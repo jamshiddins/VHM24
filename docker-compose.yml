@@ -1,7 +1,26 @@
 version: '3.8'
 
 services:
-  # Только Redis локально, БД используем Supabase
+  # PostgreSQL database
+  postgres:
+    image: postgres:15-alpine
+    container_name: vhm24-postgres
+    environment:
+      POSTGRES_DB: vhm24db
+      POSTGRES_USER: vhm24
+      POSTGRES_PASSWORD: vhm24pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vhm24 -d vhm24db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis для кеширования
   redis:
     image: redis:7-alpine
     container_name: vhm24-redis
@@ -28,5 +47,6 @@ services:
     restart: unless-stopped
 
 volumes:
+  postgres_data:
   redis_data:
   minio_data:

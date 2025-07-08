@@ -1,28 +1,26 @@
-import TelegramBot from 'node-telegram-bot-api';
-import dotenv from 'dotenv';
-import winston from 'winston';
-import axios from 'axios';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+const TelegramBot = require('node-telegram-bot-api');
+const dotenv = require('dotenv');
+const winston = require('winston');
+const axios = require('axios');
+const path = require('path');
 
 // Handlers
-import { handleStart } from './handlers/startHandler.js';
-import { handleMachines } from './handlers/machinesHandler.js';
-import { handleInventory } from './handlers/inventoryHandler.js';
-import { handleTasks } from './handlers/tasksHandler.js';
-import { handleReports } from './handlers/reportsHandler.js';
-import { handleSettings } from './handlers/settingsHandler.js';
-import { handleCallbackQuery } from './handlers/callbackHandler.js';
+const { handleStart } = require('./handlers/startHandler.js');
+const { handleMachines } = require('./handlers/machinesHandler.js');
+const { handleInventory } = require('./handlers/inventoryHandler.js');
+const { handleTasks } = require('./handlers/tasksHandler.js');
+const { handleReports } = require('./handlers/reportsHandler.js');
+const { handleSettings } = require('./handlers/settingsHandler.js');
+const { handleCallbackQuery } = require('./handlers/callbackHandler.js');
 
 // Utils
-import { checkAuth } from './utils/auth.js';
-import { errorHandler } from './utils/errorHandler.js';
+const { checkAuth } = require('./utils/auth.js');
+const { errorHandler } = require('./utils/errorHandler.js');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = __dirname || path.dirname(__filename);
 
 // Load environment variables
-dotenv.config({ path: join(__dirname, '../../../.env') });
+dotenv.config({ path: path.join(__dirname, '../../../.env') });
 
 // Configure logger
 const logger = winston.createLogger({
@@ -40,11 +38,11 @@ const logger = winston.createLogger({
       )
     }),
     new winston.transports.File({ 
-      filename: join(__dirname, '../logs/error.log'), 
+      filename: path.join(__dirname, '../logs/error.log'), 
       level: 'error' 
     }),
     new winston.transports.File({ 
-      filename: join(__dirname, '../logs/combined.log') 
+      filename: path.join(__dirname, '../logs/combined.log') 
     })
   ]
 });

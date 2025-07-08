@@ -1,4 +1,4 @@
-export async function handleStart(bot, msg) {
+async function handleStart(bot, msg) {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
   const username = msg.from.username || 'Operator';
@@ -94,4 +94,4 @@ async function showMainMenu(bot, chatId, roles) {
   );
 }
 
-export { showMainMenu };
+module.exports = { handleStart, showMainMenu };

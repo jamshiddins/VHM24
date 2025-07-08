@@ -20,8 +20,28 @@ fastify.register(jwt, {
 fastify.decorate('authenticate', async function(request, reply) {
   try {
     await request.jwtVerify();
+    const user = await prisma.user.findUnique({
+      where: { id: request.user.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        roles: true,
+        isActive: true
+      }
+    });
+    
+    if (!user || !user.isActive) {
+      throw new Error('User not found or inactive');
+    }
+    
+    request.user = user;
   } catch (err) {
-    reply.send(err);
+    reply.code(401).send({ 
+      success: false,
+      error: 'Unauthorized',
+      message: err.message || 'Invalid or expired token'
+    });
   }
 });
 

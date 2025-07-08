@@ -1,76 +1,84 @@
-// Authentication utilities
-
-export async function checkAuth(bot, msg) {
+async function checkAuth(bot, msg) {
   const userId = msg.from.id;
-  const token = global.userTokens.get(userId);
+  const chatId = msg.chat.id;
+  
+  // Проверяем, есть ли токен пользователя
+  const token = global.userTokens?.get(userId);
   
   if (!token) {
-    await bot.sendMessage(msg.chat.id, 
-      '🔒 You need to authenticate first.\n' +
-      'Please use /start command to login.',
-      {
+    await bot.sendMessage(chatId, 
+      '🔐 *Требуется авторизация*\n\n' +
+      'Для использования VHM24 необходимо войти в систему.\n' +
+      'Используйте команду /start для авторизации.',
+      { 
+        parse_mode: 'Markdown',
         reply_markup: {
-          inline_keyboard: [[
-            { text: '🚀 Start', callback_data: 'start' }
-          ]]
+          inline_keyboard: [
+            [{ text: '🚀 Начать работу', callback_data: 'start_auth' }]
+          ]
         }
       }
     );
     return false;
   }
   
-  // Set current user for API requests
-  global.currentUserId = userId;
-  return true;
-}
-
-export async function authenticate(username, password) {
+  // Проверяем валидность токена через API
   try {
-    const response = await global.apiClient.post('/auth/login', {
-      username,
-      password
-    });
+    const response = await global.apiClient.get('/auth/me');
     
-    return {
-      success: true,
-      token: response.data.data.access_token,
-      user: response.data.data.user
-    };
+    if (response.data.success) {
+      // Токен валиден, обновляем информацию о пользователе
+      global.currentUserId = userId;
+      return true;
+    } else {
+      // Токен недействителен, удаляем его
+      global.userTokens.delete(userId);
+      await bot.sendMessage(chatId, 
+        '⚠️ *Сессия истекла*\n\n' +
+        'Ваша сессия истекла. Пожалуйста, авторизуйтесь заново.\n' +
+        'Используйте команду /start',
+        { parse_mode: 'Markdown' }
+      );
+      return false;
+    }
   } catch (error) {
-    global.logger.error('Authentication failed:', error.response?.data || error.message);
-    return {
-      success: false,
-      error: error.response?.data?.message || 'Authentication failed'
-    };
-  }
-}
-
-export function isAdmin(userId) {
-  return global.config.adminIds.includes(String(userId));
-}
-
-export async function requireAdmin(bot, msg) {
-  if (!isAdmin(msg.from.id)) {
-    await bot.sendMessage(msg.chat.id, 
-      '⛔ This command requires administrator privileges.'
+    global.logger.error('Auth check error:', error);
+    
+    // В случае ошибки API, считаем что пользователь не авторизован
+    await bot.sendMessage(chatId, 
+      '❌ *Ошибка авторизации*\n\n' +
+      'Не удается проверить авторизацию. Система VHM24 может быть временно недоступна.\n' +
+      'Попробуйте позже или обратитесь к администратору.',
+      { parse_mode: 'Markdown' }
     );
     return false;
   }
-  return true;
 }
 
-export function getUserData(userId) {
-  return global.userData?.get(userId) || null;
+function getUserToken(userId) {
+  return global.userTokens?.get(userId);
 }
 
-export function setUserData(userId, data) {
-  if (!global.userData) {
-    global.userData = new Map();
+function setUserToken(userId, token) {
+  if (!global.userTokens) {
+    global.userTokens = new Map();
   }
-  global.userData.set(userId, data);
+  global.userTokens.set(userId, token);
 }
 
-export function clearUserData(userId) {
-  global.userData?.delete(userId);
+function removeUserToken(userId) {
   global.userTokens?.delete(userId);
 }
+
+function isAdmin(userId) {
+  const adminIds = global.config?.adminIds || [];
+  return adminIds.includes(userId.toString());
+}
+
+module.exports = {
+  checkAuth,
+  getUserToken,
+  setUserToken,
+  removeUserToken,
+  isAdmin
+};

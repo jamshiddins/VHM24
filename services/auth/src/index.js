@@ -48,7 +48,11 @@ fastify.decorate('authenticate', async function(request, reply) {
     
     request.user = user;
   } catch (err) {
-    reply.code(401).send({ error: 'Unauthorized' });
+    reply.code(401).send({ 
+      success: false,
+      error: 'Unauthorized',
+      message: err.message || 'Invalid or expired token'
+    });
   }
 });
 
