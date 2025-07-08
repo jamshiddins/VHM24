@@ -9,18 +9,10 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "start": "turbo run start",
-    "lint": "turbo run lint",
-    "clean": "turbo run clean && rm -rf node_modules",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "db:generate": "turbo run db:generate",
-    "db:migrate": "turbo run db:migrate",
-    "db:seed": "turbo run db:seed",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f",
+    "postinstall": "cd packages/database && npx prisma generate",
+    "dev": "node services/gateway/src/index.js",
+    "start": "node services/gateway/src/index.js",
+    "build": "echo 'No build required'",
     "install:all": "npm install && npm install --workspaces"
   },
   "devDependencies": {
@@ -37,7 +29,6 @@
     "@fastify/websocket": "^11.1.0",
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.0.1",
-    "jsonwebtoken": "^9.0.2",
-    "redis": "^5.5.6"
+    "jsonwebtoken": "^9.0.2"
   }
 }
