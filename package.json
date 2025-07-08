@@ -2,33 +2,15 @@
   "name": "vhm24-platform",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "npm@9.0.0",
-  "workspaces": [
-    "apps/*",
-    "services/*",
-    "packages/*"
-  ],
   "scripts": {
-    "postinstall": "cd packages/database && npx prisma generate",
-    "dev": "node services/gateway/src/index.js",
-    "start": "node services/gateway/src/index.js",
-    "build": "echo 'No build required'",
-    "install:all": "npm install && npm install --workspaces"
-  },
-  "devDependencies": {
-    "@types/node": "^20.10.0",
-    "prettier": "^3.1.0",
-    "turbo": "latest",
-    "typescript": "^5.3.0"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "start": "node start.js",
+    "postinstall": "cd packages/database && npx prisma generate"
   },
   "dependencies": {
-    "@fastify/websocket": "^11.1.0",
-    "bcryptjs": "^3.0.2",
-    "dotenv": "^17.0.1",
-    "jsonwebtoken": "^9.0.2"
-  }
+    "dotenv": "^16.3.1"
+  },
+  "workspaces": [
+    "services/*",
+    "packages/*"
+  ]
 }
