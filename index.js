@@ -21,8 +21,8 @@ const services = [
   {
     name: 'Gateway',
     path: './services/gateway/src/index.js',
-    port: process.env.GATEWAY_PORT || 8000,
-    env: { PORT: process.env.GATEWAY_PORT || 8000 }
+    port: parseInt(process.env.PORT || process.env.GATEWAY_PORT || 8000),
+    env: { PORT: parseInt(process.env.PORT || process.env.GATEWAY_PORT || 8000) }
   },
   {
     name: 'Auth',
