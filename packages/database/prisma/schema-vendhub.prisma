@@ -1,0 +1,733 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ENUMS ====================
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  WAREHOUSE
+  OPERATOR
+  TECHNICIAN
+}
+
+enum MachineStatus {
+  ACTIVE        // В работе
+  WAREHOUSE     // На складе
+  BROKEN        // Неисправен
+  MAINTENANCE   // На ремонте
+}
+
+enum BunkerStatus {
+  WAREHOUSE     // На складе
+  IN_MACHINE    // В машине
+  IN_TRANSIT    // В пути
+  WASHING       // На мойке
+  DAMAGED       // Поврежден
+}
+
+enum BunkerIngredientType {
+  COFFEE        // Кофе
+  CREAM         // Сливки
+  CHOCOLATE     // Шоколад
+  SUGAR         // Сахар
+  MILK          // Молоко
+  CAPPUCCINO    // Капучино
+  DECAF         // Декаф
+  TEA           // Чай
+}
+
+enum SyrupType {
+  CARAMEL       // Карамель
+  VANILLA       // Ваниль
+  COCONUT       // Кокос
+  HAZELNUT      // Лесной орех
+  AMARETTO      // Амаретто
+  IRISH_CREAM   // Ирландский крем
+  CHOCOLATE     // Шоколад
+  CUSTOM        // Пользовательский
+}
+
+enum SyrupStatus {
+  FULL          // Полный
+  PARTIAL       // Частично использован
+  EMPTY         // Пустой
+  EXPIRED       // Просрочен
+}
+
+enum WaterStatus {
+  NEW           // Новая
+  IN_USE        // В использовании
+  EMPTY         // Пустая
+  RETURNED      // Возвращена
+}
+
+enum SparePartStatus {
+  NEW           // Новая
+  USED          // Использована
+  DAMAGED       // Повреждена
+  REPAIRED      // Отремонтирована
+  WRITTEN_OFF   // Списана
+}
+
+enum TransactionType {
+  INCOME        // Доход
+  EXPENSE       // Расход
+}
+
+enum IncomeSource {
+  QR            // QR платеж
+  CASH          // Наличные
+  VIP           // VIP карта
+  RENT          // Аренда места
+  OTHER         // Другое
+}
+
+enum ExpenseCategory {
+  INGREDIENTS   // Ингредиенты
+  RENT          // Аренда
+  REPAIR        // Ремонт
+  SALARY        // Зарплата
+  TRANSPORT     // Транспорт
+  UTILITIES     // Коммунальные услуги
+  EQUIPMENT     // Оборудование
+  TAXES         // Налоги
+  OTHER         // Другое
+}
+
+enum PaymentType {
+  CASH          // Наличные
+  BANK_ACCOUNT  // Банковский счет
+  PETTY_CASH    // Касса
+  CARD          // Карта
+}
+
+enum Currency {
+  UZS           // Узбекские сумы
+  USD           // Доллары США
+  EUR           // Евро
+  RUB           // Российские рубли
+}
+
+enum StockMovementType {
+  ARRIVAL       // Приход на склад
+  ISSUE         // Выдача со склада
+  RETURN        // Возврат на склад
+  ADJUSTMENT    // Корректировка
+  WRITE_OFF     // Списание
+  TRANSFER      // Перемещение
+}
+
+enum DataEntryMethod {
+  MANUAL        // Ручной ввод
+  TELEGRAM      // Через Telegram
+  AUTO_IMPORT   // Автоимпорт
+  API           // Через API
+}
+
+// ==================== MODELS ====================
+
+// Пользователи системы
+model User {
+  id              String     @id @default(cuid())
+  email           String?    @unique
+  telegramId      BigInt?    @unique
+  telegramUsername String?
+  name            String
+  roles           UserRole[]
+  phoneNumber     String?
+  isActive        Boolean    @default(true)
+  lastLogin       DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  
+  // Relations
+  machinesAssigned        Machine[]  @relation("MachineOperator")
+  bunkerOperations        BunkerOperation[]
+  syrupOperations         SyrupOperation[]
+  waterOperations         WaterOperation[]
+  sparePartOperations     SparePartOperation[]
+  stockMovements          StockMovement[]
+  transactions            Transaction[]
+  auditLogs               AuditLog[]
+  supplierContracts       SupplierContract[] @relation("ContractManager")
+  recipeVersions          RecipeVersion[]
+}
+
+// Вендинговые автоматы
+model Machine {
+  id                String        @id @default(cuid())
+  model             String        // Например: "NECTA KREA TOUCH"
+  serialNumber      String        @unique
+  vendhubCode       String        @unique // Например: "VM-015-TASH-WEST"
+  status            MachineStatus @default(WAREHOUSE)
+  locationAddress   String?
+  locationLat       Float?
+  locationLng       Float?
+  groupName         String?       // Условная группа (по району)
+  installationDate  DateTime?
+  operatorId        String?
+  operator          User?         @relation("MachineOperator", fields: [operatorId], references: [id])
+  metadata          Json?         // Дополнительные настройки
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  
+  // Relations
+  bunkerPositions   BunkerPosition[]
+  syrups            SyrupInMachine[]
+  waterBottles      WaterBottle[]
+  serviceHistory    ServiceRecord[]
+  revenue           Revenue[]
+  sparePartsUsed    SparePartUsage[]
+  recipes           MachineRecipe[]
+}
+
+// Бункеры
+model Bunker {
+  id              String                @id @default(cuid())
+  code            String                @unique // Например: "SET-005-4SU"
+  setCode         String                // SET-005
+  position        Int                   // 4
+  ingredientCode  String                // SU
+  ingredientType  BunkerIngredientType
+  emptyWeight     Float                 // Вес пустого бункера в граммах
+  status          BunkerStatus          @default(WAREHOUSE)
+  currentMachineId String?
+  currentPosition  BunkerPosition?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  
+  // Relations
+  operations      BunkerOperation[]
+  fillHistory     BunkerFill[]
+}
+
+// Позиции бункеров в автоматах
+model BunkerPosition {
+  id            String    @id @default(cuid())
+  machineId     String
+  machine       Machine   @relation(fields: [machineId], references: [id])
+  position      Int       // Позиция в автомате (1-8)
+  bunkerId      String?   @unique
+  bunker        Bunker?   @relation(fields: [bunkerId], references: [id])
+  installedAt   DateTime?
+  
+  @@unique([machineId, position])
+}
+
+// Операции с бункерами
+model BunkerOperation {
+  id              String              @id @default(cuid())
+  bunkerId        String
+  bunker          Bunker              @relation(fields: [bunkerId], references: [id])
+  operationType   String              // FILL, INSTALL, REMOVE, WASH, REPAIR
+  userId          String
+  user            User                @relation(fields: [userId], references: [id])
+  
+  // Данные операции
+  fillWeight      Float?              // Вес при заполнении
+  returnWeight    Float?              // Вес при возврате
+  netWeight       Float?              // Чистый вес ингредиента
+  wasteWeight     Float?              // Вес отходов
+  
+  machineId       String?
+  fromLocation    String?
+  toLocation      String?
+  
+  // Временные метки
+  performedAt     DateTime            // Фактическое время операции
+  enteredAt       DateTime            @default(now()) // Время записи в систему
+  entryMethod     DataEntryMethod
+  
+  // Дополнительно
+  comments        String?
+  photoUrls       String[]
+  locationLat     Float?
+  locationLng     Float?
+  
+  @@index([bunkerId])
+  @@index([performedAt])
+}
+
+// История заполнений бункеров
+model BunkerFill {
+  id              String          @id @default(cuid())
+  bunkerId        String
+  bunker          Bunker          @relation(fields: [bunkerId], references: [id])
+  ingredientId    String
+  ingredient      Ingredient      @relation(fields: [ingredientId], references: [id])
+  batchId         String?
+  batch           Batch?          @relation(fields: [batchId], references: [id])
+  fillWeight      Float           // Вес заполнения
+  filledAt        DateTime
+  usedByDate      DateTime?       // Использовать до
+  
+  @@index([bunkerId])
+  @@index([batchId])
+}
+
+// Сиропы
+model Syrup {
+  id              String          @id @default(cuid())
+  type            SyrupType
+  name            String          // Название (для CUSTOM типа)
+  volumeLiters    Float
+  batchId         String?
+  batch           Batch?          @relation(fields: [batchId], references: [id])
+  expirationDate  DateTime
+  status          SyrupStatus     @default(FULL)
+  currentLocation String          // warehouse / machine code
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  operations      SyrupOperation[]
+  machineUsage    SyrupInMachine[]
+}
+
+// Сиропы в автоматах
+model SyrupInMachine {
+  id            String    @id @default(cuid())
+  machineId     String
+  machine       Machine   @relation(fields: [machineId], references: [id])
+  syrupId       String
+  syrup         Syrup     @relation(fields: [syrupId], references: [id])
+  installedAt   DateTime
+  removedAt     DateTime?
+  
+  @@index([machineId])
+  @@index([syrupId])
+}
+
+// Операции с сиропами
+model SyrupOperation {
+  id              String              @id @default(cuid())
+  syrupId         String
+  syrup           Syrup               @relation(fields: [syrupId], references: [id])
+  operationType   String              // INSTALL, REMOVE, USE, DISPOSE
+  userId          String
+  user            User                @relation(fields: [userId], references: [id])
+  machineId       String?
+  volumeUsed      Float?              // Использованный объем
+  
+  performedAt     DateTime
+  enteredAt       DateTime            @default(now())
+  entryMethod     DataEntryMethod
+  
+  comments        String?
+  photoUrls       String[]
+  
+  @@index([syrupId])
+  @@index([performedAt])
+}
+
+// Вода
+model WaterBottle {
+  id              String              @id @default(cuid())
+  volumeLiters    Float               @default(18.9)
+  arrivalDate     DateTime
+  machineId       String?
+  machine         Machine?            @relation(fields: [machineId], references: [id])
+  status          WaterStatus         @default(NEW)
+  returnedEmpty   DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  // Relations
+  operations      WaterOperation[]
+}
+
+// Операции с водой
+model WaterOperation {
+  id              String              @id @default(cuid())
+  bottleId        String
+  bottle          WaterBottle         @relation(fields: [bottleId], references: [id])
+  operationType   String              // DELIVER, INSTALL, REMOVE, RETURN
+  userId          String
+  user            User                @relation(fields: [userId], references: [id])
+  machineId       String?
+  
+  performedAt     DateTime
+  enteredAt       DateTime            @default(now())
+  entryMethod     DataEntryMethod
+  
+  comments        String?
+  photoUrls       String[]
+  
+  @@index([bottleId])
+  @@index([performedAt])
+}
+
+// Запасные части
+model SparePart {
+  id              String              @id @default(cuid())
+  code            String              @unique // SP-2024-DC24-5V-001
+  type            String              // Помпа, плата, двигатель и т.д.
+  model           String
+  compatibleWith  String[]            // Модели автоматов
+  status          SparePartStatus     @default(NEW)
+  currentLocation String              // warehouse / machine code
+  purchasePrice   Float?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  // Relations
+  operations      SparePartOperation[]
+  usage           SparePartUsage[]
+  batchId         String?
+  batch           Batch?              @relation(fields: [batchId], references: [id])
+}
+
+// Операции с запчастями
+model SparePartOperation {
+  id              String              @id @default(cuid())
+  partId          String
+  part            SparePart           @relation(fields: [partId], references: [id])
+  operationType   String              // RECEIVE, INSTALL, REMOVE, REPAIR, WRITE_OFF
+  userId          String
+  user            User                @relation(fields: [userId], references: [id])
+  machineId       String?
+  
+  performedAt     DateTime
+  enteredAt       DateTime            @default(now())
+  entryMethod     DataEntryMethod
+  
+  comments        String?
+  photoUrls       String[]
+  
+  @@index([partId])
+  @@index([performedAt])
+}
+
+// История использования запчастей
+model SparePartUsage {
+  id              String              @id @default(cuid())
+  partId          String
+  part            SparePart           @relation(fields: [partId], references: [id])
+  machineId       String
+  machine         Machine             @relation(fields: [machineId], references: [id])
+  installedAt     DateTime
+  removedAt       DateTime?
+  reasonRemoved   String?
+  
+  @@index([partId])
+  @@index([machineId])
+}
+
+// Поставщики
+model Supplier {
+  id              String              @id @default(cuid())
+  name            String
+  inn             String?             @unique
+  contactPerson   String?
+  phoneNumber     String?
+  email           String?
+  address         String?
+  currency        Currency            @default(UZS)
+  paymentTerms    String?             // Условия оплаты
+  isActive        Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  // Relations
+  contracts       SupplierContract[]
+  batches         Batch[]
+  transactions    Transaction[]
+}
+
+// Контракты с поставщиками
+model SupplierContract {
+  id              String              @id @default(cuid())
+  contractNumber  String              @unique
+  supplierId      String
+  supplier        Supplier            @relation(fields: [supplierId], references: [id])
+  signedDate      DateTime
+  expirationDate  DateTime?
+  managerId       String?
+  manager         User?               @relation("ContractManager", fields: [managerId], references: [id])
+  
+  // Условия контракта
+  items           Json                // Список товаров и цен
+  paymentConditions String?
+  deliveryTerms   String?
+  
+  isActive        Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  // Relations
+  batches         Batch[]
+  
+  @@index([supplierId])
+}
+
+// Ингредиенты (справочник)
+model Ingredient {
+  id              String              @id @default(cuid())
+  name            String
+  type            BunkerIngredientType
+  unit            String              @default("g") // g, ml
+  costPerUnit     Float?              // Стоимость за единицу
+  caloriesPerUnit Float?
+  isActive        Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  // Relations
+  batches         Batch[]
+  recipeItems     RecipeIngredient[]
+  bunkerFills     BunkerFill[]
+}
+
+// Партии товаров
+model Batch {
+  id              String              @id @default(cuid())
+  code            String              @unique // PARTY-2024-CHOC-03
+  type            String              // INGREDIENT, SYRUP, SPARE_PART
+  supplierId      String
+  supplier        Supplier            @relation(fields: [supplierId], references: [id])
+  contractId      String?
+  contract        SupplierContract?   @relation(fields: [contractId], references: [id])
+  
+  // Для ингредиентов
+  ingredientId    String?
+  ingredient      Ingredient?         @relation(fields: [ingredientId], references: [id])
+  
+  quantity        Float
+  unit            String
+  costPerUnit     Float
+  totalCost       Float
+  
+  arrivalDate     DateTime
+  expirationDate  DateTime?
+  storageLocation String
+  
+  remainingQuantity Float
+  status          String              // ACTIVE, USED, EXPIRED
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  // Relations
+  syrups          Syrup[]
+  spareParts      SparePart[]
+  bunkerFills     BunkerFill[]
+  stockMovements  StockMovement[]
+  
+  @@index([supplierId])
+  @@index([contractId])
+  @@index([ingredientId])
+}
+
+// Движение товаров
+model StockMovement {
+  id              String              @id @default(cuid())
+  batchId         String
+  batch           Batch               @relation(fields: [batchId], references: [id])
+  movementType    StockMovementType
+  quantity        Float
+  
+  fromLocation    String?
+  toLocation      String?
+  
+  userId          String
+  user            User                @relation(fields: [userId], references: [id])
+  
+  performedAt     DateTime
+  enteredAt       DateTime            @default(now())
+  entryMethod     DataEntryMethod
+  
+  reason          String
+  reference       String?             // Номер документа
+  
+  @@index([batchId])
+  @@index([performedAt])
+}
+
+// Рецепты
+model Recipe {
+  id              String              @id @default(cuid())
+  name            String
+  category        String              // Кофе, чай, шоколад и т.д.
+  isActive        Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  // Relations
+  versions        RecipeVersion[]
+  machineRecipes  MachineRecipe[]
+}
+
+// Версии рецептов
+model RecipeVersion {
+  id              String              @id @default(cuid())
+  recipeId        String
+  recipe          Recipe              @relation(fields: [recipeId], references: [id])
+  version         Int
+  
+  waterVolume     Float               // мл
+  temperature     Float?              // градусы
+  pressure        Float?              // бар
+  
+  createdById     String
+  createdBy       User                @relation(fields: [createdById], references: [id])
+  createdAt       DateTime            @default(now())
+  
+  isActive        Boolean             @default(true)
+  
+  // Relations
+  ingredients     RecipeIngredient[]
+  syrups          RecipeSyrup[]
+  
+  @@unique([recipeId, version])
+  @@index([recipeId])
+}
+
+// Ингредиенты в рецепте
+model RecipeIngredient {
+  id              String              @id @default(cuid())
+  versionId       String
+  version         RecipeVersion       @relation(fields: [versionId], references: [id])
+  ingredientId    String
+  ingredient      Ingredient          @relation(fields: [ingredientId], references: [id])
+  quantity        Float               // граммы
+  
+  @@unique([versionId, ingredientId])
+}
+
+// Сиропы в рецепте
+model RecipeSyrup {
+  id              String              @id @default(cuid())
+  versionId       String
+  version         RecipeVersion       @relation(fields: [versionId], references: [id])
+  syrupType       SyrupType
+  volumeMl        Float               // мл
+  
+  @@unique([versionId, syrupType])
+}
+
+// Рецепты в автоматах
+model MachineRecipe {
+  id              String              @id @default(cuid())
+  machineId       String
+  machine         Machine             @relation(fields: [machineId], references: [id])
+  recipeId        String
+  recipe          Recipe              @relation(fields: [recipeId], references: [id])
+  buttonNumber    Int                 // Номер кнопки на автомате
+  price           Float
+  isActive        Boolean             @default(true)
+  
+  @@unique([machineId, buttonNumber])
+  @@index([machineId])
+  @@index([recipeId])
+}
+
+// Финансовые транзакции
+model Transaction {
+  id              String              @id @default(cuid())
+  type            TransactionType
+  
+  // Для доходов
+  incomeSource    IncomeSource?
+  revenue         Revenue?            @relation(fields: [revenueId], references: [id])
+  revenueId       String?             @unique
+  
+  // Для расходов
+  expenseCategory ExpenseCategory?
+  supplierId      String?
+  supplier        Supplier?           @relation(fields: [supplierId], references: [id])
+  
+  amount          Float
+  currency        Currency            @default(UZS)
+  exchangeRate    Float               @default(1)
+  amountInUZS     Float               // Сумма в сумах
+  
+  paymentType     PaymentType
+  invoiceNumber   String?
+  reference       String?             // Номер платежного документа
+  
+  userId          String
+  user            User                @relation(fields: [userId], references: [id])
+  
+  performedAt     DateTime
+  enteredAt       DateTime            @default(now())
+  entryMethod     DataEntryMethod
+  
+  description     String
+  attachments     String[]            // URLs документов
+  
+  @@index([type])
+  @@index([performedAt])
+}
+
+// Доходы от автоматов
+model Revenue {
+  id              String              @id @default(cuid())
+  machineId       String
+  machine         Machine             @relation(fields: [machineId], references: [id])
+  
+  source          IncomeSource
+  amount          Float
+  currency        Currency            @default(UZS)
+  
+  paymentGateway  String?             // Для QR платежей
+  reference       String?             @unique
+  
+  collectedAt     DateTime            // Время сбора
+  enteredAt       DateTime            @default(now())
+  
+  transaction     Transaction?
+  
+  @@index([machineId])
+  @@index([collectedAt])
+}
+
+// История обслуживания
+model ServiceRecord {
+  id              String              @id @default(cuid())
+  machineId       String
+  machine         Machine             @relation(fields: [machineId], references: [id])
+  serviceType     String              // CLEANING, REPAIR, REFILL, INSPECTION
+  description     String
+  
+  performedAt     DateTime
+  nextServiceDate DateTime?
+  
+  photoUrls       String[]
+  locationLat     Float?
+  locationLng     Float?
+  
+  @@index([machineId])
+  @@index([performedAt])
+}
+
+// Аудит всех действий
+model AuditLog {
+  id              String              @id @default(cuid())
+  userId          String?
+  user            User?               @relation(fields: [userId], references: [id])
+  
+  action          String              // CREATE, UPDATE, DELETE
+  entity          String              // Название модели
+  entityId        String
+  
+  oldData         Json?
+  newData         Json?
+  
+  ipAddress       String?
+  userAgent       String?
+  
+  performedAt     DateTime            // Фактическое время действия
+  enteredAt       DateTime            @default(now()) // Время записи
+  entryMethod     DataEntryMethod
+  
+  @@index([entity, entityId])
+  @@index([userId])
+  @@index([performedAt])
+}

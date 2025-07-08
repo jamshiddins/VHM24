@@ -1,0 +1,23 @@
+{
+  "name": "@vhm24/auth-service",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "node src/index.js",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.5.0",
+    "@fastify/jwt": "^7.2.4",
+    "@vhm24/database": "*",
+    "@vhm24/shared-types": "*",
+    "bcrypt": "^5.1.1",
+    "fastify": "^4.25.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  }
+}

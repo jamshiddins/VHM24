@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-07-07T14:28:29.410Z",
+  "project": "VHM24 vs VendBot",
+  "compatibility": "65%",
+  "results": {
+    "infrastructure": {
+      "docker": false,
+      "redis": true,
+      "minio": true,
+      "env": true,
+      "node": true
+    },
+    "database": {},
+    "services": {},
+    "applications": {},
+    "functionality": {},
+    "total": {
+      "passed": 42,
+      "failed": 23
+    }
+  }
+}
