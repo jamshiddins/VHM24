@@ -9,4 +9,4 @@ cmds = ["npm install --workspaces --if-present"]
 cmds = ["npm run db:generate"]
 
 [start]
-cmd = "node index.js"
+cmd = "node railway-start.js"
