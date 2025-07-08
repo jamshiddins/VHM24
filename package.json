@@ -1,16 +1,8 @@
 {
-  "name": "vhm24-platform",
+  "name": "vhm24",
   "version": "1.0.0",
-  "private": true,
+  "main": "index.js",
   "scripts": {
-    "start": "node start.js",
-    "postinstall": "cd packages/database && npx prisma generate"
-  },
-  "dependencies": {
-    "dotenv": "^16.3.1"
-  },
-  "workspaces": [
-    "services/*",
-    "packages/*"
-  ]
+    "start": "node index.js"
+  }
 }
