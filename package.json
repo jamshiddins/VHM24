@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "node index.js",
     "build": "echo 'No build required for backend services'",
-    "start": "node index.js",
+    "start": "node railway-start.js",
     "clean": "rimraf node_modules",
     "db:generate": "cd packages/database && npx prisma generate",
     "db:migrate": "cd packages/database && npx prisma migrate dev",
