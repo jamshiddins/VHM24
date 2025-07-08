@@ -17,8 +17,6 @@ const { handleCallbackQuery } = require('./handlers/callbackHandler.js');
 const { checkAuth } = require('./utils/auth.js');
 const { errorHandler } = require('./utils/errorHandler.js');
 
-const __dirname = __dirname || path.dirname(__filename);
-
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../../../.env') });
 

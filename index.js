@@ -6,9 +6,15 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
+// Load .env only in local development
+if (!process.env.RAILWAY_ENVIRONMENT) {
+  require('dotenv').config();
+}
+
 console.log('🚀 VHM24 Platform starting on Railway...');
 console.log('Project ID:', process.env.RAILWAY_PROJECT_ID || 'local');
 console.log('Environment:', process.env.RAILWAY_ENVIRONMENT || 'development');
+console.log('Database:', process.env.DATABASE_URL ? 'Connected' : 'Not configured');
 
 // Services configuration
 const services = [
