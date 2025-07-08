@@ -9,9 +9,9 @@ const Fastify = require('fastify');
 const cors = require('@fastify/cors');
 const jwt = require('@fastify/jwt');
 const bcrypt = require('bcrypt');
-const { PrismaClient } = require('@prisma/client');
+const { getAuthClient } = require('@vhm24/database');
 
-const prisma = new PrismaClient();
+const prisma = getAuthClient();
 const fastify = Fastify({ logger: true });
 
 // Plugins

@@ -9,10 +9,11 @@
     "services/*"
   ],
   "scripts": {
-    "dev": "node index.js",
+    "dev": "node start.js",
     "build": "echo 'No build required for backend services'",
-    "start": "node railway-start.js",
-    "clean": "rimraf node_modules",
+    "start": "node start.js",
+    "clean": "rimraf node_modules packages/*/node_modules services/*/node_modules apps/*/node_modules",
+    "db:setup": "cd packages/database && npm run generate && npm run migrate:dev",
     "db:generate": "cd packages/database && npx prisma generate",
     "db:migrate": "cd packages/database && npx prisma migrate dev",
     "db:seed": "cd packages/database && npm run seed",

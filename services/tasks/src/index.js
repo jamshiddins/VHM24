@@ -2,10 +2,10 @@ require('dotenv').config({ path: require('path').join(__dirname, '../../../.env'
 const Fastify = require('fastify');
 const cors = require('@fastify/cors');
 const jwt = require('@fastify/jwt');
-const { PrismaClient } = require('@prisma/client');
+const { getTasksClient } = require('@vhm24/database');
 const { TaskStatus } = require('@prisma/client');
 
-const prisma = new PrismaClient();
+const prisma = getTasksClient();
 const fastify = Fastify({ logger: true });
 
 // Plugins

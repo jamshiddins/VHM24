@@ -1,26 +1,50 @@
 {
   "name": "@vhm24/database",
   "version": "1.0.0",
-  "main": "./dist/index.js",
+  "description": "Database layer for VHM24 platform with multi-database support",
+  "main": "./index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:seed": "node dist/seed.js",
-    "seed": "npm run build && npm run db:seed",
-    "db:studio": "prisma studio",
-    "clean": "rm -rf dist"
+    "generate": "npm run generate:all",
+    "generate:all": "npm run generate:auth && npm run generate:machines && npm run generate:inventory && npm run generate:tasks && npm run generate:shared",
+    "generate:auth": "prisma generate --schema=./prisma/auth/schema.prisma",
+    "generate:machines": "prisma generate --schema=./prisma/machines/schema.prisma",
+    "generate:inventory": "prisma generate --schema=./prisma/inventory/schema.prisma",
+    "generate:tasks": "prisma generate --schema=./prisma/tasks/schema.prisma",
+    "generate:shared": "prisma generate --schema=./prisma/shared/schema.prisma",
+    "migrate:dev": "npm run migrate:dev:all",
+    "migrate:dev:all": "npm run migrate:dev:auth && npm run migrate:dev:machines && npm run migrate:dev:inventory && npm run migrate:dev:tasks && npm run migrate:dev:shared",
+    "migrate:dev:auth": "prisma migrate dev --schema=./prisma/auth/schema.prisma",
+    "migrate:dev:machines": "prisma migrate dev --schema=./prisma/machines/schema.prisma",
+    "migrate:dev:inventory": "prisma migrate dev --schema=./prisma/inventory/schema.prisma",
+    "migrate:dev:tasks": "prisma migrate dev --schema=./prisma/tasks/schema.prisma",
+    "migrate:dev:shared": "prisma migrate dev --schema=./prisma/shared/schema.prisma",
+    "migrate:deploy": "npm run migrate:deploy:all",
+    "migrate:deploy:all": "npm run migrate:deploy:auth && npm run migrate:deploy:machines && npm run migrate:deploy:inventory && npm run migrate:deploy:tasks && npm run migrate:deploy:shared",
+    "migrate:deploy:auth": "prisma migrate deploy --schema=./prisma/auth/schema.prisma",
+    "migrate:deploy:machines": "prisma migrate deploy --schema=./prisma/machines/schema.prisma",
+    "migrate:deploy:inventory": "prisma migrate deploy --schema=./prisma/inventory/schema.prisma",
+    "migrate:deploy:tasks": "prisma migrate deploy --schema=./prisma/tasks/schema.prisma",
+    "migrate:deploy:shared": "prisma migrate deploy --schema=./prisma/shared/schema.prisma",
+    "studio": "prisma studio --schema=./prisma/schema.prisma",
+    "studio:auth": "prisma studio --schema=./prisma/auth/schema.prisma",
+    "studio:machines": "prisma studio --schema=./prisma/machines/schema.prisma",
+    "studio:inventory": "prisma studio --schema=./prisma/inventory/schema.prisma",
+    "studio:tasks": "prisma studio --schema=./prisma/tasks/schema.prisma",
+    "studio:shared": "prisma studio --schema=./prisma/shared/schema.prisma"
   },
   "dependencies": {
-    "@prisma/client": "^5.7.0"
+    "@prisma/client": "^5.22.0",
+    "ioredis": "^5.3.2"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
-    "prisma": "^5.7.0",
-    "typescript": "^5.3.0",
-    "bcrypt": "^5.1.1",
-    "@types/bcrypt": "^5.0.2"
+    "@types/node": "^20.10.5",
+    "prisma": "^5.22.0",
+    "typescript": "^5.3.3"
+  },
+  "optionalDependencies": {
+    "prisma-redis-middleware": "^4.8.0"
   }
 }

@@ -5,12 +5,12 @@ const cors = require('@fastify/cors');
 const jwt = require('@fastify/jwt');
 const multipart = require('@fastify/multipart');
 const websocket = require('@fastify/websocket');
-const { PrismaClient } = require('@prisma/client');
+const { getPrismaClient } = require('@vhm24/database');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
-const prisma = new PrismaClient();
+const prisma = getPrismaClient();
 const fastify = Fastify({ 
   logger: true,
   bodyLimit: 10485760 // 10MB для загрузки файлов

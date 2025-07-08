@@ -7,10 +7,10 @@
 require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
 const Fastify = require('fastify');
 const cors = require('@fastify/cors');
-const { PrismaClient } = require('@prisma/client');
+const { getSharedClient } = require('@vhm24/database');
 
 const fastify = Fastify({ logger: true });
-const prisma = new PrismaClient();
+const prisma = getSharedClient();
 
 // Register plugins
 fastify.register(cors, { origin: true });
