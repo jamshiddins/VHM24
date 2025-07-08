@@ -1,0 +1,31 @@
+# Test files
+test-*.js
+*test*.js
+*.test.js
+*.spec.js
+
+# Temp files
+*.tmp
+*.temp
+*.log
+
+# Development files
+add-test-data.js
+seed-*.js
+debug-*.js
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Documentation
+*.md
+docs/
