@@ -58,11 +58,11 @@ fastify.get('/health', async (request, reply) => {
   
   // Проверяем каждый сервис
   const checks = [
-    { name: 'auth', url: 'http://localhost:3001/health' },
-    { name: 'machines', url: 'http://localhost:3002/health' },
-    { name: 'inventory', url: 'http://localhost:3003/health' },
-    { name: 'tasks', url: 'http://localhost:3004/health' },
-    { name: 'bunkers', url: 'http://localhost:3005/health' }
+    { name: 'auth', url: 'http://127.0.0.1:3001/health' },
+    { name: 'machines', url: 'http://127.0.0.1:3002/health' },
+    { name: 'inventory', url: 'http://127.0.0.1:3003/health' },
+    { name: 'tasks', url: 'http://127.0.0.1:3004/health' },
+    { name: 'bunkers', url: 'http://127.0.0.1:3005/health' }
   ];
   
   for (const check of checks) {
@@ -203,40 +203,43 @@ fastify.post('/api/v1/upload', {
 //   decorateReply: false
 // });
 
+// Загружаем конфигурацию
+const config = require('./config');
+
 // Proxy к сервисам
 // Auth service
 fastify.register(httpProxy, {
-  upstream: 'http://localhost:3001',
-  prefix: '/api/v1/auth',
-  rewritePrefix: '/api/v1/auth'
+  upstream: config.services.auth.url,
+  prefix: config.services.auth.prefix,
+  rewritePrefix: config.services.auth.prefix
 });
 
 // Machines service
 fastify.register(httpProxy, {
-  upstream: 'http://localhost:3002',
-  prefix: '/api/v1/machines',
-  rewritePrefix: '/api/v1/machines'
+  upstream: config.services.machines.url,
+  prefix: config.services.machines.prefix,
+  rewritePrefix: config.services.machines.prefix
 });
 
 // Inventory service
 fastify.register(httpProxy, {
-  upstream: 'http://localhost:3003',
-  prefix: '/api/v1/inventory',
-  rewritePrefix: '/api/v1/inventory'
+  upstream: config.services.inventory.url,
+  prefix: config.services.inventory.prefix,
+  rewritePrefix: config.services.inventory.prefix
 });
 
 // Tasks service
 fastify.register(httpProxy, {
-  upstream: 'http://localhost:3004',
-  prefix: '/api/v1/tasks',
-  rewritePrefix: '/api/v1/tasks'
+  upstream: config.services.tasks.url,
+  prefix: config.services.tasks.prefix,
+  rewritePrefix: config.services.tasks.prefix
 });
 
 // Bunkers service
 fastify.register(httpProxy, {
-  upstream: 'http://localhost:3005',
-  prefix: '/api/v1/bunkers',
-  rewritePrefix: '/api/v1/bunkers'
+  upstream: config.services.bunkers.url,
+  prefix: config.services.bunkers.prefix,
+  rewritePrefix: config.services.bunkers.prefix
 });
 
 // Dashboard stats endpoint
