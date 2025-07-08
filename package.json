@@ -1,11 +1,38 @@
 {
-  "name": "vhm24",
+  "name": "vhm24-platform",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
+  "description": "VHM24 - VendHub Manager 24/7 Platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
   "scripts": {
-    "start": "node index.js"
+    "dev": "node index.js",
+    "build": "echo 'No build required for backend services'",
+    "start": "node index.js",
+    "clean": "rimraf node_modules",
+    "db:generate": "cd packages/database && npx prisma generate",
+    "db:migrate": "cd packages/database && npx prisma migrate dev",
+    "db:seed": "cd packages/database && npm run seed",
+    "db:studio": "cd packages/database && npx prisma studio",
+    "install:all": "npm install && npm install --workspaces",
+    "test": "node test-all-services.js",
+    "monitor": "node monitor-24-7.js",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "lint": "echo 'Linting not configured yet'"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.1.0",
+    "rimraf": "^5.0.5"
   },
   "engines": {
-    "node": "18.x"
-  }
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "packageManager": "npm@9.8.1"
 }

@@ -4,14 +4,16 @@
  * Manages coffee bunkers (machine inventory) for 24/7 vending operations
  */
 
-import Fastify from 'fastify';
-import cors from '@fastify/cors';
-import { PrismaClient } from '@vhm24/database';
+require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
+const Fastify = require('fastify');
+const cors = require('@fastify/cors');
+const { PrismaClient } = require('@prisma/client');
 
 const fastify = Fastify({ logger: true });
 const prisma = new PrismaClient();
 
-await fastify.register(cors, { origin: true });
+// Register plugins
+fastify.register(cors, { origin: true });
 
 // Health check
 fastify.get('/health', async () => {
@@ -175,6 +177,9 @@ fastify.post('/api/v1/bunkers/:machineId/:itemId/refill', async (request, reply)
           machineId,
           itemId
         }
+      },
+      include: {
+        item: true
       }
     });
 
@@ -295,6 +300,63 @@ fastify.get('/api/v1/bunkers/critical', async (request, reply) => {
   }
 });
 
+// Bunker consumption report
+fastify.get('/api/v1/bunkers/consumption-report', async (request, reply) => {
+  try {
+    const { machineId, itemId, days = 7 } = request.query;
+    
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    
+    const where = {
+      type: 'OUT',
+      createdAt: { gte: startDate }
+    };
+    
+    if (machineId) where.machineId = machineId;
+    if (itemId) where.itemId = itemId;
+    
+    const movements = await prisma.stockMovement.findMany({
+      where,
+      include: {
+        machine: true,
+        item: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    
+    // Group by machine and item
+    const consumption = {};
+    movements.forEach(movement => {
+      const key = `${movement.machineId}-${movement.itemId}`;
+      if (!consumption[key]) {
+        consumption[key] = {
+          machine: movement.machine,
+          item: movement.item,
+          totalConsumed: 0,
+          movements: []
+        };
+      }
+      consumption[key].totalConsumed += movement.quantity;
+      consumption[key].movements.push(movement);
+    });
+    
+    return {
+      success: true,
+      data: {
+        period: `Last ${days} days`,
+        startDate,
+        endDate: new Date(),
+        consumption: Object.values(consumption),
+        totalMovements: movements.length
+      }
+    };
+  } catch (error) {
+    fastify.log.error(error);
+    return reply.code(500).send({ error: 'Failed to generate consumption report' });
+  }
+});
+
 // Start server
 const start = async () => {
   try {
@@ -310,3 +372,10 @@ const start = async () => {
 };
 
 start();
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  await fastify.close();
+  await prisma.$disconnect();
+  process.exit(0);
+});

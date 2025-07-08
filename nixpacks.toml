@@ -1,0 +1,12 @@
+# nixpacks.toml
+[phases.setup]
+nixPkgs = ["nodejs-18_x", "npm-9_x"]
+
+[phases.install]
+cmds = ["npm install --workspaces --if-present"]
+
+[phases.build]
+cmds = ["npm run db:generate"]
+
+[start]
+cmd = "node index.js"

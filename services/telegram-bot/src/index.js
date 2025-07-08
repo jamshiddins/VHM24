@@ -50,7 +50,7 @@ const logger = winston.createLogger({
 // Configuration
 const config = {
   telegramToken: process.env.TELEGRAM_BOT_TOKEN || '',
-  apiUrl: process.env.API_URL || 'http://localhost:4000/api/v1',
+  apiUrl: process.env.API_URL || 'http://localhost:8000/api/v1',
   adminIds: (process.env.ADMIN_IDS || '').split(',').map(id => id.trim()),
   polling: {
     interval: 1000,

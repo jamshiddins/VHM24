@@ -52,7 +52,8 @@ fastify.get('/health', async (request, reply) => {
     auth: 'unknown',
     machines: 'unknown',
     inventory: 'unknown',
-    tasks: 'unknown'
+    tasks: 'unknown',
+    bunkers: 'unknown'
   };
   
   // Проверяем каждый сервис
@@ -60,7 +61,8 @@ fastify.get('/health', async (request, reply) => {
     { name: 'auth', url: 'http://localhost:3001/health' },
     { name: 'machines', url: 'http://localhost:3002/health' },
     { name: 'inventory', url: 'http://localhost:3003/health' },
-    { name: 'tasks', url: 'http://localhost:3004/health' }
+    { name: 'tasks', url: 'http://localhost:3004/health' },
+    { name: 'bunkers', url: 'http://localhost:3005/health' }
   ];
   
   for (const check of checks) {
@@ -230,6 +232,13 @@ fastify.register(httpProxy, {
   rewritePrefix: '/api/v1/tasks'
 });
 
+// Bunkers service
+fastify.register(httpProxy, {
+  upstream: 'http://localhost:3005',
+  prefix: '/api/v1/bunkers',
+  rewritePrefix: '/api/v1/bunkers'
+});
+
 // Dashboard stats endpoint
 fastify.get('/api/v1/dashboard/stats', {
   preValidation: [fastify.authenticate]
@@ -397,12 +406,18 @@ const start = async () => {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
     
+    const port = process.env.PORT || process.env.GATEWAY_PORT || 8000;
     await fastify.listen({ 
-      port: process.env.PORT || 8000,
+      port: port,
       host: '0.0.0.0'
     });
-    console.log('Gateway is running on port', process.env.PORT || 8000);
-    console.log('WebSocket available at ws://localhost:8000/ws');
+    console.log('Gateway is running on port', port);
+    console.log('WebSocket available at ws://localhost:' + port + '/ws');
+    
+    // Railway specific logging
+    if (process.env.RAILWAY_ENVIRONMENT) {
+      console.log('Running on Railway:', process.env.RAILWAY_STATIC_URL);
+    }
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
