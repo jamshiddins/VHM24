@@ -1,3 +1,4 @@
+require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
 const Fastify = require('fastify');
 const cors = require('@fastify/cors');
 const jwt = require('@fastify/jwt');

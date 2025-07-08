@@ -7,6 +7,9 @@
   },
   "dependencies": {
     "fastify": "^4.25.0",
-    "@fastify/cors": "^8.5.0"
+    "@fastify/cors": "^8.5.0",
+    "@fastify/jwt": "^7.2.4",
+    "@prisma/client": "^5.7.0",
+    "dotenv": "^16.3.1"
   }
 }
