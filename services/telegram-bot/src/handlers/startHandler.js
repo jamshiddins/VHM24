@@ -1,165 +1,97 @@
-// Start command handler
-import { authenticate, setUserData } from '../utils/auth.js';
-
-// Store user states for authentication flow
-const userStates = new Map();
-
 export async function handleStart(bot, msg) {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
+  const username = msg.from.username || 'Operator';
   
-  // Check if already authenticated
-  if (global.userTokens.has(userId)) {
-    await showMainMenu(bot, chatId);
-    return;
-  }
-  
-  // Start authentication flow
-  userStates.set(userId, { step: 'username' });
-  
-  await bot.sendMessage(chatId, 
-    '👋 Welcome to VHM24 Vending Management Bot!\n\n' +
-    '🔐 Please enter your username:',
-    {
-      reply_markup: {
-        force_reply: true,
-        input_field_placeholder: 'Username'
-      }
-    }
-  );
-  
-  // Set up message listener for authentication
-  const authListener = async (authMsg) => {
-    if (authMsg.from.id !== userId) return;
+  // Проверяем, есть ли пользователь в системе
+  try {
+    const response = await global.apiClient.post('/auth/login', {
+      telegramId: userId.toString()
+    });
     
-    const state = userStates.get(userId);
-    if (!state) return;
-    
-    if (state.step === 'username') {
-      state.username = authMsg.text;
-      state.step = 'password';
-      userStates.set(userId, state);
+    if (response.data.success) {
+      // Пользователь найден, сохраняем токен
+      global.userTokens.set(userId, response.data.token);
+      global.currentUserId = userId;
       
       await bot.sendMessage(chatId, 
-        '🔑 Please enter your password:',
+        `🎉 Добро пожаловать в *VHM24 - VendHub Manager 24/7*!\n\n` +
+        `⏰ Система работает круглосуточно без выходных\n\n` +
+        `👤 ${response.data.user.name}\n` +
+        `📧 ${response.data.user.email}\n` +
+        `🔑 Роли: ${response.data.user.roles.join(', ')}\n\n` +
+        `Используйте /help для просмотра доступных команд.`,
+        { parse_mode: 'Markdown' }
+      );
+      
+      // Показываем главное меню в зависимости от роли
+      await showMainMenu(bot, chatId, response.data.user.roles);
+    } else {
+      // Новый пользователь - процесс регистрации
+      await bot.sendMessage(chatId,
+        `👋 Добро пожаловать в *VHM24 - VendHub Manager 24/7*!\n\n` +
+        `⏰ Система управления кофейными автоматами,\nработающими 24 часа без перерыва.\n\n` +
+        `Для начала работы необходима авторизация.\n` +
+        `Пожалуйста, отправьте ваш номер телефона:`,
         {
+          parse_mode: 'Markdown',
           reply_markup: {
-            force_reply: true,
-            input_field_placeholder: 'Password'
+            keyboard: [[{
+              text: '📱 Отправить номер телефона',
+              request_contact: true
+            }]],
+            resize_keyboard: true,
+            one_time_keyboard: true
           }
         }
       );
-      
-      // Delete username message for security
-      try {
-        await bot.deleteMessage(chatId, authMsg.message_id);
-      } catch (e) {
-        // Ignore if can't delete
-      }
-    } else if (state.step === 'password') {
-      const password = authMsg.text;
-      
-      // Delete password message immediately for security
-      try {
-        await bot.deleteMessage(chatId, authMsg.message_id);
-      } catch (e) {
-        // Ignore if can't delete
-      }
-      
-      // Show loading message
-      const loadingMsg = await bot.sendMessage(chatId, '🔄 Authenticating...');
-      
-      // Attempt authentication
-      const result = await authenticate(state.username, password);
-      
-      // Delete loading message
-      try {
-        await bot.deleteMessage(chatId, loadingMsg.message_id);
-      } catch (e) {
-        // Ignore
-      }
-      
-      if (result.success) {
-        // Store token and user data
-        global.userTokens.set(userId, result.token);
-        setUserData(userId, result.user);
-        
-        // Clean up state
-        userStates.delete(userId);
-        bot.removeListener('message', authListener);
-        
-        await bot.sendMessage(chatId, 
-          `✅ Welcome, ${result.user.name || result.user.username}!\n\n` +
-          `👤 Role: ${result.user.role}\n` +
-          `📧 Email: ${result.user.email || 'Not set'}`,
-          {
-            reply_markup: {
-              remove_keyboard: true
-            }
-          }
-        );
-        
-        // Show main menu after a short delay
-        setTimeout(() => showMainMenu(bot, chatId), 1000);
-      } else {
-        // Authentication failed
-        userStates.delete(userId);
-        bot.removeListener('message', authListener);
-        
-        await bot.sendMessage(chatId, 
-          `❌ Authentication failed: ${result.error}\n\n` +
-          'Please try again with /start',
-          {
-            reply_markup: {
-              inline_keyboard: [[
-                { text: '🔄 Try Again', callback_data: 'start' }
-              ]]
-            }
-          }
-        );
-      }
     }
-  };
-  
-  bot.on('message', authListener);
-  
-  // Clean up listener after 5 minutes
-  setTimeout(() => {
-    if (userStates.has(userId)) {
-      userStates.delete(userId);
-      bot.removeListener('message', authListener);
-      bot.sendMessage(chatId, '⏱️ Authentication timeout. Please use /start to try again.');
-    }
-  }, 5 * 60 * 1000);
+  } catch (error) {
+    await bot.sendMessage(chatId,
+      `❌ Ошибка подключения к системе VHM24.\n` +
+      `Система работает 24/7, но сейчас недоступна.\n` +
+      `Попробуйте позже или обратитесь к администратору.`
+    );
+  }
 }
 
-export async function showMainMenu(bot, chatId) {
-  const menuKeyboard = {
-    inline_keyboard: [
-      [
-        { text: '🏭 Machines', callback_data: 'menu_machines' },
-        { text: '📦 Inventory', callback_data: 'menu_inventory' }
-      ],
-      [
-        { text: '📋 Tasks', callback_data: 'menu_tasks' },
-        { text: '📊 Reports', callback_data: 'menu_reports' }
-      ],
-      [
-        { text: '⚙️ Settings', callback_data: 'menu_settings' },
-        { text: '❓ Help', callback_data: 'menu_help' }
-      ],
-      [
-        { text: '🚪 Logout', callback_data: 'logout' }
-      ]
-    ]
-  };
+async function showMainMenu(bot, chatId, roles) {
+  const keyboards = [];
+  
+  // Меню в зависимости от роли
+  if (roles.includes('ADMIN') || roles.includes('MANAGER')) {
+    keyboards.push([
+      { text: '🏭 Автоматы 24/7', callback_data: 'menu_machines' },
+      { text: '📊 Отчеты', callback_data: 'menu_reports' }
+    ]);
+  }
+  
+  if (roles.includes('OPERATOR') || roles.includes('WAREHOUSE')) {
+    keyboards.push([
+      { text: '🗃️ Бункеры', callback_data: 'menu_bunkers' },
+      { text: '📋 Задачи', callback_data: 'menu_tasks' }
+    ]);
+  }
+  
+  keyboards.push([
+    { text: '📦 Склад', callback_data: 'menu_inventory' },
+    { text: '🚨 Экстренные', callback_data: 'menu_urgent' }
+  ]);
+  
+  keyboards.push([
+    { text: '⚙️ Настройки', callback_data: 'menu_settings' },
+    { text: '📞 Поддержка 24/7', callback_data: 'menu_support' }
+  ]);
   
   await bot.sendMessage(chatId, 
-    '🏠 *Main Menu*\n\n' +
-    'Choose an option from the menu below:',
+    `🏠 *Главное меню VHM24*\n⏰ Система работает 24/7\n\nВыберите раздел:`,
     {
       parse_mode: 'Markdown',
-      reply_markup: menuKeyboard
+      reply_markup: {
+        inline_keyboard: keyboards
+      }
     }
   );
 }
+
+export { showMainMenu };

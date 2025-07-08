@@ -1,3 +1,9 @@
+/**
+ * VHM24 - VendHub Manager 24/7
+ * Authentication Service
+ * Provides 24/7 authentication for vending machine operators
+ */
+
 const Fastify = require('fastify');
 const cors = require('@fastify/cors');
 const jwt = require('@fastify/jwt');
@@ -146,70 +152,61 @@ fastify.post('/api/v1/auth/register', {
 });
 
 // Вход в систему
-fastify.post('/api/v1/auth/login', {
-  schema: {
-    body: {
-      type: 'object',
-      required: ['email', 'password'],
-      properties: {
-        email: { type: 'string', format: 'email' },
-        password: { type: 'string' }
-      }
-    }
-  }
-}, async (request, reply) => {
-  const { email, password } = request.body;
+fastify.post('/api/v1/auth/login', async (request, reply) => {
+  const { email, password, phoneNumber, telegramId } = request.body;
   
   try {
-    // Находим пользователя
-    const user = await prisma.user.findUnique({
-      where: { email }
+    // Поддержка входа через email, телефон или telegram для 24/7 доступа
+    let where = {};
+    let authMethod = 'EMAIL';
+    
+    if (email) {
+      where = { email };
+    } else if (phoneNumber) {
+      where = { phoneNumber };
+      authMethod = 'PHONE';
+    } else if (telegramId) {
+      where = { telegramId };
+      authMethod = 'TELEGRAM';
+    } else {
+      return reply.code(400).send({ 
+        error: 'Email, phone or telegram ID required for 24/7 access' 
+      });
+    }
+
+    const user = await prisma.user.findFirst({
+      where,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        passwordHash: true,
+        roles: true,
+        isActive: true,
+        phoneNumber: true,
+        telegramId: true
+      }
     });
-    
-    if (!user) {
-      return reply.code(401).send({
-        success: false,
-        error: 'Invalid email or password'
-      });
+
+    if (!user || !user.isActive) {
+      return reply.code(401).send({ error: 'Invalid credentials' });
     }
-    
-    // Проверяем пароль
-    const validPassword = await bcrypt.compare(password, user.passwordHash);
-    
-    if (!validPassword) {
-      return reply.code(401).send({
-        success: false,
-        error: 'Invalid email or password'
-      });
+
+    // Для Telegram входа пароль не проверяем (для быстрого доступа 24/7)
+    if (authMethod !== 'TELEGRAM' && password) {
+      const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+      if (!isValidPassword) {
+        return reply.code(401).send({ error: 'Invalid credentials' });
+      }
+    } else if (authMethod !== 'TELEGRAM' && !password) {
+      return reply.code(400).send({ error: 'Password required' });
     }
-    
-    // Проверяем, активен ли пользователь
-    if (!user.isActive) {
-      return reply.code(403).send({
-        success: false,
-        error: 'Account is deactivated'
-      });
-    }
-    
-    // Обновляем время последнего входа
+
     await prisma.user.update({
       where: { id: user.id },
       data: { lastLogin: new Date() }
     });
-    
-    // Создаем токены
-    const token = fastify.jwt.sign({
-      id: user.id,
-      email: user.email,
-      roles: user.roles
-    });
-    
-    const refreshToken = fastify.jwt.sign(
-      { id: user.id },
-      { expiresIn: '7d' }
-    );
-    
-    // Логируем действие
+
     await prisma.auditLog.create({
       data: {
         userId: user.id,
@@ -217,29 +214,35 @@ fastify.post('/api/v1/auth/login', {
         entity: 'User',
         entityId: user.id,
         ipAddress: request.ip,
-        userAgent: request.headers['user-agent']
+        userAgent: request.headers['user-agent'],
+        changes: { authMethod }
       }
     });
-    
+
+    const token = fastify.jwt.sign({
+      id: user.id,
+      email: user.email,
+      roles: user.roles,
+      name: user.name
+    });
+
+    fastify.log.info(`User ${user.email} logged in - VHM24 system access granted`);
+
     return {
       success: true,
-      data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          roles: user.roles
-        },
-        token,
-        refreshToken
-      }
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        roles: user.roles,
+        phoneNumber: user.phoneNumber
+      },
+      message: 'Welcome to VHM24 - 24/7 Access Granted'
     };
   } catch (error) {
     fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to login'
-    });
+    return reply.code(500).send({ error: 'Internal server error' });
   }
 });
 
@@ -494,7 +497,7 @@ const start = async () => {
       port: process.env.PORT || 3001,
       host: '0.0.0.0'
     });
-    console.log('Auth service is running on port', process.env.PORT || 3001);
+    console.log('VHM24 Auth Service running 24/7 on port', process.env.PORT || 3001);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

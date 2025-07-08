@@ -1,207 +1,312 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import winston from 'winston';
-import mongoose from 'mongoose';
-import { createClient } from 'redis';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+/**
+ * VHM24 - VendHub Manager 24/7
+ * Bunkers Service
+ * Manages coffee bunkers (machine inventory) for 24/7 vending operations
+ */
 
-// Import routes
-import bunkerRoutes from './routes/bunkerRoutes.js';
-import historyRoutes from './routes/historyRoutes.js';
-import weighingRoutes from './routes/weighingRoutes.js';
+import Fastify from 'fastify';
+import cors from '@fastify/cors';
+import { PrismaClient } from '@vhm24/database';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const fastify = Fastify({ logger: true });
+const prisma = new PrismaClient();
 
-// Load environment variables
-dotenv.config({ path: join(__dirname, '../../../.env') });
+await fastify.register(cors, { origin: true });
 
-// Configure logger
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.errors({ stack: true }),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      )
-    }),
-    new winston.transports.File({ 
-      filename: join(__dirname, '../logs/error.log'), 
-      level: 'error' 
-    }),
-    new winston.transports.File({ 
-      filename: join(__dirname, '../logs/combined.log') 
-    })
-  ]
-});
-
-// Create Express app
-const app = express();
-const PORT = process.env.BUNKERS_SERVICE_PORT || 8006;
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Request logging middleware
-app.use((req, res, next) => {
-  logger.info(`${req.method} ${req.path}`, {
-    query: req.query,
-    body: req.body,
-    ip: req.ip
-  });
-  next();
-});
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
+// Health check
+fastify.get('/health', async () => {
+  return { 
+    status: 'ok', 
     service: 'bunkers',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-    redis: redis?.isReady ? 'connected' : 'disconnected'
-  });
+    description: 'VHM24 Bunkers Service - 24/7 Operation',
+    uptime: process.uptime()
+  };
 });
 
-// API Routes
-app.use('/api/v1/bunkers', bunkerRoutes);
-app.use('/api/v1/bunkers/history', historyRoutes);
-app.use('/api/v1/bunkers/weighing', weighingRoutes);
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  logger.error('Unhandled error:', err);
-  
-  const status = err.status || 500;
-  const message = err.message || 'Internal server error';
-  
-  res.status(status).json({
-    success: false,
-    error: {
-      message,
-      status,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-    }
-  });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    error: {
-      message: 'Route not found',
-      status: 404
-    }
-  });
-});
-
-// MongoDB connection
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/vhm24-bunkers';
-
-mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => {
-  logger.info('Connected to MongoDB');
-})
-.catch((error) => {
-  logger.error('MongoDB connection error:', error);
-  process.exit(1);
-});
-
-// Redis connection
-let redis;
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-
-async function connectRedis() {
+// Get all machine inventory (bunkers) with filters
+fastify.get('/api/v1/bunkers', async (request, reply) => {
   try {
-    redis = createClient({ url: redisUrl });
+    const { machineId, itemId, needsRefill, page = 1, limit = 10 } = request.query;
     
-    redis.on('error', (err) => {
-      logger.error('Redis error:', err);
+    const where = {};
+    if (machineId) where.machineId = machineId;
+    if (itemId) where.itemId = itemId;
+    
+    // Get total count
+    const total = await prisma.machineInventory.count({ where });
+    
+    // Get paginated data
+    let bunkers = await prisma.machineInventory.findMany({
+      where,
+      include: {
+        machine: {
+          include: {
+            location: true
+          }
+        },
+        item: true
+      },
+      skip: (page - 1) * limit,
+      take: parseInt(limit),
+      orderBy: [
+        { machine: { code: 'asc' } },
+        { item: { name: 'asc' } }
+      ]
     });
-    
-    redis.on('connect', () => {
-      logger.info('Connected to Redis');
+
+    // Calculate fill percentage and filter if needed
+    bunkers = bunkers.map(bunker => {
+      const fillPercentage = bunker.maxQuantity > 0 
+        ? (bunker.quantity / bunker.maxQuantity) * 100 
+        : 0;
+      
+      return {
+        ...bunker,
+        fillPercentage,
+        needsRefill: fillPercentage < 20,
+        critical: fillPercentage < 10
+      };
     });
-    
-    await redis.connect();
-    
-    // Make redis available globally
-    global.redis = redis;
+
+    // Filter for bunkers needing refill (для 24/7 мониторинга)
+    if (needsRefill === 'true') {
+      bunkers = bunkers.filter(bunker => bunker.needsRefill);
+    }
+
+    const criticalCount = bunkers.filter(b => b.critical).length;
+
+    return {
+      success: true,
+      data: {
+        items: bunkers,
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / limit),
+        criticalCount,
+        message: criticalCount > 0 
+          ? `⚠️ ${criticalCount} bunkers critically low - 24/7 monitoring active!`
+          : '✅ All bunkers operational for 24/7 service'
+      }
+    };
   } catch (error) {
-    logger.error('Redis connection error:', error);
+    fastify.log.error(error);
+    return reply.code(500).send({ error: 'Failed to fetch bunkers' });
   }
-}
+});
 
-// Service registry
-async function registerService() {
+// Get bunker details
+fastify.get('/api/v1/bunkers/:machineId/:itemId', async (request, reply) => {
   try {
-    const response = await fetch(`${process.env.GATEWAY_URL || 'http://localhost:4000'}/api/v1/registry/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: 'bunkers',
-        url: `http://localhost:${PORT}`,
-        healthCheck: '/health'
+    const { machineId, itemId } = request.params;
+    
+    const bunker = await prisma.machineInventory.findUnique({
+      where: {
+        machineId_itemId: {
+          machineId,
+          itemId
+        }
+      },
+      include: {
+        machine: {
+          include: {
+            location: true
+          }
+        },
+        item: true
+      }
+    });
+
+    if (!bunker) {
+      return reply.code(404).send({ error: 'Bunker not found' });
+    }
+
+    // Get recent movements
+    const recentMovements = await prisma.stockMovement.findMany({
+      where: {
+        machineId,
+        itemId
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+
+    const fillPercentage = bunker.maxQuantity > 0 
+      ? (bunker.quantity / bunker.maxQuantity) * 100 
+      : 0;
+
+    return {
+      success: true,
+      data: {
+        ...bunker,
+        fillPercentage,
+        needsRefill: fillPercentage < 20,
+        critical: fillPercentage < 10,
+        recentMovements,
+        status: fillPercentage < 10 ? 'CRITICAL' : 
+                fillPercentage < 20 ? 'LOW' : 
+                fillPercentage < 50 ? 'MEDIUM' : 'GOOD'
+      }
+    };
+  } catch (error) {
+    fastify.log.error(error);
+    return reply.code(500).send({ error: 'Failed to fetch bunker details' });
+  }
+});
+
+// Refill bunker
+fastify.post('/api/v1/bunkers/:machineId/:itemId/refill', async (request, reply) => {
+  try {
+    const { machineId, itemId } = request.params;
+    const { quantity, userId, notes } = request.body;
+    
+    // Get current bunker state
+    const bunker = await prisma.machineInventory.findUnique({
+      where: {
+        machineId_itemId: {
+          machineId,
+          itemId
+        }
+      }
+    });
+
+    if (!bunker) {
+      return reply.code(404).send({ error: 'Bunker not found' });
+    }
+
+    const quantityBefore = bunker.quantity;
+    const quantityAfter = Math.min(bunker.quantity + quantity, bunker.maxQuantity || quantity);
+    const actualQuantity = quantityAfter - quantityBefore;
+
+    // Update bunker
+    const updatedBunker = await prisma.machineInventory.update({
+      where: {
+        machineId_itemId: {
+          machineId,
+          itemId
+        }
+      },
+      data: {
+        quantity: quantityAfter,
+        lastRefill: new Date()
+      }
+    });
+
+    // Record stock movement
+    await prisma.stockMovement.create({
+      data: {
+        itemId,
+        userId,
+        type: 'IN',
+        quantity: actualQuantity,
+        quantityBefore,
+        quantityAfter,
+        reason: `Bunker refill - ${notes || 'Regular 24/7 maintenance'}`,
+        machineId
+      }
+    });
+
+    // Create service history
+    await prisma.serviceHistory.create({
+      data: {
+        machineId,
+        serviceType: 'REFILL',
+        description: `Refilled ${bunker.item?.name || 'Item'} - Added ${actualQuantity} ${bunker.item?.unit || 'units'}`,
+        performedById: userId,
+        performedAt: new Date(),
+        metadata: {
+          itemId,
+          quantityAdded: actualQuantity,
+          notes
+        }
+      }
+    });
+
+    fastify.log.info(`Bunker refilled - Machine: ${machineId}, Item: ${itemId}, Quantity: ${actualQuantity}`);
+
+    return {
+      success: true,
+      data: {
+        bunker: updatedBunker,
+        refillAmount: actualQuantity,
+        message: `✅ Bunker refilled successfully - Ready for 24/7 operation`
+      }
+    };
+  } catch (error) {
+    fastify.log.error(error);
+    return reply.code(500).send({ error: 'Failed to refill bunker' });
+  }
+});
+
+// Get critical bunkers (low level)
+fastify.get('/api/v1/bunkers/critical', async (request, reply) => {
+  try {
+    const bunkers = await prisma.machineInventory.findMany({
+      include: {
+        machine: {
+          include: {
+            location: true
+          }
+        },
+        item: true
+      }
+    });
+
+    // Filter critical bunkers
+    const criticalBunkers = bunkers
+      .map(bunker => {
+        const fillPercentage = bunker.maxQuantity > 0 
+          ? (bunker.quantity / bunker.maxQuantity) * 100 
+          : 0;
+        
+        return {
+          ...bunker,
+          fillPercentage,
+          hoursRemaining: fillPercentage < 20 
+            ? Math.round((bunker.quantity / 10) * 24) // Estimate based on average consumption
+            : null
+        };
       })
-    });
-    
-    if (response.ok) {
-      logger.info('Service registered with gateway');
-    }
+      .filter(bunker => bunker.fillPercentage < 20)
+      .sort((a, b) => a.fillPercentage - b.fillPercentage);
+
+    return {
+      success: true,
+      data: {
+        critical: criticalBunkers.filter(b => b.fillPercentage < 10),
+        low: criticalBunkers.filter(b => b.fillPercentage >= 10 && b.fillPercentage < 20),
+        totalCritical: criticalBunkers.length,
+        message: criticalBunkers.length > 0 
+          ? `⚠️ ${criticalBunkers.length} bunkers need urgent attention for 24/7 operation!`
+          : '✅ All bunkers have sufficient levels for 24/7 operation'
+      }
+    };
   } catch (error) {
-    logger.error('Failed to register service:', error);
+    fastify.log.error(error);
+    return reply.code(500).send({ error: 'Failed to fetch critical bunkers' });
   }
-}
-
-// Graceful shutdown
-async function gracefulShutdown() {
-  logger.info('Shutting down gracefully...');
-  
-  // Close MongoDB connection
-  await mongoose.connection.close();
-  logger.info('MongoDB connection closed');
-  
-  // Close Redis connection
-  if (redis) {
-    await redis.quit();
-    logger.info('Redis connection closed');
-  }
-  
-  // Exit process
-  process.exit(0);
-}
-
-process.on('SIGTERM', gracefulShutdown);
-process.on('SIGINT', gracefulShutdown);
+});
 
 // Start server
-async function startServer() {
-  await connectRedis();
-  
-  app.listen(PORT, () => {
-    logger.info(`Bunkers service running on port ${PORT}`);
-    
-    // Register with gateway after startup
-    setTimeout(registerService, 2000);
-  });
-}
+const start = async () => {
+  try {
+    await fastify.listen({ 
+      port: process.env.BUNKERS_PORT || 3005,
+      host: '0.0.0.0'
+    });
+    console.log('VHM24 Bunkers Service running 24/7 on port', process.env.BUNKERS_PORT || 3005);
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+};
 
-startServer().catch((error) => {
-  logger.error('Failed to start server:', error);
-  process.exit(1);
-});
-
-export { app, logger };
+start();
