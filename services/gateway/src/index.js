@@ -193,11 +193,12 @@ fastify.post('/api/v1/upload', {
 });
 
 // Статика для загруженных файлов
-fastify.register(require('@fastify/static'), {
-  root: path.join(process.cwd(), 'uploads'),
-  prefix: '/uploads/',
-  decorateReply: false
-});
+// TODO: Временно отключено из-за несовместимости версий
+// fastify.register(require('@fastify/static'), {
+//   root: path.join(process.cwd(), 'uploads'),
+//   prefix: '/uploads/',
+//   decorateReply: false
+// });
 
 // Proxy к сервисам
 // Auth service
@@ -252,7 +253,7 @@ fastify.get('/api/v1/dashboard/stats', {
       prisma.inventoryItem.count(),
       prisma.inventoryItem.count({ 
         where: { 
-          quantity: { lte: prisma.inventoryItem.fields.minQuantity } 
+          quantity: { lte: 10 } // TODO: Сделать динамическим из поля minQuantity
         } 
       })
     ]);
