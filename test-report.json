@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-07-09T22:04:29.616Z",
+  "summary": {
+    "total": 7,
+    "passed": 3,
+    "failed": 4
+  },
+  "details": {
+    "authentication": false,
+    "auditSystem": false,
+    "notificationSystem": false,
+    "coreServices": false,
+    "dataOperations": true,
+    "serviceIntegration": true,
+    "performance": true
+  },
+  "recommendations": [
+    "Настройте аутентификацию и создайте тестового пользователя",
+    "Запустите сервис аудита для полного функционала",
+    "Настройте сервис уведомлений для алертов",
+    "Проверьте запуск всех основных сервисов"
+  ]
+}

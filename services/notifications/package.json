@@ -16,7 +16,9 @@
     "@vhm24/shared-types": "file:../../packages/shared-types",
     "dotenv": "^16.3.1",
     "fastify": "^5.4.0",
-    "nodemailer": "^6.9.7"
+    "nodemailer": "^6.9.7",
+    "node-telegram-bot-api": "^0.66.0",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

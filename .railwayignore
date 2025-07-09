@@ -1,43 +1,25 @@
-# Railway ignore file
-# Files and directories to exclude from Railway deployment
-
 # Development files
+*.log
+*.backup.*
+node_modules/
+.env
 .env.local
 .env.development
-*.log
-logs/
-*.pid
-*.seed
-*.pid.lock
 
-# Testing
+# Test files
 coverage/
-.nyc_output
-test/
-tests/
-__tests__/
 *.test.js
-*.spec.js
+__tests__/
 
-# Documentation
-docs/
-*.md
-!README.md
-
-# Development scripts
-monitor-*.js
-test-*.js
-cleanup-*.js
-setup-*.js
-quick-start.*
-stop-all.*
+# Build artifacts
+dist/
+build/
 
 # IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
 # OS files
 .DS_Store
@@ -46,33 +28,14 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
-.tmp/
+*.tmp
 
-# Build artifacts (keep node_modules for Railway)
-dist/
-build/
+# Documentation (optional)
+docs/
+*.md
+!README.md
 
-# Local development
-.env.example
-docker-compose.yml
-Dockerfile
-.dockerignore
-
-# Git
-.git/
-.gitignore
-
-# NPM
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Uploads (if not needed in production)
-uploads/
-services/gateway/uploads/
-
-# Logs
-services/telegram-bot/logs/
-
-# Development monitoring
-monitor.html
+# Scripts not needed in production
+scripts/test-*
+scripts/dev-*
+scripts/local-*

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Logo from './Logo';
 import {
   HomeIcon,
   CogIcon,
@@ -13,16 +14,25 @@ import {
   BellIcon,
   Cog6ToothIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  BookOpenIcon,
+  TruckIcon,
+  BuildingStorefrontIcon,
+  ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 
 const navigation = [
   { name: 'Дашборд', href: '/dashboard', icon: HomeIcon },
   { name: 'Автоматы', href: '/machines', icon: CogIcon },
-  { name: 'Инвентарь', href: '/inventory', icon: CubeIcon },
+  { name: 'Рецепты', href: '/recipes', icon: BookOpenIcon },
+  { name: 'Водители', href: '/drivers', icon: TruckIcon },
+  { name: 'Склад', href: '/warehouse', icon: BuildingStorefrontIcon },
   { name: 'Задачи', href: '/tasks', icon: ClipboardDocumentListIcon },
   { name: 'Пользователи', href: '/users', icon: UserGroupIcon },
+  { name: 'Импорт данных', href: '/data-import', icon: CubeIcon },
+  { name: 'Инвентарь', href: '/inventory', icon: CubeIcon },
   { name: 'Отчеты', href: '/reports', icon: ChartBarIcon },
+  { name: 'Аудит', href: '/audit', icon: ShieldCheckIcon },
   { name: 'Уведомления', href: '/notifications', icon: BellIcon },
   { name: 'Настройки', href: '/settings', icon: Cog6ToothIcon },
 ];
@@ -50,7 +60,7 @@ export default function Navigation() {
           
           <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
             <div className="flex-shrink-0 flex items-center px-4">
-              <h1 className="text-xl font-bold text-gray-900">VHM24</h1>
+              <Logo size={32} showText={true} />
             </div>
             <nav className="mt-5 px-2 space-y-1">
               {navigation.map((item) => {
@@ -84,8 +94,7 @@ export default function Navigation() {
         <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
             <div className="flex items-center flex-shrink-0 px-4">
-              <h1 className="text-xl font-bold text-gray-900">VHM24</h1>
-              <span className="ml-2 text-sm text-gray-500">Dashboard</span>
+              <Logo size={40} showText={true} />
             </div>
             <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
               {navigation.map((item) => {
@@ -139,7 +148,7 @@ export default function Navigation() {
           >
             <Bars3Icon className="h-6 w-6" />
           </button>
-          <h1 className="text-lg font-semibold text-gray-900">VHM24</h1>
+          <Logo size={28} showText={false} />
           <div className="w-6" /> {/* Spacer */}
         </div>
       </div>

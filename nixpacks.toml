@@ -1,18 +1,11 @@
-# nixpacks.toml
 [phases.setup]
 nixPkgs = ["nodejs-18_x", "npm-9_x"]
 
 [phases.install]
-cmds = [
-  "npm ci --production=false",
-  "npm install --workspaces --if-present"
-]
+cmds = ["npm install", "npm install --workspaces"]
 
 [phases.build]
-cmds = [
-  "cd packages/database && npx prisma generate",
-  "npm run build --if-present"
-]
+cmds = ["npm run build --if-present"]
 
 [start]
-cmd = "npm start"
+cmd = "npm run start:production"

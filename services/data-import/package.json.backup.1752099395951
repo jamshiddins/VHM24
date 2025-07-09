@@ -1,0 +1,39 @@
+{
+  "name": "@vhm24/data-import",
+  "version": "1.0.0",
+  "description": "VHM24 Data Import Service - Historical data import with date/time support",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "fastify": "^4.24.3",
+    "@fastify/cors": "^8.4.0",
+    "@fastify/multipart": "^8.0.0",
+    "@fastify/static": "^6.12.0",
+    "csv-parser": "^3.0.0",
+    "xlsx": "^0.18.5",
+    "multer": "^1.4.5-lts.1",
+    "moment": "^2.29.4",
+    "joi": "^17.11.0",
+    "redis": "^4.6.10",
+    "prisma": "^5.6.0",
+    "@prisma/client": "^5.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0"
+  },
+  "keywords": [
+    "vhm24",
+    "data-import",
+    "historical-data",
+    "csv",
+    "excel",
+    "json"
+  ],
+  "author": "VHM24 Team",
+  "license": "MIT"
+}

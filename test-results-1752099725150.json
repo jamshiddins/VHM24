@@ -1,0 +1,483 @@
+{
+  "timestamp": "2025-07-09T22:21:48.934Z",
+  "environment": "development",
+  "tests": {
+    "dependencies": {
+      "npm": {
+        "version": "10.9.2",
+        "status": "OK"
+      },
+      "node": {
+        "version": "v22.17.0",
+        "status": "OK"
+      },
+      "vulnerabilities": "Audit check failed",
+      "outdated": {},
+      "services": {
+        "audit": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "fastify",
+            "@fastify/cors",
+            "@fastify/helmet",
+            "@fastify/rate-limit",
+            "@fastify/jwt",
+            "@fastify/multipart",
+            "@prisma/client",
+            "bcryptjs",
+            "joi",
+            "uuid",
+            "moment",
+            "lodash",
+            "node-cron"
+          ],
+          "devDependencies": [
+            "nodemon",
+            "jest"
+          ]
+        },
+        "auth": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "@fastify/cors",
+            "@fastify/helmet",
+            "@fastify/jwt",
+            "@fastify/rate-limit",
+            "@fastify/swagger",
+            "@prisma/client",
+            "@vhm24/database",
+            "@vhm24/shared",
+            "@vhm24/shared-types",
+            "bcrypt",
+            "dotenv",
+            "fastify",
+            "next"
+          ],
+          "devDependencies": [
+            "@types/bcrypt",
+            "@types/jest",
+            "@types/node",
+            "jest",
+            "supertest",
+            "typescript"
+          ]
+        },
+        "backup": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "@fastify/cors",
+            "@fastify/jwt",
+            "@vhm24/database",
+            "archiver",
+            "aws-sdk",
+            "dotenv",
+            "fastify",
+            "node-cron"
+          ],
+          "devDependencies": [
+            "nodemon"
+          ]
+        },
+        "bunkers": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "@fastify/cors",
+            "@fastify/helmet",
+            "@fastify/jwt",
+            "@fastify/rate-limit",
+            "@fastify/swagger",
+            "@prisma/client",
+            "dotenv",
+            "fastify",
+            "next"
+          ],
+          "devDependencies": [
+            "nodemon"
+          ]
+        },
+        "data-import": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "fastify",
+            "@fastify/cors",
+            "@fastify/multipart",
+            "@fastify/static",
+            "csv-parser",
+            "xlsx",
+            "multer",
+            "moment",
+            "joi",
+            "redis",
+            "prisma",
+            "@prisma/client"
+          ],
+          "devDependencies": [
+            "nodemon",
+            "jest"
+          ]
+        },
+        "gateway": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "@fastify/cors",
+            "@fastify/helmet",
+            "@fastify/http-proxy",
+            "@fastify/jwt",
+            "@fastify/multipart",
+            "@fastify/rate-limit",
+            "@fastify/static",
+            "@fastify/swagger",
+            "@fastify/websocket",
+            "@prisma/client",
+            "@vhm24/database",
+            "@vhm24/shared",
+            "@vhm24/shared-types",
+            "dotenv",
+            "fastify",
+            "next",
+            "uuid"
+          ],
+          "devDependencies": [
+            "@types/node",
+            "typescript"
+          ]
+        },
+        "inventory": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "@fastify/cors",
+            "@fastify/helmet",
+            "@fastify/jwt",
+            "@fastify/rate-limit",
+            "@fastify/swagger",
+            "@prisma/client",
+            "dotenv",
+            "fastify",
+            "next"
+          ],
+          "devDependencies": []
+        },
+        "machines": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "@fastify/cors",
+            "@fastify/helmet",
+            "@fastify/jwt",
+            "@fastify/rate-limit",
+            "@fastify/swagger",
+            "@prisma/client",
+            "dotenv",
+            "fastify",
+            "next"
+          ],
+          "devDependencies": []
+        },
+        "monitoring": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "@fastify/cors",
+            "@fastify/jwt",
+            "@vhm24/database",
+            "dotenv",
+            "fastify",
+            "prom-client"
+          ],
+          "devDependencies": [
+            "nodemon"
+          ]
+        },
+        "notifications": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "@fastify/cors",
+            "@fastify/helmet",
+            "@fastify/jwt",
+            "@fastify/rate-limit",
+            "@vhm24/database",
+            "@vhm24/shared-types",
+            "dotenv",
+            "fastify",
+            "nodemailer",
+            "node-telegram-bot-api",
+            "winston"
+          ],
+          "devDependencies": [
+            "nodemon"
+          ]
+        },
+        "recipes": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "fastify",
+            "@fastify/cors",
+            "@fastify/helmet",
+            "@fastify/rate-limit",
+            "@fastify/swagger",
+            "@fastify/swagger-ui",
+            "@prisma/client",
+            "bcryptjs",
+            "jsonwebtoken",
+            "joi",
+            "winston",
+            "dotenv"
+          ],
+          "devDependencies": [
+            "nodemon",
+            "jest",
+            "@types/jest"
+          ]
+        },
+        "reconciliation": {
+          "hasPackageJson": false
+        },
+        "routes": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "@fastify/cors",
+            "@fastify/jwt",
+            "@fastify/helmet",
+            "@fastify/rate-limit",
+            "@prisma/client",
+            "fastify",
+            "dotenv",
+            "@vhm24/database",
+            "@vhm24/shared"
+          ],
+          "devDependencies": [
+            "jest",
+            "nodemon",
+            "supertest"
+          ]
+        },
+        "tasks": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "@fastify/cors",
+            "@fastify/helmet",
+            "@fastify/jwt",
+            "@fastify/rate-limit",
+            "@fastify/swagger",
+            "@prisma/client",
+            "dotenv",
+            "fastify",
+            "next"
+          ],
+          "devDependencies": []
+        },
+        "telegram-bot": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "@fastify/jwt",
+            "axios",
+            "bcrypt",
+            "dotenv",
+            "exceljs",
+            "ioredis",
+            "lodash",
+            "moment",
+            "next",
+            "node-telegram-bot-api",
+            "pdfkit",
+            "qrcode",
+            "winston"
+          ],
+          "devDependencies": [
+            "nodemon"
+          ]
+        },
+        "warehouse": {
+          "hasPackageJson": true,
+          "hasStartScript": true,
+          "dependencies": [
+            "@fastify/cors",
+            "@fastify/jwt",
+            "@fastify/helmet",
+            "@fastify/rate-limit",
+            "@prisma/client",
+            "fastify",
+            "dotenv",
+            "@vhm24/database",
+            "@vhm24/shared"
+          ],
+          "devDependencies": [
+            "jest",
+            "nodemon",
+            "supertest"
+          ]
+        }
+      }
+    },
+    "services": {
+      "Gateway": {
+        "exists": true,
+        "hasPackageJson": true,
+        "hasIndex": true,
+        "port": 8000,
+        "status": "Down",
+        "hasHealthCheck": true,
+        "hasPortConfig": true,
+        "usesFastify": true,
+        "usesPrisma": true
+      },
+      "Auth": {
+        "exists": true,
+        "hasPackageJson": true,
+        "hasIndex": true,
+        "port": 3001,
+        "status": "Down",
+        "hasHealthCheck": true,
+        "hasPortConfig": true,
+        "usesFastify": true,
+        "usesPrisma": true
+      },
+      "Machines": {
+        "exists": true,
+        "hasPackageJson": true,
+        "hasIndex": true,
+        "port": 3002,
+        "status": "Down",
+        "hasHealthCheck": true,
+        "hasPortConfig": true,
+        "usesFastify": true,
+        "usesPrisma": true
+      },
+      "Inventory": {
+        "exists": true,
+        "hasPackageJson": true,
+        "hasIndex": true,
+        "port": 3003,
+        "status": "Down",
+        "hasHealthCheck": true,
+        "hasPortConfig": true,
+        "usesFastify": true,
+        "usesPrisma": true
+      },
+      "Tasks": {
+        "exists": true,
+        "hasPackageJson": true,
+        "hasIndex": true,
+        "port": 3004,
+        "status": "Down",
+        "hasHealthCheck": true,
+        "hasPortConfig": true,
+        "usesFastify": true,
+        "usesPrisma": true
+      },
+      "Telegram Bot": {
+        "exists": true,
+        "hasPackageJson": true,
+        "hasIndex": true,
+        "port": 3005,
+        "status": "Down",
+        "hasHealthCheck": true,
+        "hasPortConfig": true,
+        "usesFastify": false,
+        "usesPrisma": true
+      },
+      "Notifications": {
+        "exists": true,
+        "hasPackageJson": true,
+        "hasIndex": true,
+        "port": 3006,
+        "status": "Down",
+        "hasHealthCheck": true,
+        "hasPortConfig": false,
+        "usesFastify": true,
+        "usesPrisma": true
+      }
+    },
+    "api": {},
+    "database": {
+      "prismaSchema": true,
+      "models": [
+        "User",
+        "Location",
+        "Machine",
+        "Task",
+        "TaskAction",
+        "InventoryItem",
+        "StockMovement",
+        "MachineTelemetry",
+        "AuditLog",
+        "SystemAuditLog",
+        "IncompleteDataLog",
+        "UserSession",
+        "DataValidationLog",
+        "Transaction",
+        "MachineInventory",
+        "ServiceHistory",
+        "Recipe",
+        "RecipeIngredient",
+        "Route",
+        "RouteStop",
+        "DriverLog",
+        "Notification",
+        "NotificationTemplate"
+      ],
+      "hasConnectionString": true,
+      "hasRedisUrl": true,
+      "connection": "OK",
+      "tables": [
+        "_prisma_migrations",
+        "Transaction",
+        "Location",
+        "Machine",
+        "Task",
+        "TaskAction",
+        "InventoryItem",
+        "StockMovement",
+        "MachineTelemetry",
+        "AuditLog",
+        "MachineInventory",
+        "ServiceHistory",
+        "User"
+      ]
+    },
+    "infrastructure": {
+      "docker": {
+        "version": "Docker version 28.3.0, build 38b7060",
+        "status": "Installed"
+      },
+      "containers": [],
+      "directories": {
+        "services": true,
+        "packages": true,
+        "apps": true
+      },
+      "configFiles": {
+        "package.json": true,
+        "docker-compose.yml": true,
+        ".env": true,
+        "nixpacks.toml": true,
+        "railway.json": true
+      }
+    },
+    "security": {
+      "hasJwtSecret": true,
+      "hasStrongJwtSecret": [
+        "JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-12345678"
+      ],
+      "issues": [
+        "services\\backup\\src\\index.js: Potential hardcoded password",
+        "services\\backup\\src\\index.js: Potential hardcoded secret",
+        "services\\telegram-bot\\src\\handlers\\registrationHandler.js: Potential hardcoded password"
+      ],
+      "hasCors": false,
+      "corsWildcard": false
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@vhm24/routes-service",
+  "version": "1.0.0",
+  "description": "Routes management service for VHM24 platform",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [
+    "routes",
+    "drivers",
+    "vhm24",
+    "logistics"
+  ],
+  "author": "VHM24 Team",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "^8.5.0",
+    "@fastify/jwt": "^7.2.4",
+    "@fastify/helmet": "^11.1.1",
+    "@fastify/rate-limit": "^9.1.0",
+    "@prisma/client": "^5.7.1",
+    "fastify": "^4.24.3",
+    "dotenv": "^16.3.1",
+    "@vhm24/database": "file:../../packages/database",
+    "@vhm24/shared": "file:../../packages/shared"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3"
+  }
+}

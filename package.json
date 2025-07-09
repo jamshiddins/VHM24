@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "dev": "node start.js",
-    "build": "echo 'No build required for backend services'",
+    "build": "npm install --workspaces && npm run build --workspaces --if-present",
     "start": "node railway-start-final.js",
     "railway": "node railway-start-final.js",
     "clean": "rimraf node_modules packages/*/node_modules services/*/node_modules apps/*/node_modules",
@@ -23,7 +23,9 @@
     "test": "node test-all-services.js",
     "monitor": "node monitor-24-7.js",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "lint": "echo 'Linting not configured yet'"
+    "lint": "echo 'Linting not configured yet'",
+    "start:production": "node scripts/start-production.js",
+    "railway:deploy": "npm run build && npm run start:production"
   },
   "dependencies": {
     "axios": "^1.10.0",

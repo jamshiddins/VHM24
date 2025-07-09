@@ -1,0 +1,370 @@
+{
+  "timestamp": "2025-07-09T22:16:35.958Z",
+  "backups": [
+    {
+      "original": "services\\audit\\src\\index.js",
+      "backup": "services\\audit\\src\\index.js.backup.1752099395893"
+    },
+    {
+      "original": "services\\auth\\src\\index.js",
+      "backup": "services\\auth\\src\\index.js.backup.1752099395895"
+    },
+    {
+      "original": "services\\backup\\src\\index.js",
+      "backup": "services\\backup\\src\\index.js.backup.1752099395897"
+    },
+    {
+      "original": "services\\bunkers\\src\\index.js",
+      "backup": "services\\bunkers\\src\\index.js.backup.1752099395899"
+    },
+    {
+      "original": "services\\data-import\\src\\index.js",
+      "backup": "services\\data-import\\src\\index.js.backup.1752099395902"
+    },
+    {
+      "original": "services\\gateway\\src\\index.js",
+      "backup": "services\\gateway\\src\\index.js.backup.1752099395903"
+    },
+    {
+      "original": "services\\inventory\\src\\index.js",
+      "backup": "services\\inventory\\src\\index.js.backup.1752099395905"
+    },
+    {
+      "original": "services\\machines\\src\\index.js",
+      "backup": "services\\machines\\src\\index.js.backup.1752099395907"
+    },
+    {
+      "original": "services\\monitoring\\src\\index.js",
+      "backup": "services\\monitoring\\src\\index.js.backup.1752099395913"
+    },
+    {
+      "original": "services\\notifications\\src\\index.js",
+      "backup": "services\\notifications\\src\\index.js.backup.1752099395916"
+    },
+    {
+      "original": "services\\recipes\\src\\index.js",
+      "backup": "services\\recipes\\src\\index.js.backup.1752099395917"
+    },
+    {
+      "original": "services\\routes\\src\\index.js",
+      "backup": "services\\routes\\src\\index.js.backup.1752099395918"
+    },
+    {
+      "original": "services\\tasks\\src\\index.js",
+      "backup": "services\\tasks\\src\\index.js.backup.1752099395919"
+    },
+    {
+      "original": "services\\telegram-bot\\src\\index.js",
+      "backup": "services\\telegram-bot\\src\\index.js.backup.1752099395921"
+    },
+    {
+      "original": "services\\warehouse\\src\\index.js",
+      "backup": "services\\warehouse\\src\\index.js.backup.1752099395922"
+    },
+    {
+      "original": "services\\audit\\src\\index.js",
+      "backup": "services\\audit\\src\\index.js.backup.1752099395924"
+    },
+    {
+      "original": "services\\auth\\src\\index.js",
+      "backup": "services\\auth\\src\\index.js.backup.1752099395926"
+    },
+    {
+      "original": "services\\backup\\src\\index.js",
+      "backup": "services\\backup\\src\\index.js.backup.1752099395928"
+    },
+    {
+      "original": "services\\bunkers\\src\\index.js",
+      "backup": "services\\bunkers\\src\\index.js.backup.1752099395930"
+    },
+    {
+      "original": "services\\data-import\\src\\index.js",
+      "backup": "services\\data-import\\src\\index.js.backup.1752099395931"
+    },
+    {
+      "original": "services\\gateway\\src\\index.js",
+      "backup": "services\\gateway\\src\\index.js.backup.1752099395933"
+    },
+    {
+      "original": "services\\inventory\\src\\index.js",
+      "backup": "services\\inventory\\src\\index.js.backup.1752099395935"
+    },
+    {
+      "original": "services\\machines\\src\\index.js",
+      "backup": "services\\machines\\src\\index.js.backup.1752099395936"
+    },
+    {
+      "original": "services\\monitoring\\src\\index.js",
+      "backup": "services\\monitoring\\src\\index.js.backup.1752099395937"
+    },
+    {
+      "original": "services\\notifications\\src\\index.js",
+      "backup": "services\\notifications\\src\\index.js.backup.1752099395938"
+    },
+    {
+      "original": "services\\recipes\\src\\index.js",
+      "backup": "services\\recipes\\src\\index.js.backup.1752099395939"
+    },
+    {
+      "original": "services\\routes\\src\\index.js",
+      "backup": "services\\routes\\src\\index.js.backup.1752099395939"
+    },
+    {
+      "original": "services\\tasks\\src\\index.js",
+      "backup": "services\\tasks\\src\\index.js.backup.1752099395940"
+    },
+    {
+      "original": "services\\telegram-bot\\src\\index.js",
+      "backup": "services\\telegram-bot\\src\\index.js.backup.1752099395942"
+    },
+    {
+      "original": "services\\warehouse\\src\\index.js",
+      "backup": "services\\warehouse\\src\\index.js.backup.1752099395945"
+    },
+    {
+      "original": "services\\data-import\\package.json",
+      "backup": "services\\data-import\\package.json.backup.1752099395951"
+    },
+    {
+      "original": "services\\notifications\\package.json",
+      "backup": "services\\notifications\\package.json.backup.1752099395952"
+    },
+    {
+      "original": "services\\telegram-bot\\package.json",
+      "backup": "services\\telegram-bot\\package.json.backup.1752099395954"
+    },
+    {
+      "original": "services\\telegram-bot\\package.json",
+      "backup": "services\\telegram-bot\\package.json.backup.1752099395955"
+    },
+    {
+      "original": "packages/shared/package.json",
+      "backup": "packages/shared/package.json.backup.1752099395956"
+    }
+  ],
+  "changes": [
+    {
+      "file": "services\\audit\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for audit",
+      "noChanges": true
+    },
+    {
+      "file": "services\\auth\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for auth",
+      "noChanges": true
+    },
+    {
+      "file": "services\\backup\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for backup",
+      "noChanges": true
+    },
+    {
+      "file": "services\\bunkers\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for bunkers",
+      "noChanges": true
+    },
+    {
+      "file": "services\\data-import\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for data-import",
+      "noChanges": true
+    },
+    {
+      "file": "services\\gateway\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for gateway",
+      "noChanges": true
+    },
+    {
+      "file": "services\\inventory\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for inventory",
+      "noChanges": true
+    },
+    {
+      "file": "services\\machines\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for machines",
+      "noChanges": true
+    },
+    {
+      "file": "services\\monitoring\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for monitoring",
+      "noChanges": true
+    },
+    {
+      "file": "services\\notifications\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for notifications",
+      "noChanges": true
+    },
+    {
+      "file": "services\\recipes\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for recipes",
+      "noChanges": true
+    },
+    {
+      "file": "services\\routes\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for routes",
+      "noChanges": true
+    },
+    {
+      "file": "services\\tasks\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for tasks",
+      "noChanges": true
+    },
+    {
+      "file": "services\\telegram-bot\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for telegram-bot",
+      "noChanges": true
+    },
+    {
+      "file": "services\\warehouse\\src\\index.js",
+      "success": true,
+      "description": "Fixed PORT configuration for warehouse",
+      "noChanges": true
+    },
+    {
+      "file": "services\\audit\\src\\index.js",
+      "success": true,
+      "description": "Added health check for audit",
+      "noChanges": true
+    },
+    {
+      "file": "services\\auth\\src\\index.js",
+      "success": true,
+      "description": "Added health check for auth",
+      "noChanges": true
+    },
+    {
+      "file": "services\\backup\\src\\index.js",
+      "success": true,
+      "description": "Added health check for backup",
+      "noChanges": true
+    },
+    {
+      "file": "services\\bunkers\\src\\index.js",
+      "success": true,
+      "description": "Added health check for bunkers",
+      "noChanges": true
+    },
+    {
+      "file": "services\\data-import\\src\\index.js",
+      "success": true,
+      "description": "Added health check for data-import",
+      "noChanges": true
+    },
+    {
+      "file": "services\\gateway\\src\\index.js",
+      "success": true,
+      "description": "Added health check for gateway",
+      "noChanges": true
+    },
+    {
+      "file": "services\\inventory\\src\\index.js",
+      "success": true,
+      "description": "Added health check for inventory",
+      "noChanges": true
+    },
+    {
+      "file": "services\\machines\\src\\index.js",
+      "success": true,
+      "description": "Added health check for machines",
+      "noChanges": true
+    },
+    {
+      "file": "services\\monitoring\\src\\index.js",
+      "success": true,
+      "description": "Added health check for monitoring",
+      "noChanges": true
+    },
+    {
+      "file": "services\\notifications\\src\\index.js",
+      "success": true,
+      "description": "Added health check for notifications",
+      "noChanges": true
+    },
+    {
+      "file": "services\\recipes\\src\\index.js",
+      "success": true,
+      "description": "Added health check for recipes",
+      "noChanges": true
+    },
+    {
+      "file": "services\\routes\\src\\index.js",
+      "success": true,
+      "description": "Added health check for routes",
+      "noChanges": true
+    },
+    {
+      "file": "services\\tasks\\src\\index.js",
+      "success": true,
+      "description": "Added health check for tasks",
+      "noChanges": true
+    },
+    {
+      "file": "services\\telegram-bot\\src\\index.js",
+      "success": true,
+      "description": "Added health check for telegram-bot"
+    },
+    {
+      "file": "services\\warehouse\\src\\index.js",
+      "success": true,
+      "description": "Added health check for warehouse",
+      "noChanges": true
+    },
+    {
+      "file": "packages\\shared\\storage\\s3.js",
+      "success": true,
+      "description": "Created S3 storage adapter",
+      "created": true
+    },
+    {
+      "file": "packages\\shared\\storage\\index.js",
+      "success": true,
+      "description": "Created storage index file",
+      "created": true
+    },
+    {
+      "file": "services\\data-import\\package.json",
+      "success": true,
+      "description": "Updated xlsx in data-import"
+    },
+    {
+      "file": "services\\notifications\\package.json",
+      "success": true,
+      "description": "Updated node-telegram-bot-api in notifications"
+    },
+    {
+      "file": "services\\telegram-bot\\package.json",
+      "success": true,
+      "description": "Updated node-telegram-bot-api in telegram-bot"
+    },
+    {
+      "file": "services\\telegram-bot\\package.json",
+      "success": true,
+      "description": "Updated pdfkit in telegram-bot"
+    },
+    {
+      "file": "packages/shared/package.json",
+      "success": true,
+      "description": "Added aws-sdk dependency"
+    }
+  ],
+  "summary": {
+    "total": 37,
+    "successful": 37,
+    "failed": 0,
+    "created": 2,
+    "noChanges": 29
+  }
+}

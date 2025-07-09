@@ -16,15 +16,24 @@ model User {
   phoneNumber    String?
   telegramId     String?          @unique
   isActive       Boolean          @default(true)
+  isDriver       Boolean          @default(false)
+  registrationStatus RegistrationStatus @default(PENDING)
   lastLogin      DateTime?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   auditLogs      AuditLog[]
+  systemAuditLogs SystemAuditLog[]
+  incompleteDataLogs IncompleteDataLog[]
+  userSessions   UserSession[]
+  dataValidationLogs DataValidationLog[]
   serviceHistory ServiceHistory[]
   stockMovements StockMovement[]
   tasksAssigned  Task[]           @relation("TaskAssignee")
   tasksCreated   Task[]           @relation("TaskCreator")
   taskActions    TaskAction[]
+  routes         Route[]
+  driverLogs     DriverLog[]
+  notifications  Notification[]
 }
 
 model Location {
@@ -57,6 +66,7 @@ model Machine {
   serviceHistory ServiceHistory[]
   stockMovements StockMovement[]
   tasks          Task[]
+  routeStops     RouteStop[]
 }
 
 model Task {
@@ -114,6 +124,7 @@ model InventoryItem {
   updatedAt        DateTime           @updatedAt
   machineInventory MachineInventory[]
   stockMovements   StockMovement[]
+  recipeIngredients RecipeIngredient[]
 
   @@index([category])
   @@index([sku])
@@ -172,6 +183,149 @@ model AuditLog {
   @@index([entity, entityId])
   @@index([userId])
   @@index([createdAt])
+}
+
+model SystemAuditLog {
+  id            String              @id @default(cuid())
+  userId        String?
+  sessionId     String?
+  action        SystemAction
+  entity        String
+  entityId      String?
+  description   String
+  oldValues     Json?
+  newValues     Json?
+  inputData     Json?
+  ipAddress     String?
+  userAgent     String?
+  endpoint      String?
+  method        String?
+  statusCode    Int?
+  responseTime  Int?
+  errorMessage  String?
+  metadata      Json?
+  createdAt     DateTime            @default(now())
+  user          User?               @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+  @@index([sessionId])
+}
+
+model IncompleteDataLog {
+  id              String                @id @default(cuid())
+  userId          String?
+  entity          String
+  entityId        String
+  requiredFields  String[]
+  missingFields   String[]
+  partialData     Json?
+  completionRate  Float                 @default(0)
+  status          IncompleteDataStatus  @default(PENDING)
+  remindersSent   Int                   @default(0)
+  lastReminderAt  DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  user            User?                 @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([entity])
+  @@index([status])
+  @@index([createdAt])
+  @@unique([entity, entityId])
+}
+
+model UserSession {
+  id          String    @id @default(cuid())
+  userId      String
+  sessionId   String    @unique
+  ipAddress   String?
+  userAgent   String?
+  loginAt     DateTime  @default(now())
+  lastActivity DateTime @default(now())
+  logoutAt    DateTime?
+  isActive    Boolean   @default(true)
+  metadata    Json?
+  user        User      @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([sessionId])
+  @@index([isActive])
+  @@index([lastActivity])
+}
+
+model DataValidationLog {
+  id            String              @id @default(cuid())
+  userId        String?
+  entity        String
+  entityId      String?
+  fieldName     String
+  fieldValue    String?
+  validationType ValidationRule
+  isValid       Boolean
+  errorMessage  String?
+  severity      ValidationSeverity  @default(WARNING)
+  autoFixed     Boolean             @default(false)
+  createdAt     DateTime            @default(now())
+  user          User?               @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([entity])
+  @@index([isValid])
+  @@index([severity])
+  @@index([createdAt])
+}
+
+enum SystemAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  EXPORT
+  IMPORT
+  APPROVE
+  REJECT
+  ASSIGN
+  COMPLETE
+  CANCEL
+  RESTORE
+  ARCHIVE
+  SYNC
+  BACKUP
+  MAINTENANCE
+  ERROR
+  WARNING
+  INFO
+}
+
+enum IncompleteDataStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  IGNORED
+  EXPIRED
+}
+
+enum ValidationRule {
+  REQUIRED
+  FORMAT
+  LENGTH
+  RANGE
+  UNIQUE
+  REFERENCE
+  CUSTOM
+}
+
+enum ValidationSeverity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
 }
 
 model Transaction {
@@ -268,4 +422,160 @@ enum InventoryUnit {
   L
   PCS
   PACK
+}
+
+enum RegistrationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Recipe {
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  version     Int               @default(1)
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  ingredients RecipeIngredient[]
+  
+  @@unique([name, version])
+  @@index([name])
+}
+
+model RecipeIngredient {
+  id           String        @id @default(cuid())
+  recipeId     String
+  itemId       String
+  quantity     Float
+  unit         InventoryUnit
+  createdAt    DateTime      @default(now())
+  recipe       Recipe        @relation(fields: [recipeId], references: [id])
+  item         InventoryItem @relation(fields: [itemId], references: [id])
+  
+  @@unique([recipeId, itemId])
+  @@index([recipeId])
+}
+
+model Route {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  driverId    String
+  status      RouteStatus @default(PLANNED)
+  startTime   DateTime?
+  endTime     DateTime?
+  totalDistance Float?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  driver      User        @relation(fields: [driverId], references: [id])
+  stops       RouteStop[]
+  
+  @@index([driverId])
+  @@index([status])
+}
+
+model RouteStop {
+  id          String    @id @default(cuid())
+  routeId     String
+  machineId   String
+  order       Int
+  status      StopStatus @default(PENDING)
+  arrivalTime DateTime?
+  departureTime DateTime?
+  notes       String?
+  photos      String[]
+  createdAt   DateTime  @default(now())
+  route       Route     @relation(fields: [routeId], references: [id])
+  machine     Machine   @relation(fields: [machineId], references: [id])
+  
+  @@unique([routeId, order])
+  @@index([routeId])
+  @@index([machineId])
+}
+
+model DriverLog {
+  id          String    @id @default(cuid())
+  driverId    String
+  type        DriverLogType
+  description String
+  mileage     Float?
+  fuelAmount  Float?
+  fuelCost    Float?
+  location    String?
+  latitude    Float?
+  longitude   Float?
+  photos      String[]
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+  driver      User      @relation(fields: [driverId], references: [id])
+  
+  @@index([driverId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model Notification {
+  id          String             @id @default(cuid())
+  userId      String?
+  type        NotificationType
+  title       String
+  message     String
+  data        Json?
+  isRead      Boolean            @default(false)
+  sentAt      DateTime?
+  createdAt   DateTime           @default(now())
+  user        User?              @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([type])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model NotificationTemplate {
+  id          String             @id @default(cuid())
+  name        String             @unique
+  type        NotificationType
+  title       String
+  message     String
+  variables   String[]
+  isActive    Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  
+  @@index([type])
+}
+
+enum RouteStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum StopStatus {
+  PENDING
+  ARRIVED
+  COMPLETED
+  SKIPPED
+}
+
+enum DriverLogType {
+  MILEAGE
+  FUEL_CHECK
+  ARRIVAL
+  DEPARTURE
+  MAINTENANCE
+  INCIDENT
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_OVERDUE
+  MACHINE_ERROR
+  LOW_INVENTORY
+  ROUTE_ASSIGNED
+  SYSTEM_ALERT
 }

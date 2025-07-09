@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-07-09T22:13:01.519Z",
+  "compatibilityScore": 67,
+  "checks": {
+    "Monorepo structure": true,
+    "Package.json in root": true,
+    "Start scripts": false,
+    "Port configuration": true,
+    "Database compatibility": true,
+    "File storage": false,
+    "Environment variables": true,
+    "Docker configuration": true,
+    "Service dependencies": false
+  },
+  "recommendations": [
+    "Replace MinIO with external S3 service",
+    "Add start scripts to all services"
+  ]
+}
