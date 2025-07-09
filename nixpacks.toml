@@ -8,4 +8,4 @@ cmds = ["npm install", "npm install --workspaces"]
 cmds = ["npm run build --if-present"]
 
 [start]
-cmd = "npm run start:production"
+cmd = "npm start"
