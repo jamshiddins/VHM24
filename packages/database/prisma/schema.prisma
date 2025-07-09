@@ -7,7 +7,223 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ENUMS
+model User {
+  id             String           @id @default(cuid())
+  email          String           @unique
+  name           String
+  passwordHash   String
+  roles          UserRole[]
+  phoneNumber    String?
+  isActive       Boolean          @default(true)
+  lastLogin      DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  auditLogs      AuditLog[]
+  serviceHistory ServiceHistory[]
+  stockMovements StockMovement[]
+  tasksAssigned  Task[]           @relation("TaskAssignee")
+  tasksCreated   Task[]           @relation("TaskCreator")
+  taskActions    TaskAction[]
+}
+
+model Location {
+  id        String    @id @default(cuid())
+  name      String
+  address   String
+  latitude  Float?
+  longitude Float?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  machines  Machine[]
+}
+
+model Machine {
+  id             String             @id @default(cuid())
+  code           String             @unique
+  serialNumber   String             @unique
+  type           String
+  name           String
+  status         MachineStatus      @default(OFFLINE)
+  locationId     String?
+  lastPing       DateTime?
+  metadata       Json?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  location       Location?          @relation(fields: [locationId], references: [id])
+  inventory      MachineInventory[]
+  telemetry      MachineTelemetry[]
+  serviceHistory ServiceHistory[]
+  stockMovements StockMovement[]
+  tasks          Task[]
+}
+
+model Task {
+  id           String       @id @default(cuid())
+  title        String
+  description  String       @default("")
+  status       TaskStatus   @default(CREATED)
+  priority     TaskPriority @default(MEDIUM)
+  dueDate      DateTime?
+  completedAt  DateTime?
+  machineId    String?
+  assignedToId String?
+  createdById  String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  assignedTo   User?        @relation("TaskAssignee", fields: [assignedToId], references: [id])
+  createdBy    User         @relation("TaskCreator", fields: [createdById], references: [id])
+  machine      Machine?     @relation(fields: [machineId], references: [id])
+  actions      TaskAction[]
+
+  @@index([status, assignedToId])
+  @@index([machineId])
+}
+
+model TaskAction {
+  id        String   @id @default(cuid())
+  taskId    String
+  userId    String
+  action    String
+  comment   String
+  location  String?
+  photoUrls String[]
+  metadata  Json?
+  createdAt DateTime @default(now())
+  task      Task     @relation(fields: [taskId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([taskId])
+}
+
+model InventoryItem {
+  id               String             @id @default(cuid())
+  name             String
+  sku              String             @unique
+  unit             InventoryUnit
+  category         String
+  description      String?
+  quantity         Float              @default(0)
+  minQuantity      Float?
+  maxQuantity      Float?
+  price            Float?
+  isActive         Boolean            @default(true)
+  lastUpdated      DateTime           @default(now())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  machineInventory MachineInventory[]
+  stockMovements   StockMovement[]
+
+  @@index([category])
+  @@index([sku])
+}
+
+model StockMovement {
+  id             String            @id @default(cuid())
+  itemId         String
+  userId         String
+  type           StockMovementType
+  quantity       Float
+  quantityBefore Float
+  quantityAfter  Float
+  reason         String
+  reference      String?
+  fromLocation   String?
+  toLocation     String?
+  machineId      String?
+  metadata       Json?
+  createdAt      DateTime          @default(now())
+  item           InventoryItem     @relation(fields: [itemId], references: [id])
+  machine        Machine?          @relation(fields: [machineId], references: [id])
+  user           User              @relation(fields: [userId], references: [id])
+
+  @@index([itemId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model MachineTelemetry {
+  id          String   @id @default(cuid())
+  machineId   String
+  temperature Float?
+  humidity    Float?
+  sales       Int?
+  errors      String[]
+  rawData     Json
+  createdAt   DateTime @default(now())
+  machine     Machine  @relation(fields: [machineId], references: [id])
+
+  @@index([machineId, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String
+  changes   Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  machineId   String
+  amount      Float
+  currency    String   @default("RUB")
+  paymentType String
+  status      String
+  reference   String?  @unique
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([machineId])
+  @@index([createdAt])
+}
+
+model MachineInventory {
+  id          String        @id @default(cuid())
+  machineId   String
+  itemId      String
+  quantity    Float         @default(0)
+  minQuantity Float?
+  maxQuantity Float?
+  lastRefill  DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  item        InventoryItem @relation(fields: [itemId], references: [id])
+  machine     Machine       @relation(fields: [machineId], references: [id])
+
+  @@unique([machineId, itemId])
+  @@index([machineId])
+  @@index([itemId])
+}
+
+model ServiceHistory {
+  id              String    @id @default(cuid())
+  machineId       String
+  serviceType     String
+  description     String
+  performedById   String
+  performedAt     DateTime  @default(now())
+  nextServiceDate DateTime?
+  photos          String[]
+  location        String?
+  metadata        Json?
+  machine         Machine   @relation(fields: [machineId], references: [id])
+  performedBy     User      @relation(fields: [performedById], references: [id])
+
+  @@index([machineId])
+  @@index([performedAt])
+}
+
 enum UserRole {
   ADMIN
   MANAGER
@@ -51,242 +267,4 @@ enum InventoryUnit {
   L
   PCS
   PACK
-}
-
-// MODELS
-model User {
-  id           String     @id @default(cuid())
-  email        String     @unique
-  name         String
-  passwordHash String
-  roles        UserRole[]
-  phoneNumber  String?
-  telegramId   String?    @unique
-  isActive     Boolean    @default(true)
-  lastLogin    DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  
-  // Relations
-  tasksAssigned    Task[]         @relation("TaskAssignee")
-  tasksCreated     Task[]         @relation("TaskCreator")
-  taskActions      TaskAction[]
-  stockMovements   StockMovement[]
-  auditLogs        AuditLog[]
-  serviceHistory   ServiceHistory[]
-}
-
-model Location {
-  id          String    @id @default(cuid())
-  name        String
-  address     String
-  latitude    Float?
-  longitude   Float?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  // Relations
-  machines    Machine[]
-}
-
-model Machine {
-  id           String        @id @default(cuid())
-  code         String        @unique
-  serialNumber String        @unique
-  type         String
-  name         String
-  status       MachineStatus @default(OFFLINE)
-  locationId   String?
-  location     Location?     @relation(fields: [locationId], references: [id])
-  lastPing     DateTime?
-  metadata     Json?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  
-  // Relations
-  tasks            Task[]
-  telemetry        MachineTelemetry[]
-  stockMovements   StockMovement[]
-  inventory        MachineInventory[]
-  serviceHistory   ServiceHistory[]
-}
-
-model Task {
-  id           String       @id @default(cuid())
-  title        String
-  description  String       @default("")
-  status       TaskStatus   @default(CREATED)
-  priority     TaskPriority @default(MEDIUM)
-  dueDate      DateTime?
-  completedAt  DateTime?
-  
-  // Relations
-  machineId    String?
-  machine      Machine?     @relation(fields: [machineId], references: [id])
-  assignedToId String?
-  assignedTo   User?        @relation("TaskAssignee", fields: [assignedToId], references: [id])
-  createdById  String
-  createdBy    User         @relation("TaskCreator", fields: [createdById], references: [id])
-  
-  // Timestamps
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  
-  // Relations
-  actions      TaskAction[]
-  
-  @@index([status, assignedToId])
-  @@index([machineId])
-}
-
-model TaskAction {
-  id          String   @id @default(cuid())
-  taskId      String
-  task        Task     @relation(fields: [taskId], references: [id])
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  action      String
-  comment     String
-  location    String?  // "latitude,longitude"
-  photoUrls   String[]
-  metadata    Json?
-  createdAt   DateTime @default(now())
-  
-  @@index([taskId])
-}
-
-model InventoryItem {
-  id           String         @id @default(cuid())
-  name         String
-  sku          String         @unique
-  unit         InventoryUnit
-  category     String
-  description  String?
-  quantity     Float          @default(0)
-  minQuantity  Float?
-  maxQuantity  Float?
-  price        Float?
-  isActive     Boolean        @default(true)
-  lastUpdated  DateTime       @default(now())
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  
-  // Relations
-  stockMovements    StockMovement[]
-  machineInventory  MachineInventory[]
-  
-  @@index([category])
-  @@index([sku])
-}
-
-model StockMovement {
-  id             String            @id @default(cuid())
-  itemId         String
-  item           InventoryItem     @relation(fields: [itemId], references: [id])
-  userId         String
-  user           User              @relation(fields: [userId], references: [id])
-  type           StockMovementType
-  quantity       Float
-  quantityBefore Float
-  quantityAfter  Float
-  reason         String
-  reference      String?           // Номер документа
-  fromLocation   String?
-  toLocation     String?
-  machineId      String?
-  machine        Machine?          @relation(fields: [machineId], references: [id])
-  metadata       Json?
-  createdAt      DateTime          @default(now())
-  
-  @@index([itemId])
-  @@index([type])
-  @@index([createdAt])
-}
-
-model MachineTelemetry {
-  id          String   @id @default(cuid())
-  machineId   String
-  machine     Machine  @relation(fields: [machineId], references: [id])
-  temperature Float?
-  humidity    Float?
-  sales       Int?
-  errors      String[]
-  rawData     Json
-  createdAt   DateTime @default(now())
-  
-  @@index([machineId, createdAt])
-}
-
-model AuditLog {
-  id         String   @id @default(cuid())
-  userId     String?
-  user       User?    @relation(fields: [userId], references: [id])
-  action     String
-  entity     String
-  entityId   String
-  changes    Json?
-  ipAddress  String?
-  userAgent  String?
-  createdAt  DateTime @default(now())
-  
-  @@index([entity, entityId])
-  @@index([userId])
-  @@index([createdAt])
-}
-
-// Для будущей функциональности платежей
-model Transaction {
-  id          String   @id @default(cuid())
-  machineId   String
-  amount      Float
-  currency    String   @default("RUB")
-  paymentType String   // CASH, CARD, QR
-  status      String   // SUCCESS, FAILED, PENDING
-  reference   String?  @unique
-  metadata    Json?
-  createdAt   DateTime @default(now())
-  
-  @@index([machineId])
-  @@index([createdAt])
-}
-
-// Привязка товаров к машинам
-model MachineInventory {
-  id          String        @id @default(cuid())
-  machineId   String
-  itemId      String
-  quantity    Float         @default(0)
-  minQuantity Float?
-  maxQuantity Float?
-  lastRefill  DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  
-  machine     Machine       @relation(fields: [machineId], references: [id])
-  item        InventoryItem @relation(fields: [itemId], references: [id])
-  
-  @@unique([machineId, itemId])
-  @@index([machineId])
-  @@index([itemId])
-}
-
-// История обслуживания машин
-model ServiceHistory {
-  id              String    @id @default(cuid())
-  machineId       String
-  serviceType     String    // CLEANING, REPAIR, REFILL, INSPECTION, OTHER
-  description     String
-  performedById   String
-  performedBy     User      @relation(fields: [performedById], references: [id])
-  performedAt     DateTime  @default(now())
-  nextServiceDate DateTime?
-  photos          String[]
-  location        String?   // latitude,longitude
-  metadata        Json?
-  
-  machine         Machine   @relation(fields: [machineId], references: [id])
-  
-  @@index([machineId])
-  @@index([performedAt])
 }
