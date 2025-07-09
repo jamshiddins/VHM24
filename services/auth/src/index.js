@@ -165,14 +165,14 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
     let where = {};
     let authMethod = 'EMAIL';
     
-    if (email) {
+    if (telegramId) {
+      where = { telegramId };
+      authMethod = 'TELEGRAM';
+    } else if (email) {
       where = { email };
     } else if (phoneNumber) {
       where = { phoneNumber };
       authMethod = 'PHONE';
-    } else if (telegramId) {
-      where = { telegramId };
-      authMethod = 'TELEGRAM';
     } else {
       return reply.code(400).send({ 
         error: 'Email, phone or telegram ID required for 24/7 access' 
@@ -446,6 +446,66 @@ fastify.post('/api/v1/auth/logout', {
       success: true,
       message: 'Logged out successfully'
     };
+  }
+});
+
+// Связывание Telegram ID с пользователем
+fastify.post('/api/v1/auth/link-telegram', {
+  preValidation: [fastify.authenticate],
+  schema: {
+    body: {
+      type: 'object',
+      required: ['telegramId'],
+      properties: {
+        telegramId: { type: 'string' }
+      }
+    }
+  }
+}, async (request, reply) => {
+  const { telegramId } = request.body;
+  const userId = request.user.id;
+  
+  try {
+    // Проверяем, не привязан ли уже этот Telegram ID к другому пользователю
+    const existingUser = await prisma.user.findFirst({
+      where: { telegramId }
+    });
+    
+    if (existingUser && existingUser.id !== userId) {
+      return reply.code(400).send({
+        success: false,
+        error: 'This Telegram ID is already linked to another account'
+      });
+    }
+    
+    // Обновляем пользователя
+    await prisma.user.update({
+      where: { id: userId },
+      data: { telegramId }
+    });
+    
+    // Логируем действие
+    await prisma.auditLog.create({
+      data: {
+        userId,
+        action: 'TELEGRAM_LINKED',
+        entity: 'User',
+        entityId: userId,
+        ipAddress: request.ip,
+        changes: { telegramId }
+      }
+    });
+    
+    return {
+      success: true,
+      message: 'Telegram account linked successfully'
+    };
+  } catch (error) {
+    fastify.log.error(error);
+    reply.code(500).send({
+      success: false,
+      error: 'Failed to link Telegram account'
+    });
   }
 });
 

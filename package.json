@@ -25,7 +25,9 @@
     "lint": "echo 'Linting not configured yet'"
   },
   "dependencies": {
-    "dotenv": "^16.3.1"
+    "colors": "^1.4.0",
+    "dotenv": "^16.3.1",
+    "fastify": "^5.4.0"
   },
   "devDependencies": {
     "prettier": "^3.1.0",

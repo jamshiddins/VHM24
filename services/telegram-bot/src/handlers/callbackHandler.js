@@ -31,7 +31,13 @@ async function handleCallbackQuery(bot, callbackQuery) {
         
       case 'menu_settings':
         await bot.sendMessage(chatId, '⚙️ Загрузка настроек...');
-        // Здесь можно вызвать handleSettings
+        const { handleSettings } = require('./settingsHandler');
+        await handleSettings(bot, callbackQuery.message);
+        break;
+        
+      case 'settings_link_account':
+        const { handleLinkAccount } = require('./settingsHandler');
+        await handleLinkAccount(bot, callbackQuery.message);
         break;
         
       case 'menu_support':

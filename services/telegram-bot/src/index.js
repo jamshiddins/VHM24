@@ -50,12 +50,18 @@ const config = {
   telegramToken: process.env.TELEGRAM_BOT_TOKEN || '',
   apiUrl: process.env.API_URL || 'http://localhost:8000/api/v1',
   adminIds: (process.env.ADMIN_IDS || '').split(',').map(id => id.trim()),
+  // Определяем режим работы бота (polling или webhook)
+  mode: process.env.NODE_ENV === 'production' ? 'webhook' : 'polling',
   polling: {
     interval: 1000,
     autoStart: true,
     params: {
       timeout: 10
     }
+  },
+  webhook: {
+    port: process.env.TELEGRAM_WEBHOOK_PORT || 8443,
+    url: process.env.TELEGRAM_WEBHOOK_URL || ''
   }
 };
 
@@ -66,7 +72,23 @@ if (!config.telegramToken) {
 }
 
 // Create bot instance
-const bot = new TelegramBot(config.telegramToken, { polling: config.polling });
+let bot;
+if (config.mode === 'webhook' && config.webhook.url) {
+  logger.info(`Starting bot in webhook mode with URL: ${config.webhook.url}`);
+  bot = new TelegramBot(config.telegramToken, {
+    webhook: {
+      port: config.webhook.port,
+      host: '0.0.0.0'
+    }
+  });
+  // Устанавливаем webhook
+  bot.setWebHook(config.webhook.url)
+    .then(() => logger.info('Webhook set successfully'))
+    .catch(error => logger.error('Failed to set webhook:', error));
+} else {
+  logger.info('Starting bot in polling mode');
+  bot = new TelegramBot(config.telegramToken, { polling: config.polling });
+}
 
 // Global error handler
 bot.on('polling_error', (error) => {
@@ -166,7 +188,7 @@ bot.onText(/\/settings/, async (msg) => {
 
 bot.onText(/\/help/, async (msg) => {
   const helpText = `
-🤖 *VHM24 Bot Commands*
+🤖 VHM24 Bot Commands
 
 /start - Start the bot and authenticate
 /machines - View and manage vending machines
@@ -176,7 +198,7 @@ bot.onText(/\/help/, async (msg) => {
 /settings - Bot settings and preferences
 /help - Show this help message
 
-*Quick Actions:*
+Quick Actions:
 • Send machine ID to view details
 • Send QR code photo to access machine
 • Send location to find nearest machines
@@ -184,9 +206,7 @@ bot.onText(/\/help/, async (msg) => {
 For support, contact @vhm24_support
   `;
 
-  await bot.sendMessage(msg.chat.id, helpText, { 
-    parse_mode: 'Markdown' 
-  });
+  await bot.sendMessage(msg.chat.id, helpText);
 });
 
 // Callback query handler
@@ -224,19 +244,17 @@ bot.on('location', async (msg) => {
     }
 
     const machines = response.data.data.slice(0, 5); // Show top 5 nearest
-    let message = '📍 *Nearest Machines:*\n\n';
+    let message = '📍 Nearest Machines:\n\n';
     
     machines.forEach((machine, index) => {
       const distance = machine.distance ? `${(machine.distance / 1000).toFixed(1)}km` : 'N/A';
-      message += `${index + 1}. *${machine.name}*\n`;
+      message += `${index + 1}. ${machine.name}\n`;
       message += `   📍 ${machine.location || 'No address'}\n`;
       message += `   📏 Distance: ${distance}\n`;
       message += `   🔧 Status: ${machine.status}\n\n`;
     });
 
-    await bot.sendMessage(msg.chat.id, message, { 
-      parse_mode: 'Markdown' 
-    });
+    await bot.sendMessage(msg.chat.id, message);
   } catch (error) {
     await errorHandler(bot, msg, error);
   }
@@ -259,13 +277,21 @@ bot.on('photo', async (msg) => {
 // Graceful shutdown
 process.on('SIGINT', () => {
   logger.info('Shutting down Telegram bot...');
-  bot.stopPolling();
+  if (config.mode === 'polling') {
+    bot.stopPolling();
+  } else if (config.mode === 'webhook') {
+    bot.deleteWebHook();
+  }
   process.exit(0);
 });
 
 process.on('SIGTERM', () => {
   logger.info('Shutting down Telegram bot...');
-  bot.stopPolling();
+  if (config.mode === 'polling') {
+    bot.stopPolling();
+  } else if (config.mode === 'webhook') {
+    bot.deleteWebHook();
+  }
   process.exit(0);
 });
 
