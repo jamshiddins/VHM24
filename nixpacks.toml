@@ -15,4 +15,4 @@ cmds = [
 ]
 
 [start]
-cmd = "node railway-start-final.js"
+cmd = "npm start"

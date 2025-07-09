@@ -11,7 +11,8 @@
   "scripts": {
     "dev": "node start.js",
     "build": "echo 'No build required for backend services'",
-    "start": "node start.js",
+    "start": "node railway-start-final.js",
+    "railway": "node railway-start-final.js",
     "clean": "rimraf node_modules packages/*/node_modules services/*/node_modules apps/*/node_modules",
     "db:setup": "cd packages/database && npm run generate && npm run migrate:dev",
     "db:generate": "cd packages/database && npx prisma generate",
