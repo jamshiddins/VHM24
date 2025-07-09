@@ -1,0 +1,663 @@
+openapi: 3.0.0
+info:
+  title: VHM24 API
+  description: VendHub Manager 24/7 - API для управления вендинговыми машинами
+  version: 1.0.0
+  contact:
+    name: VHM24 Support
+    email: support@vhm24.ru
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+  - url: https://vhm24-production.up.railway.app/api/v1
+    description: Production server
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Auth
+    description: Аутентификация и авторизация
+  - name: Machines
+    description: Управление вендинговыми машинами
+  - name: Inventory
+    description: Управление складом
+  - name: Tasks
+    description: Управление задачами
+  - name: Notifications
+    description: Уведомления
+  - name: Monitoring
+    description: Мониторинг системы
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Регистрация нового пользователя
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - name
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  minLength: 8
+                  example: SecurePass123!
+                name:
+                  type: string
+                  minLength: 2
+                  example: Иван Иванов
+                phoneNumber:
+                  type: string
+                  pattern: '^\+998\d{9}$'
+                  example: "+998901234567"
+                roles:
+                  type: array
+                  items:
+                    type: string
+                    enum: [ADMIN, MANAGER, WAREHOUSE, OPERATOR, TECHNICIAN, DRIVER]
+                  default: [OPERATOR]
+      responses:
+        '200':
+          description: Успешная регистрация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Вход в систему
+      description: Поддерживает вход через email, телефон или Telegram ID
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                phoneNumber:
+                  type: string
+                telegramId:
+                  type: string
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/me:
+    get:
+      tags:
+        - Auth
+      summary: Получить текущего пользователя
+      responses:
+        '200':
+          description: Информация о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /machines:
+    get:
+      tags:
+        - Machines
+      summary: Получить список машин
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [ONLINE, OFFLINE, MAINTENANCE, ERROR]
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: locationId
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/take'
+      responses:
+        '200':
+          description: Список машин
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Machine'
+                      total:
+                        type: integer
+                      skip:
+                        type: integer
+                      take:
+                        type: integer
+
+    post:
+      tags:
+        - Machines
+      summary: Создать новую машину
+      description: Требуется роль ADMIN или MANAGER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+                - serialNumber
+                - type
+                - name
+              properties:
+                code:
+                  type: string
+                  pattern: '^CVM-\d{5}$'
+                  example: CVM-00001
+                serialNumber:
+                  type: string
+                  minLength: 5
+                type:
+                  type: string
+                  enum: [COFFEE, SNACK, COMBO, OTHER]
+                name:
+                  type: string
+                  minLength: 3
+                locationId:
+                  type: string
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Машина создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Machine'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /machines/{id}:
+    get:
+      tags:
+        - Machines
+      summary: Получить машину по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Информация о машине
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineDetailed'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags:
+        - Machines
+      summary: Обновить машину
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                status:
+                  type: string
+                  enum: [ONLINE, OFFLINE, MAINTENANCE, ERROR]
+                locationId:
+                  type: string
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Машина обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Machine'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - Machines
+      summary: Удалить машину
+      description: Требуется роль ADMIN. Выполняет soft delete.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Машина удалена
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /machines/{id}/telemetry:
+    post:
+      tags:
+        - Machines
+      summary: Отправить телеметрию машины
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rawData
+              properties:
+                temperature:
+                  type: number
+                humidity:
+                  type: number
+                sales:
+                  type: integer
+                errors:
+                  type: array
+                  items:
+                    type: string
+                rawData:
+                  type: object
+      responses:
+        '200':
+          description: Телеметрия сохранена
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /notifications/email:
+    post:
+      tags:
+        - Notifications
+      summary: Отправить email уведомление
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - to
+                - subject
+                - text
+              properties:
+                to:
+                  type: string
+                  format: email
+                subject:
+                  type: string
+                text:
+                  type: string
+                html:
+                  type: string
+      responses:
+        '200':
+          description: Email отправлен
+        '503':
+          description: Email сервис не настроен
+
+  /notifications/telegram:
+    post:
+      tags:
+        - Notifications
+      summary: Отправить Telegram уведомление
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - chatId
+                - message
+              properties:
+                chatId:
+                  type: string
+                message:
+                  type: string
+                parseMode:
+                  type: string
+                  enum: [Markdown, HTML]
+      responses:
+        '200':
+          description: Сообщение отправлено
+        '503':
+          description: Telegram сервис не настроен
+
+  /monitoring/stats:
+    get:
+      tags:
+        - Monitoring
+      summary: Получить статистику системы
+      responses:
+        '200':
+          description: Статистика системы
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  machines:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      online:
+                        type: integer
+                      offline:
+                        type: integer
+                      error:
+                        type: integer
+                  tasks:
+                    type: object
+                  inventory:
+                    type: object
+                  users:
+                    type: object
+                  system:
+                    type: object
+
+  /metrics:
+    get:
+      tags:
+        - Monitoring
+      summary: Prometheus метрики
+      security: []
+      responses:
+        '200':
+          description: Метрики в формате Prometheus
+          content:
+            text/plain:
+              schema:
+                type: string
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    skip:
+      name: skip
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    take:
+      name: take
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  responses:
+    BadRequest:
+      description: Неверный запрос
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Доступ запрещен
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Не найдено
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Конфликт
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: false
+        error:
+          type: string
+        message:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        token:
+          type: string
+        refreshToken:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        phoneNumber:
+          type: string
+        telegramId:
+          type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        lastLogin:
+          type: string
+          format: date-time
+
+    Machine:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        serialNumber:
+          type: string
+        type:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum: [ONLINE, OFFLINE, MAINTENANCE, ERROR]
+        locationId:
+          type: string
+        location:
+          $ref: '#/components/schemas/Location'
+        lastPing:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    MachineDetailed:
+      allOf:
+        - $ref: '#/components/schemas/Machine'
+        - type: object
+          properties:
+            tasks:
+              type: array
+              items:
+                $ref: '#/components/schemas/Task'
+            telemetry:
+              type: array
+              items:
+                $ref: '#/components/schemas/Telemetry'
+            stats:
+              type: object
+
+    Location:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [CREATED, ASSIGNED, IN_PROGRESS, COMPLETED, CANCELLED]
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, URGENT]
+        dueDate:
+          type: string
+          format: date-time
+        assignedTo:
+          $ref: '#/components/schemas/User'
+
+    Telemetry:
+      type: object
+      properties:
+        id:
+          type: string
+        machineId:
+          type: string
+        temperature:
+          type: number
+        humidity:
+          type: number
+        sales:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: string
+        rawData:
+          type: object
+        createdAt:
+          type: string
+          format: date-time

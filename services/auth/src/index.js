@@ -9,21 +9,86 @@ const Fastify = require('fastify');
 const cors = require('@fastify/cors');
 const jwt = require('@fastify/jwt');
 const bcrypt = require('bcrypt');
+const rateLimit = require('@fastify/rate-limit');
+const helmet = require('@fastify/helmet');
 const { getAuthClient } = require('@vhm24/database');
+const { 
+  validateEmail, 
+  validatePhoneNumber, 
+  validateTelegramId,
+  validatePasswordStrength,
+  sanitizeInput,
+  maskSensitiveData
+} = require('@vhm24/shared-types/src/security');
 
 const prisma = getAuthClient();
-const fastify = Fastify({ logger: true });
+const fastify = Fastify({ 
+  logger: true,
+  trustProxy: true // Для получения реального IP за прокси
+});
 
-// Plugins
+// Проверка обязательных переменных окружения
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET must be set in environment variables');
+}
+
+// Security headers
+fastify.register(helmet, {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+});
+
+// Rate limiting
+const rateLimitOptions = {
+  max: parseInt(process.env.RATE_LIMIT_MAX) || 100,
+  timeWindow: parseInt(process.env.RATE_LIMIT_WINDOW) || 60000, // 1 минута
+  cache: 10000,
+  whitelist: ['127.0.0.1']
+};
+
+// Добавляем Redis только если URL указан
+if (process.env.REDIS_URL) {
+  try {
+    const redis = require('redis');
+    rateLimitOptions.redis = {
+      client: redis.createClient({ url: process.env.REDIS_URL }),
+      namespace: 'rate-limit:'
+    };
+  } catch (error) {
+    fastify.log.warn('Redis not available for rate limiting, using in-memory store');
+  }
+}
+
+fastify.register(rateLimit, rateLimitOptions);
+
+// CORS с безопасными настройками
 fastify.register(cors, {
-  origin: true,
+  origin: (origin, cb) => {
+    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
+    if (!origin || allowedOrigins.includes(origin)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 });
 
+// JWT с безопасными настройками
 fastify.register(jwt, {
-  secret: process.env.JWT_SECRET || 'your-secret-key',
+  secret: process.env.JWT_SECRET,
   sign: {
-    expiresIn: '24h'
+    expiresIn: '24h',
+    issuer: 'vhm24-auth'
+  },
+  verify: {
+    issuer: 'vhm24-auth'
   }
 });
 
@@ -88,66 +153,122 @@ fastify.post('/api/v1/auth/register', {
   const { email, password, name, phoneNumber, roles } = request.body;
   
   try {
+    // Валидация email
+    if (!validateEmail(email)) {
+      return reply.code(400).send({
+        success: false,
+        error: 'Invalid email format'
+      });
+    }
+    
+    // Валидация пароля
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.valid) {
+      return reply.code(400).send({
+        success: false,
+        error: passwordValidation.message
+      });
+    }
+    
+    // Валидация телефона (если указан)
+    if (phoneNumber && !validatePhoneNumber(phoneNumber)) {
+      return reply.code(400).send({
+        success: false,
+        error: 'Invalid phone number format. Use format: +998XXXXXXXXX'
+      });
+    }
+    
+    // Санитизация имени
+    const sanitizedName = sanitizeInput(name);
+    
     // Проверяем, существует ли пользователь
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          phoneNumber ? { phoneNumber } : {}
+        ].filter(Boolean)
+      }
     });
     
     if (existingUser) {
       return reply.code(400).send({
         success: false,
-        error: 'User with this email already exists'
+        error: 'User with this email or phone number already exists'
       });
     }
     
-    // Хешируем пароль
-    const passwordHash = await bcrypt.hash(password, 10);
+    // Хешируем пароль с более высокой стоимостью для production
+    const saltRounds = process.env.NODE_ENV === 'production' ? 12 : 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
     
-    // Создаем пользователя
-    const user = await prisma.user.create({
-      data: {
-        email,
-        passwordHash,
-        name,
-        phoneNumber,
-        roles: roles || ['OPERATOR']
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        roles: true,
-        createdAt: true
-      }
+    // Используем транзакцию для создания пользователя и логирования
+    const result = await prisma.$transaction(async (tx) => {
+      // Создаем пользователя
+      const user = await tx.user.create({
+        data: {
+          email: email.toLowerCase(), // Нормализуем email
+          passwordHash,
+          name: sanitizedName,
+          phoneNumber,
+          roles: roles || ['OPERATOR']
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          roles: true,
+          createdAt: true
+        }
+      });
+      
+      // Логируем действие
+      await tx.auditLog.create({
+        data: {
+          userId: user.id,
+          action: 'USER_REGISTERED',
+          entity: 'User',
+          entityId: user.id,
+          ipAddress: request.ip,
+          userAgent: request.headers['user-agent']
+        }
+      });
+      
+      return user;
     });
     
-    // Создаем токен
+    // Создаем токены
     const token = fastify.jwt.sign({
-      id: user.id,
-      email: user.email,
-      roles: user.roles
+      id: result.id,
+      email: result.email,
+      roles: result.roles
     });
     
-    // Логируем действие
-    await prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'USER_REGISTERED',
-        entity: 'User',
-        entityId: user.id,
-        ipAddress: request.ip
-      }
-    });
+    const refreshToken = fastify.jwt.sign(
+      { id: result.id, type: 'refresh' }, 
+      { expiresIn: '7d' }
+    );
     
     return {
       success: true,
       data: {
-        user,
+        user: {
+          ...result,
+          email: maskSensitiveData(result.email, 'email')
+        },
         token,
-        refreshToken: fastify.jwt.sign({ id: user.id }, { expiresIn: '7d' })
+        refreshToken
       }
     };
   } catch (error) {
+    // Обработка ошибок Prisma
+    if (error.code === 'P2002') {
+      return reply.code(409).send({
+        success: false,
+        error: 'User already exists'
+      });
+    }
+    
     fastify.log.error(error);
     reply.code(500).send({
       success: false,
@@ -166,15 +287,37 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
     let authMethod = 'EMAIL';
     
     if (telegramId) {
+      // Валидация Telegram ID
+      if (!validateTelegramId(telegramId)) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Invalid Telegram ID format'
+        });
+      }
       where = { telegramId };
       authMethod = 'TELEGRAM';
     } else if (email) {
-      where = { email };
+      // Валидация email
+      if (!validateEmail(email)) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Invalid email format'
+        });
+      }
+      where = { email: email.toLowerCase() };
     } else if (phoneNumber) {
+      // Валидация телефона
+      if (!validatePhoneNumber(phoneNumber)) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Invalid phone number format. Use format: +998XXXXXXXXX'
+        });
+      }
       where = { phoneNumber };
       authMethod = 'PHONE';
     } else {
       return reply.code(400).send({ 
+        success: false,
         error: 'Email, phone or telegram ID required for 24/7 access' 
       });
     }

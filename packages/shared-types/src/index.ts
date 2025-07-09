@@ -1,3 +1,6 @@
+// Re-export Redis utilities
+export * from './redis';
+
 // Enums
 export enum UserRole {
   ADMIN = 'ADMIN',

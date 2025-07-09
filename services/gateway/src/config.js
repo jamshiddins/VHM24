@@ -20,6 +20,10 @@ module.exports = {
     bunkers: {
       url: process.env.BUNKERS_SERVICE_URL || 'http://127.0.0.1:3005',
       prefix: '/api/v1/bunkers'
+    },
+    notifications: {
+      url: process.env.NOTIFICATIONS_SERVICE_URL || 'http://127.0.0.1:3006',
+      prefix: '/api/v1/notifications'
     }
   }
 };

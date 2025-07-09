@@ -2,18 +2,52 @@ require('dotenv').config({ path: require('path').join(__dirname, '../../../.env'
 const Fastify = require('fastify');
 const cors = require('@fastify/cors');
 const jwt = require('@fastify/jwt');
+const rateLimit = require('@fastify/rate-limit');
+const helmet = require('@fastify/helmet');
 const { getMachinesClient } = require('@vhm24/database');
-const prisma = getMachinesClient();
-const fastify = Fastify({ logger: true });
+const { sanitizeInput } = require('@vhm24/shared-types/src/security');
+const { cacheManagers, cacheMiddleware } = require('@vhm24/shared-types/src/redis');
 
-// Plugins
+const prisma = getMachinesClient();
+const cache = cacheManagers.machines;
+const fastify = Fastify({ 
+  logger: true,
+  trustProxy: true
+});
+
+// Проверка обязательных переменных окружения
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET must be set in environment variables');
+}
+
+// Security headers
+fastify.register(helmet);
+
+// Rate limiting
+fastify.register(rateLimit, {
+  max: parseInt(process.env.RATE_LIMIT_MAX) || 100,
+  timeWindow: parseInt(process.env.RATE_LIMIT_WINDOW) || 60000
+});
+
+// CORS с безопасными настройками
 fastify.register(cors, {
-  origin: true,
+  origin: (origin, cb) => {
+    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
+    if (!origin || allowedOrigins.includes(origin)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 });
 
+// JWT с безопасными настройками
 fastify.register(jwt, {
-  secret: process.env.JWT_SECRET || 'your-secret-key'
+  secret: process.env.JWT_SECRET,
+  verify: {
+    issuer: ['vhm24-gateway', 'vhm24-auth']
+  }
 });
 
 // Декоратор для проверки авторизации
@@ -45,6 +79,28 @@ fastify.decorate('authenticate', async function(request, reply) {
   }
 });
 
+// Декоратор для проверки ролей
+fastify.decorate('requireRole', (roles) => {
+  return async function (request, reply) {
+    if (!request.user) {
+      return reply.code(401).send({ 
+        success: false,
+        error: 'Unauthorized' 
+      });
+    }
+    
+    const hasRole = roles.some(role => request.user.roles.includes(role));
+    
+    if (!hasRole) {
+      return reply.code(403).send({ 
+        success: false,
+        error: 'Forbidden',
+        message: `Required roles: ${roles.join(', ')}`
+      });
+    }
+  };
+});
+
 // Health check
 fastify.get('/health', async (request, reply) => {
   return { status: 'ok', service: 'machines' };
@@ -53,6 +109,12 @@ fastify.get('/health', async (request, reply) => {
 // Получить все машины с фильтрами
 fastify.get('/api/v1/machines', {
   preValidation: [fastify.authenticate],
+  preHandler: cacheMiddleware({
+    keyGenerator: (req) => `machines:list:${JSON.stringify(req.query)}`,
+    ttl: 300, // 5 минут
+    serviceName: 'machines',
+    condition: (req) => !req.query.search // Кешируем только если нет поиска
+  }),
   schema: {
     querystring: {
       type: 'object',
@@ -142,6 +204,17 @@ fastify.get('/api/v1/machines/:id', {
   const { id } = request.params;
   
   try {
+    // Пробуем получить из кеша
+    const cacheKey = `machine:${id}`;
+    const cached = await cache.get(cacheKey);
+    if (cached) {
+      reply.header('X-Cache', 'HIT');
+      return {
+        success: true,
+        data: cached
+      };
+    }
+    
     const machine = await prisma.machine.findUnique({
       where: { id },
       include: {
@@ -193,12 +266,17 @@ fastify.get('/api/v1/machines/:id', {
       })
     };
 
+    const result = {
+      ...machine,
+      stats
+    };
+    
+    // Сохраняем в кеш
+    await cache.set(cacheKey, result, 600); // 10 минут
+    
     return {
       success: true,
-      data: {
-        ...machine,
-        stats
-      }
+      data: result
     };
   } catch (error) {
     fastify.log.error(error);
@@ -209,9 +287,9 @@ fastify.get('/api/v1/machines/:id', {
   }
 });
 
-// Создать новую машину
+// Создать новую машину (только для ADMIN и MANAGER)
 fastify.post('/api/v1/machines', {
-  preValidation: [fastify.authenticate],
+  preValidation: [fastify.authenticate, fastify.requireRole(['ADMIN', 'MANAGER'])],
   schema: {
     body: {
       type: 'object',
@@ -282,6 +360,10 @@ fastify.post('/api/v1/machines', {
         changes: data
       }
     });
+
+    // Инвалидируем кеш списка машин
+    await cache.deletePattern('machines:list:*');
+    await cache.deletePattern('machines:stats');
 
     return {
       success: true,
@@ -382,6 +464,11 @@ fastify.patch('/api/v1/machines/:id', {
       });
     }
 
+    // Инвалидируем кеш
+    await cache.delete(`machine:${id}`);
+    await cache.deletePattern('machines:list:*');
+    await cache.deletePattern('machines:stats');
+
     return {
       success: true,
       data: machine
@@ -395,9 +482,9 @@ fastify.patch('/api/v1/machines/:id', {
   }
 });
 
-// Удалить машину (soft delete)
+// Удалить машину (soft delete) - только для ADMIN
 fastify.delete('/api/v1/machines/:id', {
-  preValidation: [fastify.authenticate]
+  preValidation: [fastify.authenticate, fastify.requireRole(['ADMIN'])]
 }, async (request, reply) => {
   const { id } = request.params;
   
@@ -439,6 +526,11 @@ fastify.delete('/api/v1/machines/:id', {
         entityId: id
       }
     });
+
+    // Инвалидируем кеш
+    await cache.delete(`machine:${id}`);
+    await cache.deletePattern('machines:list:*');
+    await cache.deletePattern('machines:stats');
 
     return {
       success: true,
@@ -519,6 +611,10 @@ fastify.post('/api/v1/machines/:id/telemetry', {
       }
     });
 
+    // Инвалидируем кеш машины
+    await cache.delete(`machine:${id}`);
+    await cache.deletePattern('machines:stats');
+
     return {
       success: true,
       data: telemetry
@@ -588,6 +684,17 @@ fastify.get('/api/v1/machines/stats', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
   try {
+    // Пробуем получить из кеша
+    const cacheKey = 'machines:stats';
+    const cached = await cache.get(cacheKey);
+    if (cached) {
+      reply.header('X-Cache', 'HIT');
+      return {
+        success: true,
+        data: cached
+      };
+    }
+    
     const [
       totalMachines,
       machinesByStatus,
@@ -616,21 +723,26 @@ fastify.get('/api/v1/machines/stats', {
       })
     ]);
 
+    const stats = {
+      total: totalMachines,
+      byStatus: machinesByStatus.reduce((acc, item) => {
+        acc[item.status] = item._count;
+        return acc;
+      }, {}),
+      byType: machinesByType.reduce((acc, item) => {
+        acc[item.type] = item._count;
+        return acc;
+      }, {}),
+      withErrors: machinesWithErrors,
+      telemetryLast24h: recentTelemetry
+    };
+    
+    // Сохраняем в кеш на 5 минут
+    await cache.set(cacheKey, stats, 300);
+    
     return {
       success: true,
-      data: {
-        total: totalMachines,
-        byStatus: machinesByStatus.reduce((acc, item) => {
-          acc[item.status] = item._count;
-          return acc;
-        }, {}),
-        byType: machinesByType.reduce((acc, item) => {
-          acc[item.type] = item._count;
-          return acc;
-        }, {}),
-        withErrors: machinesWithErrors,
-        telemetryLast24h: recentTelemetry
-      }
+      data: stats
     };
   } catch (error) {
     fastify.log.error(error);
@@ -644,11 +756,12 @@ fastify.get('/api/v1/machines/stats', {
 // Start server
 const start = async () => {
   try {
+    const port = process.env.MACHINES_PORT || process.env.PORT || 3002;
     await fastify.listen({ 
-      port: process.env.PORT || 3002,
+      port: port,
       host: '0.0.0.0'
     });
-    console.log('Machines service is running on port', process.env.PORT || 3002);
+    console.log('Machines service is running on port', port);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

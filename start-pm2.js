@@ -92,6 +92,17 @@ try {
         }
       },
       {
+        name: 'vhm24-notifications',
+        script: 'services/notifications/src/index.js',
+        watch: false,
+        instances: 1,
+        autorestart: true,
+        max_memory_restart: '200M',
+        env: {
+          NODE_ENV: 'production'
+        }
+      },
+      {
         name: 'vhm24-gateway',
         script: 'services/gateway/src/index.js',
         watch: false,

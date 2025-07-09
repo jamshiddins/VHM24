@@ -5,7 +5,10 @@ const cors = require('@fastify/cors');
 const jwt = require('@fastify/jwt');
 const multipart = require('@fastify/multipart');
 const websocket = require('@fastify/websocket');
+const rateLimit = require('@fastify/rate-limit');
+const helmet = require('@fastify/helmet');
 const { getPrismaClient } = require('@vhm24/database');
+const { validateFileType, sanitizeInput } = require('@vhm24/shared-types/src/security');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
@@ -13,20 +16,77 @@ const { v4: uuidv4 } = require('uuid');
 const prisma = getPrismaClient();
 const fastify = Fastify({ 
   logger: true,
-  bodyLimit: 10485760 // 10MB для загрузки файлов
+  bodyLimit: parseInt(process.env.MAX_FILE_SIZE) || 10485760, // 10MB по умолчанию
+  trustProxy: true
 });
 
 // WebSocket клиенты
 const wsClients = new Set();
 
-// Plugins
+// Проверка обязательных переменных окружения
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET must be set in environment variables');
+}
+
+// Security headers
+fastify.register(helmet, {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "ws:", "wss:"],
+    },
+  },
+});
+
+// Rate limiting
+const rateLimitOptions = {
+  max: parseInt(process.env.RATE_LIMIT_MAX) || 100,
+  timeWindow: parseInt(process.env.RATE_LIMIT_WINDOW) || 60000,
+  cache: 10000,
+  whitelist: ['127.0.0.1']
+};
+
+// Добавляем Redis только если URL указан
+if (process.env.REDIS_URL) {
+  try {
+    const redis = require('redis');
+    rateLimitOptions.redis = {
+      client: redis.createClient({ url: process.env.REDIS_URL }),
+      namespace: 'rate-limit:'
+    };
+  } catch (error) {
+    fastify.log.warn('Redis not available for rate limiting, using in-memory store');
+  }
+}
+
+fastify.register(rateLimit, rateLimitOptions);
+
+// CORS с безопасными настройками
 fastify.register(cors, {
-  origin: true,
+  origin: (origin, cb) => {
+    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
+    if (!origin || allowedOrigins.includes(origin)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 });
 
+// JWT с безопасными настройками
 fastify.register(jwt, {
-  secret: process.env.JWT_SECRET || 'your-secret-key'
+  secret: process.env.JWT_SECRET,
+  sign: {
+    expiresIn: '24h',
+    issuer: 'vhm24-gateway'
+  },
+  verify: {
+    issuer: ['vhm24-gateway', 'vhm24-auth'] // Принимаем токены от auth сервиса
+  }
 });
 
 fastify.register(multipart, {
@@ -53,7 +113,8 @@ fastify.get('/health', async (request, reply) => {
     machines: 'unknown',
     inventory: 'unknown',
     tasks: 'unknown',
-    bunkers: 'unknown'
+    bunkers: 'unknown',
+    notifications: 'unknown'
   };
   
   // Проверяем каждый сервис
@@ -62,7 +123,8 @@ fastify.get('/health', async (request, reply) => {
     { name: 'machines', url: 'http://127.0.0.1:3002/health' },
     { name: 'inventory', url: 'http://127.0.0.1:3003/health' },
     { name: 'tasks', url: 'http://127.0.0.1:3004/health' },
-    { name: 'bunkers', url: 'http://127.0.0.1:3005/health' }
+    { name: 'bunkers', url: 'http://127.0.0.1:3005/health' },
+    { name: 'notifications', url: 'http://127.0.0.1:3006/health' }
   ];
   
   for (const check of checks) {
@@ -152,19 +214,29 @@ function broadcastToClients(type, data) {
   });
 }
 
-// Загрузка файлов
+// Загрузка файлов с валидацией
 fastify.post('/api/v1/upload', {
   preValidation: [fastify.authenticate],
   handler: async (request, reply) => {
     const parts = request.parts();
     const uploadedFiles = [];
+    const maxFileSize = parseInt(process.env.MAX_FILE_SIZE) || 10485760; // 10MB
     
     for await (const part of parts) {
       if (part.file) {
-        // Генерируем уникальное имя файла
-        const ext = path.extname(part.filename);
+        // Валидация типа файла
+        if (!validateFileType(part.mimetype)) {
+          return reply.code(400).send({
+            success: false,
+            error: `File type ${part.mimetype} is not allowed`
+          });
+        }
+        
+        // Санитизация имени файла
+        const sanitizedFilename = sanitizeInput(part.filename);
+        const ext = path.extname(sanitizedFilename);
         const filename = `${uuidv4()}${ext}`;
-        const uploadDir = path.join(process.cwd(), 'uploads');
+        const uploadDir = path.join(process.cwd(), process.env.UPLOAD_DIR || 'uploads');
         const filepath = path.join(uploadDir, filename);
         
         // Создаем директорию если не существует
@@ -172,15 +244,46 @@ fastify.post('/api/v1/upload', {
           fs.mkdirSync(uploadDir, { recursive: true });
         }
         
+        // Проверяем размер файла
+        let fileSize = 0;
+        const chunks = [];
+        
+        for await (const chunk of part.file) {
+          fileSize += chunk.length;
+          if (fileSize > maxFileSize) {
+            return reply.code(413).send({
+              success: false,
+              error: `File size exceeds maximum allowed size of ${maxFileSize} bytes`
+            });
+          }
+          chunks.push(chunk);
+        }
+        
         // Сохраняем файл
-        const writeStream = fs.createWriteStream(filepath);
-        await part.file.pipe(writeStream);
+        const buffer = Buffer.concat(chunks);
+        fs.writeFileSync(filepath, buffer);
+        
+        // Логируем загрузку файла
+        await prisma.auditLog.create({
+          data: {
+            userId: request.user.id,
+            action: 'FILE_UPLOADED',
+            entity: 'File',
+            entityId: filename,
+            changes: {
+              originalName: sanitizedFilename,
+              size: fileSize,
+              mimetype: part.mimetype
+            },
+            ipAddress: request.ip
+          }
+        });
         
         uploadedFiles.push({
-          originalName: part.filename,
+          originalName: sanitizedFilename,
           filename: filename,
           mimetype: part.mimetype,
-          size: writeStream.bytesWritten,
+          size: fileSize,
           url: `/uploads/${filename}`
         });
         
@@ -240,6 +343,13 @@ fastify.register(httpProxy, {
   upstream: config.services.bunkers.url,
   prefix: config.services.bunkers.prefix,
   rewritePrefix: config.services.bunkers.prefix
+});
+
+// Notifications service
+fastify.register(httpProxy, {
+  upstream: config.services.notifications.url,
+  prefix: config.services.notifications.prefix,
+  rewritePrefix: config.services.notifications.prefix
 });
 
 // Dashboard stats endpoint

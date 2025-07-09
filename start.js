@@ -59,6 +59,12 @@ const services = [
     path: './services/bunkers/src/index.js',
     port: process.env.BUNKERS_PORT || 3005,
     env: { PORT: process.env.BUNKERS_PORT || 3005 }
+  },
+  {
+    name: 'Notifications',
+    path: './services/notifications/src/index.js',
+    port: process.env.NOTIFICATIONS_PORT || 3006,
+    env: { PORT: process.env.NOTIFICATIONS_PORT || 3006 }
   }
 ];
 
