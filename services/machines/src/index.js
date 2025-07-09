@@ -1,104 +1,85 @@
+/**
+ * VHM24 - VendHub Manager 24/7
+ * Machines Service - PRODUCTION READY
+ * Secure machine management with telemetry
+ */
+
 require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
+
+// Устанавливаем SERVICE_NAME для конфигурации
+process.env.SERVICE_NAME = 'machines';
+
 const Fastify = require('fastify');
-const cors = require('@fastify/cors');
-const jwt = require('@fastify/jwt');
-const rateLimit = require('@fastify/rate-limit');
-const helmet = require('@fastify/helmet');
 const { getMachinesClient } = require('@vhm24/database');
 const { sanitizeInput } = require('@vhm24/shared-types/src/security');
 const { cacheManagers, cacheMiddleware } = require('@vhm24/shared-types/src/redis');
 
+// Импортируем наш новый shared пакет
+const {
+  // Middleware
+  setupCORS,
+  setupHelmet,
+  setupRateLimit,
+  setupJWT,
+  authenticate,
+  authorize,
+  sanitizeInputs,
+  securityLogger,
+  healthCheck,
+  
+  // Validation
+  validateBody,
+  validateQuery,
+  validateId,
+  
+  // Error handling
+  registerErrorHandlers,
+  setupGlobalErrorHandlers,
+  createError,
+  asyncHandler,
+  
+  // Utils
+  logger,
+  config: sharedConfig,
+  createFastifyConfig,
+  paginate
+} = require('@vhm24/shared');
+
+// Настройка глобальных обработчиков ошибок
+setupGlobalErrorHandlers();
+
+// Создаем Fastify с безопасной конфигурацией
+const fastify = Fastify(createFastifyConfig());
+
 const prisma = getMachinesClient();
 const cache = cacheManagers.machines;
-const fastify = Fastify({ 
-  logger: true,
-  trustProxy: true
+
+// Регистрируем обработчики ошибок
+registerErrorHandlers(fastify);
+
+// Настройка безопасности
+setupHelmet(fastify);
+setupCORS(fastify);
+setupRateLimit(fastify, {
+  max: 150, // Средний лимит для machines сервиса
+  timeWindow: '1 minute'
 });
-
-// Проверка обязательных переменных окружения
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET must be set in environment variables');
-}
-
-// Security headers
-fastify.register(helmet);
-
-// Rate limiting
-fastify.register(rateLimit, {
-  max: parseInt(process.env.RATE_LIMIT_MAX) || 100,
-  timeWindow: parseInt(process.env.RATE_LIMIT_WINDOW) || 60000
-});
-
-// CORS с безопасными настройками
-fastify.register(cors, {
-  origin: (origin, cb) => {
-    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
-    if (!origin || allowedOrigins.includes(origin)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-});
-
-// JWT с безопасными настройками
-fastify.register(jwt, {
-  secret: process.env.JWT_SECRET,
+setupJWT(fastify, {
   verify: {
     issuer: ['vhm24-gateway', 'vhm24-auth']
   }
 });
 
-// Декоратор для проверки авторизации
-fastify.decorate('authenticate', async function(request, reply) {
-  try {
-    await request.jwtVerify();
-    const user = await prisma.user.findUnique({
-      where: { id: request.user.id },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        roles: true,
-        isActive: true
-      }
-    });
-    
-    if (!user || !user.isActive) {
-      throw new Error('User not found or inactive');
-    }
-    
-    request.user = user;
-  } catch (err) {
-    reply.code(401).send({ 
-      success: false,
-      error: 'Unauthorized',
-      message: err.message || 'Invalid or expired token'
-    });
-  }
-});
+// Middleware для логирования и санитизации
+fastify.addHook('preHandler', securityLogger);
+fastify.addHook('preHandler', sanitizeInputs);
 
-// Декоратор для проверки ролей
+// Декоратор для проверки авторизации (переопределяем для совместимости)
+fastify.decorate('authenticate', authenticate);
+
+// Декоратор для проверки ролей (переопределяем для совместимости)
 fastify.decorate('requireRole', (roles) => {
-  return async function (request, reply) {
-    if (!request.user) {
-      return reply.code(401).send({ 
-        success: false,
-        error: 'Unauthorized' 
-      });
-    }
-    
-    const hasRole = roles.some(role => request.user.roles.includes(role));
-    
-    if (!hasRole) {
-      return reply.code(403).send({ 
-        success: false,
-        error: 'Forbidden',
-        message: `Required roles: ${roles.join(', ')}`
-      });
-    }
-  };
+  return authorize(roles);
 });
 
 // Health check
@@ -189,11 +170,7 @@ fastify.get('/api/v1/machines', {
       }
     };
   } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to fetch machines'
-    });
+    throw createError.database('Failed to fetch machines');
   }
 });
 
@@ -279,11 +256,7 @@ fastify.get('/api/v1/machines/:id', {
       data: result
     };
   } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to fetch machine'
-    });
+    throw createError.database('Failed to fetch machine');
   }
 });
 
@@ -370,11 +343,7 @@ fastify.post('/api/v1/machines', {
       data: machine
     };
   } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to create machine'
-    });
+    throw createError.database('Failed to create machine');
   }
 });
 
@@ -474,11 +443,7 @@ fastify.patch('/api/v1/machines/:id', {
       data: machine
     };
   } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to update machine'
-    });
+    throw createError.database('Failed to update machine');
   }
 });
 
@@ -544,11 +509,7 @@ fastify.delete('/api/v1/machines/:id', {
       });
     }
     
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to delete machine'
-    });
+    throw createError.database('Failed to delete machine');
   }
 });
 
@@ -620,11 +581,7 @@ fastify.post('/api/v1/machines/:id/telemetry', {
       data: telemetry
     };
   } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to save telemetry'
-    });
+    throw createError.database('Failed to save telemetry');
   }
 });
 

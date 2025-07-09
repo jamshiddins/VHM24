@@ -1,35 +1,70 @@
+/**
+ * VHM24 - VendHub Manager 24/7
+ * Gateway Service - PRODUCTION READY
+ * Secure API Gateway with WebSocket support
+ */
+
 require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
+
+// Устанавливаем SERVICE_NAME для конфигурации
+process.env.SERVICE_NAME = 'gateway';
+
 const Fastify = require('fastify');
 const httpProxy = require('@fastify/http-proxy');
-const cors = require('@fastify/cors');
-const jwt = require('@fastify/jwt');
 const multipart = require('@fastify/multipart');
 const websocket = require('@fastify/websocket');
-const rateLimit = require('@fastify/rate-limit');
-const helmet = require('@fastify/helmet');
 const { getPrismaClient } = require('@vhm24/database');
 const { validateFileType, sanitizeInput } = require('@vhm24/shared-types/src/security');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
-const prisma = getPrismaClient();
-const fastify = Fastify({ 
-  logger: true,
-  bodyLimit: parseInt(process.env.MAX_FILE_SIZE) || 10485760, // 10MB по умолчанию
-  trustProxy: true
+// Импортируем наш новый shared пакет
+const {
+  // Middleware
+  setupCORS,
+  setupHelmet,
+  setupRateLimit,
+  setupJWT,
+  authenticate,
+  authorize,
+  sanitizeInputs,
+  securityLogger,
+  healthCheck,
+  
+  // Validation
+  validateBody,
+  validateQuery,
+  validateId,
+  
+  // Error handling
+  registerErrorHandlers,
+  setupGlobalErrorHandlers,
+  createError,
+  asyncHandler,
+  
+  // Utils
+  logger,
+  config: sharedConfig,
+  createFastifyConfig
+} = require('@vhm24/shared');
+
+// Настройка глобальных обработчиков ошибок
+setupGlobalErrorHandlers();
+
+// Создаем Fastify с безопасной конфигурацией
+const fastify = Fastify({
+  ...createFastifyConfig(),
+  bodyLimit: parseInt(process.env.MAX_FILE_SIZE) || 10485760 // 10MB по умолчанию
 });
 
-// WebSocket клиенты
-const wsClients = new Set();
+const prisma = getPrismaClient();
 
-// Проверка обязательных переменных окружения
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET must be set in environment variables');
-}
+// Регистрируем обработчики ошибок
+registerErrorHandlers(fastify);
 
-// Security headers
-fastify.register(helmet, {
+// Настройка безопасности
+setupHelmet(fastify, {
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
@@ -40,54 +75,20 @@ fastify.register(helmet, {
     },
   },
 });
-
-// Rate limiting
-const rateLimitOptions = {
-  max: parseInt(process.env.RATE_LIMIT_MAX) || 100,
-  timeWindow: parseInt(process.env.RATE_LIMIT_WINDOW) || 60000,
-  cache: 10000,
-  whitelist: ['127.0.0.1']
-};
-
-// Добавляем Redis только если URL указан
-if (process.env.REDIS_URL) {
-  try {
-    const redis = require('redis');
-    rateLimitOptions.redis = {
-      client: redis.createClient({ url: process.env.REDIS_URL }),
-      namespace: 'rate-limit:'
-    };
-  } catch (error) {
-    fastify.log.warn('Redis not available for rate limiting, using in-memory store');
-  }
-}
-
-fastify.register(rateLimit, rateLimitOptions);
-
-// CORS с безопасными настройками
-fastify.register(cors, {
-  origin: (origin, cb) => {
-    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
-    if (!origin || allowedOrigins.includes(origin)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
+setupCORS(fastify);
+setupRateLimit(fastify, {
+  max: 200, // Более высокий лимит для gateway
+  timeWindow: '1 minute'
 });
-
-// JWT с безопасными настройками
-fastify.register(jwt, {
-  secret: process.env.JWT_SECRET,
-  sign: {
-    expiresIn: '24h',
-    issuer: 'vhm24-gateway'
-  },
+setupJWT(fastify, {
   verify: {
     issuer: ['vhm24-gateway', 'vhm24-auth'] // Принимаем токены от auth сервиса
   }
 });
+
+// Middleware для логирования и санитизации
+fastify.addHook('preHandler', securityLogger);
+fastify.addHook('preHandler', sanitizeInputs);
 
 fastify.register(multipart, {
   limits: {
@@ -97,14 +98,11 @@ fastify.register(multipart, {
 
 fastify.register(websocket);
 
-// Декоратор для проверки авторизации
-fastify.decorate('authenticate', async function(request, reply) {
-  try {
-    await request.jwtVerify();
-  } catch (err) {
-    reply.code(401).send({ error: 'Unauthorized' });
-  }
-});
+// WebSocket клиенты
+const wsClients = new Set();
+
+// Декоратор для проверки авторизации (переопределяем для совместимости)
+fastify.decorate('authenticate', authenticate);
 
 // Health check
 fastify.get('/health', async (request, reply) => {
@@ -421,11 +419,7 @@ fastify.get('/api/v1/dashboard/stats', {
       data: stats
     };
   } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to fetch dashboard stats'
-    });
+    throw createError.database('Failed to fetch dashboard stats');
   }
 });
 
@@ -502,11 +496,7 @@ fastify.get('/api/v1/audit-log', {
       }
     };
   } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to fetch audit logs'
-    });
+    throw createError.database('Failed to fetch audit logs');
   }
 });
 

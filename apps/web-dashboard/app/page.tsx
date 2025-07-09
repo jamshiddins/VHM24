@@ -1,36 +1,23 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Перенаправляем на дашборд
+    router.push('/dashboard');
+  }, [router]);
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          VHM24 - VendHub Manager
-        </h1>
-        <p className="text-xl text-gray-600 mb-2">
-          Система управления вендинговыми автоматами
-        </p>
-        <p className="text-lg text-green-600 font-semibold">
-          ⏰ Работает 24 часа в сутки, 7 дней в неделю
-        </p>
-      </div>
-      
-      <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900">Автоматы онлайн</h3>
-          <p className="text-3xl font-bold text-green-600">24/7</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900">Активных операторов</h3>
-          <p className="text-3xl font-bold text-blue-600">12</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900">Продаж сегодня</h3>
-          <p className="text-3xl font-bold text-purple-600">847</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900">Время работы</h3>
-          <p className="text-3xl font-bold text-orange-600">∞</p>
-        </div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">VHM24 Dashboard</h2>
+        <p className="text-gray-600">Загрузка...</p>
       </div>
     </div>
-  )
+  );
 }

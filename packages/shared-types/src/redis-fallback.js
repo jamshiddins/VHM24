@@ -1,5 +1,135 @@
-// Используем fallback версию Redis для локальной разработки
-const { redis } = require('./redis-fallback');
+// Fallback Redis implementation для локальной разработки без Redis сервера
+const EventEmitter = require('events');
+
+// Mock Redis client
+class MockRedis extends EventEmitter {
+  constructor() {
+    super();
+    this.data = new Map();
+    this.ttls = new Map();
+    
+    // Эмулируем успешное подключение
+    setTimeout(() => {
+      console.log('Connected to Redis (Mock)');
+      this.emit('connect');
+    }, 100);
+  }
+
+  async get(key) {
+    // Проверяем TTL
+    if (this.ttls.has(key)) {
+      const expiry = this.ttls.get(key);
+      if (Date.now() > expiry) {
+        this.data.delete(key);
+        this.ttls.delete(key);
+        return null;
+      }
+    }
+    return this.data.get(key) || null;
+  }
+
+  async set(key, value) {
+    this.data.set(key, value);
+    return 'OK';
+  }
+
+  async setex(key, seconds, value) {
+    this.data.set(key, value);
+    this.ttls.set(key, Date.now() + (seconds * 1000));
+    return 'OK';
+  }
+
+  async del(...keys) {
+    let deleted = 0;
+    keys.forEach(key => {
+      if (this.data.has(key)) {
+        this.data.delete(key);
+        this.ttls.delete(key);
+        deleted++;
+      }
+    });
+    return deleted;
+  }
+
+  async exists(key) {
+    // Проверяем TTL
+    if (this.ttls.has(key)) {
+      const expiry = this.ttls.get(key);
+      if (Date.now() > expiry) {
+        this.data.delete(key);
+        this.ttls.delete(key);
+        return 0;
+      }
+    }
+    return this.data.has(key) ? 1 : 0;
+  }
+
+  async expire(key, seconds) {
+    if (this.data.has(key)) {
+      this.ttls.set(key, Date.now() + (seconds * 1000));
+      return 1;
+    }
+    return 0;
+  }
+
+  async ttl(key) {
+    if (!this.data.has(key)) return -2;
+    if (!this.ttls.has(key)) return -1;
+    
+    const expiry = this.ttls.get(key);
+    const remaining = Math.ceil((expiry - Date.now()) / 1000);
+    return remaining > 0 ? remaining : -2;
+  }
+
+  async keys(pattern) {
+    const regex = new RegExp(pattern.replace(/\*/g, '.*'));
+    return Array.from(this.data.keys()).filter(key => regex.test(key));
+  }
+
+  async flushall() {
+    this.data.clear();
+    this.ttls.clear();
+    return 'OK';
+  }
+}
+
+// Определяем, использовать ли реальный Redis или mock
+let redis;
+const useRealRedis = process.env.REDIS_URL && process.env.NODE_ENV === 'production';
+
+if (useRealRedis) {
+  try {
+    const Redis = require('ioredis');
+    redis = new Redis(process.env.REDIS_URL, {
+      maxRetriesPerRequest: 3,
+      retryStrategy: (times) => {
+        const delay = Math.min(times * 50, 2000);
+        return delay;
+      },
+      reconnectOnError: (err) => {
+        const targetError = 'READONLY';
+        if (err.message.includes(targetError)) {
+          return true;
+        }
+        return false;
+      }
+    });
+
+    redis.on('error', (err) => {
+      console.error('Redis connection error:', err);
+    });
+
+    redis.on('connect', () => {
+      console.log('Connected to Redis');
+    });
+  } catch (error) {
+    console.warn('Failed to connect to Redis, using fallback:', error.message);
+    redis = new MockRedis();
+  }
+} else {
+  console.log('Using Redis fallback for local development');
+  redis = new MockRedis();
+}
 
 // Утилиты для работы с кешем
 class CacheManager {

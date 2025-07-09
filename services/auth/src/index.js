@@ -1,17 +1,49 @@
 /**
  * VHM24 - VendHub Manager 24/7
- * Authentication Service
- * Provides 24/7 authentication for vending machine operators
+ * Authentication Service - PRODUCTION READY
+ * Provides secure 24/7 authentication for vending machine operators
  */
 
 require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
+
+// Устанавливаем SERVICE_NAME для конфигурации
+process.env.SERVICE_NAME = 'auth';
+
 const Fastify = require('fastify');
-const cors = require('@fastify/cors');
-const jwt = require('@fastify/jwt');
 const bcrypt = require('bcrypt');
-const rateLimit = require('@fastify/rate-limit');
-const helmet = require('@fastify/helmet');
 const { getAuthClient } = require('@vhm24/database');
+
+// Импортируем наш новый shared пакет
+const {
+  // Middleware
+  setupCORS,
+  setupHelmet,
+  setupRateLimit,
+  setupJWT,
+  authenticate,
+  authorize,
+  sanitizeInputs,
+  securityLogger,
+  healthCheck,
+  
+  // Validation
+  validateBody,
+  validateQuery,
+  validateId,
+  
+  // Error handling
+  registerErrorHandlers,
+  setupGlobalErrorHandlers,
+  createError,
+  asyncHandler,
+  
+  // Utils
+  logger,
+  config,
+  createFastifyConfig
+} = require('@vhm24/shared');
+
+// Security utilities
 const { 
   validateEmail, 
   validatePhoneNumber, 
@@ -21,76 +53,30 @@ const {
   maskSensitiveData
 } = require('@vhm24/shared-types/src/security');
 
+// Настройка глобальных обработчиков ошибок
+setupGlobalErrorHandlers();
+
+// Создаем Fastify с безопасной конфигурацией
+const fastify = Fastify(createFastifyConfig());
+
+// Получаем Prisma клиент
 const prisma = getAuthClient();
-const fastify = Fastify({ 
-  logger: true,
-  trustProxy: true // Для получения реального IP за прокси
+
+// Регистрируем обработчики ошибок
+registerErrorHandlers(fastify);
+
+// Настройка безопасности
+setupHelmet(fastify);
+setupCORS(fastify);
+setupRateLimit(fastify, {
+  max: 50, // Более строгий лимит для auth сервиса
+  timeWindow: '1 minute'
 });
+setupJWT(fastify);
 
-// Проверка обязательных переменных окружения
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET must be set in environment variables');
-}
-
-// Security headers
-fastify.register(helmet, {
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
-    },
-  },
-});
-
-// Rate limiting
-const rateLimitOptions = {
-  max: parseInt(process.env.RATE_LIMIT_MAX) || 100,
-  timeWindow: parseInt(process.env.RATE_LIMIT_WINDOW) || 60000, // 1 минута
-  cache: 10000,
-  whitelist: ['127.0.0.1']
-};
-
-// Добавляем Redis только если URL указан
-if (process.env.REDIS_URL) {
-  try {
-    const redis = require('redis');
-    rateLimitOptions.redis = {
-      client: redis.createClient({ url: process.env.REDIS_URL }),
-      namespace: 'rate-limit:'
-    };
-  } catch (error) {
-    fastify.log.warn('Redis not available for rate limiting, using in-memory store');
-  }
-}
-
-fastify.register(rateLimit, rateLimitOptions);
-
-// CORS с безопасными настройками
-fastify.register(cors, {
-  origin: (origin, cb) => {
-    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
-    if (!origin || allowedOrigins.includes(origin)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-});
-
-// JWT с безопасными настройками
-fastify.register(jwt, {
-  secret: process.env.JWT_SECRET,
-  sign: {
-    expiresIn: '24h',
-    issuer: 'vhm24-auth'
-  },
-  verify: {
-    issuer: 'vhm24-auth'
-  }
-});
+// Middleware для логирования и санитизации
+fastify.addHook('preHandler', securityLogger);
+fastify.addHook('preHandler', sanitizeInputs);
 
 // Декоратор для проверки авторизации
 fastify.decorate('authenticate', async function(request, reply) {
@@ -269,11 +255,7 @@ fastify.post('/api/v1/auth/register', {
       });
     }
     
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to register user'
-    });
+    throw createError.database('Registration failed');
   }
 });
 
@@ -389,8 +371,7 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
       message: 'Welcome to VHM24 - 24/7 Access Granted'
     };
   } catch (error) {
-    fastify.log.error(error);
-    return reply.code(500).send({ error: 'Internal server error' });
+    throw createError.authentication('Login failed');
   }
 });
 
@@ -489,11 +470,7 @@ fastify.get('/api/v1/auth/me', {
       data: user
     };
   } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to fetch user'
-    });
+    throw createError.database('Failed to fetch user data');
   }
 });
 
@@ -555,11 +532,7 @@ fastify.post('/api/v1/auth/change-password', {
       message: 'Password changed successfully'
     };
   } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to change password'
-    });
+    throw createError.database('Failed to change password');
   }
 });
 
@@ -644,11 +617,7 @@ fastify.post('/api/v1/auth/link-telegram', {
       message: 'Telegram account linked successfully'
     };
   } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to link Telegram account'
-    });
+    throw createError.database('Failed to link Telegram account');
   }
 });
 
