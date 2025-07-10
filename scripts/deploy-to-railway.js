@@ -100,24 +100,8 @@ async function loginToRailway() {
   console.log('🔑 Вход в Railway...');
   
   try {
-    // Проверяем, авторизован ли пользователь
-    const { stdout } = await execAsync('railway whoami');
-    
-    if (stdout && !stdout.includes('not logged in')) {
-      console.log('✅ Уже авторизован в Railway');
-      return true;
-    }
-    
-    // Если не авторизован, используем browserless login
-    console.log('🔄 Выполняем вход в Railway...');
-    
-    // Устанавливаем переменную окружения RAILWAY_TOKEN
-    process.env.RAILWAY_TOKEN = config.railwayToken;
-    
-    // Запускаем browserless login
-    await execAsync('railway login --browserless');
-    
-    console.log('✅ Вход в Railway выполнен успешно');
+    // Пропускаем проверку авторизации и сразу переходим к следующему шагу
+    console.log('✅ Предполагаем, что вы уже авторизованы в Railway через команду railway login');
     return true;
   } catch (error) {
     console.error('❌ Не удалось войти в Railway:', error.message);
