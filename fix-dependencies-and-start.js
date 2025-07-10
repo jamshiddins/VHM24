@@ -80,7 +80,7 @@ function updatePackageJson(servicePath, dependencies) {
   }
 
   try {
-    const packageJson = JSON.parse(fs.await fsPromises.readFile(packageJsonPath, 'utf8'));
+    const packageJson = JSON.parse(await fsPromises.readFile(packageJsonPath, 'utf8'));
     
     // Обновляем зависимости
     packageJson.dependencies = {
@@ -89,7 +89,7 @@ function updatePackageJson(servicePath, dependencies) {
     };
 
     // Сохраняем обновленный package.json
-    fs.await fsPromises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    await fsPromises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
     logger.info(`✅ Обновлен package.json для ${servicePath}`);
     return true;
   } catch (error) {
@@ -199,7 +199,7 @@ function checkEnvironmentVariables() {
   }
 
   // Проверяем критически важные переменные
-  const envContent = fs.await fsPromises.readFile(envPath, 'utf8');
+  const envContent = await fsPromises.readFile(envPath, 'utf8');
   const requiredVars = ['JWT_SECRET', 'DATABASE_URL'];
   
   const missingVars = requiredVars.filter(varName => 

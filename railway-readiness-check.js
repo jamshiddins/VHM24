@@ -101,7 +101,7 @@ optionalVars.forEach(varName => {
 // 4. Проверка package.json
 logger.info('\n📦 Package.json Check:');
 try {
-  const packageJson = JSON.parse(fs.await fsPromises.readFile('package.json', 'utf8'));
+  const packageJson = JSON.parse(await fsPromises.readFile('package.json', 'utf8'));
   
   check('start script exists', !!packageJson.scripts?.start, 'start script not found in package.json');
   check('start script points to railway-start-final.js', 
@@ -119,7 +119,7 @@ try {
 // 5. Проверка nixpacks.toml
 logger.info('\n🚂 Nixpacks Configuration Check:');
 try {
-  const nixpacksContent = fs.await fsPromises.readFile('nixpacks.toml', 'utf8');
+  const nixpacksContent = await fsPromises.readFile('nixpacks.toml', 'utf8');
   
   check('nixpacks.toml has start command', nixpacksContent.includes('[start]'), 'start section not found in nixpacks.toml');
   check('start command is npm start', nixpacksContent.includes('cmd = "npm start"'), 'start command should be "npm start"');

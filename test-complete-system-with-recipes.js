@@ -502,7 +502,7 @@ function generateTestReport() {
   
   // Сохранение отчёта
   const reportFile = `test-report-complete-${Date.now()}.json`;
-  fs.await fsPromises.writeFile(reportFile, JSON.stringify(report, null, 2));
+  await fsPromises.writeFile(reportFile, JSON.stringify(report, null, 2));
   
   // Вывод результатов
   log('\n' + '=' * 80, 'info');

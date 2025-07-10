@@ -31,7 +31,7 @@ function fixPackageJson(filePath, serviceName = 'root') {
   if (!fs.existsSync(filePath)) return;
   
   try {
-    const packageJson = JSON.parse(fs.await fsPromises.readFile(filePath, 'utf8'));
+    const packageJson = JSON.parse(await fsPromises.readFile(filePath, 'utf8'));
     let modified = false;
     
     logger.info(`📦 Fixing ${serviceName}...`);
@@ -79,7 +79,7 @@ function fixPackageJson(filePath, serviceName = 'root') {
     }
     
     if (modified) {
-      fs.await fsPromises.writeFile(filePath, JSON.stringify(packageJson, null, 2) + '\n');
+      await fsPromises.writeFile(filePath, JSON.stringify(packageJson, null, 2) + '\n');
       filesFixed++;
       logger.info(`  ✅ Fixed and saved`);
     } else {
@@ -126,7 +126,7 @@ if (fs.existsSync(appsDir)) {
         // Только исправляем версии, но не удаляем next
         if (fs.existsSync(packagePath)) {
           try {
-            const packageJson = JSON.parse(fs.await fsPromises.readFile(packagePath, 'utf8'));
+            const packageJson = JSON.parse(await fsPromises.readFile(packagePath, 'utf8'));
             let modified = false;
             
             logger.info(`📦 Fixing apps/${app}...`);
@@ -146,7 +146,7 @@ if (fs.existsSync(appsDir)) {
             });
             
             if (modified) {
-              fs.await fsPromises.writeFile(packagePath, JSON.stringify(packageJson, null, 2) + '\n');
+              await fsPromises.writeFile(packagePath, JSON.stringify(packageJson, null, 2) + '\n');
               filesFixed++;
               logger.info(`  ✅ Fixed and saved`);
             } else {

@@ -46,7 +46,7 @@ servicePaths.forEach(filePath => {
   }
   
   try {
-    let content = fs.await fsPromises.readFile(filePath, 'utf8');
+    let content = await fsPromises.readFile(filePath, 'utf8');
     const originalContent = content;
     
     // Determine which client to use based on service
@@ -78,7 +78,7 @@ servicePaths.forEach(filePath => {
       
       // If content changed, write it back
       if (content !== originalContent) {
-        fs.await fsPromises.writeFile(filePath, content, 'utf8');
+        await fsPromises.writeFile(filePath, content, 'utf8');
         logger.info(`✅ Fixed: ${filePath} (using ${clientFunction})`);
         fixedCount++;
       } else {

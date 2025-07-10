@@ -1,0 +1,582 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String           @id @default(cuid())
+  email          String           @unique
+  name           String
+  passwordHash   String
+  roles          UserRole[]
+  phoneNumber    String?
+  telegramId     String?          @unique
+  telegramUsername String?        @unique
+  isActive       Boolean          @default(true)
+  isDriver       Boolean          @default(false)
+  registrationStatus RegistrationStatus @default(PENDING)
+  lastLogin      DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  auditLogs      AuditLog[]
+  systemAuditLogs SystemAuditLog[]
+  incompleteDataLogs IncompleteDataLog[]
+  userSessions   UserSession[]
+  dataValidationLogs DataValidationLog[]
+  serviceHistory ServiceHistory[]
+  stockMovements StockMovement[]
+  tasksAssigned  Task[]           @relation("TaskAssignee")
+  tasksCreated   Task[]           @relation("TaskCreator")
+  taskActions    TaskAction[]
+  routes         Route[]
+  driverLogs     DriverLog[]
+  notifications  Notification[]
+}
+
+model Location {
+  id        String    @id @default(cuid())
+  name      String
+  address   String
+  latitude  Float?
+  longitude Float?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  machines  Machine[]
+}
+
+model Machine {
+  id             String             @id @default(cuid())
+  code           String             @unique
+  serialNumber   String             @unique
+  type           String
+  name           String
+  status         MachineStatus      @default(OFFLINE)
+  locationId     String?
+  lastPing       DateTime?
+  metadata       Json?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  location       Location?          @relation(fields: [locationId], references: [id])
+  inventory      MachineInventory[]
+  telemetry      MachineTelemetry[]
+  serviceHistory ServiceHistory[]
+  stockMovements StockMovement[]
+  tasks          Task[]
+  routeStops     RouteStop[]
+}
+
+model Task {
+  id           String       @id @default(cuid())
+  title        String
+  description  String       @default("")
+  status       TaskStatus   @default(CREATED)
+  priority     TaskPriority @default(MEDIUM)
+  dueDate      DateTime?
+  completedAt  DateTime?
+  machineId    String?
+  assignedToId String?
+  createdById  String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  assignedTo   User?        @relation("TaskAssignee", fields: [assignedToId], references: [id])
+  createdBy    User         @relation("TaskCreator", fields: [createdById], references: [id])
+  machine      Machine?     @relation(fields: [machineId], references: [id])
+  actions      TaskAction[]
+
+  @@index([status, assignedToId])
+  @@index([machineId])
+}
+
+model TaskAction {
+  id        String   @id @default(cuid())
+  taskId    String
+  userId    String
+  action    String
+  comment   String
+  location  String?
+  photoUrls String[]
+  metadata  Json?
+  createdAt DateTime @default(now())
+  task      Task     @relation(fields: [taskId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([taskId])
+}
+
+model InventoryItem {
+  id               String             @id @default(cuid())
+  name             String
+  sku              String             @unique
+  unit             InventoryUnit
+  category         String
+  description      String?
+  quantity         Float              @default(0)
+  minQuantity      Float?
+  maxQuantity      Float?
+  price            Float?
+  isActive         Boolean            @default(true)
+  lastUpdated      DateTime           @default(now())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  machineInventory MachineInventory[]
+  stockMovements   StockMovement[]
+  recipeIngredients RecipeIngredient[]
+
+  @@index([category])
+  @@index([sku])
+}
+
+model StockMovement {
+  id             String            @id @default(cuid())
+  itemId         String
+  userId         String
+  type           StockMovementType
+  quantity       Float
+  quantityBefore Float
+  quantityAfter  Float
+  reason         String
+  reference      String?
+  fromLocation   String?
+  toLocation     String?
+  machineId      String?
+  metadata       Json?
+  createdAt      DateTime          @default(now())
+  item           InventoryItem     @relation(fields: [itemId], references: [id])
+  machine        Machine?          @relation(fields: [machineId], references: [id])
+  user           User              @relation(fields: [userId], references: [id])
+
+  @@index([itemId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model MachineTelemetry {
+  id          String   @id @default(cuid())
+  machineId   String
+  temperature Float?
+  humidity    Float?
+  sales       Int?
+  errors      String[]
+  rawData     Json
+  createdAt   DateTime @default(now())
+  machine     Machine  @relation(fields: [machineId], references: [id])
+
+  @@index([machineId, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String
+  changes   Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model SystemAuditLog {
+  id            String              @id @default(cuid())
+  userId        String?
+  sessionId     String?
+  action        SystemAction
+  entity        String
+  entityId      String?
+  description   String
+  oldValues     Json?
+  newValues     Json?
+  inputData     Json?
+  ipAddress     String?
+  userAgent     String?
+  endpoint      String?
+  method        String?
+  statusCode    Int?
+  responseTime  Int?
+  errorMessage  String?
+  metadata      Json?
+  createdAt     DateTime            @default(now())
+  user          User?               @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+  @@index([sessionId])
+}
+
+model IncompleteDataLog {
+  id              String                @id @default(cuid())
+  userId          String?
+  entity          String
+  entityId        String
+  requiredFields  String[]
+  missingFields   String[]
+  partialData     Json?
+  completionRate  Float                 @default(0)
+  status          IncompleteDataStatus  @default(PENDING)
+  remindersSent   Int                   @default(0)
+  lastReminderAt  DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  user            User?                 @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([entity])
+  @@index([status])
+  @@index([createdAt])
+  @@unique([entity, entityId])
+}
+
+model UserSession {
+  id          String    @id @default(cuid())
+  userId      String
+  sessionId   String    @unique
+  ipAddress   String?
+  userAgent   String?
+  loginAt     DateTime  @default(now())
+  lastActivity DateTime @default(now())
+  logoutAt    DateTime?
+  isActive    Boolean   @default(true)
+  metadata    Json?
+  user        User      @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([sessionId])
+  @@index([isActive])
+  @@index([lastActivity])
+}
+
+model DataValidationLog {
+  id            String              @id @default(cuid())
+  userId        String?
+  entity        String
+  entityId      String?
+  fieldName     String
+  fieldValue    String?
+  validationType ValidationRule
+  isValid       Boolean
+  errorMessage  String?
+  severity      ValidationSeverity  @default(WARNING)
+  autoFixed     Boolean             @default(false)
+  createdAt     DateTime            @default(now())
+  user          User?               @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([entity])
+  @@index([isValid])
+  @@index([severity])
+  @@index([createdAt])
+}
+
+enum SystemAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  EXPORT
+  IMPORT
+  APPROVE
+  REJECT
+  ASSIGN
+  COMPLETE
+  CANCEL
+  RESTORE
+  ARCHIVE
+  SYNC
+  BACKUP
+  MAINTENANCE
+  ERROR
+  WARNING
+  INFO
+}
+
+enum IncompleteDataStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  IGNORED
+  EXPIRED
+}
+
+enum ValidationRule {
+  REQUIRED
+  FORMAT
+  LENGTH
+  RANGE
+  UNIQUE
+  REFERENCE
+  CUSTOM
+}
+
+enum ValidationSeverity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  machineId   String
+  amount      Float
+  currency    String   @default("RUB")
+  paymentType String
+  status      String
+  reference   String?  @unique
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([machineId])
+  @@index([createdAt])
+}
+
+model MachineInventory {
+  id          String        @id @default(cuid())
+  machineId   String
+  itemId      String
+  quantity    Float         @default(0)
+  minQuantity Float?
+  maxQuantity Float?
+  lastRefill  DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  item        InventoryItem @relation(fields: [itemId], references: [id])
+  machine     Machine       @relation(fields: [machineId], references: [id])
+
+  @@unique([machineId, itemId])
+  @@index([machineId])
+  @@index([itemId])
+}
+
+model ServiceHistory {
+  id              String    @id @default(cuid())
+  machineId       String
+  serviceType     String
+  description     String
+  performedById   String
+  performedAt     DateTime  @default(now())
+  nextServiceDate DateTime?
+  photos          String[]
+  location        String?
+  metadata        Json?
+  machine         Machine   @relation(fields: [machineId], references: [id])
+  performedBy     User      @relation(fields: [performedById], references: [id])
+
+  @@index([machineId])
+  @@index([performedAt])
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  WAREHOUSE
+  OPERATOR
+  TECHNICIAN
+  DRIVER
+}
+
+enum MachineStatus {
+  ONLINE
+  OFFLINE
+  MAINTENANCE
+  ERROR
+}
+
+enum TaskStatus {
+  CREATED
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum StockMovementType {
+  IN
+  OUT
+  ADJUSTMENT
+  TRANSFER
+}
+
+enum InventoryUnit {
+  KG
+  L
+  PCS
+  PACK
+}
+
+enum RegistrationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Recipe {
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  version     Int               @default(1)
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  ingredients RecipeIngredient[]
+  
+  @@unique([name, version])
+  @@index([name])
+}
+
+model RecipeIngredient {
+  id           String        @id @default(cuid())
+  recipeId     String
+  itemId       String
+  quantity     Float
+  unit         InventoryUnit
+  createdAt    DateTime      @default(now())
+  recipe       Recipe        @relation(fields: [recipeId], references: [id])
+  item         InventoryItem @relation(fields: [itemId], references: [id])
+  
+  @@unique([recipeId, itemId])
+  @@index([recipeId])
+}
+
+model Route {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  driverId    String
+  status      RouteStatus @default(PLANNED)
+  startTime   DateTime?
+  endTime     DateTime?
+  totalDistance Float?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  driver      User        @relation(fields: [driverId], references: [id])
+  stops       RouteStop[]
+  
+  @@index([driverId])
+  @@index([status])
+}
+
+model RouteStop {
+  id          String    @id @default(cuid())
+  routeId     String
+  machineId   String
+  order       Int
+  status      StopStatus @default(PENDING)
+  arrivalTime DateTime?
+  departureTime DateTime?
+  notes       String?
+  photos      String[]
+  createdAt   DateTime  @default(now())
+  route       Route     @relation(fields: [routeId], references: [id])
+  machine     Machine   @relation(fields: [machineId], references: [id])
+  
+  @@unique([routeId, order])
+  @@index([routeId])
+  @@index([machineId])
+}
+
+model DriverLog {
+  id          String    @id @default(cuid())
+  driverId    String
+  type        DriverLogType
+  description String
+  mileage     Float?
+  fuelAmount  Float?
+  fuelCost    Float?
+  location    String?
+  latitude    Float?
+  longitude   Float?
+  photos      String[]
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+  driver      User      @relation(fields: [driverId], references: [id])
+  
+  @@index([driverId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model Notification {
+  id          String             @id @default(cuid())
+  userId      String?
+  type        NotificationType
+  title       String
+  message     String
+  data        Json?
+  isRead      Boolean            @default(false)
+  sentAt      DateTime?
+  createdAt   DateTime           @default(now())
+  user        User?              @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([type])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model NotificationTemplate {
+  id          String             @id @default(cuid())
+  name        String             @unique
+  type        NotificationType
+  title       String
+  message     String
+  variables   String[]
+  isActive    Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  
+  @@index([type])
+}
+
+enum RouteStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum StopStatus {
+  PENDING
+  ARRIVED
+  COMPLETED
+  SKIPPED
+}
+
+enum DriverLogType {
+  MILEAGE
+  FUEL_CHECK
+  ARRIVAL
+  DEPARTURE
+  MAINTENANCE
+  INCIDENT
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_OVERDUE
+  MACHINE_ERROR
+  LOW_INVENTORY
+  ROUTE_ASSIGNED
+  SYSTEM_ALERT
+}

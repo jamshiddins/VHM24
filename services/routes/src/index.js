@@ -1,3 +1,4 @@
+const logger = console;
 /**
  * VHM24 Routes Service
  * Микросервис для управления маршрутами водителей
@@ -230,7 +231,7 @@ fastify.post('/routes', { preHandler: [fastify.authenticate], schema: postroutes
 // Обновить маршрут
 
 // Схема валидации для PATCH /routes/:id
-const patchroutes:idSchema = {
+const patchRoutesIdSchema = {
   body: {
     type: 'object',
     required: [],
@@ -238,7 +239,7 @@ const patchroutes:idSchema = {
   }
 };
 
-fastify.patch('/routes/:id', { preHandler: [fastify.authenticate], schema: patchroutes:idSchema }, async (request, reply) => {
+fastify.patch('/routes/:id', { preHandler: [fastify.authenticate], schema: patchRoutesIdSchema }, async (request, reply) => {
   try {
     const { id } = request.params;
     const updateData = request.body;

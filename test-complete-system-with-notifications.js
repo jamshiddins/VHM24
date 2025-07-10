@@ -428,7 +428,7 @@ async function generateReport(results) {
 
   // Сохраняем отчет
   const reportPath = path.join(__dirname, 'test-report.json');
-  fs.await fsPromises.writeFile(reportPath, JSON.stringify(report, null, 2));
+  await fsPromises.writeFile(reportPath, JSON.stringify(report, null, 2));
 
   log('\n📊 РЕЗУЛЬТАТЫ ТЕСТИРОВАНИЯ:', 'bright');
   log(`✅ Пройдено: ${report.summary.passed}`, 'green');

@@ -1,65 +1,49 @@
 const logger = require('@vhm24/shared/logger');
 
 const fastify = require('fastify')({ logger: true 
-    
-    
-    
-    
-    
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }} catch (error) {
       console.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
+      console.error('Error:', error);
+      throw error;)
+    }}} catch (error) {
       console.error('Error:', error);
       throw error;
-    }}} catch (error) {
+} catch (error) {
       console.error('Error:', error);
+      throw error;)
+    }}} catch (error) {
+      logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+} catch (error) {
+      logger.error('Error:', error);
+      throw error;)
     }}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }}} catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}});
 const path = require('path');
 const fs = require('fs')
-const { promises: fsPromises 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }} = fs;
+const { promises: fsPromises )} = fs;
 const csv = require('csv-parser');
 const ExcelJS = require('exceljs');
 const moment = require('moment');
@@ -68,8 +52,7 @@ const moment = require('moment');
 fastify.register(require('@fastify/cors'), {
   origin: true,
   credentials: true
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -78,8 +61,7 @@ fastify.register(require('@fastify/multipart'), {
   limits: {
     fileSize: 100 * 1024 * 1024, // 100MB
   }
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -87,8 +69,7 @@ fastify.register(require('@fastify/multipart'), {
 fastify.register(require('@fastify/static'), {
   root: path.join(__dirname, '../templates'),
   prefix: '/templates/',
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -123,8 +104,7 @@ const dataSchemas = {
     required: ['date', 'time', 'title', 'type', 'assigned_to', 'status', 'description'],
     optional: ['priority', 'machine_id', 'estimated_duration', 'actual_duration']
   }
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }};
@@ -143,8 +123,7 @@ const generateTemplate = (dataType) => {
   csv += sampleData.map(row => headers.map(header => row[header] || '').join(',')).join('\n');
   
   return csv;
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }};
@@ -257,20 +236,13 @@ const generateSampleData = (dataType) => {
     default:
       return [];
   }
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }};
 
 // Парсинг файлов
 const parseFile = async (filePath, dataType) => {
-    try {
-      
-    try {
-      
-    try {
-      
     try {
       
     try {
@@ -295,9 +267,7 @@ const parseFile = async (filePath, dataType) => {
 
     // Валидация данных
     const validationResult = validateData(data, dataType);
-    return validationResult;
-  } catch (error) {
-    throw new Error(`Error parsing file: ${error.message}`);
+    return validationResult;)`);
   }
 };
 
@@ -313,12 +283,6 @@ const parseCSV = (filePath) => {
 };
 
 const parseExcel = async (filePath) => {
-    try {
-      
-    try {
-      
-    try {
-      
     try {
       
     try {
@@ -355,31 +319,12 @@ const parseJSON = async (filePath) => {
       
     try {
       
-    try {
-      
-    try {
-      
-    try {
-      
   const content = await fsPromises.readFile(filePath, 'utf8');
   return JSON.parse(content);
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
-    }
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }};
+    })))};
 
 // Валидация данных
 const validateData = (data, dataType) => {
@@ -395,81 +340,52 @@ const validateData = (data, dataType) => {
       if (!record[field] || record[field].toString().trim() === '') {
         recordErrors.push(`Missing required field: ${field}`);
       }
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
-      throw error;
-    }
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }
-    
-    
-    
-    } catch (error) {
-      console.error('Error:', error);
       throw error;
     }} catch (error) {
       console.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       console.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }}});
 
     // Валидация даты и времени
     if (record.date && !moment(record.date, 'YYYY-MM-DD', true).isValid()) {
-      recordErrors.push(`Invalid date format: ${record.date
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }}. Expected: YYYY-MM-DD`);
-    
-    
-    
-    } catch (error) {
+      recordErrors.push(`Invalid date format: ${record.date)}. Expected: YYYY-MM-DD`);
+} catch (error) {
       logger.error('Error:', error);
-      throw error;
+      throw error;)
     }} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}}
     
     if (record.time && !moment(record.time, 'HH:mm:ss', true).isValid()) {
-      recordErrors.push(`Invalid time format: ${record.time
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }}. Expected: HH:mm:ss`);
-    
-    } catch (error) {
+      recordErrors.push(`Invalid time format: ${record.time)}. Expected: HH:mm:ss`);
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}
@@ -477,29 +393,19 @@ const validateData = (data, dataType) => {
     // Специфичная валидация по типу данных
     if (dataType === 'SALES') {
       if (record.amount && isNaN(parseFloat(record.amount))) {
-        recordErrors.push(`Invalid amount: ${record.amount
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }}`);
+        recordErrors.push(`Invalid amount: ${record.amount)}`);
       }
       if (record.quantity && isNaN(parseInt(record.quantity))) {
-        recordErrors.push(`Invalid quantity: ${record.quantity
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }}`);
+        recordErrors.push(`Invalid quantity: ${record.quantity)}`);
       }
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}
 
     if (recordErrors.length > 0) {
       errors.push(`Row ${index + 1}: ${recordErrors.join(', ')}`);
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }} else {
@@ -508,8 +414,7 @@ const validateData = (data, dataType) => {
         originalIndex: index + 1,
         importedAt: new Date().toISOString()
       });
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}
@@ -525,12 +430,6 @@ const validateData = (data, dataType) => {
 
 // Обработка импорта
 const processImport = async (jobId) => {
-    try {
-      
-    try {
-      
-    try {
-      
     try {
       
     try {
@@ -563,14 +462,12 @@ const processImport = async (jobId) => {
 
     // Удаление временного файла
     fs.unlinkSync(job.filePath);
-    
-  } catch (error) {
+} catch (error) {
     job.status = 'FAILED';
     job.errors = [error.message];
     job.completedAt = new Date().toISOString();
   }
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }};
@@ -579,12 +476,6 @@ const processImport = async (jobId) => {
 
 // Получение списка задач импорта
 fastify.get('/api/v1/data-import/jobs', async (request, reply) => {
-    try {
-      
-    try {
-      
-    try {
-      
     try {
       
     try {
@@ -613,46 +504,26 @@ fastify.get('/api/v1/data-import/historical', async (request, reply) => {
       
     try {
       
-    try {
-      
-    try {
-      
-    try {
-      
   // В production здесь будет запрос к базе данных
   return {
     success: true,
     data: []
-  
-    
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
-    }
     } catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }} catch (error) {
       console.error('Error:', error);
       throw error;
-    
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
-    }} catch (error) {
-      console.error('Error:', error);
-      throw error;
-    
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+      throw error;)
     }}}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }}};
@@ -665,13 +536,8 @@ const postapiv1data-importpreviewSchema = {
   body: {
     type: 'object',
     required: [],
-    properties: {
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }}
-  
-    } catch (error) {
+    properties: {)}
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}
@@ -685,14 +551,6 @@ fastify.post('/api/v1/data-import/preview', { schema: postapiv1data-importprevie
     try {
       
     try {
-      
-    try {
-      
-    try {
-      
-    try {
-      
-  try {
     const data = await request.file();
     const dataType = request.body?.dataType || 'SALES';
     
@@ -719,23 +577,15 @@ fastify.post('/api/v1/data-import/preview', { schema: postapiv1data-importprevie
       preview,
       totalRecords: result.totalRecords,
       errors: result.errors.slice(0, 5) // Показать только первые 5 ошибок
-    };
-  } catch (error) {
-    return reply.code(500).send({
-      success: false,
-      error: error.message
-    });
+    };));
   }
-
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }} catch (error) {
       console.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }}});
@@ -748,22 +598,16 @@ const postapiv1data-importuploadSchema = {
     type: 'object',
     required: [],
     properties: {}
-  
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }}
-
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }};
 
-fastify.post('/api/v1/data-import/upload', { schema: postapiv1data-importuploadSchema 
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }}, async (request, reply) => {
+fastify.post('/api/v1/data-import/upload', { schema: postapiv1data-importuploadSchema )}, async (request, reply) => {
     try {
       
     try {
@@ -771,14 +615,6 @@ fastify.post('/api/v1/data-import/upload', { schema: postapiv1data-importuploadS
     try {
       
     try {
-      
-    try {
-      
-    try {
-      
-    try {
-      
-  try {
     const data = await request.file();
     const { dataType, startDate, endDate } = request.body;
     
@@ -832,12 +668,7 @@ fastify.post('/api/v1/data-import/upload', { schema: postapiv1data-importuploadS
         status: job.status,
         createdAt: job.createdAt
       }
-    };
-  } catch (error) {
-    return reply.code(500).send({
-      success: false,
-      error: error.message
-    });
+    };));
   }
 });
 
@@ -850,14 +681,6 @@ fastify.get('/api/v1/data-import/template/:dataType', async (request, reply) => 
     try {
       
     try {
-      
-    try {
-      
-    try {
-      
-    try {
-      
-  try {
     const { dataType } = request.params;
     
     if (!dataSchemas[dataType]) {
@@ -891,12 +714,6 @@ fastify.get('/api/v1/data-import/jobs/:jobId', async (request, reply) => {
       
     try {
       
-    try {
-      
-    try {
-      
-    try {
-      
   const { jobId } = request.params;
   const job = importJobs.get(parseInt(jobId));
   
@@ -922,14 +739,6 @@ fastify.get('/health', async (request, reply) => {
     try {
       
     try {
-      
-    try {
-      
-    try {
-      
-    try {
-      
-  try {
     // В этом сервисе нет прямого подключения к базе данных через Prisma
     // Но мы можем проверить доступность директории для временных файлов
     const tempDir = path.join(__dirname, '../temp');
@@ -945,15 +754,7 @@ fastify.get('/health', async (request, reply) => {
       version: process.env.npm_package_version || '1.0.0',
       storage: 'connected',
       activeJobs: importJobs.size
-    };
-  } catch (error) {
-    fastify.log.error('Health check failed:', error);
-    return reply.code(503).send({ 
-      status: 'error', 
-      service: 'data-import',
-      timestamp: new Date().toISOString(),
-      error: 'Storage access failed'
-    });
+    };));
   }
 });
 
@@ -966,14 +767,6 @@ const start = async () => {
     try {
       
     try {
-      
-    try {
-      
-    try {
-      
-    try {
-      
-  try {
     const port = process.env.PORT || 3009;
     const host = process.env.HOST || '0.0.0.0';
     
@@ -991,12 +784,6 @@ start();
 let server;
 
 const gracefulShutdown = async () => {
-    try {
-      
-    try {
-      
-    try {
-      
     try {
       
     try {

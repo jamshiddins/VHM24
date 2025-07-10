@@ -5,7 +5,8 @@
     "dev": "node src/index.js",
     "build": "echo 'Build not configured'",
     "start": "node src/index.js",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@fastify/cors": "^8.4.0",

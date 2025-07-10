@@ -1,0 +1,48 @@
+{
+  "timestamp": "2025-07-10T18:33:34.613Z",
+  "checks": [
+    "✅ backend/src/index.js - найден",
+    "✅ backend/package.json - найден",
+    "✅ apps/web-dashboard/package.json - найден",
+    "✅ services/telegram-bot/src/index.js - найден",
+    "✅ .env - найден",
+    "✅ packages/database/prisma/schema.prisma - найден",
+    "✅ backend/src/routes/ - найдена",
+    "✅ apps/web-dashboard/ - найдена",
+    "✅ services/telegram-bot/ - найдена",
+    "✅ packages/database/ - найдена",
+    "✅ DATABASE_URL - настроена",
+    "✅ JWT_SECRET - настроена",
+    "✅ TELEGRAM_BOT_TOKEN - настроена",
+    "✅ ADMIN_IDS - настроена",
+    "✅ backend/package.json - зависимости установлены",
+    "✅ services/telegram-bot/package.json - зависимости установлены",
+    "✅ backend/src/index.js - синтаксис корректный",
+    "✅ services/telegram-bot/src/index.js - синтаксис корректный",
+    "✅ auth.js - найден",
+    "✅ users.js - найден",
+    "✅ machines.js - найден",
+    "✅ tasks.js - найден",
+    "✅ recipes.js - найден",
+    "✅ dashboard.js - найден",
+    "✅ audit.js - найден",
+    "✅ warehouse.js - найден",
+    "✅ ingredients.js - найден",
+    "✅ routes.js - найден",
+    "✅ data-import.js - найден",
+    "✅ incomplete-data.js - найден",
+    "✅ Backend Health - работает",
+    "✅ Frontend - работает"
+  ],
+  "warnings": [
+    "⚠️ apps/web-dashboard/package.json - node_modules отсутствует",
+    "⚠️ services/telegram-bot/src/index.js - несоответствие try/catch блоков"
+  ],
+  "errors": [],
+  "processes": [
+    "Backend API (порт 8000)",
+    "Web Dashboard (порт 3000)",
+    "Telegram Bot"
+  ],
+  "status": "SUCCESS"
+}

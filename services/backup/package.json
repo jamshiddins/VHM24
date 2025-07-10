@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@fastify/cors": "^8.4.0",
@@ -16,7 +17,8 @@
     "child_process": "^1.0.2",
     "dotenv": "^16.3.1",
     "fastify": "^4.24.3",
-    "node-cron": "^3.0.3"
+    "node-cron": "^3.0.3",
+    "@prisma/client": "^6.11.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

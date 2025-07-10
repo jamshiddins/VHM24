@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest"
+    "test": "jest",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "fastify": "^4.24.3",
@@ -20,7 +21,7 @@
     "joi": "^17.11.0",
     "redis": "^4.6.10",
     "prisma": "^5.6.0",
-    "@prisma/client": "^5.6.0"
+    "@prisma/client": "^6.11.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",

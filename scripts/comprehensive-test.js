@@ -90,7 +90,7 @@ class ProjectTester {
       services.forEach(service => {
         const pkgPath = path.join('services', service, 'package.json');
         if (fs.existsSync(pkgPath)) {
-          const pkg = JSON.parse(fs.await fsPromises.readFile(pkgPath, 'utf8'));
+          const pkg = JSON.parse(await fsPromises.readFile(pkgPath, 'utf8'));
           this.results.tests.dependencies.services[service] = {
             hasPackageJson: true,
             hasStartScript: !!(pkg.scripts && (pkg.scripts.start || pkg.scripts.dev)),
@@ -164,14 +164,14 @@ class ProjectTester {
       this.results.tests.database.prismaSchema = fs.existsSync(prismaSchemaPath);
       
       if (this.results.tests.database.prismaSchema) {
-        const schema = fs.await fsPromises.readFile(prismaSchemaPath, 'utf8');
+        const schema = await fsPromises.readFile(prismaSchemaPath, 'utf8');
         const models = schema.match(/model\s+(\w+)/g) || [];
         this.results.tests.database.models = models.map(m => m.replace('model ', ''));
       }
       
       // Проверка переменных окружения для БД
       if (fs.existsSync('.env')) {
-        const env = fs.await fsPromises.readFile('.env', 'utf8');
+        const env = await fsPromises.readFile('.env', 'utf8');
         this.results.tests.database.hasConnectionString = env.includes('DATABASE_URL');
         this.results.tests.database.hasRedisUrl = env.includes('REDIS_URL');
       }
@@ -229,7 +229,7 @@ class ProjectTester {
       // Проверка содержимого index.js
       const indexPath = path.join(service.path, 'src', 'index.js');
       if (fs.existsSync(indexPath)) {
-        const content = fs.await fsPromises.readFile(indexPath, 'utf8');
+        const content = await fsPromises.readFile(indexPath, 'utf8');
         serviceResult.hasHealthCheck = content.includes('/health');
         serviceResult.hasPortConfig = content.includes('process.env.PORT');
         serviceResult.usesFastify = content.includes('fastify');
@@ -278,7 +278,7 @@ class ProjectTester {
     try {
       // Проверка .env файла
       if (fs.existsSync('.env')) {
-        const env = fs.await fsPromises.readFile('.env', 'utf8');
+        const env = await fsPromises.readFile('.env', 'utf8');
         this.results.tests.security.hasJwtSecret = env.includes('JWT_SECRET');
         this.results.tests.security.hasStrongJwtSecret = env.includes('JWT_SECRET') && 
           env.match(/JWT_SECRET=.{32,}/);
@@ -293,7 +293,7 @@ class ProjectTester {
         if (fs.existsSync(servicePath)) {
           const files = this.getAllJsFiles(servicePath);
           files.forEach(file => {
-            const content = fs.await fsPromises.readFile(file, 'utf8');
+            const content = await fsPromises.readFile(file, 'utf8');
             
             // Поиск потенциальных проблем безопасности
             if (content.includes('password') && content.includes('=') && content.includes('"')) {
@@ -316,7 +316,7 @@ class ProjectTester {
       // Проверка CORS настроек
       const gatewayPath = 'services/gateway/src/index.js';
       if (fs.existsSync(gatewayPath)) {
-        const content = fs.await fsPromises.readFile(gatewayPath, 'utf8');
+        const content = await fsPromises.readFile(gatewayPath, 'utf8');
         this.results.tests.security.hasCors = content.includes('cors');
         this.results.tests.security.corsWildcard = content.includes('origin: "*"');
       }
@@ -349,7 +349,7 @@ class ProjectTester {
 
   saveResults() {
     const filename = `test-results-${Date.now()}.json`;
-    fs.await fsPromises.writeFile(filename, JSON.stringify(this.results, null, 2));
+    await fsPromises.writeFile(filename, JSON.stringify(this.results, null, 2));
     
     logger.info('\n📊 Результаты тестирования:');
     logger.info(`✅ Сохранено в: ${filename}`);

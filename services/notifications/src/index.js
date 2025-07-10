@@ -1,3 +1,4 @@
+const logger = console;
 /**
  * VHM24 - VendHub Manager 24/7
  * Notifications Service

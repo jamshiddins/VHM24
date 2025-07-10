@@ -17,9 +17,9 @@ class SafeFixer {
       return false;
     }
     
-    const content = fs.await fsPromises.readFile(filePath, 'utf8');
+    const content = await fsPromises.readFile(filePath, 'utf8');
     const backupPath = `${filePath}.backup.${Date.now()}`;
-    fs.await fsPromises.writeFile(backupPath, content);
+    await fsPromises.writeFile(backupPath, content);
     this.backups.push({ original: filePath, backup: backupPath });
     logger.info(`📦 Backup created: ${backupPath}`);
     return true;
@@ -33,7 +33,7 @@ class SafeFixer {
         return;
       }
       
-      const content = fs.await fsPromises.readFile(filePath, 'utf8');
+      const content = await fsPromises.readFile(filePath, 'utf8');
       const modified = modifier(content);
       
       if (content === modified) {
@@ -42,7 +42,7 @@ class SafeFixer {
         return;
       }
       
-      fs.await fsPromises.writeFile(filePath, modified);
+      await fsPromises.writeFile(filePath, modified);
       this.changes.push({ file: filePath, success: true, description });
       logger.info(`✅ Modified: ${filePath} - ${description}`);
     } catch (error) {
@@ -370,7 +370,7 @@ class S3StorageAdapter {
     
     switch (operation) {
       case 'upload':
-        fs.await fsPromises.writeFile(filePath, data);
+        await fsPromises.writeFile(filePath, data);
         return {
           success: true,
           url: \`/uploads/\${key}\`,
@@ -382,7 +382,7 @@ class S3StorageAdapter {
         if (fs.existsSync(filePath)) {
           return {
             success: true,
-            data: fs.await fsPromises.readFile(filePath),
+            data: await fsPromises.readFile(filePath),
             fallback: true
           };
         }
@@ -404,7 +404,7 @@ module.exports = S3StorageAdapter;
 `;
     
     const s3AdapterPath = path.join(storageDir, 's3.js');
-    fs.await fsPromises.writeFile(s3AdapterPath, s3AdapterContent.trim());
+    await fsPromises.writeFile(s3AdapterPath, s3AdapterContent.trim());
     this.changes.push({ 
       file: s3AdapterPath, 
       success: true, 
@@ -425,7 +425,7 @@ module.exports = {
 `;
     
     const indexPath = path.join(storageDir, 'index.js');
-    fs.await fsPromises.writeFile(indexPath, indexContent.trim());
+    await fsPromises.writeFile(indexPath, indexContent.trim());
     this.changes.push({ 
       file: indexPath, 
       success: true, 
@@ -498,7 +498,7 @@ module.exports = {
       }
     };
     
-    fs.await fsPromises.writeFile('safe-fixes-report.json', JSON.stringify(report, null, 2));
+    await fsPromises.writeFile('safe-fixes-report.json', JSON.stringify(report, null, 2));
     logger.info('\n📄 Report saved: safe-fixes-report.json');
     
     // Вывод статистики
@@ -525,7 +525,7 @@ if (process.argv.includes('--rollback')) {
   logger.info('🔄 Rollback mode activated');
   // Загружаем предыдущий отчет для rollback
   if (fs.existsSync('safe-fixes-report.json')) {
-    const report = JSON.parse(fs.await fsPromises.readFile('safe-fixes-report.json', 'utf8'));
+    const report = JSON.parse(await fsPromises.readFile('safe-fixes-report.json', 'utf8'));
     fixer.backups = report.backups;
     fixer.rollback();
   } else {

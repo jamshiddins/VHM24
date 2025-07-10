@@ -63,7 +63,7 @@ function checkFiles() {
 function checkEnvironment() {
   logger.info('🔍 Checking environment variables...');
   
-  const envContent = fs.await fsPromises.readFile('.env', 'utf8');
+  const envContent = await fsPromises.readFile('.env', 'utf8');
   const hasValidTelegramToken = envContent.includes('TELEGRAM_BOT_TOKEN=') && 
                                 !envContent.includes('your-telegram-bot-token');
   

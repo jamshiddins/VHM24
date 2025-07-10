@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@fastify/cors": "^8.4.0",
@@ -18,7 +19,8 @@
     "fastify": "^4.24.3",
     "nodemailer": "^6.9.7",
     "node-telegram-bot-api": "^0.66.0",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "@prisma/client": "^6.11.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

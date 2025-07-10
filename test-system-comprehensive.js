@@ -634,7 +634,7 @@ async function generateTestReport(runner) {
   };
 
   const reportPath = path.join(__dirname, `test-report-${Date.now()}.json`);
-  fs.await fsPromises.writeFile(reportPath, JSON.stringify(reportData, null, 2));
+  await fsPromises.writeFile(reportPath, JSON.stringify(reportData, null, 2));
   
   runner.log(`\n📄 Detailed report saved to: ${reportPath}`, 'info');
 

@@ -74,7 +74,7 @@ function checkPackageJson(filePath, serviceName = 'root') {
   if (!fs.existsSync(filePath)) return;
   
   try {
-    const packageJson = JSON.parse(fs.await fsPromises.readFile(filePath, 'utf8'));
+    const packageJson = JSON.parse(await fsPromises.readFile(filePath, 'utf8'));
     const dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
     
     logger.info(`📦 Checking ${serviceName}...`);

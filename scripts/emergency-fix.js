@@ -267,10 +267,10 @@ console.log('\n🔧 Исправление синтаксических ошиб
 
 // Исправляем fs.await на await в файлах
 const fsAwaitReplacements = [
-  { search: 'fs.await fsPromises.readFile', replace: 'await fsPromises.readFile' },
-  { search: 'fs.await fsPromises.writeFile', replace: 'await fsPromises.writeFile' },
-  { search: 'fs.await fs.promises.readFile', replace: 'await fs.promises.readFile' },
-  { search: 'fs.await fs.promises.writeFile', replace: 'await fs.promises.writeFile' }
+  { search: 'await fsPromises.readFile', replace: 'await fsPromises.readFile' },
+  { search: 'await fsPromises.writeFile', replace: 'await fsPromises.writeFile' },
+  { search: 'await fs.promises.readFile', replace: 'await fs.promises.readFile' },
+  { search: 'await fs.promises.writeFile', replace: 'await fs.promises.writeFile' }
 ];
 
 // Список файлов для проверки

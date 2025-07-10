@@ -451,10 +451,10 @@ async function createDefaultAdmin() {
         }
       });
       
-      logger.info('Default admin user created: admin@vhm24.ru / admin123');
+      console.log('Default admin user created: admin@vhm24.ru / admin123');
     }
   } catch (error) {
-    logger.error('Failed to create default admin:', error);
+    console.error('Failed to create default admin:', error);
   }
 }
 
@@ -468,7 +468,7 @@ const start = async () => {
       port: process.env.PORT || 3001,
       host: '0.0.0.0'
     });
-    logger.info('VHM24 Auth Service running 24/7 on port', process.env.PORT || 3001);
+    console.log('VHM24 Auth Service running 24/7 on port', process.env.PORT || 3001);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

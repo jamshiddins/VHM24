@@ -31,7 +31,7 @@ function checkStartScripts() {
     services.forEach(service => {
       const pkgPath = path.join('services', service, 'package.json');
       if (fs.existsSync(pkgPath)) {
-        const pkg = JSON.parse(fs.await fsPromises.readFile(pkgPath, 'utf8'));
+        const pkg = JSON.parse(await fsPromises.readFile(pkgPath, 'utf8'));
         const hasStart = pkg.scripts && (pkg.scripts.start || pkg.scripts.dev);
         serviceScripts[service] = hasStart;
         if (!hasStart) allHaveScripts = false;
@@ -61,7 +61,7 @@ function checkPortConfig() {
     services.forEach(service => {
       const indexPath = path.join('services', service, 'src', 'index.js');
       if (fs.existsSync(indexPath)) {
-        const content = fs.await fsPromises.readFile(indexPath, 'utf8');
+        const content = await fsPromises.readFile(indexPath, 'utf8');
         
         // Проверяем на hardcoded порты
         if (content.includes('const PORT =') && !content.includes('process.env.PORT')) {
@@ -87,7 +87,7 @@ function checkDatabase() {
   const hasPrisma = fs.existsSync('packages/database/prisma/schema.prisma');
   
   if (hasEnv) {
-    const envContent = fs.await fsPromises.readFile('.env', 'utf8');
+    const envContent = await fsPromises.readFile('.env', 'utf8');
     const hasDatabaseUrl = envContent.includes('DATABASE_URL');
     
     logger.info('🗄️ Database configuration:');
@@ -103,11 +103,11 @@ function checkDatabase() {
 function checkFileStorage() {
   // MinIO не будет работать на Railway - нужен внешний S3
   const hasMinIO = fs.existsSync('docker-compose.yml') && 
-    fs.await fsPromises.readFile('docker-compose.yml', 'utf8').includes('minio');
+    await fsPromises.readFile('docker-compose.yml', 'utf8').includes('minio');
   
   const hasS3Adapter = fs.existsSync('packages/shared/storage') ||
     fs.existsSync('packages/shared/utils') && 
-    fs.await fsPromises.readFile('packages/shared/utils/index.js', 'utf8').includes('s3');
+    await fsPromises.readFile('packages/shared/utils/index.js', 'utf8').includes('s3');
   
   logger.info('📁 File storage:');
   logger.info(`  ${hasMinIO ? '⚠️' : '✅'} MinIO detected (needs S3 replacement)`);
@@ -135,7 +135,7 @@ function checkEnvVars() {
     return false;
   }
   
-  const env = fs.await fsPromises.readFile('.env', 'utf8');
+  const env = await fsPromises.readFile('.env', 'utf8');
   const missing = required.filter(v => !env.includes(v));
   const missingOptional = optional.filter(v => !env.includes(v));
   
@@ -170,7 +170,7 @@ function checkServiceDependencies() {
     services.forEach(service => {
       const pkgPath = path.join('services', service, 'package.json');
       if (fs.existsSync(pkgPath)) {
-        const pkg = JSON.parse(fs.await fsPromises.readFile(pkgPath, 'utf8'));
+        const pkg = JSON.parse(await fsPromises.readFile(pkgPath, 'utf8'));
         
         // Проверяем на устаревшие зависимости
         if (pkg.dependencies) {
@@ -226,7 +226,7 @@ const report = {
   recommendations: generateRecommendations(checks)
 };
 
-fs.await fsPromises.writeFile('railway-compatibility-report.json', JSON.stringify(report, null, 2));
+await fsPromises.writeFile('railway-compatibility-report.json', JSON.stringify(report, null, 2));
 logger.info('\n📄 Detailed report saved to: railway-compatibility-report.json');
 
 function generateRecommendations(checks) {

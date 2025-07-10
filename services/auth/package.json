@@ -9,7 +9,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:ci": "jest --ci --coverage --watchAll=false"
+    "test:ci": "jest --ci --coverage --watchAll=false",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@fastify/cors": "^8.4.0",
@@ -18,7 +19,7 @@
     "@fastify/rate-limit": "^9.0.1",
     "@fastify/swagger": "^9.5.1",
     "@jest/globals": "^30.0.4",
-    "@prisma/client": "^5.7.0",
+    "@prisma/client": "^5.22.0",
     "@vhm24/database": "*",
     "@vhm24/shared": "*",
     "@vhm24/shared-types": "*",

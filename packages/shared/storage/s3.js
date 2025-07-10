@@ -118,7 +118,7 @@ class S3StorageAdapter {
     
     switch (operation) {
       case 'upload':
-        fs.await fsPromises.writeFile(filePath, data);
+        await fsPromises.writeFile(filePath, data);
         return {
           success: true,
           url: `/uploads/${key}`,
@@ -130,7 +130,7 @@ class S3StorageAdapter {
         if (fs.existsSync(filePath)) {
           return {
             success: true,
-            data: fs.await fsPromises.readFile(filePath),
+            data: await fsPromises.readFile(filePath),
             fallback: true
           };
         }

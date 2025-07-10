@@ -120,7 +120,7 @@ try {
   };
 
   // Записываем конфигурацию в файл
-  fs.await fsPromises.writeFile('ecosystem.config.js', `module.exports = ${JSON.stringify(pm2Config, null, 2)}`);
+  await fsPromises.writeFile('ecosystem.config.js', `module.exports = ${JSON.stringify(pm2Config, null, 2)}`);
   logger.info('✅ Создан конфигурационный файл PM2: ecosystem.config.js');
 
   // Запускаем систему с использованием PM2

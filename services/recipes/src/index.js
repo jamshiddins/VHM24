@@ -181,7 +181,7 @@ fastify.get('/api/v1/recipes', {
       }
     };
   } catch (error) {
-    logger.error('Get recipes error:', error);
+    console.error('Get recipes error:', error);
     reply.code(500).send({ success: false, message: 'Internal server error' });
   }
 });
@@ -220,7 +220,7 @@ fastify.get('/api/v1/recipes/:id', {
 
     return { success: true, data: recipe };
   } catch (error) {
-    logger.error('Get recipe error:', error);
+    console.error('Get recipe error:', error);
     reply.code(500).send({ success: false, message: 'Internal server error' });
   }
 });
@@ -298,7 +298,7 @@ fastify.post('/api/v1/recipes', {
 
     return { success: true, data: recipe };
   } catch (error) {
-    logger.error('Create recipe error:', error);
+    console.error('Create recipe error:', error);
     reply.code(500).send({ success: false, message: 'Internal server error' });
   }
 });
@@ -375,7 +375,7 @@ fastify.put('/api/v1/recipes/:id', {
 
     return { success: true, data: recipe };
   } catch (error) {
-    logger.error('Update recipe error:', error);
+    console.error('Update recipe error:', error);
     reply.code(500).send({ success: false, message: 'Internal server error' });
   }
 });
@@ -411,7 +411,7 @@ fastify.delete('/api/v1/recipes/:id', {
 
     return { success: true, message: 'Recipe deleted successfully' };
   } catch (error) {
-    logger.error('Delete recipe error:', error);
+    console.error('Delete recipe error:', error);
     reply.code(500).send({ success: false, message: 'Internal server error' });
   }
 });
@@ -457,7 +457,7 @@ fastify.get('/api/v1/ingredients', {
       }
     };
   } catch (error) {
-    logger.error('Get ingredients error:', error);
+    console.error('Get ingredients error:', error);
     reply.code(500).send({ success: false, message: 'Internal server error' });
   }
 });
@@ -488,7 +488,7 @@ fastify.post('/api/v1/ingredients', {
 
     return { success: true, data: ingredient };
   } catch (error) {
-    logger.error('Create ingredient error:', error);
+    console.error('Create ingredient error:', error);
     reply.code(500).send({ success: false, message: 'Internal server error' });
   }
 });
@@ -560,7 +560,7 @@ fastify.post('/api/v1/cost-calculation', {
       }
     };
   } catch (error) {
-    logger.error('Cost calculation error:', error);
+    console.error('Cost calculation error:', error);
     reply.code(500).send({ success: false, message: 'Internal server error' });
   }
 });
@@ -593,7 +593,7 @@ fastify.get('/api/v1/recipe-categories', {
       data: categoryList
     };
   } catch (error) {
-    logger.error('Get categories error:', error);
+    console.error('Get categories error:', error);
     reply.code(500).send({ success: false, message: 'Internal server error' });
   }
 });
@@ -611,8 +611,8 @@ async function start() {
       host: config.host
     });
 
-    logger.info(`🍳 Recipes service running on http://${config.host}:${config.port}`);
-    logger.info(`📚 API documentation available at http://${config.host}:${config.port}/docs`);
+    console.log(`🍳 Recipes service running on http://${config.host}:${config.port}`);
+    console.log(`📚 API documentation available at http://${config.host}:${config.port}/docs`);
   } catch (error) {
     console.error('Failed to start recipes service:', error);
     process.exit(1);
@@ -621,14 +621,14 @@ async function start() {
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-  logger.info('Shutting down recipes service...');
+  console.log('Shutting down recipes service...');
   await fastify.close();
   await prisma.$disconnect();
   process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
-  logger.info('Shutting down recipes service...');
+  console.log('Shutting down recipes service...');
   await fastify.close();
   await prisma.$disconnect();
   process.exit(0);

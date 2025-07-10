@@ -1,6 +1,7 @@
 const fastify = require('fastify')({ logger: true });
 const { PrismaClient } = require('@prisma/client');
 const cron = require('node-cron');
+const logger = console;
 
 const prisma = new PrismaClient();
 

@@ -1,19 +1,11 @@
+const logger = console;
 /**
  * VHM24 - VendHub Manager 24/7
  * Machines Service - PRODUCTION READY
  * Secure machine management with telemetry
  */
 
-require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') 
-    
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }} catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    
-    } catch (error) {
+require('dotenv').config({ path: require('path').join(__dirname, '../../../.env' catch (error) {
       logger.error('Error:', error);
       throw error;
     }}});
@@ -22,21 +14,9 @@ require('dotenv').config({ path: require('path').join(__dirname, '../../../.env'
 process.env.SERVICE_NAME = 'machines';
 
 const Fastify = require('fastify');
-const { getMachinesClient 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }} = require('@vhm24/database');
-const { sanitizeInput 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }} = require('@vhm24/shared-types/src/security');
-const { cacheManagers, cacheMiddleware 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }} = require('@vhm24/shared-types/src/redis');
+const { getMachinesClient )} = require('@vhm24/database');
+const { sanitizeInput )} = require('@vhm24/shared-types/src/security');
+const { cacheManagers, cacheMiddleware )} = require('@vhm24/shared-types/src/redis');
 
 // Импортируем наш новый shared пакет
 const {
@@ -67,8 +47,7 @@ const {
   config: sharedConfig,
   createFastifyConfig,
   paginate
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }} = require('@vhm24/shared');
@@ -91,8 +70,7 @@ setupCORS(fastify);
 setupRateLimit(fastify, {
   max: 150, // Средний лимит для machines сервиса
   timeWindow: '1 minute'
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -100,8 +78,7 @@ setupJWT(fastify, {
   verify: {
     issuer: ['vhm24-gateway', 'vhm24-auth']
   }
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -116,16 +93,13 @@ fastify.decorate('authenticate', authenticate);
 // Декоратор для проверки ролей (переопределяем для совместимости)
 fastify.decorate('requireRole', (roles) => {
   return authorize(roles);
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
 
 // Health check
 fastify.get('/health', async (request, reply) => {
-    try {
-      
     try {
       
   try {
@@ -151,15 +125,7 @@ fastify.get('/health', async (request, reply) => {
       version: process.env.npm_package_version || '1.0.0',
       database: 'connected',
       redis: redisStatus
-    };
-  } catch (error) {
-    logger.error('Health check failed:', error);
-    return reply.code(503).send({ 
-      status: 'error', 
-      service: 'machines',
-      timestamp: new Date().toISOString(),
-      error: 'Database connection failed'
-    });
+    };));
   }
 });
 
@@ -189,8 +155,6 @@ fastify.get('/api/v1/machines', {
 }, async (request, reply) => {
     try {
       
-    try {
-      
   const { status, type, locationId, search, skip, take, orderBy } = request.query;
   
   try {
@@ -201,21 +165,9 @@ fastify.get('/api/v1/machines', {
     if (locationId) where.locationId = locationId;
     if (search) {
       where.OR = [
-        { code: { contains: search, mode: 'insensitive' 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }} },
-        { name: { contains: search, mode: 'insensitive' 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }} },
-        { serialNumber: { contains: search, mode: 'insensitive' 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }} }
+        { code: { contains: search, mode: 'insensitive' )} },
+        { name: { contains: search, mode: 'insensitive' )} },
+        { serialNumber: { contains: search, mode: 'insensitive' )} }
       ];
     }
 
@@ -232,8 +184,7 @@ fastify.get('/api/v1/machines', {
               tasks: true,
               telemetry: true
             }
-          
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}
@@ -247,8 +198,6 @@ fastify.get('/api/v1/machines', {
       machines.map(async (machine) => {
     try {
       
-    try {
-      
         const lastTelemetry = await prisma.machineTelemetry.findFirst({
           where: { machineId: machine.id },
           orderBy: { createdAt: 'desc' }
@@ -257,8 +206,7 @@ fastify.get('/api/v1/machines', {
           ...machine,
           lastTelemetry
         };
-      
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }})
@@ -272,22 +220,16 @@ fastify.get('/api/v1/machines', {
         skip,
         take
       }
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
-    }};
-  } catch (error) {
-    throw createError.database('Failed to fetch machines');
-  }
+    }};)
 });
 
 // Получить машину по ID
 fastify.get('/api/v1/machines/:id', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
-    try {
-      
     try {
       
   const { id } = request.params;
@@ -366,15 +308,7 @@ fastify.get('/api/v1/machines/:id', {
     return {
       success: true,
       data: result
-    };
-  } catch (error) {
-    throw createError.database('Failed to fetch machine');
-  }
-
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }});
+    };});
 
 // Создать новую машину (только для ADMIN и MANAGER)
 fastify.post('/api/v1/machines', {
@@ -393,13 +327,10 @@ fastify.post('/api/v1/machines', {
       }
     }
   }
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}, async (request, reply) => {
-    try {
-      
     try {
       
   const data = request.body;
@@ -465,10 +396,7 @@ fastify.post('/api/v1/machines', {
     return {
       success: true,
       data: machine
-    };
-  } catch (error) {
-    throw createError.database('Failed to create machine');
-  }
+    };)
 });
 
 // Обновить машину
@@ -492,8 +420,6 @@ fastify.patch('/api/v1/machines/:id', {
     }
   }
 }, async (request, reply) => {
-    try {
-      
     try {
       
   const { id } = request.params;
@@ -569,18 +495,13 @@ fastify.patch('/api/v1/machines/:id', {
     return {
       success: true,
       data: machine
-    };
-  } catch (error) {
-    throw createError.database('Failed to update machine');
-  }
+    };)
 });
 
 // Удалить машину (soft delete) - только для ADMIN
 fastify.delete('/api/v1/machines/:id', {
   preValidation: [fastify.authenticate, fastify.requireRole(['ADMIN'])]
 }, async (request, reply) => {
-    try {
-      
     try {
       
   const { id } = request.params;
@@ -632,13 +553,7 @@ fastify.delete('/api/v1/machines/:id', {
     return {
       success: true,
       message: 'Machine deleted successfully'
-    };
-  } catch (error) {
-    if (error.code === 'P2025') {
-      return reply.code(404).send({
-        success: false,
-        error: 'Machine not found'
-      });
+    };));
     }
     
     throw createError.database('Failed to delete machine');
@@ -667,8 +582,6 @@ fastify.post('/api/v1/machines/:id/telemetry', {
     }
   }
 }, async (request, reply) => {
-    try {
-      
     try {
       
   const { id } = request.params;
@@ -715,10 +628,7 @@ fastify.post('/api/v1/machines/:id/telemetry', {
     return {
       success: true,
       data: telemetry
-    };
-  } catch (error) {
-    throw createError.database('Failed to save telemetry');
-  }
+    };)
 });
 
 // Получить телеметрию машины
@@ -743,8 +653,6 @@ fastify.get('/api/v1/machines/:id/telemetry', {
 }, async (request, reply) => {
     try {
       
-    try {
-      
   const { id } = request.params;
   const { from, to, limit } = request.query;
   
@@ -766,13 +674,7 @@ fastify.get('/api/v1/machines/:id/telemetry', {
     return {
       success: true,
       data: telemetry
-    };
-  } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to fetch telemetry'
-    });
+    };));
   }
 });
 
@@ -780,8 +682,6 @@ fastify.get('/api/v1/machines/:id/telemetry', {
 fastify.get('/api/v1/machines/stats', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
-    try {
-      
     try {
       
   try {
@@ -844,20 +744,12 @@ fastify.get('/api/v1/machines/stats', {
     return {
       success: true,
       data: stats
-    };
-  } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to fetch statistics'
-    });
+    };));
   }
 });
 
 // Start server
 const start = async () => {
-    try {
-      
     try {
       
   try {
@@ -877,8 +769,6 @@ start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
-    try {
-      
     try {
       
   await fastify.close();

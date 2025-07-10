@@ -23,7 +23,7 @@ if (!fs.existsSync(fastJwtPath)) {
 
 try {
   // Читаем текущий package.json
-  const packageJson = JSON.parse(fs.await fsPromises.readFile(fastJwtPath, 'utf8'));
+  const packageJson = JSON.parse(await fsPromises.readFile(fastJwtPath, 'utf8'));
   
   // Сохраняем оригинальные engines для логирования
   const originalEngines = JSON.stringify(packageJson.engines || {});
@@ -38,7 +38,7 @@ try {
   }
   
   // Записываем обновленный package.json
-  fs.await fsPromises.writeFile(fastJwtPath, JSON.stringify(packageJson, null, 2), 'utf8');
+  await fsPromises.writeFile(fastJwtPath, JSON.stringify(packageJson, null, 2), 'utf8');
   
   logger.info(`✅ Успешно обновлен ${fastJwtPath}`);
   logger.info(`ℹ️ Изменено: engines с ${originalEngines} на ${JSON.stringify(packageJson.engines || {})}`);

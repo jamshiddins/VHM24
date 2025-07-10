@@ -57,7 +57,7 @@ cmds = ["npm run build --if-present"]
 [start]
 cmd = "npm run start:production"`;
     
-    fs.await fsPromises.writeFile('nixpacks.toml', nixpacksConfig);
+    await fsPromises.writeFile('nixpacks.toml', nixpacksConfig);
     this.tasks.push('Updated nixpacks.toml for monorepo');
     
     // Создаем railway.toml для конфигурации сервисов
@@ -74,14 +74,14 @@ restartPolicyType = "always"
 [env]
 NODE_ENV = "production"`;
     
-    fs.await fsPromises.writeFile('railway.toml', railwayConfig);
+    await fsPromises.writeFile('railway.toml', railwayConfig);
     this.tasks.push('Created railway.toml');
   }
 
   updatePackageJson() {
     logger.info('📦 Обновление package.json...');
     
-    const pkg = JSON.parse(fs.await fsPromises.readFile('package.json', 'utf8'));
+    const pkg = JSON.parse(await fsPromises.readFile('package.json', 'utf8'));
     
     // Добавляем production скрипты
     pkg.scripts = pkg.scripts || {};
@@ -103,7 +103,7 @@ NODE_ENV = "production"`;
       ];
     }
     
-    fs.await fsPromises.writeFile('package.json', JSON.stringify(pkg, null, 2));
+    await fsPromises.writeFile('package.json', JSON.stringify(pkg, null, 2));
     this.tasks.push('Updated root package.json');
   }
 
@@ -169,7 +169,7 @@ MAX_REQUEST_SIZE=52428800
 # Кэширование
 CACHE_TTL=3600`;
     
-    fs.await fsPromises.writeFile('.env.railway.example', envExample);
+    await fsPromises.writeFile('.env.railway.example', envExample);
     this.tasks.push('Created .env.railway.example');
     
     // Создаем скрипт для проверки переменных
@@ -219,7 +219,7 @@ logger.info('✅ All required environment variables are set');
 logger.info(\`📊 \${required.length - missing.length}/\${required.length} required variables configured\`);
 logger.info(\`📊 \${optional.length - missingOptional.length}/\${optional.length} optional variables configured\`);`;
     
-    fs.await fsPromises.writeFile('scripts/check-env.js', envChecker);
+    await fsPromises.writeFile('scripts/check-env.js', envChecker);
     this.tasks.push('Created environment checker script');
   }
 
@@ -272,7 +272,7 @@ module.exports = railwayMiddleware;`;
       fs.mkdirSync(middlewareDir, { recursive: true });
     }
     
-    fs.await fsPromises.writeFile(path.join(middlewareDir, 'railway.js'), railwayMiddleware);
+    await fsPromises.writeFile(path.join(middlewareDir, 'railway.js'), railwayMiddleware);
     this.tasks.push('Created Railway-specific middleware');
     
     // Обновляем .railwayignore
@@ -318,7 +318,7 @@ scripts/test-*
 scripts/dev-*
 scripts/local-*`;
     
-    fs.await fsPromises.writeFile('.railwayignore', railwayIgnore);
+    await fsPromises.writeFile('.railwayignore', railwayIgnore);
     this.tasks.push('Updated .railwayignore');
   }
 
@@ -431,7 +431,7 @@ function detectServiceFromPath() {
   return servicePath || null;
 }`;
     
-    fs.await fsPromises.writeFile('scripts/start-production.js', productionStarter);
+    await fsPromises.writeFile('scripts/start-production.js', productionStarter);
     this.tasks.push('Created production starter script');
   }
 
@@ -440,8 +440,8 @@ function detectServiceFromPath() {
     
     const checklist = {
       'Root package.json': fs.existsSync('package.json'),
-      'Start script': JSON.parse(fs.await fsPromises.readFile('package.json', 'utf8')).scripts?.['start:production'],
-      'Node version specified': JSON.parse(fs.await fsPromises.readFile('package.json', 'utf8')).engines?.node,
+      'Start script': JSON.parse(await fsPromises.readFile('package.json', 'utf8')).scripts?.['start:production'],
+      'Node version specified': JSON.parse(await fsPromises.readFile('package.json', 'utf8')).engines?.node,
       'Environment example': fs.existsSync('.env.railway.example'),
       'Railway config': fs.existsSync('railway.toml'),
       'Nixpacks config': fs.existsSync('nixpacks.toml'),
@@ -524,7 +524,7 @@ railway status
 - Railway Docs: https://docs.railway.app
 `;
     
-    fs.await fsPromises.writeFile('RAILWAY_DEPLOYMENT_GUIDE.md', guide);
+    await fsPromises.writeFile('RAILWAY_DEPLOYMENT_GUIDE.md', guide);
     this.tasks.push('Created comprehensive deployment guide');
     
     logger.info('\n✅ Railway preparation completed!');

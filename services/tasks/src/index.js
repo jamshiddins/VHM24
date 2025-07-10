@@ -1,103 +1,65 @@
-require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') 
-    
-    
-    
-    
-    
-    
-    } catch (error) {
+require('dotenv').config({ path: require('path').join(__dirname, '../../../.env' catch (error) {
       console.error('Error:', error);
-      throw error;
-    }} catch (error) {
-      console.error('Error:', error);
-      throw error;
-    
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       console.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}});
 const Fastify = require('fastify');
 const cors = require('@fastify/cors');
 const jwt = require('@fastify/jwt');
-const { getTasksClient 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }} = require('@vhm24/database');
-const { TaskStatus 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }} = require('@prisma/client');
+const { getTasksClient )} = require('@vhm24/database');
+const { TaskStatus )} = require('@prisma/client');
 const scheduledTasks = require('./scheduledTasks');
 
 // Создаем логгер
 const logger = {
   info: (message, ...args) => console.info(`[INFO] ${message}`, ...args),
   warn: (message, ...args) => logger.warn(`[WARN] ${message}`, ...args),
-  error: (message, ...args) => logger.error(`[ERROR] ${message}`, ...args)
-
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }};
+  error: (message, ...args) => logger.error(`[ERROR] ${message}`, ...args)};
 
 const prisma = getTasksClient();
-const fastify = Fastify({ logger: true 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }});
+const fastify = Fastify({ logger: true )});
 
 // Plugins
 fastify.register(cors, {
   origin: true,
   credentials: true
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
 
 fastify.register(jwt, {
   secret: process.env.JWT_SECRET || 'your-secret-key'
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -129,8 +91,7 @@ fastify.decorate('authenticate', async function(request, reply) {
       message: err.message || 'Invalid or expired token'
     });
   }
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -144,14 +105,6 @@ fastify.get('/health', async (request, reply) => {
     try {
       
     try {
-      
-    try {
-      
-    try {
-      
-    try {
-      
-  try {
     // Проверяем соединение с базой данных
     await prisma.$queryRaw`SELECT 1`;
     
@@ -163,15 +116,7 @@ fastify.get('/health', async (request, reply) => {
       version: process.env.npm_package_version || '1.0.0',
       database: 'connected',
       scheduledTasks: process.env.ENABLE_SCHEDULED_TASKS !== 'false' ? 'enabled' : 'disabled'
-    };
-  } catch (error) {
-    fastify.log.error('Health check failed:', error);
-    return reply.code(503).send({ 
-      status: 'error', 
-      service: 'tasks',
-      timestamp: new Date().toISOString(),
-      error: 'Database connection failed'
-    });
+    };));
   }
 });
 
@@ -193,12 +138,6 @@ fastify.get('/api/v1/tasks', {
     }
   }
 }, async (request, reply) => {
-    try {
-      
-    try {
-      
-    try {
-      
     try {
       
     try {
@@ -229,48 +168,37 @@ fastify.get('/api/v1/tasks', {
               name: true,
               location: true
             }
-          
-    
-    
-    
-    
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }} catch (error) {
       console.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       console.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
-      throw error;
+      throw error;)
     }}} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}},
@@ -279,13 +207,11 @@ fastify.get('/api/v1/tasks', {
               id: true,
               name: true,
               email: true
-            
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}
-          
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }},
@@ -295,8 +221,7 @@ fastify.get('/api/v1/tasks', {
               name: true,
               email: true
             }
-          
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}
@@ -313,13 +238,7 @@ fastify.get('/api/v1/tasks', {
         skip,
         take
       }
-    };
-  } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to fetch tasks'
-    });
+    };));
   }
 });
 
@@ -330,21 +249,11 @@ fastify.get('/api/v1/tasks/:id', {
     params: {
       type: 'object',
       properties: {
-        id: { type: 'string' 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }}
+        id: { type: 'string' )}
       }
     }
   }
 }, async (request, reply) => {
-    try {
-      
-    try {
-      
-    try {
-      
     try {
       
     try {
@@ -363,11 +272,7 @@ fastify.get('/api/v1/tasks/:id', {
         assignedTo: true,
         createdBy: true,
         actions: {
-          orderBy: { createdAt: 'desc' 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }},
+          orderBy: { createdAt: 'desc' )},
           include: {
             user: {
               select: {
@@ -376,15 +281,13 @@ fastify.get('/api/v1/tasks/:id', {
                 email: true
               }
             }
-          
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}
         }
       }
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -394,8 +297,7 @@ fastify.get('/api/v1/tasks/:id', {
         success: false,
         error: 'Task not found'
       });
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}
@@ -403,18 +305,10 @@ fastify.get('/api/v1/tasks/:id', {
     return {
       success: true,
       data: task
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
-    }};
-  } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to fetch task'
-    
-    } catch (error) {
+    }};) catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -436,19 +330,12 @@ fastify.post('/api/v1/tasks', {
         priority: { type: 'string', enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'] },
         dueDate: { type: 'string', format: 'date-time' }
       }
-    
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}
   }
 }, async (request, reply) => {
-    try {
-      
-    try {
-      
-    try {
-      
     try {
       
     try {
@@ -521,16 +408,9 @@ fastify.post('/api/v1/tasks', {
     return {
       success: true,
       data: task
-    };
-  } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to create task'
-    });
+    };));
   }
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -557,17 +437,10 @@ fastify.patch('/api/v1/tasks/:id', {
       }
     }
   }
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}, async (request, reply) => {
-    try {
-      
-    try {
-      
-    try {
-      
     try {
       
     try {
@@ -636,11 +509,7 @@ fastify.patch('/api/v1/tasks/:id', {
           taskId: task.id,
           userId,
           action: 'UPDATED',
-          comment: `Updated: ${changes.join(', ')
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }}`
+          comment: `Updated: ${changes.join(', ')}`
         }
       });
     }
@@ -648,13 +517,7 @@ fastify.patch('/api/v1/tasks/:id', {
     return {
       success: true,
       data: task
-    };
-  } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to update task'
-    });
+    };));
   }
 });
 
@@ -678,35 +541,20 @@ fastify.post('/api/v1/tasks/:id/actions', {
           type: 'object',
           properties: {
             latitude: { type: 'number' 
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
-    }
     } catch (error) {
       console.error('Error:', error);
-      throw error;
-    }} catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    
-    
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+      throw error;)
     }} catch (error) {
       console.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }}}},
-            longitude: { type: 'number' 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }}
+            longitude: { type: 'number' )}
           }
         },
         photoUrls: { type: 'array', items: { type: 'string' } }
@@ -722,12 +570,6 @@ fastify.post('/api/v1/tasks/:id/actions', {
       
     try {
       
-    try {
-      
-    try {
-      
-    try {
-      
   const { id } = request.params;
   const { action, comment, location, photoUrls } = request.body;
   const userId = request.user.id;
@@ -735,20 +577,10 @@ fastify.post('/api/v1/tasks/:id/actions', {
   try {
     // Проверяем существование задачи
     const task = await prisma.task.findUnique({
-      where: { id 
-    } catch (error) {
-      logger.error('Error:', error);
-      throw error;
-    }
-    
-    } catch (error) {
+      where: { id } catch (error) {
       console.error('Error:', error);
       throw error;
-    }} catch (error) {
-      console.error('Error:', error);
-      throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }}}
@@ -758,16 +590,13 @@ fastify.post('/api/v1/tasks/:id/actions', {
       return reply.code(404).send({
         success: false,
         error: 'Task not found'
-      
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
-      throw error;
+      throw error;)
     }} catch (error) {
       logger.error('Error:', error);
       throw error;
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }}});
@@ -780,18 +609,9 @@ fastify.post('/api/v1/tasks/:id/actions', {
         userId,
         action,
         comment,
-        location: location ? `${location.latitude
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }},${location.longitude
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }}` : null,
+        location: location ? `${location.latitude)},${location.longitude)}` : null,
         photoUrls: photoUrls || []
-      
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }},
@@ -801,14 +621,12 @@ fastify.post('/api/v1/tasks/:id/actions', {
             id: true,
             name: true,
             email: true
-          
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }}
         }
-      
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}
@@ -819,8 +637,7 @@ fastify.post('/api/v1/tasks/:id/actions', {
       await prisma.task.update({
         where: { id },
         data: { status: 'IN_PROGRESS' }
-      
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -831,8 +648,7 @@ fastify.post('/api/v1/tasks/:id/actions', {
           status: 'COMPLETED',
           completedAt: new Date()
         }
-      
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -840,8 +656,7 @@ fastify.post('/api/v1/tasks/:id/actions', {
       await prisma.task.update({
         where: { id },
         data: { status: 'CANCELLED' }
-      
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -850,13 +665,7 @@ fastify.post('/api/v1/tasks/:id/actions', {
     return {
       success: true,
       data: taskAction
-    };
-  } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to add action'
-    });
+    };));
   }
 });
 
@@ -871,14 +680,6 @@ fastify.get('/api/v1/tasks/stats', {
     try {
       
     try {
-      
-    try {
-      
-    try {
-      
-    try {
-      
-  try {
     const [
       totalTasks,
       tasksByStatus,
@@ -898,8 +699,7 @@ fastify.get('/api/v1/tasks/stats', {
         where: {
           dueDate: { lt: new Date() },
           status: { not: 'COMPLETED' }
-        
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }}
@@ -919,21 +719,13 @@ fastify.get('/api/v1/tasks/stats', {
           return acc;
         }, {}),
         overdue: overdueTasks
-      
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }}
-    };
-  } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to fetch statistics'
-    });
+    };));
   }
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
@@ -945,8 +737,7 @@ fastify.post('/api/v1/tasks/scheduled/inventory-check', {
     description: 'Manually trigger inventory check',
     tags: ['Scheduled Tasks']
   }
-
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }}, async (request, reply) => {
@@ -957,21 +748,12 @@ fastify.post('/api/v1/tasks/scheduled/inventory-check', {
     try {
       
     try {
-      
-    try {
-      
-    try {
-      
-    try {
-      
-  try {
     // Проверяем, что пользователь - администратор
     if (!request.user.roles.includes('ADMIN')) {
       return reply.code(403).send({
         success: false,
         error: 'Only administrators can trigger scheduled tasks'
-      
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }});
@@ -982,16 +764,9 @@ fastify.post('/api/v1/tasks/scheduled/inventory-check', {
     return {
       success: result,
       message: result ? 'Inventory check triggered successfully' : 'Failed to trigger inventory check'
-    };
-  } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to trigger inventory check'
-    });
+    };));
   }
-
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }});
@@ -1002,8 +777,7 @@ fastify.post('/api/v1/tasks/scheduled/maintenance', {
     description: 'Manually trigger maintenance tasks creation',
     tags: ['Scheduled Tasks']
   }
-
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }}, async (request, reply) => {
@@ -1014,26 +788,16 @@ fastify.post('/api/v1/tasks/scheduled/maintenance', {
     try {
       
     try {
-      
-    try {
-      
-    try {
-      
-    try {
-      
-  try {
     // Проверяем, что пользователь - администратор
     if (!request.user.roles.includes('ADMIN')) {
       return reply.code(403).send({
         success: false,
         error: 'Only administrators can trigger scheduled tasks'
-      
-    } catch (error) {
+} catch (error) {
       logger.error('Error:', error);
       throw error;
     }});
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
     }}
@@ -1043,18 +807,10 @@ fastify.post('/api/v1/tasks/scheduled/maintenance', {
     return {
       success: result,
       message: result ? 'Maintenance tasks created successfully' : 'Failed to create maintenance tasks'
-    
-    } catch (error) {
+} catch (error) {
       console.error('Error:', error);
       throw error;
-    }};
-  } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to create maintenance tasks'
-    
-    } catch (error) {
+    }};) catch (error) {
       console.error('Error:', error);
       throw error;
     }});
@@ -1075,14 +831,6 @@ fastify.post('/api/v1/tasks/scheduled/inventory', {
     try {
       
     try {
-      
-    try {
-      
-    try {
-      
-    try {
-      
-  try {
     // Проверяем, что пользователь - администратор
     if (!request.user.roles.includes('ADMIN')) {
       return reply.code(403).send({
@@ -1096,13 +844,7 @@ fastify.post('/api/v1/tasks/scheduled/inventory', {
     return {
       success: result,
       message: result ? 'Inventory tasks created successfully' : 'Failed to create inventory tasks'
-    };
-  } catch (error) {
-    fastify.log.error(error);
-    reply.code(500).send({
-      success: false,
-      error: 'Failed to create inventory tasks'
-    });
+    };));
   }
 });
 
@@ -1115,14 +857,6 @@ const start = async () => {
     try {
       
     try {
-      
-    try {
-      
-    try {
-      
-    try {
-      
-  try {
     await fastify.listen({ 
       port: process.env.PORT || 3004,
       host: '0.0.0.0'
@@ -1146,12 +880,6 @@ start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
-    try {
-      
-    try {
-      
-    try {
-      
     try {
       
     try {

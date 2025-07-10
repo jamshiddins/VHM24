@@ -1,0 +1,11 @@
+{
+  "name": "@vhm24/prisma-client",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "generate": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.11.1"
+  }
+}

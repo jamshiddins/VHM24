@@ -175,7 +175,7 @@ class ProjectAnalyzer {
           const packageJsonPath = path.join(servicePath, 'package.json');
           
           if (fs.existsSync(packageJsonPath)) {
-            const pkg = JSON.parse(fs.await fsPromises.readFile(packageJsonPath, 'utf8'));
+            const pkg = JSON.parse(await fsPromises.readFile(packageJsonPath, 'utf8'));
             const deps = Object.keys(pkg.dependencies || {});
             
             if (!deps.includes(module) && !this.isBuiltinModule(module)) {
@@ -339,7 +339,7 @@ class ProjectAnalyzer {
     });
     
     files.forEach(file => {
-      const content = fs.await fsPromises.readFile(file, 'utf8');
+      const content = await fsPromises.readFile(file, 'utf8');
       callback(file, content);
       this.stats.filesAnalyzed++;
     });
@@ -380,7 +380,7 @@ class ProjectAnalyzer {
     };
     
     // Сохраняем детальный JSON отчет
-    fs.await fsPromises.writeFile('analysis-report.json', JSON.stringify(report, null, 2));
+    await fsPromises.writeFile('analysis-report.json', JSON.stringify(report, null, 2));
     
     // Создаем Markdown отчет
     let markdown = `# VHM24 Project Analysis Report
@@ -411,7 +411,7 @@ Generated: ${new Date().toLocaleString()}
       }
     });
     
-    fs.await fsPromises.writeFile('ANALYSIS_REPORT.md', markdown);
+    await fsPromises.writeFile('ANALYSIS_REPORT.md', markdown);
     
     logger.info('\n✅ Analysis complete!');
     logger.info(`📄 Reports saved: analysis-report.json, ANALYSIS_REPORT.md`);

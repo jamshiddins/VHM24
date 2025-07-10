@@ -5,7 +5,7 @@ const logger = require('@vhm24/shared/logger');
  * Критически важные middleware для безопасности всех сервисов
  */
 
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("../node_modules/.prisma/client");
 const rateLimit = require('@fastify/rate-limit');
 const helmet = require('@fastify/helmet');
 const cors = require('@fastify/cors');
