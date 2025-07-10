@@ -114,7 +114,7 @@ async function createRailwayProject() {
   console.log(`🔄 Создание проекта ${config.projectName} в Railway...`);
   
   try {
-    await execAsync(`railway project create --name ${config.projectName}`);
+    await execAsync(`railway init --name ${config.projectName}`);
     console.log(`✅ Проект ${config.projectName} создан в Railway`);
     return true;
   } catch (error) {
@@ -148,7 +148,7 @@ async function createRailwayServices() {
     console.log('🔄 Создание монолитного сервиса в Railway...');
     
     try {
-      await execAsync('railway service create --name vhm24-monolith');
+      await execAsync('railway add --service vhm24-monolith');
       console.log('✅ Монолитный сервис создан в Railway');
       return true;
     } catch (error) {
@@ -176,7 +176,7 @@ async function createRailwayServices() {
     
     for (const service of services) {
       try {
-        await execAsync(`railway service create --name ${service}`);
+        await execAsync(`railway add --service ${service}`);
         console.log(`✅ Сервис ${service} создан в Railway`);
       } catch (error) {
         if (error.message.includes('already exists')) {
@@ -197,7 +197,7 @@ async function createPostgresDatabase() {
   console.log('🔄 Создание базы данных PostgreSQL в Railway...');
   
   try {
-    await execAsync('railway add --plugin postgresql');
+    await execAsync('railway add --database postgres');
     console.log('✅ База данных PostgreSQL создана в Railway');
     return true;
   } catch (error) {
@@ -216,7 +216,7 @@ async function createRedis() {
   console.log('🔄 Создание Redis в Railway...');
   
   try {
-    await execAsync('railway add --plugin redis');
+    await execAsync('railway add --database redis');
     console.log('✅ Redis создан в Railway');
     return true;
   } catch (error) {
