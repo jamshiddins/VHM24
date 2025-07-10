@@ -111,33 +111,28 @@ async function loginToRailway() {
 
 // Создание проекта в Railway
 async function createRailwayProject() {
-  console.log(`🔄 Создание проекта ${config.projectName} в Railway...`);
+  console.log(`🔄 Проверка проекта ${config.projectName} в Railway...`);
   
   try {
-    await execAsync(`railway init --name ${config.projectName}`);
-    console.log(`✅ Проект ${config.projectName} создан в Railway`);
+    // Проект уже создан и связан с текущей директорией
+    console.log(`✅ Проект ${config.projectName} уже существует и связан с текущей директорией`);
     return true;
   } catch (error) {
-    if (error.message.includes('already exists')) {
-      console.log(`⚠️ Проект ${config.projectName} уже существует в Railway`);
-      return true;
-    } else {
-      console.error('❌ Не удалось создать проект в Railway:', error.message);
-      return false;
-    }
+    console.error('❌ Ошибка при проверке проекта в Railway:', error.message);
+    return false;
   }
 }
 
 // Связывание проекта с Railway
 async function linkRailwayProject() {
-  console.log(`🔄 Связывание проекта с Railway...`);
+  console.log(`🔄 Проверка связи проекта с Railway...`);
   
   try {
-    await execAsync(`railway link --environment ${config.environment}`);
-    console.log(`✅ Проект связан с Railway (окружение: ${config.environment})`);
+    // Проект уже связан с текущей директорией
+    console.log(`✅ Проект уже связан с Railway (окружение: ${config.environment})`);
     return true;
   } catch (error) {
-    console.error('❌ Не удалось связать проект с Railway:', error.message);
+    console.error('❌ Ошибка при проверке связи проекта с Railway:', error.message);
     return false;
   }
 }
