@@ -5,10 +5,18 @@
  */
 
 require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') 
+    
     } catch (error) {
       logger.error('Error:', error);
       throw error;
-    }});
+    }} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}});
 
 // Устанавливаем SERVICE_NAME для конфигурации
 process.env.SERVICE_NAME = 'machines';
@@ -118,6 +126,8 @@ fastify.decorate('requireRole', (roles) => {
 fastify.get('/health', async (request, reply) => {
     try {
       
+    try {
+      
   try {
     // Проверяем соединение с базой данных
     await prisma.$queryRaw`SELECT 1`;
@@ -179,6 +189,8 @@ fastify.get('/api/v1/machines', {
 }, async (request, reply) => {
     try {
       
+    try {
+      
   const { status, type, locationId, search, skip, take, orderBy } = request.query;
   
   try {
@@ -189,9 +201,21 @@ fastify.get('/api/v1/machines', {
     if (locationId) where.locationId = locationId;
     if (search) {
       where.OR = [
-        { code: { contains: search, mode: 'insensitive' } },
-        { name: { contains: search, mode: 'insensitive' } },
-        { serialNumber: { contains: search, mode: 'insensitive' } }
+        { code: { contains: search, mode: 'insensitive' 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} },
+        { name: { contains: search, mode: 'insensitive' 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} },
+        { serialNumber: { contains: search, mode: 'insensitive' 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} }
       ];
     }
 
@@ -208,7 +232,11 @@ fastify.get('/api/v1/machines', {
               tasks: true,
               telemetry: true
             }
-          }
+          
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
         }
       }),
       prisma.machine.count({ where })
@@ -219,6 +247,8 @@ fastify.get('/api/v1/machines', {
       machines.map(async (machine) => {
     try {
       
+    try {
+      
         const lastTelemetry = await prisma.machineTelemetry.findFirst({
           where: { machineId: machine.id },
           orderBy: { createdAt: 'desc' }
@@ -227,7 +257,11 @@ fastify.get('/api/v1/machines', {
           ...machine,
           lastTelemetry
         };
-      })
+      
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }})
     );
 
     return {
@@ -238,7 +272,11 @@ fastify.get('/api/v1/machines', {
         skip,
         take
       }
-    };
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }};
   } catch (error) {
     throw createError.database('Failed to fetch machines');
   }
@@ -248,6 +286,8 @@ fastify.get('/api/v1/machines', {
 fastify.get('/api/v1/machines/:id', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
     try {
       
   const { id } = request.params;
@@ -330,7 +370,11 @@ fastify.get('/api/v1/machines/:id', {
   } catch (error) {
     throw createError.database('Failed to fetch machine');
   }
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Создать новую машину (только для ADMIN и MANAGER)
 fastify.post('/api/v1/machines', {
@@ -349,7 +393,13 @@ fastify.post('/api/v1/machines', {
       }
     }
   }
-}, async (request, reply) => {
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}, async (request, reply) => {
+    try {
+      
     try {
       
   const data = request.body;
@@ -444,6 +494,8 @@ fastify.patch('/api/v1/machines/:id', {
 }, async (request, reply) => {
     try {
       
+    try {
+      
   const { id } = request.params;
   const updates = request.body;
   
@@ -527,6 +579,8 @@ fastify.patch('/api/v1/machines/:id', {
 fastify.delete('/api/v1/machines/:id', {
   preValidation: [fastify.authenticate, fastify.requireRole(['ADMIN'])]
 }, async (request, reply) => {
+    try {
+      
     try {
       
   const { id } = request.params;
@@ -615,6 +669,8 @@ fastify.post('/api/v1/machines/:id/telemetry', {
 }, async (request, reply) => {
     try {
       
+    try {
+      
   const { id } = request.params;
   const telemetryData = request.body;
   
@@ -687,6 +743,8 @@ fastify.get('/api/v1/machines/:id/telemetry', {
 }, async (request, reply) => {
     try {
       
+    try {
+      
   const { id } = request.params;
   const { from, to, limit } = request.query;
   
@@ -722,6 +780,8 @@ fastify.get('/api/v1/machines/:id/telemetry', {
 fastify.get('/api/v1/machines/stats', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
     try {
       
   try {
@@ -798,6 +858,8 @@ fastify.get('/api/v1/machines/stats', {
 const start = async () => {
     try {
       
+    try {
+      
   try {
     const port = process.env.MACHINES_PORT || process.env.PORT || 3002;
     await fastify.listen({ 
@@ -815,6 +877,8 @@ start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
+    try {
+      
     try {
       
   await fastify.close();

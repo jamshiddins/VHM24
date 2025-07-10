@@ -4,10 +4,18 @@
  */
 
 const fastify = require('fastify')({ logger: true 
+    
     } catch (error) {
       logger.error('Error:', error);
       throw error;
-    }});
+    }} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}});
 const { PrismaClient 
     } catch (error) {
       logger.error('Error:', error);
@@ -59,6 +67,8 @@ fastify.get('/warehouse/stats', {
     }}, async (request, reply) => {
     try {
       
+    try {
+      
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -73,7 +83,11 @@ fastify.get('/warehouse/stats', {
       where: {
         quantity: {
           lte: prisma.inventoryItem.fields.minQuantity
-        }
+        
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
       }
     });
 
@@ -84,7 +98,11 @@ fastify.get('/warehouse/stats', {
         createdAt: {
           gte: today,
           lt: tomorrow
-        }
+        
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
       }
     });
 
@@ -95,7 +113,11 @@ fastify.get('/warehouse/stats', {
         createdAt: {
           gte: today,
           lt: tomorrow
-        }
+        
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
       }
     });
 
@@ -123,10 +145,20 @@ fastify.get('/stock-movements', {
 }, async (request, reply) => {
     try {
       
+    try {
+      
   try {
-    const { type, itemId, userId, limit = 50, offset = 0 } = request.query;
+    const { type, itemId, userId, limit = 50, offset = 0 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = request.query;
     
-    const where = {};
+    const where = {
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }};
     if (type) where.type = type;
     if (itemId) where.itemId = itemId;
     if (userId) where.userId = userId;
@@ -144,7 +176,11 @@ fastify.get('/stock-movements', {
       orderBy: { createdAt: 'desc' },
       take: parseInt(limit),
       skip: parseInt(offset)
-    });
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
     reply.send({
       success: true,
@@ -154,13 +190,21 @@ fastify.get('/stock-movements', {
         offset: parseInt(offset),
         total: await prisma.stockMovement.count({ where })
       }
-    });
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
   } catch (error) {
     fastify.log.error(error);
     reply.status(500).send({
       success: false,
       error: 'Failed to fetch stock movements'
-    });
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
   }
 });
 
@@ -171,11 +215,17 @@ const poststock-movementsSchema = {
   body: {
     type: 'object',
     required: [],
-    properties: {}
+    properties: {
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
   }
 };
 
 fastify.post('/stock-movements', { preHandler: [fastify.authenticate], schema: poststock-movementsSchema }, async (request, reply) => {
+    try {
+      
     try {
       
   try {
@@ -213,6 +263,8 @@ fastify.post('/stock-movements', { preHandler: [fastify.authenticate], schema: p
 
     // Создаем движение в транзакции
     const result = await prisma.$transaction(async (tx) => {
+    try {
+      
     try {
       
       // Создаем запись о движении
@@ -279,6 +331,8 @@ fastify.get('/warehouse-logs', {
 }, async (request, reply) => {
     try {
       
+    try {
+      
   try {
     const { type, userId, limit = 50, offset = 0 } = request.query;
     
@@ -336,6 +390,8 @@ const postwarehouse-logsSchema = {
 fastify.post('/warehouse-logs', { preHandler: [fastify.authenticate], schema: postwarehouse-logsSchema }, async (request, reply) => {
     try {
       
+    try {
+      
   try {
     const { type, description, weight, photos, metadata } = request.body;
 
@@ -383,6 +439,8 @@ fastify.post('/warehouse-logs', { preHandler: [fastify.authenticate], schema: po
 fastify.get('/machine-inventory', {
   preHandler: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
     try {
       
   try {
@@ -441,6 +499,8 @@ const patchmachine-inventory:idSchema = {
 };
 
 fastify.patch('/machine-inventory/:id', { preHandler: [fastify.authenticate], schema: patchmachine-inventory:idSchema }, async (request, reply) => {
+    try {
+      
     try {
       
   try {
@@ -522,6 +582,8 @@ fastify.get('/inventory/items', {
 }, async (request, reply) => {
     try {
       
+    try {
+      
   try {
     const { sku, name, limit = 20, offset = 0 } = request.query;
     
@@ -568,11 +630,15 @@ fastify.get('/inventory/items', {
 fastify.get('/health', async (request, reply) => {
     try {
       
+    try {
+      
   reply.send({ status: 'ok', service: 'warehouse', timestamp: new Date().toISOString() });
 });
 
 // Запуск сервера
 const start = async () => {
+    try {
+      
     try {
       
   try {

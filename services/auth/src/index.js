@@ -7,10 +7,34 @@
 require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') 
     
     
+    
+    
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
     } catch (error) {
       logger.error('Error:', error);
       throw error;
-    }} catch (error) {
+    }}} catch (error) {
       logger.error('Error:', error);
       throw error;
     
@@ -156,6 +180,12 @@ fastify.get('/health', async (request, reply) => {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     // Проверяем соединение с базой данных
     await prisma.$queryRaw`SELECT 1`;
@@ -222,6 +252,12 @@ fastify.post('/api/v1/auth/register', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {
@@ -308,6 +344,12 @@ fastify.post('/api/v1/auth/register', {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
       // Создаем пользователя
       const user = await tx.user.create({
         data: {
@@ -387,7 +429,17 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
       
     try {
       
-  const { email, password, phoneNumber, telegramId } = request.body;
+    try {
+      
+    try {
+      
+    try {
+      
+  const { email, password, phoneNumber, telegramId 
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }} = request.body;
   
   try {
     // Поддержка входа через email, телефон или telegram для 24/7 доступа
@@ -401,8 +453,20 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
           success: false,
           error: 'Invalid Telegram ID format'
         });
-      }
-      where = { telegramId };
+      
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
+      where = { telegramId 
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }};
       authMethod = 'TELEGRAM';
     } else if (email) {
       // Валидация email
@@ -411,8 +475,24 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
           success: false,
           error: 'Invalid email format'
         });
-      }
-      where = { email: email.toLowerCase() };
+      
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}}
+      where = { email: email.toLowerCase() 
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }};
     } else if (phoneNumber) {
       // Валидация телефона
       if (!validatePhoneNumber(phoneNumber)) {
@@ -420,14 +500,26 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
           success: false,
           error: 'Invalid phone number format. Use format: +998XXXXXXXXX'
         });
-      }
-      where = { phoneNumber };
+      
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
+      where = { phoneNumber 
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }};
       authMethod = 'PHONE';
     } else {
       return reply.code(400).send({ 
         success: false,
         error: 'Email, phone or telegram ID required for 24/7 access' 
-      });
+      
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }});
     }
 
     const user = await prisma.user.findFirst({
@@ -441,11 +533,19 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
         isActive: true,
         phoneNumber: true,
         telegramId: true
-      }
+      
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
     });
 
     if (!user || !user.isActive) {
-      return reply.code(401).send({ error: 'Invalid credentials' });
+      return reply.code(401).send({ error: 'Invalid credentials' 
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }});
     }
 
     // Для Telegram входа пароль не проверяем (для быстрого доступа 24/7)
@@ -453,14 +553,30 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
       const isValidPassword = await bcrypt.compare(password, user.passwordHash);
       if (!isValidPassword) {
         return reply.code(401).send({ error: 'Invalid credentials' });
-      }
+      
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
     } else if (authMethod !== 'TELEGRAM' && !password) {
-      return reply.code(400).send({ error: 'Password required' });
+      return reply.code(400).send({ error: 'Password required' 
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }});
     }
 
     await prisma.user.update({
-      where: { id: user.id },
-      data: { lastLogin: new Date() }
+      where: { id: user.id 
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }},
+      data: { lastLogin: new Date() 
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
     });
 
     await prisma.auditLog.create({
@@ -472,7 +588,11 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
         ipAddress: request.ip,
         userAgent: request.headers['user-agent'],
         changes: { authMethod }
-      }
+      
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
     });
 
     const token = fastify.jwt.sign({
@@ -493,7 +613,11 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
         name: user.name,
         roles: user.roles,
         phoneNumber: user.phoneNumber
-      },
+      
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }},
       message: 'Welcome to VHM24 - 24/7 Access Granted'
     };
   } catch (error) {
@@ -509,7 +633,11 @@ fastify.post('/api/v1/auth/refresh', {
       required: ['refreshToken'],
       properties: {
         refreshToken: { type: 'string' }
-      }
+      
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
     }
   }
 }, async (request, reply) => {
@@ -519,7 +647,17 @@ fastify.post('/api/v1/auth/refresh', {
       
     try {
       
-  const { refreshToken } = request.body;
+    try {
+      
+    try {
+      
+    try {
+      
+  const { refreshToken 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = request.body;
   
   try {
     // Проверяем refresh token
@@ -561,18 +699,36 @@ fastify.post('/api/v1/auth/refresh', {
         refreshToken: newRefreshToken
       }
     };
-  } catch (error) {
+  
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} catch (error) {
     reply.code(401).send({
       success: false,
       error: 'Invalid refresh token'
     });
-  }
+  
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
 });
 
 // Получить текущего пользователя
 fastify.get('/api/v1/auth/me', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {
@@ -635,7 +791,21 @@ fastify.post('/api/v1/auth/change-password', {
       logger.error('Error:', error);
       throw error;
     }}
-}, async (request, reply) => {
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {
@@ -700,6 +870,12 @@ fastify.post('/api/v1/auth/logout', {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     // Логируем действие
     await prisma.auditLog.create({
@@ -710,18 +886,30 @@ fastify.post('/api/v1/auth/logout', {
         entityId: request.user.id,
         ipAddress: request.ip
       }
-    });
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }});
     
     return {
       success: true,
       message: 'Logged out successfully'
-    };
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }};
   } catch (error) {
     fastify.log.error(error);
     return {
       success: true,
       message: 'Logged out successfully'
-    };
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }};
   }
 });
 
@@ -735,9 +923,19 @@ fastify.post('/api/v1/auth/link-telegram', {
       properties: {
         telegramId: { type: 'string' }
       }
-    }
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {
@@ -838,6 +1036,12 @@ const start = async () => {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     // Создаем администратора по умолчанию
     await createDefaultAdmin();
@@ -857,6 +1061,12 @@ start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {

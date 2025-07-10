@@ -32,7 +32,7 @@ const envSchema = joi.object({
   JWT_REFRESH_EXPIRES_IN: joi.string().default('30d'),
   
   // CORS
-  ALLOWED_ORIGINS: joi.string().default('http://localhost:3000,http://localhost:3001'),
+  ALLOWED_ORIGINS: joi.string().default('http://${process.env.URL_825}:3000,http://localhost:3001'),
   
   // Логирование
   LOG_LEVEL: joi.string().valid('debug', 'info', 'warn', 'error').default('info'),

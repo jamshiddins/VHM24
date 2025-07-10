@@ -5,10 +5,18 @@
  */
 
 require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') 
+    
     } catch (error) {
       logger.error('Error:', error);
       throw error;
-    }});
+    }} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}});
 
 // Устанавливаем SERVICE_NAME для конфигурации
 process.env.SERVICE_NAME = 'gateway';
@@ -160,6 +168,8 @@ fastify.decorate('authenticate', authenticate);
 fastify.get('/health', async (request, reply) => {
     try {
       
+    try {
+      
   const services = {
     auth: 'unknown',
     machines: 'unknown',
@@ -171,7 +181,7 @@ fastify.get('/health', async (request, reply) => {
   
   // Проверяем каждый сервис
   const checks = [
-    { name: 'auth', url: 'http://127.0.0.1:3001/health' },
+    { name: 'auth', url: 'http://${process.env.URL_147}:3001/health' },
     { name: 'machines', url: 'http://127.0.0.1:3002/health' },
     { name: 'inventory', url: 'http://127.0.0.1:3003/health' },
     { name: 'tasks', url: 'http://127.0.0.1:3004/health' },
@@ -230,6 +240,8 @@ fastify.register(async function (fastify) {
     connection.socket.on('message', async (message) => {
     try {
       
+    try {
+      
       try {
         const data = JSON.parse(message.toString());
         logger.info('WebSocket message:', data);
@@ -274,6 +286,8 @@ fastify.post('/api/v1/upload', {
   handler: async (request, reply) => {
     try {
       
+    try {
+      
     const parts = request.parts();
     const uploadedFiles = [];
     const maxFileSize = parseInt(process.env.MAX_FILE_SIZE) || 10485760; // 10MB
@@ -285,7 +299,11 @@ fastify.post('/api/v1/upload', {
           return reply.code(400).send({
             success: false,
             error: `File type ${part.mimetype} is not allowed`
-          });
+          
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
         }
         
         // Санитизация имени файла
@@ -297,7 +315,11 @@ fastify.post('/api/v1/upload', {
         
         // Создаем директорию если не существует
         if (!fs.existsSync(uploadDir)) {
-          fs.mkdirSync(uploadDir, { recursive: true });
+          fs.mkdirSync(uploadDir, { recursive: true 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
         }
         
         // Проверяем размер файла
@@ -311,7 +333,11 @@ fastify.post('/api/v1/upload', {
               success: false,
               error: `File size exceeds maximum allowed size of ${maxFileSize} bytes`
             });
-          }
+          
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
           chunks.push(chunk);
         }
         
@@ -332,7 +358,11 @@ fastify.post('/api/v1/upload', {
               mimetype: part.mimetype
             },
             ipAddress: request.ip
-          }
+          
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
         });
         
         uploadedFiles.push({
@@ -340,7 +370,11 @@ fastify.post('/api/v1/upload', {
           filename: filename,
           mimetype: part.mimetype,
           size: fileSize,
-          url: `/uploads/${filename}`
+          url: `/uploads/${filename
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}`
         });
         
         // TODO: Интеграция с MinIO для постоянного хранения
@@ -449,6 +483,8 @@ fastify.get('/api/v1/dashboard/stats', {
 }, async (request, reply) => {
     try {
       
+    try {
+      
   try {
     const [
       totalMachines,
@@ -461,23 +497,43 @@ fastify.get('/api/v1/dashboard/stats', {
       lowStockItems
     ] = await Promise.all([
       prisma.machine.count(),
-      prisma.machine.count({ where: { status: 'ONLINE' } }),
+      prisma.machine.count({ where: { status: 'ONLINE' 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} }),
       prisma.task.count(),
-      prisma.task.count({ where: { status: { in: ['CREATED', 'ASSIGNED'] } } }),
+      prisma.task.count({ where: { status: { in: ['CREATED', 'ASSIGNED'] } 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} }),
       prisma.user.count(),
-      prisma.user.count({ where: { isActive: true } }),
+      prisma.user.count({ where: { isActive: true 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} }),
       prisma.inventoryItem.count(),
       prisma.inventoryItem.count({ 
         where: { 
           quantity: { lte: 10 } // TODO: Сделать динамическим из поля minQuantity
-        } 
+        
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} 
       })
     ]);
     
     // Получаем последние транзакции
     const recentTransactions = await prisma.transaction.findMany({
       take: 5,
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
     });
     
     // Считаем выручку за сегодня
@@ -488,8 +544,16 @@ fastify.get('/api/v1/dashboard/stats', {
       where: {
         createdAt: { gte: todayStart },
         status: 'SUCCESS'
-      },
-      _sum: { amount: true }
+      
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }},
+      _sum: { amount: true 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
     });
     
     const stats = {
@@ -522,6 +586,8 @@ fastify.get('/api/v1/dashboard/stats', {
 fastify.get('/api/v1/test-db', async (request, reply) => {
     try {
       
+    try {
+      
   try {
     const [machines, tasks, users] = await Promise.all([
       prisma.machine.count(),
@@ -538,18 +604,28 @@ fastify.get('/api/v1/test-db', async (request, reply) => {
         database: 'connected'
       }
     };
-  } catch (error) {
+  
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} catch (error) {
     return {
       success: false,
       error: error.message
     };
-  }
+  
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 });
 
 // Audit log endpoint
 fastify.get('/api/v1/audit-log', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
     try {
       
   try {
@@ -603,6 +679,8 @@ fastify.get('/api/v1/audit-log', {
 const start = async () => {
     try {
       
+    try {
+      
   try {
     // Создаем директорию для загрузок
     const uploadDir = path.join(process.cwd(), 'uploads');
@@ -632,6 +710,8 @@ start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
+    try {
+      
     try {
       
   // Закрываем все WebSocket соединения

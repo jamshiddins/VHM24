@@ -3,10 +3,34 @@ const logger = require('@vhm24/shared/logger');
 const fastify = require('fastify')({ logger: true 
     
     
+    
+    
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
     } catch (error) {
       logger.error('Error:', error);
       throw error;
-    }} catch (error) {
+    }}} catch (error) {
       logger.error('Error:', error);
       throw error;
     
@@ -239,6 +263,12 @@ const parseFile = async (filePath, dataType) => {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   const ext = path.extname(filePath).toLowerCase();
   let data = [];
 
@@ -279,6 +309,12 @@ const parseExcel = async (filePath) => {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile(filePath);
   const worksheet = workbook.getWorksheet(1); // Получаем первый лист
@@ -305,9 +341,27 @@ const parseJSON = async (filePath) => {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   const content = await fsPromises.readFile(filePath, 'utf8');
   return JSON.parse(content);
-};
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }};
 
 // Валидация данных
 const validateData = (data, dataType) => {
@@ -331,17 +385,49 @@ const validateData = (data, dataType) => {
     } catch (error) {
       logger.error('Error:', error);
       throw error;
-    }});
+    }
+    
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}});
 
     // Валидация даты и времени
     if (record.date && !moment(record.date, 'YYYY-MM-DD', true).isValid()) {
-      recordErrors.push(`Invalid date format: ${record.date}. Expected: YYYY-MM-DD`);
+      recordErrors.push(`Invalid date format: ${record.date
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}. Expected: YYYY-MM-DD`);
+    
     
     
     } catch (error) {
       logger.error('Error:', error);
       throw error;
     }} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}} catch (error) {
       logger.error('Error:', error);
       throw error;
     
@@ -419,6 +505,12 @@ const processImport = async (jobId) => {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   const job = importJobs.get(jobId);
   if (!job) return;
 
@@ -465,6 +557,12 @@ fastify.get('/api/v1/data-import/jobs', async (request, reply) => {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   const jobs = Array.from(importJobs.values()).sort((a, b) => 
     new Date(b.createdAt) - new Date(a.createdAt)
   );
@@ -483,11 +581,37 @@ fastify.get('/api/v1/data-import/historical', async (request, reply) => {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   // В production здесь будет запрос к базе данных
   return {
     success: true,
     data: []
-  };
+  
+    
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}};
 });
 
 // Предварительный просмотр файла
@@ -497,11 +621,25 @@ const postapiv1data-importpreviewSchema = {
   body: {
     type: 'object',
     required: [],
-    properties: {}
-  }
+    properties: {
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
+  
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 };
 
 fastify.post('/api/v1/data-import/preview', { schema: postapiv1data-importpreviewSchema }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {
@@ -542,7 +680,11 @@ fastify.post('/api/v1/data-import/preview', { schema: postapiv1data-importprevie
       error: error.message
     });
   }
-});
+
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }});
 
 // Загрузка файла для импорта
 
@@ -553,9 +695,23 @@ const postapiv1data-importuploadSchema = {
     required: [],
     properties: {}
   }
-};
 
-fastify.post('/api/v1/data-import/upload', { schema: postapiv1data-importuploadSchema }, async (request, reply) => {
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }};
+
+fastify.post('/api/v1/data-import/upload', { schema: postapiv1data-importuploadSchema 
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {
@@ -633,6 +789,12 @@ fastify.get('/api/v1/data-import/template/:dataType', async (request, reply) => 
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     const { dataType } = request.params;
     
@@ -665,6 +827,12 @@ fastify.get('/api/v1/data-import/jobs/:jobId', async (request, reply) => {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   const { jobId } = request.params;
   const job = importJobs.get(parseInt(jobId));
   
@@ -683,6 +851,12 @@ fastify.get('/api/v1/data-import/jobs/:jobId', async (request, reply) => {
 
 // Health check
 fastify.get('/health', async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {
@@ -725,6 +899,12 @@ const start = async () => {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     const port = process.env.PORT || 3009;
     const host = process.env.HOST || '0.0.0.0';
@@ -743,6 +923,12 @@ start();
 let server;
 
 const gracefulShutdown = async () => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {

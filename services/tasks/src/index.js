@@ -1,10 +1,34 @@
 require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') 
     
     
+    
+    
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
     } catch (error) {
       logger.error('Error:', error);
       throw error;
-    }} catch (error) {
+    }}} catch (error) {
       logger.error('Error:', error);
       throw error;
     
@@ -111,6 +135,12 @@ fastify.get('/health', async (request, reply) => {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     // Проверяем соединение с базой данных
     await prisma.$queryRaw`SELECT 1`;
@@ -159,6 +189,12 @@ fastify.get('/api/v1/tasks', {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   const { status, assignedToId, machineId, skip, take, orderBy, order } = request.query;
   
   try {
@@ -183,10 +219,34 @@ fastify.get('/api/v1/tasks', {
             }
           
     
+    
+    
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
     } catch (error) {
       logger.error('Error:', error);
       throw error;
-    }} catch (error) {
+    }}} catch (error) {
       logger.error('Error:', error);
       throw error;
     
@@ -259,6 +319,12 @@ fastify.get('/api/v1/tasks/:id', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {
@@ -355,6 +421,12 @@ fastify.post('/api/v1/tasks', {
     }}
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {
@@ -472,6 +544,12 @@ fastify.patch('/api/v1/tasks/:id', {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   const { id } = request.params;
   const updates = request.body;
   const userId = request.user.id;
@@ -570,10 +648,18 @@ fastify.post('/api/v1/tasks/:id/actions', {
           type: 'object',
           properties: {
             latitude: { type: 'number' 
+    
     } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }} catch (error) {
       logger.error('Error:', error);
       throw error;
-    }},
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}},
             longitude: { type: 'number' 
     } catch (error) {
       logger.error('Error:', error);
@@ -592,6 +678,12 @@ fastify.post('/api/v1/tasks/:id/actions', {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   const { id } = request.params;
   const { action, comment, location, photoUrls } = request.body;
   const userId = request.user.id;
@@ -603,6 +695,10 @@ fastify.post('/api/v1/tasks/:id/actions', {
     } catch (error) {
       logger.error('Error:', error);
       throw error;
+    }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }}
     });
 
@@ -611,10 +707,18 @@ fastify.post('/api/v1/tasks/:id/actions', {
         success: false,
         error: 'Task not found'
       
+    
     } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }} catch (error) {
       logger.error('Error:', error);
       throw error;
-    }});
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}});
     }
 
     // Создаем действие
@@ -624,7 +728,15 @@ fastify.post('/api/v1/tasks/:id/actions', {
         userId,
         action,
         comment,
-        location: location ? `${location.latitude},${location.longitude}` : null,
+        location: location ? `${location.latitude
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }},${location.longitude
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}` : null,
         photoUrls: photoUrls || []
       
     } catch (error) {
@@ -637,7 +749,11 @@ fastify.post('/api/v1/tasks/:id/actions', {
             id: true,
             name: true,
             email: true
-          }
+          
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
         }
       
     } catch (error) {
@@ -702,6 +818,12 @@ fastify.get('/api/v1/tasks/stats', {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     const [
       totalTasks,
@@ -722,7 +844,11 @@ fastify.get('/api/v1/tasks/stats', {
         where: {
           dueDate: { lt: new Date() },
           status: { not: 'COMPLETED' }
-        }
+        
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
       })
     ]);
 
@@ -739,7 +865,11 @@ fastify.get('/api/v1/tasks/stats', {
           return acc;
         }, {}),
         overdue: overdueTasks
-      }
+      
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
     };
   } catch (error) {
     fastify.log.error(error);
@@ -772,13 +902,23 @@ fastify.post('/api/v1/tasks/scheduled/inventory-check', {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     // Проверяем, что пользователь - администратор
     if (!request.user.roles.includes('ADMIN')) {
       return reply.code(403).send({
         success: false,
         error: 'Only administrators can trigger scheduled tasks'
-      });
+      
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }});
     }
 
     const result = await scheduledTasks.manualCheckInventory();
@@ -794,7 +934,11 @@ fastify.post('/api/v1/tasks/scheduled/inventory-check', {
       error: 'Failed to trigger inventory check'
     });
   }
-});
+
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }});
 
 fastify.post('/api/v1/tasks/scheduled/maintenance', {
   preValidation: [fastify.authenticate],
@@ -802,7 +946,17 @@ fastify.post('/api/v1/tasks/scheduled/maintenance', {
     description: 'Manually trigger maintenance tasks creation',
     tags: ['Scheduled Tasks']
   }
-}, async (request, reply) => {
+
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {
@@ -815,7 +969,11 @@ fastify.post('/api/v1/tasks/scheduled/maintenance', {
       return reply.code(403).send({
         success: false,
         error: 'Only administrators can trigger scheduled tasks'
-      });
+      
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
     }
 
     const result = await scheduledTasks.manualCreateMaintenanceTasks();
@@ -840,6 +998,12 @@ fastify.post('/api/v1/tasks/scheduled/inventory', {
     tags: ['Scheduled Tasks']
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {
@@ -878,6 +1042,12 @@ const start = async () => {
       
     try {
       
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     await fastify.listen({ 
       port: process.env.PORT || 3004,
@@ -902,6 +1072,12 @@ start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
+    try {
+      
+    try {
+      
+    try {
+      
     try {
       
     try {

@@ -6,10 +6,18 @@ const path = require('path');
 
 // Handlers
 const { handleStart 
+    
     } catch (error) {
       logger.error('Error:', error);
       throw error;
-    }} = require('./handlers/startHandler.js');
+    }} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}} = require('./handlers/startHandler.js');
 const { handleMachines 
     } catch (error) {
       logger.error('Error:', error);
@@ -123,7 +131,7 @@ const logger = winston.createLogger({
 // Configuration
 const config = {
   telegramToken: process.env.TELEGRAM_BOT_TOKEN || '',
-  apiUrl: process.env.API_URL || 'http://localhost:8000/api/v1',
+  apiUrl: process.env.API_URL || 'http://${process.env.URL_207}:8000/api/v1',
   adminIds: (process.env.ADMIN_IDS || '').split(',').map(id => id.trim()),
   // Определяем режим работы бота (polling или webhook)
   mode: process.env.NODE_ENV === 'production' ? 'webhook' : 'polling',
@@ -249,6 +257,8 @@ let uploadHandler;
 
 // Initialize FSM Manager
 (async () => {
+    try {
+      
     try {
       
   try {
@@ -478,6 +488,8 @@ bot.onText(/\/report_problem/, async (msg) => {
 bot.onText(/\/help/, async (msg) => {
     try {
       
+    try {
+      
   const helpText = `
 🤖 VHM24 Bot Commands
 
@@ -527,6 +539,8 @@ bot.on('callback_query', async (callbackQuery) => {
 
 // FSM Message Handler - обрабатывает все сообщения через FSM
 bot.on('message', async (msg) => {
+    try {
+      
     try {
       
   try {
@@ -732,6 +746,8 @@ const healthApp = express();
 const healthPort = process.env.PORT || 3005;
 
 healthApp.get('/health', async (req, res) => {
+    try {
+      
     try {
       
   try {
