@@ -1,9 +1,8 @@
 /**
  * VHM24 Registration Handler with FSM
- * Полный процесс регистрации с подтверждением телефона и паролем
+ * Упрощенный процесс регистрации через Telegram
  */
 
-const bcrypt = require('bcrypt');
 const fsmManager = require('../fsm/manager');
 const { REGISTRATION_STATES, COMMON_STATES } = require('../fsm/states');
 
@@ -29,7 +28,6 @@ async function startRegistration(bot, msg) {
       await bot.sendMessage(chatId, 
         `✅ Вы уже зарегистрированы в системе VHM24!\n\n` +
         `👤 ${response.data.user.name}\n` +
-        `📧 ${response.data.user.email}\n` +
         `🔑 Роли: ${response.data.user.roles.join(', ')}\n\n` +
         `Используйте /help для просмотра команд.`,
         { parse_mode: 'Markdown' }
@@ -46,6 +44,7 @@ async function startRegistration(bot, msg) {
   await fsmManager.setUserData(userId, {
     username,
     telegramId: userId.toString(),
+    telegramUsername: msg.from.username || null,
     startTime: new Date().toISOString()
   });
 
@@ -54,10 +53,9 @@ async function startRegistration(bot, msg) {
   await bot.sendMessage(chatId,
     `🎉 *Добро пожаловать в VHM24!*\n\n` +
     `⏰ Система управления кофейными автоматами 24/7\n\n` +
-    `📋 *Процесс регистрации:*\n` +
+    `📋 *Упрощенный процесс регистрации:*\n` +
     `1️⃣ Подтверждение номера телефона\n` +
-    `2️⃣ Создание пароля\n` +
-    `3️⃣ Ожидание одобрения администратора\n\n` +
+    `2️⃣ Ожидание одобрения администратора\n\n` +
     `📱 *Шаг 1:* Пожалуйста, поделитесь вашим номером телефона:`,
     {
       parse_mode: 'Markdown',
@@ -138,154 +136,90 @@ async function handlePhoneNumber(bot, msg) {
       // Номер не найден, продолжаем
     }
 
-    // Сохраняем номер телефона
+    // Сохраняем номер телефона и данные пользователя
     await fsmManager.updateUserData(userId, {
       phoneNumber: normalizedPhone,
       firstName: msg.from.first_name || '',
       lastName: msg.from.last_name || ''
     });
 
-    await fsmManager.setUserState(userId, REGISTRATION_STATES.WAITING_PASSWORD);
+    // Получаем данные пользователя
+    const userData = await fsmManager.getUserData(userId);
 
-    await bot.sendMessage(chatId,
-      `✅ Номер телефона подтвержден: ${normalizedPhone}\n\n` +
-      `🔐 *Шаг 2:* Создайте пароль для входа в систему\n\n` +
-      `📋 *Требования к паролю:*\n` +
-      `• Минимум 6 символов\n` +
-      `• Содержит буквы и цифры\n` +
-      `• Не содержит пробелов\n\n` +
-      `💬 Отправьте ваш пароль следующим сообщением:`,
-      { 
-        parse_mode: 'Markdown',
-        reply_markup: { remove_keyboard: true }
+    // Создаем пользователя в системе через API
+    try {
+      // Формируем данные для создания пользователя
+      const apiData = {
+        telegramId: userId.toString(),
+        telegramUsername: userData.telegramUsername,
+        name: `${userData.firstName} ${userData.lastName}`.trim() || userData.username,
+        phoneNumber: userData.phoneNumber,
+        email: `telegram_${userId}@vhm24.local`, // Временный email
+        roles: ['OPERATOR'] // Роль по умолчанию
+      };
+
+      // Отправляем запрос на создание пользователя
+      const response = await global.apiClient.post('/users', apiData);
+
+      if (response.data.success) {
+        // Получаем токен для пользователя
+        const loginResponse = await global.apiClient.post('/auth/login', {
+          telegramId: userId.toString()
+        });
+
+        if (loginResponse.data.success) {
+          // Сохраняем токен
+          global.userTokens.set(userId, loginResponse.data.token);
+          global.currentUserId = userId;
+
+          // Обновляем состояние FSM
+          await fsmManager.setUserState(userId, REGISTRATION_STATES.WAITING_ADMIN_APPROVAL);
+          await fsmManager.updateUserData(userId, {
+            userId: response.data.data.id,
+            registrationCompleted: true
+          });
+
+          // Отправляем сообщение пользователю
+          await bot.sendMessage(chatId,
+            `✅ *Регистрация завершена!*\n\n` +
+            `👤 Имя: ${response.data.data.name}\n` +
+            `📱 Телефон: ${userData.phoneNumber}\n` +
+            `🆔 Telegram: @${userData.telegramUsername || 'не указан'}\n` +
+            `🆔 ID: ${response.data.data.id}\n\n` +
+            `⏳ *Ожидание одобрения администратора*\n\n` +
+            `Ваша заявка отправлена администратору для одобрения. ` +
+            `Вы получите уведомление, когда доступ будет активирован.\n\n` +
+            `📞 Для срочных вопросов обращайтесь к администратору.`,
+            { 
+              parse_mode: 'Markdown',
+              reply_markup: { remove_keyboard: true }
+            }
+          );
+
+          // Уведомляем администраторов
+          await notifyAdminsAboutNewUser(bot, response.data.data, userData);
+        } else {
+          throw new Error('Failed to login after registration');
+        }
+      } else {
+        throw new Error(response.data.error || 'Registration failed');
       }
-    );
+    } catch (error) {
+      global.logger.error('Registration API error:', error);
+      await bot.sendMessage(chatId,
+        `❌ Ошибка при создании аккаунта. Попробуйте позже или обратитесь к администратору.`,
+        { reply_markup: { remove_keyboard: true } }
+      );
+      await fsmManager.clearUserState(userId);
+    }
 
     return true;
   } catch (error) {
     global.logger.error('Registration phone error:', error);
     await bot.sendMessage(chatId,
-      `❌ Ошибка при обработке номера телефона. Попробуйте еще раз или обратитесь к администратору.`
+      `❌ Ошибка при обработке номера телефона. Попробуйте еще раз или обратитесь к администратору.`,
+      { reply_markup: { remove_keyboard: true } }
     );
-    return true;
-  }
-}
-
-/**
- * Обработка пароля
- */
-async function handlePassword(bot, msg) {
-  const chatId = msg.chat.id;
-  const userId = msg.from.id;
-
-  try {
-    const currentState = await fsmManager.getUserState(userId);
-    
-    if (currentState !== REGISTRATION_STATES.WAITING_PASSWORD) {
-      return false; // Не наше состояние
-    }
-
-    const password = msg.text;
-
-    // Валидация пароля
-    if (!password || password.length < 6) {
-      await bot.sendMessage(chatId,
-        `❌ Пароль слишком короткий. Минимум 6 символов.\n\n` +
-        `Попробуйте еще раз:`
-      );
-      return true;
-    }
-
-    if (password.includes(' ')) {
-      await bot.sendMessage(chatId,
-        `❌ Пароль не должен содержать пробелы.\n\n` +
-        `Попробуйте еще раз:`
-      );
-      return true;
-    }
-
-    if (!/(?=.*[a-zA-Z])(?=.*\d)/.test(password)) {
-      await bot.sendMessage(chatId,
-        `❌ Пароль должен содержать как буквы, так и цифры.\n\n` +
-        `Попробуйте еще раз:`
-      );
-      return true;
-    }
-
-    // Удаляем сообщение с паролем для безопасности
-    try {
-      await bot.deleteMessage(chatId, msg.message_id);
-    } catch (error) {
-      // Игнорируем ошибку удаления
-    }
-
-    // Хешируем пароль
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    // Получаем данные пользователя
-    const userData = await fsmManager.getUserData(userId);
-
-    // Создаем пользователя в системе
-    const registrationData = {
-      email: `telegram_${userId}@vhm24.local`, // Временный email
-      name: `${userData.firstName} ${userData.lastName}`.trim() || userData.username,
-      password,
-      phoneNumber: userData.phoneNumber,
-      roles: ['OPERATOR'] // Роль по умолчанию
-    };
-
-    const response = await global.apiClient.post('/auth/register', registrationData);
-
-    if (response.data.success) {
-      // Связываем Telegram ID с пользователем
-      const token = response.data.data.token;
-      global.userTokens.set(userId, token);
-      
-      await global.apiClient.post('/auth/link-telegram', {
-        telegramId: userId.toString()
-      });
-
-      await fsmManager.setUserState(userId, REGISTRATION_STATES.WAITING_ADMIN_APPROVAL);
-      await fsmManager.updateUserData(userId, {
-        userId: response.data.data.user.id,
-        registrationCompleted: true
-      });
-
-      await bot.sendMessage(chatId,
-        `✅ *Регистрация завершена!*\n\n` +
-        `👤 Имя: ${response.data.data.user.name}\n` +
-        `📱 Телефон: ${userData.phoneNumber}\n` +
-        `🆔 ID: ${response.data.data.user.id}\n\n` +
-        `⏳ *Ожидание одобрения администратора*\n\n` +
-        `Ваша заявка отправлена администратору для одобрения. ` +
-        `Вы получите уведомление, когда доступ будет активирован.\n\n` +
-        `📞 Для срочных вопросов обращайтесь к администратору.`,
-        { parse_mode: 'Markdown' }
-      );
-
-      // Уведомляем администраторов
-      await notifyAdminsAboutNewUser(bot, response.data.data.user, userData);
-
-    } else {
-      throw new Error(response.data.error || 'Registration failed');
-    }
-
-    return true;
-  } catch (error) {
-    global.logger.error('Registration password error:', error);
-    
-    if (error.response?.status === 400) {
-      await bot.sendMessage(chatId,
-        `❌ ${error.response.data.error || 'Ошибка валидации данных'}\n\n` +
-        `Попробуйте еще раз или обратитесь к администратору.`
-      );
-    } else {
-      await bot.sendMessage(chatId,
-        `❌ Ошибка при создании аккаунта. Попробуйте позже или обратитесь к администратору.`
-      );
-    }
-    
-    await fsmManager.clearUserState(userId);
     return true;
   }
 }
@@ -301,7 +235,7 @@ async function notifyAdminsAboutNewUser(bot, user, userData) {
       `🆕 *Новая заявка на регистрацию*\n\n` +
       `👤 Имя: ${user.name}\n` +
       `📱 Телефон: ${userData.phoneNumber}\n` +
-      `🆔 Telegram: @${userData.username || 'не указан'}\n` +
+      `🆔 Telegram: @${userData.telegramUsername || 'не указан'}\n` +
       `🆔 User ID: ${user.id}\n` +
       `📅 Дата: ${new Date().toLocaleString('ru-RU')}\n\n` +
       `Одобрить регистрацию?`;
@@ -481,10 +415,15 @@ async function rejectUser(bot, callbackQuery) {
   }
 }
 
+// Заглушка для обратной совместимости
+function handlePassword(bot, msg) {
+  return false; // Больше не используется
+}
+
 module.exports = {
   startRegistration,
   handlePhoneNumber,
-  handlePassword,
+  handlePassword, // Оставляем для обратной совместимости
   approveUser,
   rejectUser,
   REGISTRATION_STATES

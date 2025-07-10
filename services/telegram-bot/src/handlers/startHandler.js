@@ -20,14 +20,14 @@ async function handleStart(bot, msg) {
         `🎉 Добро пожаловать в *VHM24 - VendHub Manager 24/7*!\n\n` +
         `⏰ Система работает круглосуточно без выходных\n\n` +
         `👤 ${response.data.user.name}\n` +
-        `📧 ${response.data.user.email}\n` +
+        `🆔 Telegram: @${response.data.user.telegramUsername || username}\n` +
         `🔑 Роли: ${response.data.user.roles.join(', ')}\n\n` +
         `Используйте /help для просмотра доступных команд.`,
         { parse_mode: 'Markdown' }
       );
       
       // Показываем главное меню в зависимости от роли
-      await showMainMenu(bot, chatId, response.data.user.roles);
+      await showMainMenu(bot, chatId, response.data.user.roles, response.data.user);
     } else {
       // Новый пользователь - запускаем процесс регистрации через FSM
       await registrationHandler.startRegistration(bot, msg);
@@ -94,6 +94,11 @@ async function showMainMenu(bot, chatId, roles, userInfo) {
   
   let menuText = `🏠 *Главное меню VHM24*\n⏰ Система работает 24/7\n\n`;
   menuText += `👤 ${userInfo?.name || 'Пользователь'}\n`;
+  
+  if (userInfo?.telegramUsername) {
+    menuText += `🆔 Telegram: @${userInfo.telegramUsername}\n`;
+  }
+  
   menuText += `🔑 Роли: ${roles.join(', ')}`;
   
   if (userInfo?.isDriver) {

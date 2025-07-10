@@ -1,6 +1,6 @@
 // Pagination utilities
 
-export function createPagination(currentOffset, limit, total, prefix) {
+function createPagination(currentOffset, limit, total, prefix) {
   const currentPage = Math.floor(currentOffset / limit) + 1;
   const totalPages = Math.ceil(total / limit);
   
@@ -31,7 +31,7 @@ export function createPagination(currentOffset, limit, total, prefix) {
   return buttons;
 }
 
-export function parsePaginationCallback(callbackData) {
+function parsePaginationCallback(callbackData) {
   const match = callbackData.match(/(.+)_page_(\d+)/);
   if (!match) return null;
   
@@ -41,18 +41,18 @@ export function parsePaginationCallback(callbackData) {
   };
 }
 
-export function calculateOffset(page, limit) {
+function calculateOffset(page, limit) {
   return (page - 1) * limit;
 }
 
-export function createNumberedList(items, offset = 0) {
+function createNumberedList(items, offset = 0) {
   return items.map((item, index) => ({
     ...item,
     number: offset + index + 1
   }));
 }
 
-export function createPageButtons(total, current, maxButtons = 5) {
+function createPageButtons(total, current, maxButtons = 5) {
   const buttons = [];
   let startPage = Math.max(1, current - Math.floor(maxButtons / 2));
   let endPage = Math.min(total, startPage + maxButtons - 1);
@@ -72,7 +72,7 @@ export function createPageButtons(total, current, maxButtons = 5) {
   return buttons;
 }
 
-export function splitIntoChunks(array, chunkSize) {
+function splitIntoChunks(array, chunkSize) {
   const chunks = [];
   for (let i = 0; i < array.length; i += chunkSize) {
     chunks.push(array.slice(i, i + chunkSize));
@@ -80,7 +80,7 @@ export function splitIntoChunks(array, chunkSize) {
   return chunks;
 }
 
-export function createAlphabeticalIndex(items, keyGetter = (item) => item.name) {
+function createAlphabeticalIndex(items, keyGetter = (item) => item.name) {
   const index = {};
   
   items.forEach(item => {
@@ -99,7 +99,7 @@ export function createAlphabeticalIndex(items, keyGetter = (item) => item.name) 
   return index;
 }
 
-export function createIndexButtons(index) {
+function createIndexButtons(index) {
   const letters = Object.keys(index).sort();
   const buttons = [];
   const buttonsPerRow = 6;
@@ -114,3 +114,5 @@ export function createIndexButtons(index) {
   
   return buttons;
 }
+
+module.exports = { createPagination, parsePaginationCallback, calculateOffset, createNumberedList, createPageButtons, splitIntoChunks, createAlphabeticalIndex, createIndexButtons };

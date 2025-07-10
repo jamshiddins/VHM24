@@ -1,15 +1,35 @@
 [build]
 builder = "nixpacks"
-buildCommand = "npm install && npm install --workspaces"
+buildCommand = "npm install"
 
 [deploy]
-startCommand = "npm run start"
+startCommand = "node start-services.js --production"
 healthcheckPath = "/health"
-healthcheckTimeout = 30
-restartPolicyType = "always"
+healthcheckTimeout = 300
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 5
 
-[env]
-NODE_ENV = "production"
+[nixpacks]
+nodejs-version = "18"
 
-[phases.setup]
-nixPkgs = ["nodejs-20_x", "npm-10_x"]
+[service]
+internal_port = 8000
+auto_rollback = true
+
+[[services.ports]]
+port = 80
+handlers = ["http"]
+force_https = true
+
+[[services.ports]]
+port = 443
+handlers = ["tls", "http"]
+
+[[services.http_checks]]
+interval = 10000
+grace_period = "30s"
+method = "get"
+path = "/health"
+protocol = "http"
+timeout = 2000
+tls_skip_verify = false

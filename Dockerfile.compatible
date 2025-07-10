@@ -1,0 +1,18 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Установка зависимостей для сборки нативных модулей
+RUN apk add --no-cache python3 make g++ cairo-dev jpeg-dev pango-dev giflib-dev
+
+# Копирование package.json и package-lock.json
+COPY package*.json ./
+
+# Установка зависимостей
+RUN npm ci
+
+# Копирование исходного кода
+COPY . .
+
+# Запуск приложения
+CMD ["node", "start-optimized.js"]

@@ -22,15 +22,18 @@
     "install:all": "npm install && npm install --workspaces",
     "kill-ports": "node scripts/kill-ports.js",
     "pretest": "npm run kill-ports",
-    "test": "jest --forceExit --detectOpenHandles",
+    "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage --forceExit --detectOpenHandles",
+    "test:coverage": "jest --coverage",
     "test:services": "node test-all-services.js",
     "monitor": "node monitor-24-7.js",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "lint": "echo 'Linting not configured yet'",
     "start:production": "node scripts/start-production.js",
-    "railway:deploy": "npm run build && npm run start:production"
+    "railway:deploy": "npm run build && npm run start:production",
+    "docker:start": "docker-compose -f docker-compose.compatible.yml up --build",
+    "docker:stop": "docker-compose -f docker-compose.compatible.yml down",
+    "docker:shell": "docker-compose -f docker-compose.compatible.yml exec app sh"
   },
   "dependencies": {
     "@fastify/cors": "^8.4.0",
@@ -45,15 +48,28 @@
     "fastify": "^4.24.3",
     "ioredis": "^5.3.2",
     "jsonwebtoken": "^9.0.2",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "skia-canvas": "^0.9.30"
   },
   "devDependencies": {
     "prettier": "^3.1.0",
-    "rimraf": "^5.0.5"
+    "rimraf": "^5.0.5",
+    "jest": "^29.5.0",
+    "@jest/globals": "^29.5.0",
+    "@babel/core": "^7.22.0",
+    "@babel/preset-env": "^7.22.0",
+    "babel-jest": "^29.5.0"
   },
   "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=16 <22",
+    "npm": ">=7"
   },
-  "packageManager": "npm@9.8.1"
+  "packageManager": "npm@9.8.1",
+  "overrides": {
+    "fast-jwt": {
+      "engines": {
+        "node": ">=16"
+      }
+    }
+  }
 }

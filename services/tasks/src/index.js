@@ -4,10 +4,18 @@ require('dotenv').config({ path: require('path').join(__dirname, '../../../.env'
     
     
     
+    
     } catch (error) {
       console.error('Error:', error);
       throw error;
     }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
       console.error('Error:', error);
       throw error;
     
@@ -141,6 +149,8 @@ fastify.get('/health', async (request, reply) => {
       
     try {
       
+    try {
+      
   try {
     // Проверяем соединение с базой данных
     await prisma.$queryRaw`SELECT 1`;
@@ -195,6 +205,8 @@ fastify.get('/api/v1/tasks', {
       
     try {
       
+    try {
+      
   const { status, assignedToId, machineId, skip, take, orderBy, order } = request.query;
   
   try {
@@ -222,10 +234,18 @@ fastify.get('/api/v1/tasks', {
     
     
     
+    
     } catch (error) {
       console.error('Error:', error);
       throw error;
     }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
       console.error('Error:', error);
       throw error;
     
@@ -331,6 +351,8 @@ fastify.get('/api/v1/tasks/:id', {
       
     try {
       
+    try {
+      
   const { id } = request.params;
   
   try {
@@ -421,6 +443,8 @@ fastify.post('/api/v1/tasks', {
     }}
   }
 }, async (request, reply) => {
+    try {
+      
     try {
       
     try {
@@ -550,6 +574,8 @@ fastify.patch('/api/v1/tasks/:id', {
       
     try {
       
+    try {
+      
   const { id } = request.params;
   const updates = request.body;
   const userId = request.user.id;
@@ -610,7 +636,11 @@ fastify.patch('/api/v1/tasks/:id', {
           taskId: task.id,
           userId,
           action: 'UPDATED',
-          comment: `Updated: ${changes.join(', ')}`
+          comment: `Updated: ${changes.join(', ')
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}`
         }
       });
     }
@@ -652,14 +682,26 @@ fastify.post('/api/v1/tasks/:id/actions', {
     } catch (error) {
       console.error('Error:', error);
       throw error;
+    }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }} catch (error) {
       logger.error('Error:', error);
+      throw error;
+    
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      console.error('Error:', error);
       throw error;
     
     } catch (error) {
       console.error('Error:', error);
       throw error;
-    }}},
+    }}}},
             longitude: { type: 'number' 
     } catch (error) {
       logger.error('Error:', error);
@@ -684,6 +726,8 @@ fastify.post('/api/v1/tasks/:id/actions', {
       
     try {
       
+    try {
+      
   const { id } = request.params;
   const { action, comment, location, photoUrls } = request.body;
   const userId = request.user.id;
@@ -696,10 +740,18 @@ fastify.post('/api/v1/tasks/:id/actions', {
       logger.error('Error:', error);
       throw error;
     }
+    
     } catch (error) {
       console.error('Error:', error);
       throw error;
-    }}
+    }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}}
     });
 
     if (!task) {
@@ -824,6 +876,8 @@ fastify.get('/api/v1/tasks/stats', {
       
     try {
       
+    try {
+      
   try {
     const [
       totalTasks,
@@ -908,6 +962,8 @@ fastify.post('/api/v1/tasks/scheduled/inventory-check', {
       
     try {
       
+    try {
+      
   try {
     // Проверяем, что пользователь - администратор
     if (!request.user.roles.includes('ADMIN')) {
@@ -963,6 +1019,8 @@ fastify.post('/api/v1/tasks/scheduled/maintenance', {
       
     try {
       
+    try {
+      
   try {
     // Проверяем, что пользователь - администратор
     if (!request.user.roles.includes('ADMIN')) {
@@ -974,20 +1032,32 @@ fastify.post('/api/v1/tasks/scheduled/maintenance', {
       logger.error('Error:', error);
       throw error;
     }});
-    }
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}
 
     const result = await scheduledTasks.manualCreateMaintenanceTasks();
 
     return {
       success: result,
       message: result ? 'Maintenance tasks created successfully' : 'Failed to create maintenance tasks'
-    };
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }};
   } catch (error) {
     fastify.log.error(error);
     reply.code(500).send({
       success: false,
       error: 'Failed to create maintenance tasks'
-    });
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }});
   }
 });
 
@@ -998,6 +1068,8 @@ fastify.post('/api/v1/tasks/scheduled/inventory', {
     tags: ['Scheduled Tasks']
   }
 }, async (request, reply) => {
+    try {
+      
     try {
       
     try {
@@ -1048,6 +1120,8 @@ const start = async () => {
       
     try {
       
+    try {
+      
   try {
     await fastify.listen({ 
       port: process.env.PORT || 3004,
@@ -1072,6 +1146,8 @@ start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
+    try {
+      
     try {
       
     try {

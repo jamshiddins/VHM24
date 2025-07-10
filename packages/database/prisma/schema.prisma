@@ -15,6 +15,7 @@ model User {
   roles          UserRole[]
   phoneNumber    String?
   telegramId     String?          @unique
+  telegramUsername String?        @unique
   isActive       Boolean          @default(true)
   isDriver       Boolean          @default(false)
   registrationStatus RegistrationStatus @default(PENDING)

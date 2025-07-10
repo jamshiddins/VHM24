@@ -1,5 +1,5 @@
 // QR Code generation utilities
-import QRCode from 'qrcode';
+const QRCode = require('qrcode');
 
 export async function generateMachineQR(machine) {
   const qrData = {
@@ -95,7 +95,7 @@ export async function generateAuthQR(authToken, userId) {
   return qrBuffer;
 }
 
-export function parseQRData(qrString) {
+function parseQRData(qrString) {
   try {
     const data = JSON.parse(qrString);
     
@@ -155,3 +155,5 @@ export async function generateQRWithLogo(data, logoPath, options = {}) {
   // For now, return standard QR code
   return await generateCustomQR(data, options);
 }
+
+module.exports = { parseQRData };

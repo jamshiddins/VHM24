@@ -1,328 +1,198 @@
 /**
- * VHM24 Pagination Utility
- * Утилиты для пагинации данных
+ * Утилиты для работы с пагинацией
+ * @module @vhm24/shared/utils/pagination
  */
 
 /**
- * Создание параметров пагинации для Prisma
+ * Создает объект пагинации для Prisma
+ * @param {Object} options - Опции пагинации
+ * @param {number} options.page - Номер страницы (начиная с 1)
+ * @param {number} options.pageSize - Размер страницы
+ * @returns {Object} Объект пагинации для Prisma
  */
-const createPaginationParams = (page = 1, limit = 20) => {
-  const pageNum = Math.max(1, parseInt(page, 10));
-  const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10))); // Максимум 100 записей
+function createPagination({ page = 1, pageSize = 20 } = {}) {
+  // Проверка и приведение параметров к числам
+  const parsedPage = parseInt(page, 10);
+  const parsedPageSize = parseInt(pageSize, 10);
   
-  const skip = (pageNum - 1) * limitNum;
+  // Валидация параметров
+  const validPage = isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
+  const validPageSize = isNaN(parsedPageSize) || parsedPageSize < 1 ? 20 : 
+                        parsedPageSize > 100 ? 100 : parsedPageSize;
+  
+  const skip = (validPage - 1) * validPageSize;
   
   return {
     skip,
-    take: limitNum,
-    page: pageNum,
-    limit: limitNum
+    take: validPageSize
   };
-};
+}
 
 /**
- * Создание метаданных пагинации
+ * Форматирует результат запроса с пагинацией
+ * @param {Array} items - Элементы текущей страницы
+ * @param {number} total - Общее количество элементов
+ * @param {Object} options - Опции пагинации
+ * @param {number} options.page - Номер страницы (начиная с 1)
+ * @param {number} options.pageSize - Размер страницы
+ * @returns {Object} Отформатированный результат с метаданными пагинации
  */
-const createPaginationMeta = (totalCount, page, limit) => {
-  const totalPages = Math.ceil(totalCount / limit);
-  const hasNextPage = page < totalPages;
-  const hasPrevPage = page > 1;
+function formatPaginatedResult(items, total, { page = 1, pageSize = 20 } = {}) {
+  // Проверка и приведение параметров к числам
+  const parsedPage = parseInt(page, 10);
+  const parsedPageSize = parseInt(pageSize, 10);
+  
+  // Валидация параметров
+  const validPage = isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
+  const validPageSize = isNaN(parsedPageSize) || parsedPageSize < 1 ? 20 : 
+                        parsedPageSize > 100 ? 100 : parsedPageSize;
+  
+  const totalPages = Math.ceil(total / validPageSize);
   
   return {
-    currentPage: page,
-    totalPages,
-    totalCount,
-    limit,
-    hasNextPage,
-    hasPrevPage,
-    nextPage: hasNextPage ? page + 1 : null,
-    prevPage: hasPrevPage ? page - 1 : null
-  };
-};
-
-/**
- * Создание полного ответа с пагинацией
- */
-const createPaginatedResponse = (data, totalCount, page, limit, additionalMeta = {}) => {
-  const meta = createPaginationMeta(totalCount, page, limit);
-  
-  return {
-    data,
+    items,
     meta: {
-      ...meta,
-      ...additionalMeta
+      page: validPage,
+      pageSize: validPageSize,
+      total,
+      totalPages,
+      hasNextPage: validPage < totalPages,
+      hasPrevPage: validPage > 1
     }
   };
-};
+}
 
 /**
- * Middleware для автоматической пагинации
+ * Создает объект для сортировки Prisma
+ * @param {Object} options - Опции сортировки
+ * @param {string} options.sortBy - Поле для сортировки
+ * @param {string} options.sortOrder - Порядок сортировки (asc или desc)
+ * @param {Array} options.allowedFields - Разрешенные поля для сортировки
+ * @returns {Object} Объект сортировки для Prisma
  */
-const paginationMiddleware = (defaultLimit = 20, maxLimit = 100) => {
-  return async (request, reply) => {
-    try {
-      const page = Math.max(1, parseInt(request.query.page, 10) || 1);
-      const limit = Math.min(maxLimit, Math.max(1, parseInt(request.query.limit, 10) || defaultLimit));
-      
-      // Добавляем параметры пагинации в request
-      request.pagination = createPaginationParams(page, limit);
-      
-      // Добавляем helper функцию для создания ответа
-      request.createPaginatedResponse = (data, totalCount, additionalMeta = {}) => {
-        try {
-          return createPaginatedResponse(data, totalCount, page, limit, additionalMeta);
-        } catch (error) {
-          console.error('Error:', error);
-          throw error;
-        }
-      };
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }
-  };
-};
-
-/**
- * Утилита для пагинации массивов (для случаев когда нельзя использовать БД пагинацию)
- */
-const paginateArray = (array, page = 1, limit = 20) => {
-  const { skip, take } = createPaginationParams(page, limit);
-  const totalCount = array.length;
-  const data = array.slice(skip, skip + take);
+function createSorting({ sortBy = 'createdAt', sortOrder = 'desc', allowedFields = [] } = {}) {
+  // Проверка, что поле сортировки разрешено
+  const validSortBy = allowedFields.length > 0 && !allowedFields.includes(sortBy) 
+    ? allowedFields[0] 
+    : sortBy;
   
-  return createPaginatedResponse(data, totalCount, page, limit);
-};
-
-/**
- * Создание параметров сортировки для Prisma
- */
-const createSortParams = (sortBy, sortOrder = 'desc', allowedFields = []) => {
-  // Проверяем разрешенные поля для сортировки
-  if (sortBy && allowedFields.length > 0 && !allowedFields.includes(sortBy)) {
-    sortBy = allowedFields[0]; // Используем первое разрешенное поле по умолчанию
-  }
-  
-  if (!sortBy) {
-    return { createdAt: 'desc' }; // Сортировка по умолчанию
-  }
-  
-  const order = ['asc', 'desc'].includes(sortOrder.toLowerCase()) ? sortOrder.toLowerCase() : 'desc';
-  
-  return { [sortBy]: order };
-};
-
-/**
- * Комбинированная утилита для пагинации и сортировки
- */
-const createQueryParams = (query = {}, allowedSortFields = []) => {
-  const { page, limit, sortBy, sortOrder, ...filters } = query;
-  
-  const pagination = createPaginationParams(page, limit);
-  const sorting = createSortParams(sortBy, sortOrder, allowedSortFields);
+  // Проверка порядка сортировки
+  const validSortOrder = ['asc', 'desc'].includes(sortOrder.toLowerCase()) 
+    ? sortOrder.toLowerCase() 
+    : 'desc';
   
   return {
-    ...pagination,
-    orderBy: sorting,
-    filters
-  };
-};
-
-/**
- * Middleware для валидации параметров пагинации
- */
-const validatePaginationParams = (maxLimit = 100) => {
-  return async (request, reply) => {
-    try {
-      const { page, limit } = request.query;
-      
-      // Валидация page
-      if (page !== undefined) {
-        const pageNum = parseInt(page, 10);
-        if (isNaN(pageNum) || pageNum < 1) {
-          return reply.code(400).send({
-            error: 'Validation Error',
-            message: 'Page must be a positive integer',
-            statusCode: 400
-          });
-        }
-      }
-      
-      // Валидация limit
-      if (limit !== undefined) {
-        const limitNum = parseInt(limit, 10);
-        if (isNaN(limitNum) || limitNum < 1 || limitNum > maxLimit) {
-          return reply.code(400).send({
-            error: 'Validation Error',
-            message: `Limit must be between 1 and ${maxLimit}`,
-            statusCode: 400
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+    orderBy: {
+      [validSortBy]: validSortOrder
     }
   };
-};
+}
 
 /**
- * Создание ссылок для пагинации (для REST API)
+ * Создает объект фильтрации для Prisma
+ * @param {Object} filters - Объект с фильтрами
+ * @param {Object} schema - Схема фильтрации
+ * @returns {Object} Объект фильтрации для Prisma
  */
-const createPaginationLinks = (baseUrl, page, limit, totalPages) => {
-  const createUrl = (pageNum) => {
-    const url = new URL(baseUrl);
-    url.searchParams.set('page', pageNum.toString());
-    url.searchParams.set('limit', limit.toString());
-    return url.toString();
-  };
+function createFilters(filters = {}, schema = {}) {
+  const where = {};
   
-  const links = {
-    self: createUrl(page),
-    first: createUrl(1),
-    last: createUrl(totalPages)
-  };
-  
-  if (page > 1) {
-    links.prev = createUrl(page - 1);
-  }
-  
-  if (page < totalPages) {
-    links.next = createUrl(page + 1);
-  }
-  
-  return links;
-};
-
-/**
- * Cursor-based пагинация (для больших датасетов)
- */
-const createCursorPagination = (cursor, limit = 20, direction = 'forward') => {
-  const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10)));
-  
-  const params = {
-    take: direction === 'forward' ? limitNum : -limitNum
-  };
-  
-  if (cursor) {
-    params.cursor = { id: cursor };
-    params.skip = 1; // Пропускаем сам cursor
-  }
-  
-  return params;
-};
-
-/**
- * Создание ответа для cursor-based пагинации
- */
-const createCursorResponse = (data, hasMore = false, additionalMeta = {}) => {
-  const response = {
-    data,
-    meta: {
-      hasMore,
-      count: data.length,
-      ...additionalMeta
+  // Обрабатываем каждый фильтр согласно схеме
+  Object.entries(filters).forEach(([key, value]) => {
+    // Пропускаем пустые значения
+    if (value === undefined || value === null || value === '') {
+      return;
     }
-  };
-  
-  // Добавляем cursors если есть данные
-  if (data.length > 0) {
-    response.meta.startCursor = data[0].id;
-    response.meta.endCursor = data[data.length - 1].id;
-  }
-  
-  return response;
-};
-
-/**
- * Утилита для поиска с пагинацией
- */
-const createSearchParams = (searchQuery, searchFields = [], page = 1, limit = 20) => {
-  const pagination = createPaginationParams(page, limit);
-  
-  let where = {};
-  
-  if (searchQuery && searchFields.length > 0) {
-    where = {
-      OR: searchFields.map(field => ({
-        [field]: {
-          contains: searchQuery,
-          mode: 'insensitive'
+    
+    // Проверяем, что ключ есть в схеме
+    if (!schema[key]) {
+      return;
+    }
+    
+    const { field, operator, transform } = schema[key];
+    
+    // Применяем трансформацию, если она указана
+    const transformedValue = transform ? transform(value) : value;
+    
+    // Создаем фильтр в зависимости от оператора
+    switch (operator) {
+      case 'equals':
+        where[field] = { equals: transformedValue };
+        break;
+      case 'contains':
+        where[field] = { contains: transformedValue, mode: 'insensitive' };
+        break;
+      case 'startsWith':
+        where[field] = { startsWith: transformedValue };
+        break;
+      case 'endsWith':
+        where[field] = { endsWith: transformedValue };
+        break;
+      case 'in':
+        where[field] = { in: Array.isArray(transformedValue) ? transformedValue : [transformedValue] };
+        break;
+      case 'gt':
+        where[field] = { gt: transformedValue };
+        break;
+      case 'gte':
+        where[field] = { gte: transformedValue };
+        break;
+      case 'lt':
+        where[field] = { lt: transformedValue };
+        break;
+      case 'lte':
+        where[field] = { lte: transformedValue };
+        break;
+      case 'between':
+        if (Array.isArray(transformedValue) && transformedValue.length === 2) {
+          where[field] = { 
+            gte: transformedValue[0],
+            lte: transformedValue[1]
+          };
         }
-      }))
-    };
-  }
+        break;
+      default:
+        where[field] = transformedValue;
+    }
+  });
   
-  return {
-    ...pagination,
-    where
-  };
-};
+  return { where };
+}
 
 /**
- * Агрегация данных для пагинации (например, для дашбордов)
+ * Создает middleware для обработки пагинации, сортировки и фильтрации
+ * @param {Object} options - Опции
+ * @param {Array} options.allowedSortFields - Разрешенные поля для сортировки
+ * @param {Object} options.filterSchema - Схема фильтрации
+ * @returns {Function} Middleware функция
  */
-const createAggregatedPagination = async (model, aggregateFields = [], page = 1, limit = 20, where = {}) => {
-  try {
-    const { skip, take } = createPaginationParams(page, limit);
+function paginationMiddleware({ allowedSortFields = [], filterSchema = {} } = {}) {
+  return (req, reply, done) => {
+    // Извлекаем параметры пагинации из запроса
+    const { page, pageSize, sortBy, sortOrder, ...filters } = req.query;
     
-    // Получаем общее количество
-    const totalCount = await model.count({ where });
+    // Создаем объекты пагинации и сортировки
+    const pagination = createPagination({ page, pageSize });
+    const sorting = createSorting({ sortBy, sortOrder, allowedFields: allowedSortFields });
+    const filtering = createFilters(filters, filterSchema);
     
-    // Получаем агрегированные данные
-    const aggregateData = await model.aggregate({
-      where,
-      _count: { _all: true },
-      ...aggregateFields.reduce((acc, field) => {
-        acc[`_${field.type}`] = { [field.field]: true };
-        return acc;
-      }, {})
-    });
+    // Добавляем параметры в запрос
+    req.pagination = pagination;
+    req.sorting = sorting;
+    req.filtering = filtering;
     
-    // Получаем данные с пагинацией
-    const data = await model.findMany({
-      where,
-      skip,
-      take,
-      orderBy: { createdAt: 'desc' }
-    });
+    // Добавляем функцию форматирования результата
+    req.formatPaginatedResult = (items, total) => 
+      formatPaginatedResult(items, total, { page, pageSize });
     
-    return {
-      data,
-      meta: createPaginationMeta(totalCount, page, limit),
-      aggregates: aggregateData
-    };
-  } catch (error) {
-    console.error('Error:', error);
-    throw error;
-  }
-};
+    done();
+  };
+}
 
 module.exports = {
-  // Основные функции пагинации
-  createPaginationParams,
-  createPaginationMeta,
-  createPaginatedResponse,
-  paginateArray,
-  
-  // Сортировка
-  createSortParams,
-  createQueryParams,
-  
-  // Middleware
-  paginationMiddleware,
-  validatePaginationParams,
-  
-  // REST API утилиты
-  createPaginationLinks,
-  
-  // Cursor-based пагинация
-  createCursorPagination,
-  createCursorResponse,
-  
-  // Поиск
-  createSearchParams,
-  
-  // Агрегация
-  createAggregatedPagination
+  createPagination,
+  formatPaginatedResult,
+  createSorting,
+  createFilters,
+  paginationMiddleware
 };

@@ -118,15 +118,15 @@ function standardizeModules(filePath) {
   if (importRegex.test(content)) {
     content = content.replace(importRegex, (match, imports, source) => {
       if (imports.startsWith('{') && imports.endsWith('}')) {
-        // Деструктуризация: import { a, b } from 'module'
+        // Деструктуризация: const { a, b } = require('module')
         const items = imports.slice(1, -1).split(',').map(item => item.trim());
         return `const { ${items.join(', ')} } = require('${source}')`;
       } else if (imports.startsWith('*')) {
-        // Импорт всего модуля: import * as name from 'module'
+        // Импорт всего модуля: const name = require('module')
         const name = imports.replace(/\*\s+as\s+/, '').trim();
         return `const ${name} = require('${source}')`;
       } else {
-        // Простой импорт: import name from 'module'
+        // Простой импорт: const name = require('module')
         return `const ${imports} = require('${source}')`;
       }
     });

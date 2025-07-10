@@ -1,7 +1,7 @@
 // Formatting utilities
-import moment from 'moment';
+const moment = require('moment');
 
-export function formatMachineStatus(status) {
+function formatMachineStatus(status) {
   const statusMap = {
     'active': '✅ Active',
     'inactive': '⚠️ Inactive',
@@ -13,7 +13,7 @@ export function formatMachineStatus(status) {
   return statusMap[status] || status;
 }
 
-export function formatMachineDetails(machine) {
+function formatMachineDetails(machine) {
   let message = `🏭 *${machine.name}*\n\n`;
   
   message += `📍 *Location:* ${machine.location || 'Not specified'}\n`;
@@ -50,7 +50,7 @@ export function formatMachineDetails(machine) {
   return message;
 }
 
-export function formatInventoryItem(item) {
+function formatInventoryItem(item) {
   let message = `📦 *${item.name}*\n`;
   
   message += `• SKU: \`${item.sku}\`\n`;
@@ -72,7 +72,7 @@ export function formatInventoryItem(item) {
   return message;
 }
 
-export function formatTask(task) {
+function formatTask(task) {
   const priorityEmojis = {
     'low': '🟢',
     'medium': '🟡',
@@ -112,11 +112,11 @@ export function formatTask(task) {
   return message;
 }
 
-export function formatDate(date, format = 'DD.MM.YYYY HH:mm') {
+function formatDate(date, format = 'DD.MM.YYYY HH:mm') {
   return moment(date).format(format);
 }
 
-export function formatCurrency(amount, currency = 'USD') {
+function formatCurrency(amount, currency = 'USD') {
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: currency
@@ -125,18 +125,18 @@ export function formatCurrency(amount, currency = 'USD') {
   return formatter.format(amount);
 }
 
-export function formatNumber(number, decimals = 0) {
+function formatNumber(number, decimals = 0) {
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals
   }).format(number);
 }
 
-export function formatPercentage(value, decimals = 1) {
+function formatPercentage(value, decimals = 1) {
   return `${(value * 100).toFixed(decimals)}%`;
 }
 
-export function formatDuration(seconds) {
+function formatDuration(seconds) {
   const duration = moment.duration(seconds, 'seconds');
   const days = duration.days();
   const hours = duration.hours();
@@ -150,11 +150,13 @@ export function formatDuration(seconds) {
   return result.join(' ') || '< 1m';
 }
 
-export function truncate(text, maxLength = 100) {
+function truncate(text, maxLength = 100) {
   if (!text || text.length <= maxLength) return text;
   return text.substring(0, maxLength - 3) + '...';
 }
 
-export function escapeMarkdown(text) {
+function escapeMarkdown(text) {
   return text.replace(/[_*\[\]()~`>#+=|{}.!-]/g, '\\$&');
 }
+
+module.exports = { formatMachineStatus, formatMachineDetails, formatInventoryItem, formatTask, formatDate, formatCurrency, formatNumber, formatPercentage, formatDuration, truncate, escapeMarkdown };

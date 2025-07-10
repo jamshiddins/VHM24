@@ -1,7 +1,7 @@
 // Report generation utilities
-import ExcelJS from 'exceljs';
-import PDFDocument from 'pdfkit';
-import { formatDate, formatCurrency, formatNumber } from './formatters.js';
+const ExcelJS = require('exceljs');
+const PDFDocument = require('pdfkit');
+const { formatDate, formatCurrency, formatNumber } = require('./formatters.js');
 
 export async function generateReportFile(reportType, format) {
   switch (format) {

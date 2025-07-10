@@ -1,109 +1,428 @@
-const { execSync } = require('child_process');
-const fs = require('fs');
+/**
+ * VHM24 - VendHub Manager 24/7
+ * Скрипт для деплоя на Railway
+ * 
+ * Использование:
+ * node scripts/deploy-to-railway.js
+ * 
+ * Опции:
+ * --production: деплой в production режиме
+ * --monolith: деплой в монолитном режиме
+ */
+
+require('dotenv').config();
+const { exec } = require('child_process');
+const { promisify } = require('util');
+const fs = require('fs').promises;
 const path = require('path');
 
-console.log('🚀 Подготовка к деплою на Railway\n');
+const execAsync = promisify(exec);
 
-// Функция для выполнения команды и вывода результата
-function runCommand(command, options = {}) {
-  console.log(`Выполнение команды: ${command}`);
+// Конфигурация
+const config = {
+  production: process.argv.includes('--production'),
+  monolith: process.argv.includes('--monolith'),
+  railwayToken: process.env.RAILWAY_TOKEN,
+  projectName: 'vhm24',
+  environment: process.argv.includes('--production') ? 'production' : 'development'
+};
+
+// Проверка наличия Railway CLI
+async function checkRailwayCLI() {
   try {
-    const output = execSync(command, { encoding: 'utf8', ...options });
-    console.log(output);
-    return output;
+    console.log('🔍 Проверка наличия Railway CLI...');
+    
+    await execAsync('railway --version');
+    console.log('✅ Railway CLI найден');
+    return true;
   } catch (error) {
-    console.error(`❌ Ошибка при выполнении команды: ${command}`);
-    console.error(error.message);
-    if (error.stdout) console.log(error.stdout.toString());
-    if (error.stderr) console.error(error.stderr.toString());
+    console.log('⚠️ Railway CLI не найден, установка...');
+    
+    try {
+      await execAsync('npm install -g @railway/cli');
+      console.log('✅ Railway CLI установлен');
+      return true;
+    } catch (installError) {
+      console.error('❌ Не удалось установить Railway CLI:', installError.message);
+      return false;
+    }
+  }
+}
+
+// Проверка наличия токена Railway
+function checkRailwayToken() {
+  console.log('🔍 Проверка наличия токена Railway...');
+  
+  if (config.railwayToken) {
+    console.log('✅ Токен Railway найден');
+    return true;
+  } else {
+    console.error('❌ Токен Railway не найден. Установите переменную окружения RAILWAY_TOKEN');
+    console.log('Получить токен можно командой: railway login');
+    return false;
+  }
+}
+
+// Проверка наличия файла railway.toml
+async function checkRailwayConfig() {
+  console.log('🔍 Проверка наличия файла railway.toml...');
+  
+  const railwayPath = path.join(process.cwd(), 'railway.toml');
+  const exists = await fs.access(railwayPath).then(() => true).catch(() => false);
+  
+  if (exists) {
+    console.log('✅ Файл railway.toml найден');
+    return true;
+  } else {
+    console.error('❌ Файл railway.toml не найден');
+    return false;
+  }
+}
+
+// Проверка наличия файла .env
+async function checkEnvFile() {
+  console.log('🔍 Проверка наличия файла .env...');
+  
+  const envPath = path.join(process.cwd(), '.env');
+  const exists = await fs.access(envPath).then(() => true).catch(() => false);
+  
+  if (exists) {
+    console.log('✅ Файл .env найден');
+    return true;
+  } else {
+    console.error('❌ Файл .env не найден');
+    return false;
+  }
+}
+
+// Логин в Railway
+async function loginToRailway() {
+  console.log('🔑 Вход в Railway...');
+  
+  try {
+    await execAsync(`railway login --token ${config.railwayToken}`);
+    console.log('✅ Вход в Railway выполнен успешно');
+    return true;
+  } catch (error) {
+    console.error('❌ Не удалось войти в Railway:', error.message);
+    return false;
+  }
+}
+
+// Создание проекта в Railway
+async function createRailwayProject() {
+  console.log(`🔄 Создание проекта ${config.projectName} в Railway...`);
+  
+  try {
+    await execAsync(`railway project create --name ${config.projectName}`);
+    console.log(`✅ Проект ${config.projectName} создан в Railway`);
+    return true;
+  } catch (error) {
+    if (error.message.includes('already exists')) {
+      console.log(`⚠️ Проект ${config.projectName} уже существует в Railway`);
+      return true;
+    } else {
+      console.error('❌ Не удалось создать проект в Railway:', error.message);
+      return false;
+    }
+  }
+}
+
+// Связывание проекта с Railway
+async function linkRailwayProject() {
+  console.log(`🔄 Связывание проекта с Railway...`);
+  
+  try {
+    await execAsync(`railway link --environment ${config.environment}`);
+    console.log(`✅ Проект связан с Railway (окружение: ${config.environment})`);
+    return true;
+  } catch (error) {
+    console.error('❌ Не удалось связать проект с Railway:', error.message);
+    return false;
+  }
+}
+
+// Создание сервисов в Railway
+async function createRailwayServices() {
+  if (config.monolith) {
+    console.log('🔄 Создание монолитного сервиса в Railway...');
+    
+    try {
+      await execAsync('railway service create --name vhm24-monolith');
+      console.log('✅ Монолитный сервис создан в Railway');
+      return true;
+    } catch (error) {
+      if (error.message.includes('already exists')) {
+        console.log('⚠️ Монолитный сервис уже существует в Railway');
+        return true;
+      } else {
+        console.error('❌ Не удалось создать монолитный сервис в Railway:', error.message);
+        return false;
+      }
+    }
+  } else {
+    console.log('🔄 Создание микросервисов в Railway...');
+    
+    const services = [
+      'vhm24-gateway',
+      'vhm24-auth',
+      'vhm24-machines',
+      'vhm24-inventory',
+      'vhm24-tasks',
+      'vhm24-bunkers',
+      'vhm24-backup',
+      'vhm24-telegram-bot'
+    ];
+    
+    for (const service of services) {
+      try {
+        await execAsync(`railway service create --name ${service}`);
+        console.log(`✅ Сервис ${service} создан в Railway`);
+      } catch (error) {
+        if (error.message.includes('already exists')) {
+          console.log(`⚠️ Сервис ${service} уже существует в Railway`);
+        } else {
+          console.error(`❌ Не удалось создать сервис ${service} в Railway:`, error.message);
+          return false;
+        }
+      }
+    }
+    
+    return true;
+  }
+}
+
+// Создание базы данных PostgreSQL в Railway
+async function createPostgresDatabase() {
+  console.log('🔄 Создание базы данных PostgreSQL в Railway...');
+  
+  try {
+    await execAsync('railway add --plugin postgresql');
+    console.log('✅ База данных PostgreSQL создана в Railway');
+    return true;
+  } catch (error) {
+    if (error.message.includes('already exists')) {
+      console.log('⚠️ База данных PostgreSQL уже существует в Railway');
+      return true;
+    } else {
+      console.error('❌ Не удалось создать базу данных PostgreSQL в Railway:', error.message);
+      return false;
+    }
+  }
+}
+
+// Создание Redis в Railway
+async function createRedis() {
+  console.log('🔄 Создание Redis в Railway...');
+  
+  try {
+    await execAsync('railway add --plugin redis');
+    console.log('✅ Redis создан в Railway');
+    return true;
+  } catch (error) {
+    if (error.message.includes('already exists')) {
+      console.log('⚠️ Redis уже существует в Railway');
+      return true;
+    } else {
+      console.error('❌ Не удалось создать Redis в Railway:', error.message);
+      return false;
+    }
+  }
+}
+
+// Настройка переменных окружения в Railway
+async function setupEnvironmentVariables() {
+  console.log('🔄 Настройка переменных окружения в Railway...');
+  
+  try {
+    // Чтение файла .env
+    const envPath = path.join(process.cwd(), '.env');
+    const envContent = await fs.readFile(envPath, 'utf-8');
+    
+    // Парсинг переменных окружения
+    const envVars = {};
+    envContent.split('\n').forEach(line => {
+      const match = line.match(/^([^#=]+)=(.*)$/);
+      if (match) {
+        const key = match[1].trim();
+        const value = match[2].trim().replace(/^["']|["']$/g, '');
+        if (key && value) {
+          envVars[key] = value;
+        }
+      }
+    });
+    
+    // Установка переменных окружения в Railway
+    for (const [key, value] of Object.entries(envVars)) {
+      try {
+        await execAsync(`railway variables set ${key}=${value}`);
+        console.log(`✅ Переменная ${key} установлена в Railway`);
+      } catch (error) {
+        console.error(`❌ Не удалось установить переменную ${key} в Railway:`, error.message);
+      }
+    }
+    
+    // Установка дополнительных переменных окружения для production
+    if (config.production) {
+      await execAsync('railway variables set NODE_ENV=production');
+      console.log('✅ Переменная NODE_ENV=production установлена в Railway');
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('❌ Не удалось настроить переменные окружения в Railway:', error.message);
+    return false;
+  }
+}
+
+// Деплой на Railway
+async function deployToRailway() {
+  console.log('🚀 Деплой на Railway...');
+  
+  try {
+    let command = 'railway up';
+    
+    if (config.production) {
+      command += ' --environment production';
+    }
+    
+    if (config.monolith) {
+      command += ' --service vhm24-monolith';
+    }
+    
+    const { stdout, stderr } = await execAsync(command);
+    
+    console.log(stdout);
+    if (stderr) console.error(stderr);
+    
+    console.log('✅ Деплой на Railway выполнен успешно');
+    return true;
+  } catch (error) {
+    console.error('❌ Не удалось выполнить деплой на Railway:', error.message);
+    return false;
+  }
+}
+
+// Получение URL проекта
+async function getProjectUrl() {
+  console.log('🔍 Получение URL проекта...');
+  
+  try {
+    const { stdout } = await execAsync('railway status');
+    
+    const urlMatch = stdout.match(/URL:\s+(https:\/\/[^\s]+)/);
+    if (urlMatch && urlMatch[1]) {
+      const url = urlMatch[1];
+      console.log(`✅ URL проекта: ${url}`);
+      return url;
+    } else {
+      console.log('⚠️ URL проекта не найден');
+      return null;
+    }
+  } catch (error) {
+    console.error('❌ Не удалось получить URL проекта:', error.message);
     return null;
   }
 }
 
-// Проверка наличия Git
-console.log('🔍 Проверка наличия Git...');
-try {
-  execSync('git --version', { stdio: 'ignore' });
-  console.log('✅ Git установлен');
-} catch (error) {
-  console.error('❌ Git не установлен. Установите Git перед продолжением.');
-  process.exit(1);
-}
-
-// Проверка наличия Railway CLI
-console.log('🔍 Проверка наличия Railway CLI...');
-let railwayInstalled = false;
-try {
-  execSync('railway --version', { stdio: 'ignore' });
-  railwayInstalled = true;
-  console.log('✅ Railway CLI установлен');
-} catch (error) {
-  console.log('⚠️ Railway CLI не установлен. Деплой будет выполнен через Git.');
-}
-
-// Проверка статуса Git репозитория
-console.log('\n🔍 Проверка статуса Git репозитория...');
-const gitStatus = runCommand('git status --porcelain');
-
-if (gitStatus && gitStatus.trim()) {
-  console.log('📝 Есть неотслеживаемые изменения. Добавляем их в коммит...');
+// Главная функция
+async function main() {
+  console.log(`
+🚀 VHM24 - Деплой на Railway
+⏰ Дата: ${new Date().toISOString()}
+🔧 Режим: ${config.production ? 'production' : 'development'}
+🏗️ Тип: ${config.monolith ? 'монолитный' : 'микросервисы'}
+  `);
   
-  // Добавляем все изменения
-  runCommand('git add .');
-  
-  // Создаем коммит
-  runCommand('git commit -m "🚀 Финальная подготовка к деплою: исправлены ошибки, добавлены health checks, улучшена безопасность"');
-  
-  console.log('✅ Изменения закоммичены');
-} else {
-  console.log('✅ Нет неотслеживаемых изменений');
-}
-
-// Проверка наличия удаленного репозитория
-console.log('\n🔍 Проверка наличия удаленного репозитория...');
-const remotes = runCommand('git remote -v');
-
-if (remotes && remotes.includes('origin')) {
-  console.log('✅ Удаленный репозиторий найден');
-  
-  // Пушим изменения
-  console.log('📤 Отправка изменений в удаленный репозиторий...');
-  runCommand('git push origin HEAD');
-  
-  console.log('✅ Изменения отправлены в удаленный репозиторий');
-} else {
-  console.log('⚠️ Удаленный репозиторий не найден. Пропускаем отправку изменений.');
-}
-
-// Деплой на Railway
-if (railwayInstalled) {
-  console.log('\n🚂 Деплой на Railway...');
-  
-  // Проверка авторизации в Railway
-  console.log('🔍 Проверка авторизации в Railway...');
-  const railwayStatus = runCommand('railway status');
-  
-  if (railwayStatus && !railwayStatus.includes('not logged in')) {
-    console.log('✅ Авторизация в Railway успешна');
-    
-    // Деплой на Railway
-    console.log('🚀 Деплой проекта на Railway...');
-    runCommand('railway up');
-    
-    console.log('✅ Проект успешно задеплоен на Railway');
-  } else {
-    console.log('⚠️ Необходимо авторизоваться в Railway. Выполните команду:');
-    console.log('railway login');
+  // Проверка наличия Railway CLI
+  const cliExists = await checkRailwayCLI();
+  if (!cliExists) {
+    process.exit(1);
   }
-} else {
-  console.log('\n⚠️ Для деплоя на Railway через CLI установите Railway CLI:');
-  console.log('npm i -g @railway/cli');
-  console.log('\nИли выполните деплой через веб-интерфейс Railway, подключив Git репозиторий.');
+  
+  // Проверка наличия токена Railway
+  const tokenExists = checkRailwayToken();
+  if (!tokenExists) {
+    process.exit(1);
+  }
+  
+  // Проверка наличия файла railway.toml
+  const configExists = await checkRailwayConfig();
+  if (!configExists) {
+    process.exit(1);
+  }
+  
+  // Проверка наличия файла .env
+  const envExists = await checkEnvFile();
+  if (!envExists) {
+    process.exit(1);
+  }
+  
+  // Логин в Railway
+  const loginSuccess = await loginToRailway();
+  if (!loginSuccess) {
+    process.exit(1);
+  }
+  
+  // Создание проекта в Railway
+  const projectCreated = await createRailwayProject();
+  if (!projectCreated) {
+    process.exit(1);
+  }
+  
+  // Связывание проекта с Railway
+  const projectLinked = await linkRailwayProject();
+  if (!projectLinked) {
+    process.exit(1);
+  }
+  
+  // Создание сервисов в Railway
+  const servicesCreated = await createRailwayServices();
+  if (!servicesCreated) {
+    process.exit(1);
+  }
+  
+  // Создание базы данных PostgreSQL в Railway
+  const postgresCreated = await createPostgresDatabase();
+  if (!postgresCreated) {
+    process.exit(1);
+  }
+  
+  // Создание Redis в Railway
+  const redisCreated = await createRedis();
+  if (!redisCreated) {
+    process.exit(1);
+  }
+  
+  // Настройка переменных окружения в Railway
+  const envSetup = await setupEnvironmentVariables();
+  if (!envSetup) {
+    process.exit(1);
+  }
+  
+  // Деплой на Railway
+  const deploySuccess = await deployToRailway();
+  if (!deploySuccess) {
+    process.exit(1);
+  }
+  
+  // Получение URL проекта
+  const projectUrl = await getProjectUrl();
+  
+  console.log(`
+✅ Деплой на Railway выполнен успешно!
+🌐 URL проекта: ${projectUrl || 'не удалось получить'}
+📊 Health check: ${projectUrl ? `${projectUrl}/health` : 'не удалось получить'}
+📱 API: ${projectUrl ? `${projectUrl}/api/v1` : 'не удалось получить'}
+  `);
 }
 
-console.log('\n✅ Подготовка к деплою завершена!');
-console.log('📋 Следующие шаги:');
-console.log('1. Если Railway CLI не установлен, установите его: npm i -g @railway/cli');
-console.log('2. Авторизуйтесь в Railway: railway login');
-console.log('3. Выполните деплой: railway up');
-console.log('4. Или используйте веб-интерфейс Railway для деплоя, подключив Git репозиторий.');
+// Запуск
+main()
+  .then(() => {
+    console.log('✅ Операция завершена успешно');
+  })
+  .catch(error => {
+    console.error('❌ Ошибка:', error);
+    process.exit(1);
+  });

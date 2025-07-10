@@ -4,10 +4,18 @@ require('dotenv').config({ path: require('path').join(__dirname, '../../../.env'
     
     
     
+    
     } catch (error) {
       console.error('Error:', error);
       throw error;
     }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
       console.error('Error:', error);
       throw error;
     
@@ -134,6 +142,8 @@ fastify.get('/health', async (request, reply) => {
       
     try {
       
+    try {
+      
   try {
     // Проверяем соединение с базой данных
     await prisma.$queryRaw`SELECT 1`;
@@ -185,6 +195,8 @@ fastify.get('/api/v1/inventory/items', {
       
     try {
       
+    try {
+      
   const { category, search, inStock, skip, take } = request.query;
   
   try {
@@ -198,10 +210,18 @@ fastify.get('/api/v1/inventory/items', {
     
     
     
+    
     } catch (error) {
       console.error('Error:', error);
       throw error;
     }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}} catch (error) {
       console.error('Error:', error);
       throw error;
     
@@ -315,6 +335,8 @@ fastify.get('/api/v1/inventory/items/:id', {
       
     try {
       
+    try {
+      
   const { id 
     } catch (error) {
       logger.error('Error:', error);
@@ -404,6 +426,8 @@ fastify.post('/api/v1/inventory/items', {
       
     try {
       
+    try {
+      
   const data = request.body;
   
   try {
@@ -474,6 +498,8 @@ fastify.patch('/api/v1/inventory/items/:id', {
       
     try {
       
+    try {
+      
   const { id } = request.params;
   const updates = request.body;
   
@@ -483,15 +509,27 @@ fastify.patch('/api/v1/inventory/items/:id', {
     } catch (error) {
       console.error('Error:', error);
       throw error;
+    }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }},
       data: {
         ...updates,
         lastUpdated: new Date()
       
+    
     } catch (error) {
       console.error('Error:', error);
       throw error;
-    }}
+    }} catch (error) {
+      console.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }}}
     });
 
     return {
@@ -582,6 +620,8 @@ fastify.post('/api/v1/inventory/stock-movement', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
     try {
       
     try {
@@ -764,6 +804,8 @@ fastify.get('/api/v1/inventory/movements', {
       
     try {
       
+    try {
+      
   const { itemId, type, machineId, dateFrom, dateTo, skip, take } = request.query;
   
   try {
@@ -840,6 +882,8 @@ fastify.get('/api/v1/inventory/low-stock', {
       
     try {
       
+    try {
+      
   try {
     const items = await prisma.inventoryItem.findMany({
       where: {
@@ -892,6 +936,8 @@ fastify.get('/api/v1/inventory/low-stock', {
 fastify.get('/api/v1/inventory/stats', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
     try {
       
     try {
@@ -1013,6 +1059,8 @@ fastify.post('/api/v1/inventory/bulk-import', {
       
     try {
       
+    try {
+      
   const { items } = request.body;
   
   try {
@@ -1069,6 +1117,8 @@ const start = async () => {
       
     try {
       
+    try {
+      
   try {
     await fastify.listen({ 
       port: process.env.PORT || 3003,
@@ -1083,12 +1133,18 @@ const start = async () => {
     } catch (error) {
       console.error('Error:', error);
       throw error;
+    }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }};
 
 start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
+    try {
+      
     try {
       
     try {
