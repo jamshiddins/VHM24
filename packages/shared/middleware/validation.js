@@ -433,36 +433,41 @@ Object.keys(schemas).forEach(category => {
  */
 const validateBody = (category, schemaName) => {
   return async (request, reply) => {
-    const validator = compiledSchemas[category]?.[schemaName];
-    
-    if (!validator) {
-      return reply.code(500).send({
-        error: 'Internal Server Error',
-        message: 'Validation schema not found',
-        statusCode: 500
-      });
-    }
+    try {
+      const validator = compiledSchemas[category]?.[schemaName];
+      
+      if (!validator) {
+        return reply.code(500).send({
+          error: 'Internal Server Error',
+          message: 'Validation schema not found',
+          statusCode: 500
+        });
+      }
 
-    // Санитизируем данные перед валидацией
-    if (request.body && typeof request.body === 'object') {
-      sanitizeRequestData(request.body);
-    }
+      // Санитизируем данные перед валидацией
+      if (request.body && typeof request.body === 'object') {
+        sanitizeRequestData(request.body);
+      }
 
-    const valid = validator(request.body);
-    
-    if (!valid) {
-      const errors = validator.errors.map(err => ({
-        field: err.instancePath.replace('/', '') || err.params?.missingProperty || 'root',
-        message: err.message,
-        value: err.data
-      }));
+      const valid = validator(request.body);
+      
+      if (!valid) {
+        const errors = validator.errors.map(err => ({
+          field: err.instancePath.replace('/', '') || err.params?.missingProperty || 'root',
+          message: err.message,
+          value: err.data
+        }));
 
-      return reply.code(400).send({
-        error: 'Validation Error',
-        message: 'Invalid request data',
-        statusCode: 400,
-        details: errors
-      });
+        return reply.code(400).send({
+          error: 'Validation Error',
+          message: 'Invalid request data',
+          statusCode: 400,
+          details: errors
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
   };
 };
@@ -472,36 +477,41 @@ const validateBody = (category, schemaName) => {
  */
 const validateQuery = (category, schemaName) => {
   return async (request, reply) => {
-    const validator = compiledSchemas[category]?.[schemaName];
-    
-    if (!validator) {
-      return reply.code(500).send({
-        error: 'Internal Server Error',
-        message: 'Validation schema not found',
-        statusCode: 500
-      });
-    }
+    try {
+      const validator = compiledSchemas[category]?.[schemaName];
+      
+      if (!validator) {
+        return reply.code(500).send({
+          error: 'Internal Server Error',
+          message: 'Validation schema not found',
+          statusCode: 500
+        });
+      }
 
-    // Санитизируем query параметры
-    if (request.query) {
-      sanitizeRequestData(request.query);
-    }
+      // Санитизируем query параметры
+      if (request.query) {
+        sanitizeRequestData(request.query);
+      }
 
-    const valid = validator(request.query);
-    
-    if (!valid) {
-      const errors = validator.errors.map(err => ({
-        field: err.instancePath.replace('/', '') || err.params?.missingProperty || 'root',
-        message: err.message,
-        value: err.data
-      }));
+      const valid = validator(request.query);
+      
+      if (!valid) {
+        const errors = validator.errors.map(err => ({
+          field: err.instancePath.replace('/', '') || err.params?.missingProperty || 'root',
+          message: err.message,
+          value: err.data
+        }));
 
-      return reply.code(400).send({
-        error: 'Validation Error',
-        message: 'Invalid query parameters',
-        statusCode: 400,
-        details: errors
-      });
+        return reply.code(400).send({
+          error: 'Validation Error',
+          message: 'Invalid query parameters',
+          statusCode: 400,
+          details: errors
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
   };
 };
@@ -513,21 +523,26 @@ const validateParams = (paramsSchema) => {
   const validator = ajv.compile(paramsSchema);
   
   return async (request, reply) => {
-    const valid = validator(request.params);
-    
-    if (!valid) {
-      const errors = validator.errors.map(err => ({
-        field: err.instancePath.replace('/', '') || err.params?.missingProperty || 'root',
-        message: err.message,
-        value: err.data
-      }));
+    try {
+      const valid = validator(request.params);
+      
+      if (!valid) {
+        const errors = validator.errors.map(err => ({
+          field: err.instancePath.replace('/', '') || err.params?.missingProperty || 'root',
+          message: err.message,
+          value: err.data
+        }));
 
-      return reply.code(400).send({
-        error: 'Validation Error',
-        message: 'Invalid URL parameters',
-        statusCode: 400,
-        details: errors
-      });
+        return reply.code(400).send({
+          error: 'Validation Error',
+          message: 'Invalid URL parameters',
+          statusCode: 400,
+          details: errors
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
   };
 };
@@ -566,30 +581,35 @@ const createValidator = (schema) => {
   const validator = ajv.compile(schema);
   
   return async (request, reply) => {
-    const dataToValidate = {
-      ...request.body,
-      ...request.query,
-      ...request.params
-    };
+    try {
+      const dataToValidate = {
+        ...request.body,
+        ...request.query,
+        ...request.params
+      };
 
-    // Санитизируем данные
-    sanitizeRequestData(dataToValidate);
+      // Санитизируем данные
+      sanitizeRequestData(dataToValidate);
 
-    const valid = validator(dataToValidate);
-    
-    if (!valid) {
-      const errors = validator.errors.map(err => ({
-        field: err.instancePath.replace('/', '') || err.params?.missingProperty || 'root',
-        message: err.message,
-        value: err.data
-      }));
+      const valid = validator(dataToValidate);
+      
+      if (!valid) {
+        const errors = validator.errors.map(err => ({
+          field: err.instancePath.replace('/', '') || err.params?.missingProperty || 'root',
+          message: err.message,
+          value: err.data
+        }));
 
-      return reply.code(400).send({
-        error: 'Validation Error',
-        message: 'Invalid request data',
-        statusCode: 400,
-        details: errors
-      });
+        return reply.code(400).send({
+          error: 'Validation Error',
+          message: 'Invalid request data',
+          statusCode: 400,
+          details: errors
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
   };
 };
@@ -605,35 +625,40 @@ const validateFile = (options = {}) => {
   } = options;
 
   return async (request, reply) => {
-    const file = request.file;
+    try {
+      const file = request.file;
 
-    if (required && !file) {
-      return reply.code(400).send({
-        error: 'Validation Error',
-        message: 'File is required',
-        statusCode: 400
-      });
-    }
-
-    if (file) {
-      // Проверяем размер файла
-      if (file.size > maxSize) {
+      if (required && !file) {
         return reply.code(400).send({
           error: 'Validation Error',
-          message: `File size exceeds limit of ${Math.round(maxSize / 1024 / 1024)}MB`,
+          message: 'File is required',
           statusCode: 400
         });
       }
 
-      // Проверяем тип файла
-      if (!allowedTypes.includes(file.mimetype)) {
-        return reply.code(400).send({
-          error: 'Validation Error',
-          message: `File type ${file.mimetype} is not allowed`,
-          statusCode: 400,
-          allowedTypes
-        });
+      if (file) {
+        // Проверяем размер файла
+        if (file.size > maxSize) {
+          return reply.code(400).send({
+            error: 'Validation Error',
+            message: `File size exceeds limit of ${Math.round(maxSize / 1024 / 1024)}MB`,
+            statusCode: 400
+          });
+        }
+
+        // Проверяем тип файла
+        if (!allowedTypes.includes(file.mimetype)) {
+          return reply.code(400).send({
+            error: 'Validation Error',
+            message: `File type ${file.mimetype} is not allowed`,
+            statusCode: 400,
+            allowedTypes
+          });
+        }
       }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
   };
 };

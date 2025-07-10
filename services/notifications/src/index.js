@@ -631,7 +631,7 @@ const start = async () => {
       port: process.env.NOTIFICATIONS_PORT || 3006,
       host: '0.0.0.0'
     });
-    console.log('VHM24 Notifications Service running 24/7 on port', process.env.NOTIFICATIONS_PORT || 3006);
+    logger.info('VHM24 Notifications Service running 24/7 on port', process.env.NOTIFICATIONS_PORT || 3006);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

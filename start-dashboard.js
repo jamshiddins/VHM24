@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 /**
  * VHM24 - Start Web Dashboard
  * Запуск веб-дашборда
@@ -17,17 +19,22 @@ function log(message, type = 'info') {
     reset: '\x1b[0m'
   };
   
-  console.log(`${colors[type]}[${timestamp}] ${message}${colors.reset}`);
+  logger.info(`${colors[type]}[${timestamp}] ${message}${colors.reset}`);
 }
 
 async function startDashboard() {
+  try {
   const dashboardPath = path.join(__dirname, 'apps', 'web-dashboard');
   
   // Проверяем существование директории
   if (!fs.existsSync(dashboardPath)) {
     log('❌ Web dashboard directory not found', 'error');
     return false;
+    } catch (error) {
+    logger.error('Error:', error);
+    throw error;
   }
+}
 
   // Проверяем package.json
   const packageJsonPath = path.join(dashboardPath, 'package.json');

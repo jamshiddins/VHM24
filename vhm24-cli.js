@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
 const command = process.argv[2];
@@ -7,9 +9,9 @@ async function fetchAPI(endpoint) {
   try {
     const response = await fetch(`${API_URL}${endpoint}`);
     const data = await response.json();
-    console.log(JSON.stringify(data, null, 2));
+    logger.info(JSON.stringify(data, null, 2));
   } catch (error) {
-    console.error('Error:', error.message);
+    logger.error('Error:', error.message);
   }
 }
 
@@ -28,18 +30,18 @@ async function main() {
       await fetchAPI('/api/v1/inventory');
       break;
     case 'machines':
-      console.log('Fetching machines...');
+      logger.info('Fetching machines...');
       // Добавить позже
       break;
     default:
-      console.log('VHM24 CLI - Vending Machine Management');
-      console.log('\nUsage: node vhm24-cli.js <command>');
-      console.log('\nCommands:');
-      console.log('  health     - Check system health');
-      console.log('  stats      - Dashboard statistics');
-      console.log('  tasks      - List all tasks');
-      console.log('  inventory  - List inventory');
-      console.log('  machines   - List machines (TODO)');
+      logger.info('VHM24 CLI - Vending Machine Management');
+      logger.info('\nUsage: node vhm24-cli.js <command>');
+      logger.info('\nCommands:');
+      logger.info('  health     - Check system health');
+      logger.info('  stats      - Dashboard statistics');
+      logger.info('  tasks      - List all tasks');
+      logger.info('  inventory  - List inventory');
+      logger.info('  machines   - List machines (TODO)');
   }
 }
 

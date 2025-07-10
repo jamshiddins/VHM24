@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 /**
  * VHM24 - Start All Services
  * Запуск всех микросервисов системы
@@ -32,7 +34,7 @@ function log(message, type = 'info') {
     reset: '\x1b[0m'
   };
   
-  console.log(`${colors[type]}[${timestamp}] ${message}${colors.reset}`);
+  logger.info(`${colors[type]}[${timestamp}] ${message}${colors.reset}`);
 }
 
 function startService(service) {
@@ -78,7 +80,7 @@ function startService(service) {
       // Показываем вывод сервиса с префиксом
       output.split('\n').forEach(line => {
         if (line.trim()) {
-          console.log(`[${service.name}] ${line}`);
+          logger.info(`[${service.name}] ${line}`);
         }
       });
     });
@@ -87,7 +89,7 @@ function startService(service) {
       const error = data.toString();
       error.split('\n').forEach(line => {
         if (line.trim()) {
-          console.log(`[${service.name}] ERROR: ${line}`);
+          logger.info(`[${service.name}] ERROR: ${line}`);
         }
       });
     });
@@ -108,6 +110,7 @@ function startService(service) {
 }
 
 async function startAllServices() {
+  try {
   log('🚀 Starting VHM24 Services...', 'info');
   log('=' .repeat(50), 'info');
 
@@ -116,7 +119,11 @@ async function startAllServices() {
   // Запускаем сервисы последовательно с небольшой задержкой
   for (const service of services) {
     const result = await startService(service);
-    results.push({ name: service.name, started: result });
+    results.push({ name: service.name, started: result   } catch (error) {
+    logger.error('Error:', error);
+    throw error;
+  }
+});
     
     // Небольшая пауза между запусками
     await new Promise(resolve => setTimeout(resolve, 1000));

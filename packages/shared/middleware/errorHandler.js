@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 /**
  * VHM24 Error Handler Middleware
  * Централизованная обработка ошибок для всех сервисов
@@ -163,7 +165,7 @@ const errorHandler = (error, request, reply) => {
     processedError = handleFastifyError(error);
   } else if (!error.isOperational) {
     // Неожиданная ошибка - логируем полностью и возвращаем общую ошибку
-    console.error('Unexpected Error:', {
+    logger.error('Unexpected Error:', {
       error: error.message,
       stack: error.stack,
       url: request.url,
@@ -208,7 +210,7 @@ const notFoundHandler = (request, reply) => {
  * Обработчик необработанных Promise rejections
  */
 const handleUnhandledRejection = (reason, promise) => {
-  console.error('Unhandled Promise Rejection:', {
+  logger.error('Unhandled Promise Rejection:', {
     reason: reason.message || reason,
     stack: reason.stack,
     promise: promise,
@@ -226,7 +228,7 @@ const handleUnhandledRejection = (reason, promise) => {
  * Обработчик необработанных исключений
  */
 const handleUncaughtException = (error) => {
-  console.error('Uncaught Exception:', {
+  logger.error('Uncaught Exception:', {
     error: error.message,
     stack: error.stack,
     timestamp: new Date().toISOString()
@@ -251,12 +253,12 @@ const setupGlobalErrorHandlers = () => {
   
   // Graceful shutdown
   process.on('SIGTERM', () => {
-    console.log('SIGTERM received, shutting down gracefully');
+    logger.info('SIGTERM received, shutting down gracefully');
     process.exit(0);
   });
   
   process.on('SIGINT', () => {
-    console.log('SIGINT received, shutting down gracefully');
+    logger.info('SIGINT received, shutting down gracefully');
     process.exit(0);
   });
 };

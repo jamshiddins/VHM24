@@ -1,41 +1,67 @@
-# Development files
+# Игнорируемые файлы и директории для Railway
+
+# Системные файлы
+.git
+.github
+.vscode
+.idea
+.DS_Store
+
+# Зависимости
+node_modules
+**/node_modules
+
+# Логи
+logs
 *.log
-*.backup.*
-node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Временные файлы
+tmp
+temp
+.tmp
+.temp
+
+# Файлы окружения (кроме примеров)
 .env
 .env.local
 .env.development
+.env.test
+!.env.example
+!.env.railway.example
+!.env.production
 
-# Test files
-coverage/
+# Файлы разработки
 *.test.js
-__tests__/
+*.spec.js
+**/__tests__
+**/__mocks__
+**/test
+**/tests
 
-# Build artifacts
-dist/
-build/
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-
-# Documentation (optional)
-docs/
+# Документация
+docs
 *.md
 !README.md
 
-# Scripts not needed in production
-scripts/test-*
-scripts/dev-*
-scripts/local-*
+# Бэкапы
+backups
+**/backups
+
+# Загрузки
+uploads/*
+!uploads/.gitkeep
+
+# Конфигурационные файлы разработки
+.eslintrc
+.prettierrc
+.babelrc
+jest.config.js
+tsconfig.json
+
+# Другие файлы
+*.zip
+*.tar.gz
+*.tgz

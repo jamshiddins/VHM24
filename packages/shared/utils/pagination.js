@@ -60,16 +60,26 @@ const createPaginatedResponse = (data, totalCount, page, limit, additionalMeta =
  */
 const paginationMiddleware = (defaultLimit = 20, maxLimit = 100) => {
   return async (request, reply) => {
-    const page = Math.max(1, parseInt(request.query.page, 10) || 1);
-    const limit = Math.min(maxLimit, Math.max(1, parseInt(request.query.limit, 10) || defaultLimit));
-    
-    // Добавляем параметры пагинации в request
-    request.pagination = createPaginationParams(page, limit);
-    
-    // Добавляем helper функцию для создания ответа
-    request.createPaginatedResponse = (data, totalCount, additionalMeta = {}) => {
-      return createPaginatedResponse(data, totalCount, page, limit, additionalMeta);
-    };
+    try {
+      const page = Math.max(1, parseInt(request.query.page, 10) || 1);
+      const limit = Math.min(maxLimit, Math.max(1, parseInt(request.query.limit, 10) || defaultLimit));
+      
+      // Добавляем параметры пагинации в request
+      request.pagination = createPaginationParams(page, limit);
+      
+      // Добавляем helper функцию для создания ответа
+      request.createPaginatedResponse = (data, totalCount, additionalMeta = {}) => {
+        try {
+          return createPaginatedResponse(data, totalCount, page, limit, additionalMeta);
+        } catch (error) {
+          console.error('Error:', error);
+          throw error;
+        }
+      };
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
   };
 };
 
@@ -123,30 +133,35 @@ const createQueryParams = (query = {}, allowedSortFields = []) => {
  */
 const validatePaginationParams = (maxLimit = 100) => {
   return async (request, reply) => {
-    const { page, limit } = request.query;
-    
-    // Валидация page
-    if (page !== undefined) {
-      const pageNum = parseInt(page, 10);
-      if (isNaN(pageNum) || pageNum < 1) {
-        return reply.code(400).send({
-          error: 'Validation Error',
-          message: 'Page must be a positive integer',
-          statusCode: 400
-        });
+    try {
+      const { page, limit } = request.query;
+      
+      // Валидация page
+      if (page !== undefined) {
+        const pageNum = parseInt(page, 10);
+        if (isNaN(pageNum) || pageNum < 1) {
+          return reply.code(400).send({
+            error: 'Validation Error',
+            message: 'Page must be a positive integer',
+            statusCode: 400
+          });
+        }
       }
-    }
-    
-    // Валидация limit
-    if (limit !== undefined) {
-      const limitNum = parseInt(limit, 10);
-      if (isNaN(limitNum) || limitNum < 1 || limitNum > maxLimit) {
-        return reply.code(400).send({
-          error: 'Validation Error',
-          message: `Limit must be between 1 and ${maxLimit}`,
-          statusCode: 400
-        });
+      
+      // Валидация limit
+      if (limit !== undefined) {
+        const limitNum = parseInt(limit, 10);
+        if (isNaN(limitNum) || limitNum < 1 || limitNum > maxLimit) {
+          return reply.code(400).send({
+            error: 'Validation Error',
+            message: `Limit must be between 1 and ${maxLimit}`,
+            statusCode: 400
+          });
+        }
       }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
   };
 };
@@ -248,34 +263,39 @@ const createSearchParams = (searchQuery, searchFields = [], page = 1, limit = 20
  * Агрегация данных для пагинации (например, для дашбордов)
  */
 const createAggregatedPagination = async (model, aggregateFields = [], page = 1, limit = 20, where = {}) => {
-  const { skip, take } = createPaginationParams(page, limit);
-  
-  // Получаем общее количество
-  const totalCount = await model.count({ where });
-  
-  // Получаем агрегированные данные
-  const aggregateData = await model.aggregate({
-    where,
-    _count: { _all: true },
-    ...aggregateFields.reduce((acc, field) => {
-      acc[`_${field.type}`] = { [field.field]: true };
-      return acc;
-    }, {})
-  });
-  
-  // Получаем данные с пагинацией
-  const data = await model.findMany({
-    where,
-    skip,
-    take,
-    orderBy: { createdAt: 'desc' }
-  });
-  
-  return {
-    data,
-    meta: createPaginationMeta(totalCount, page, limit),
-    aggregates: aggregateData
-  };
+  try {
+    const { skip, take } = createPaginationParams(page, limit);
+    
+    // Получаем общее количество
+    const totalCount = await model.count({ where });
+    
+    // Получаем агрегированные данные
+    const aggregateData = await model.aggregate({
+      where,
+      _count: { _all: true },
+      ...aggregateFields.reduce((acc, field) => {
+        acc[`_${field.type}`] = { [field.field]: true };
+        return acc;
+      }, {})
+    });
+    
+    // Получаем данные с пагинацией
+    const data = await model.findMany({
+      where,
+      skip,
+      take,
+      orderBy: { createdAt: 'desc' }
+    });
+    
+    return {
+      data,
+      meta: createPaginationMeta(totalCount, page, limit),
+      aggregates: aggregateData
+    };
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
 };
 
 module.exports = {

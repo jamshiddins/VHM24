@@ -165,7 +165,17 @@ fastify.get('/api/v1/bunkers/:machineId/:itemId', async (request, reply) => {
 });
 
 // Refill bunker
-fastify.post('/api/v1/bunkers/:machineId/:itemId/refill', async (request, reply) => {
+
+// Схема валидации для POST /api/v1/bunkers/:machineId/:itemId/refill
+const postapiv1bunkers:machineId:itemIdrefillSchema = {
+  body: {
+    type: 'object',
+    required: [],
+    properties: {}
+  }
+};
+
+fastify.post('/api/v1/bunkers/:machineId/:itemId/refill', { schema: postapiv1bunkers:machineId:itemIdrefillSchema }, async (request, reply) => {
   try {
     const { machineId, itemId } = request.params;
     const { quantity, userId, notes } = request.body;
@@ -364,7 +374,7 @@ const start = async () => {
       port: process.env.BUNKERS_PORT || 3005,
       host: '0.0.0.0'
     });
-    console.log('VHM24 Bunkers Service running 24/7 on port', process.env.BUNKERS_PORT || 3005);
+    logger.info('VHM24 Bunkers Service running 24/7 on port', process.env.BUNKERS_PORT || 3005);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

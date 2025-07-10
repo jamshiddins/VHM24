@@ -465,7 +465,7 @@ const start = async () => {
       port: process.env.BACKUP_PORT || 3007,
       host: '0.0.0.0'
     });
-    console.log('VHM24 Backup Service running 24/7 on port', process.env.BACKUP_PORT || 3007);
+    logger.info('VHM24 Backup Service running 24/7 on port', process.env.BACKUP_PORT || 3007);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

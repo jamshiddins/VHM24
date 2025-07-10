@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
 /**
@@ -12,12 +14,12 @@ const fs = require('fs');
 try {
   require('dotenv').config();
 } catch (error) {
-  console.log('⚠️  dotenv not available, using environment variables');
+  logger.info('⚠️  dotenv not available, using environment variables');
 }
 
-console.log('🚂 VHM24 Railway Deployment Starting...');
-console.log(`📍 Environment: ${process.env.NODE_ENV || 'production'}`);
-console.log(`🔌 Port: ${process.env.PORT || 8000}`);
+logger.info('🚂 VHM24 Railway Deployment Starting...');
+logger.info(`📍 Environment: ${process.env.NODE_ENV || 'production'}`);
+logger.info(`🔌 Port: ${process.env.PORT || 8000}`);
 
 // Устанавливаем переменные окружения
 process.env.NODE_ENV = process.env.NODE_ENV || 'production';
@@ -28,14 +30,14 @@ const requiredEnvVars = ['DATABASE_URL'];
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 
 if (missingVars.length > 0) {
-  console.error('❌ Missing required environment variables:', missingVars.join(', '));
+  logger.error('❌ Missing required environment variables:', missingVars.join(', '));
   process.exit(1);
 }
 
 // Функция для запуска сервиса
 async function startService(serviceName, servicePath, port) {
   try {
-    console.log(`🚀 Starting ${serviceName} service on port ${port}...`);
+    logger.info(`🚀 Starting ${serviceName} service on port ${port}...`);
     
     // Устанавливаем порт для сервиса
     process.env[`${serviceName.toUpperCase()}_PORT`] = port;
@@ -43,10 +45,10 @@ async function startService(serviceName, servicePath, port) {
     // Запускаем сервис
     require(servicePath);
     
-    console.log(`✅ ${serviceName} service started successfully`);
+    logger.info(`✅ ${serviceName} service started successfully`);
     return true;
   } catch (error) {
-    console.error(`❌ Failed to start ${serviceName} service:`, error.message);
+    logger.error(`❌ Failed to start ${serviceName} service:`, error.message);
     return false;
   }
 }
@@ -54,17 +56,17 @@ async function startService(serviceName, servicePath, port) {
 // Основная функция
 async function deployToRailway() {
   try {
-    console.log('🔧 Initializing Railway deployment...');
+    logger.info('🔧 Initializing Railway deployment...');
     
     // Генерируем Prisma клиент если нужно
     if (fs.existsSync('packages/database/prisma/schema.prisma')) {
-      console.log('🔧 Checking Prisma client...');
+      logger.info('🔧 Checking Prisma client...');
       try {
         const { getAuthClient } = require('./packages/database');
         await getAuthClient().$connect();
-        console.log('✅ Prisma client is ready');
+        logger.info('✅ Prisma client is ready');
       } catch (error) {
-        console.log('⚠️  Prisma client needs generation, this is normal on first deploy');
+        logger.info('⚠️  Prisma client needs generation, this is normal on first deploy');
       }
     }
 
@@ -85,51 +87,51 @@ async function deployToRailway() {
           startService(service.name, service.path, service.port);
         }, 1000); // Небольшая задержка между запусками
       } else {
-        console.log(`⚠️  Service ${service.name} not found at ${service.path}`);
+        logger.info(`⚠️  Service ${service.name} not found at ${service.path}`);
       }
     }
 
     // Запускаем Telegram Bot если токен есть
     if (process.env.TELEGRAM_BOT_TOKEN && fs.existsSync('./services/telegram-bot/src/index.js')) {
       setTimeout(() => {
-        console.log('🤖 Starting Telegram Bot...');
+        logger.info('🤖 Starting Telegram Bot...');
         require('./services/telegram-bot/src/index.js');
       }, 2000);
     }
 
     // Запускаем Gateway последним (основной сервис)
     setTimeout(() => {
-      console.log('📡 Starting Gateway service (main)...');
+      logger.info('📡 Starting Gateway service (main)...');
       require('./services/gateway/src/index.js');
     }, 3000);
 
-    console.log('🎉 All services initialization started!');
+    logger.info('🎉 All services initialization started!');
     
   } catch (error) {
-    console.error('❌ Railway deployment failed:', error.message);
-    console.error('Stack trace:', error.stack);
+    logger.error('❌ Railway deployment failed:', error.message);
+    logger.error('Stack trace:', error.stack);
     process.exit(1);
   }
 }
 
 // Обработка сигналов
 process.on('SIGTERM', () => {
-  console.log('🛑 Received SIGTERM, shutting down...');
+  logger.info('🛑 Received SIGTERM, shutting down...');
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('🛑 Received SIGINT, shutting down...');
+  logger.info('🛑 Received SIGINT, shutting down...');
   process.exit(0);
 });
 
 process.on('uncaughtException', (error) => {
-  console.error('❌ Uncaught Exception:', error);
+  logger.error('❌ Uncaught Exception:', error);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Rejection:', reason);
+  logger.error('❌ Unhandled Rejection:', reason);
   process.exit(1);
 });
 

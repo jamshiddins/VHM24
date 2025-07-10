@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 /**
  * VHM24 - Update Fastify Dependencies
  * Обновление всех Fastify зависимостей до совместимых с версией 5.x
@@ -42,17 +44,22 @@ function log(message, type = 'info') {
     reset: '\x1b[0m'
   };
   
-  console.log(`${colors[type]}[${timestamp}] ${message}${colors.reset}`);
+  logger.info(`${colors[type]}[${timestamp}] ${message}${colors.reset}`);
 }
 
 async function updateService(servicePath) {
+  try {
   return new Promise((resolve, reject) => {
     const fullPath = path.join(__dirname, servicePath);
     
     // Проверяем существование package.json
     const packageJsonPath = path.join(fullPath, 'package.json');
     if (!fs.existsSync(packageJsonPath)) {
-      log(`⚠️  Skipping ${servicePath} - no package.json found`, 'warning');
+      log(`⚠️  Skipping ${servicePath  } catch (error) {
+    logger.error('Error:', error);
+    throw error;
+  }
+} - no package.json found`, 'warning');
       resolve(false);
       return;
     }
@@ -93,6 +100,7 @@ async function updateService(servicePath) {
 }
 
 async function updateAllServices() {
+  try {
   log('🚀 Starting Fastify dependencies update...', 'info');
   log('=' .repeat(60), 'info');
 
@@ -100,7 +108,11 @@ async function updateAllServices() {
   
   for (const service of services) {
     const result = await updateService(service);
-    results.push({ service, success: result });
+    results.push({ service, success: result   } catch (error) {
+    logger.error('Error:', error);
+    throw error;
+  }
+});
     
     // Небольшая пауза между обновлениями
     await new Promise(resolve => setTimeout(resolve, 1000));

@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 /**
  * VHM24 - VendHub Manager 24/7
  * System Monitor
@@ -16,7 +18,7 @@ const services = [
 ];
 
 async function checkServices() {
-  console.log('🔍 VHM24 - Checking 24/7 service status...\n');
+  logger.info('🔍 VHM24 - Checking 24/7 service status...\n');
   
   let allHealthy = true;
   
@@ -24,23 +26,23 @@ async function checkServices() {
     try {
       const response = await axios.get(service.url, { timeout: 5000 });
       if (response.data.status === 'ok') {
-        console.log(`✅ ${service.name} - ONLINE 24/7`);
+        logger.info(`✅ ${service.name} - ONLINE 24/7`);
       } else {
-        console.log(`⚠️  ${service.name} - ISSUE DETECTED`);
+        logger.info(`⚠️  ${service.name} - ISSUE DETECTED`);
         allHealthy = false;
       }
     } catch (error) {
-      console.log(`❌ ${service.name} - OFFLINE`);
+      logger.info(`❌ ${service.name} - OFFLINE`);
       allHealthy = false;
     }
   }
   
-  console.log('\n' + '='.repeat(40));
+  logger.info('\n' + '='.repeat(40));
   if (allHealthy) {
-    console.log('✅ VHM24 System Status: FULLY OPERATIONAL 24/7');
+    logger.info('✅ VHM24 System Status: FULLY OPERATIONAL 24/7');
   } else {
-    console.log('⚠️  VHM24 System Status: ISSUES DETECTED');
-    console.log('Some services need attention for 24/7 operation');
+    logger.info('⚠️  VHM24 System Status: ISSUES DETECTED');
+    logger.info('Some services need attention for 24/7 operation');
   }
 }
 
@@ -50,5 +52,5 @@ checkServices();
 // Check every 5 minutes for 24/7 monitoring
 setInterval(checkServices, 5 * 60 * 1000);
 
-console.log('\n⏰ VHM24 Monitor running - checking every 5 minutes');
-console.log('Press Ctrl+C to stop monitoring\n');
+logger.info('\n⏰ VHM24 Monitor running - checking every 5 minutes');
+logger.info('Press Ctrl+C to stop monitoring\n');

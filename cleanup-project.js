@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 /**
  * VHM24 Project Cleanup Script
  * Removes redundant files and organizes the project structure
@@ -93,55 +95,55 @@ const filesToKeep = [
   'VHM24_ANALYSIS_AND_OPTIMIZATION.md'
 ];
 
-console.log('🧹 VHM24 Project Cleanup\n');
+logger.info('🧹 VHM24 Project Cleanup\n');
 
 // Count files before cleanup
 const totalFilesBefore = fs.readdirSync('.').length;
-console.log(`Total files before cleanup: ${totalFilesBefore}`);
+logger.info(`Total files before cleanup: ${totalFilesBefore}`);
 
 // Delete files
 let deletedCount = 0;
 let errors = [];
 
-console.log('\n📁 Deleting redundant files...\n');
+logger.info('\n📁 Deleting redundant files...\n');
 
 filesToDelete.forEach(file => {
   const filePath = path.join('.', file);
   if (fs.existsSync(filePath)) {
     try {
       fs.unlinkSync(filePath);
-      console.log(`✅ Deleted: ${file}`);
+      logger.info(`✅ Deleted: ${file}`);
       deletedCount++;
     } catch (error) {
-      console.error(`❌ Error deleting ${file}: ${error.message}`);
+      logger.error(`❌ Error deleting ${file}: ${error.message}`);
       errors.push({ file, error: error.message });
     }
   } else {
-    console.log(`⏭️  Skipped (not found): ${file}`);
+    logger.info(`⏭️  Skipped (not found): ${file}`);
   }
 });
 
 // Summary
-console.log('\n📊 Cleanup Summary:');
-console.log(`- Files deleted: ${deletedCount}`);
-console.log(`- Files kept: ${filesToKeep.length}`);
-console.log(`- Errors: ${errors.length}`);
+logger.info('\n📊 Cleanup Summary:');
+logger.info(`- Files deleted: ${deletedCount}`);
+logger.info(`- Files kept: ${filesToKeep.length}`);
+logger.info(`- Errors: ${errors.length}`);
 
 if (errors.length > 0) {
-  console.log('\n❌ Errors encountered:');
+  logger.info('\n❌ Errors encountered:');
   errors.forEach(({ file, error }) => {
-    console.log(`  - ${file}: ${error}`);
+    logger.info(`  - ${file}: ${error}`);
   });
 }
 
 // Count files after cleanup
 const totalFilesAfter = fs.readdirSync('.').length;
-console.log(`\nTotal files after cleanup: ${totalFilesAfter}`);
-console.log(`Files removed: ${totalFilesBefore - totalFilesAfter}`);
+logger.info(`\nTotal files after cleanup: ${totalFilesAfter}`);
+logger.info(`Files removed: ${totalFilesBefore - totalFilesAfter}`);
 
-console.log('\n✨ Cleanup complete!');
-console.log('\n📝 Next steps:');
-console.log('1. Review the remaining documentation files');
-console.log('2. Merge related documentation into single files');
-console.log('3. Update README.md with current project structure');
-console.log('4. Run "npm run clean && npm install" to refresh dependencies');
+logger.info('\n✨ Cleanup complete!');
+logger.info('\n📝 Next steps:');
+logger.info('1. Review the remaining documentation files');
+logger.info('2. Merge related documentation into single files');
+logger.info('3. Update README.md with current project structure');
+logger.info('4. Run "npm run clean && npm install" to refresh dependencies');

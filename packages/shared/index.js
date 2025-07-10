@@ -6,6 +6,7 @@
 const middleware = require('./middleware');
 const utils = require('./utils');
 const schemas = require('./schemas');
+const logger = require('./logger');
 
 module.exports = {
   // Middleware
@@ -17,6 +18,9 @@ module.exports = {
   // Схемы валидации
   schemas,
   
+  // Логгер
+  logger,
+  
   // Прямые экспорты для удобства
   ...middleware,
   ...utils,
@@ -26,5 +30,6 @@ module.exports = {
   validate: middleware.validate,
   errors: middleware.errors,
   security: require('../shared-types/src/security'),
-  redis: require('../shared-types/src/redis')
+  redis: require('../shared-types/src/redis'),
+  log: logger
 };

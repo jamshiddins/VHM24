@@ -22,7 +22,10 @@ fastify.decorate('authenticate', async function (request, reply) {
   try {
     await request.jwtVerify();
   } catch (err) {
-    reply.send(err);
+    reply.code(err.statusCode || 500).send({
+          error: err.name || 'Internal Server Error',
+          message: process.env.NODE_ENV === 'development' ? err.message : 'An error occurred'
+        });
   }
 });
 
@@ -144,9 +147,17 @@ fastify.get('/routes/:id', {
 });
 
 // Создать новый маршрут
-fastify.post('/routes', {
-  preHandler: [fastify.authenticate]
-}, async (request, reply) => {
+
+// Схема валидации для POST /routes
+const postroutesSchema = {
+  body: {
+    type: 'object',
+    required: [],
+    properties: {}
+  }
+};
+
+fastify.post('/routes', { preHandler: [fastify.authenticate], schema: postroutesSchema }, async (request, reply) => {
   try {
     const { name, description, driverId, plannedDate, stops } = request.body;
 
@@ -217,9 +228,17 @@ fastify.post('/routes', {
 });
 
 // Обновить маршрут
-fastify.patch('/routes/:id', {
-  preHandler: [fastify.authenticate]
-}, async (request, reply) => {
+
+// Схема валидации для PATCH /routes/:id
+const patchroutes:idSchema = {
+  body: {
+    type: 'object',
+    required: [],
+    properties: {}
+  }
+};
+
+fastify.patch('/routes/:id', { preHandler: [fastify.authenticate], schema: patchroutes:idSchema }, async (request, reply) => {
   try {
     const { id } = request.params;
     const updateData = request.body;
@@ -325,9 +344,17 @@ fastify.get('/route-stops', {
 });
 
 // Обновить остановку
-fastify.patch('/route-stops/:id', {
-  preHandler: [fastify.authenticate]
-}, async (request, reply) => {
+
+// Схема валидации для PATCH /route-stops/:id
+const patchroute-stops:idSchema = {
+  body: {
+    type: 'object',
+    required: [],
+    properties: {}
+  }
+};
+
+fastify.patch('/route-stops/:id', { preHandler: [fastify.authenticate], schema: patchroute-stops:idSchema }, async (request, reply) => {
   try {
     const { id } = request.params;
     const updateData = request.body;
@@ -420,9 +447,17 @@ fastify.get('/driver-logs', {
 });
 
 // Создать лог водителя
-fastify.post('/driver-logs', {
-  preHandler: [fastify.authenticate]
-}, async (request, reply) => {
+
+// Схема валидации для POST /driver-logs
+const postdriver-logsSchema = {
+  body: {
+    type: 'object',
+    required: [],
+    properties: {}
+  }
+};
+
+fastify.post('/driver-logs', { preHandler: [fastify.authenticate], schema: postdriver-logsSchema }, async (request, reply) => {
   try {
     const { type, description, driverId, routeId, mileage, latitude, longitude, photos, metadata } = request.body;
 

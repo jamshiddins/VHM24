@@ -1,10 +1,12 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-console.log('🚀 Запуск всех сервисов VHM24 с системой аудита...\n');
+logger.info('🚀 Запуск всех сервисов VHM24 с системой аудита...\n');
 
 // Список всех сервисов с их портами и путями
 const services = [
@@ -108,16 +110,21 @@ const runningProcesses = [];
 
 // Функция для установки зависимостей сервиса
 async function installDependencies(service) {
+  try {
   return new Promise((resolve, reject) => {
     const servicePath = path.join(__dirname, service.path);
     
     if (!fs.existsSync(servicePath)) {
-      console.log(`⚠️  Сервис ${service.name} не найден по пути ${servicePath}`);
+      logger.info(`⚠️  Сервис ${service.name  } catch (error) {
+    logger.error('Error:', error);
+    throw error;
+  }
+} не найден по пути ${servicePath}`);
       resolve();
       return;
     }
 
-    console.log(`📦 Установка зависимостей для ${service.name}...`);
+    logger.info(`📦 Установка зависимостей для ${service.name}...`);
     
     const installProcess = spawn('npm', ['install'], {
       cwd: servicePath,
@@ -136,16 +143,16 @@ async function installDependencies(service) {
 
     installProcess.on('close', (code) => {
       if (code === 0) {
-        console.log(`✅ Зависимости для ${service.name} установлены`);
+        logger.info(`✅ Зависимости для ${service.name} установлены`);
         resolve();
       } else {
-        console.log(`❌ Ошибка установки зависимостей для ${service.name}:`, output);
+        logger.info(`❌ Ошибка установки зависимостей для ${service.name}:`, output);
         resolve(); // Продолжаем даже при ошибке
       }
     });
 
     installProcess.on('error', (error) => {
-      console.log(`❌ Ошибка запуска установки для ${service.name}:`, error.message);
+      logger.info(`❌ Ошибка запуска установки для ${service.name}:`, error.message);
       resolve();
     });
   });
@@ -157,12 +164,12 @@ function startService(service) {
     const servicePath = path.join(__dirname, service.path);
     
     if (!fs.existsSync(servicePath)) {
-      console.log(`⚠️  Пропуск ${service.name} - сервис не найден`);
+      logger.info(`⚠️  Пропуск ${service.name} - сервис не найден`);
       resolve();
       return;
     }
 
-    console.log(`${service.icon} Запуск ${service.name} на порту ${service.port}...`);
+    logger.info(`${service.icon} Запуск ${service.name} на порту ${service.port}...`);
     
     const serviceProcess = spawn('npm', ['start'], {
       cwd: servicePath,
@@ -179,19 +186,19 @@ function startService(service) {
     serviceProcess.stdout.on('data', (data) => {
       const output = data.toString().trim();
       if (output) {
-        console.log(`[${service.name}] ${output}`);
+        logger.info(`[${service.name}] ${output}`);
       }
     });
 
     serviceProcess.stderr.on('data', (data) => {
       const output = data.toString().trim();
       if (output && !output.includes('ExperimentalWarning')) {
-        console.log(`[${service.name}] ⚠️  ${output}`);
+        logger.info(`[${service.name}] ⚠️  ${output}`);
       }
     });
 
     serviceProcess.on('close', (code) => {
-      console.log(`[${service.name}] 🛑 Сервис завершен с кодом ${code}`);
+      logger.info(`[${service.name}] 🛑 Сервис завершен с кодом ${code}`);
       // Удаляем из списка запущенных процессов
       const index = runningProcesses.indexOf(serviceProcess);
       if (index > -1) {
@@ -200,7 +207,7 @@ function startService(service) {
     });
 
     serviceProcess.on('error', (error) => {
-      console.log(`[${service.name}] ❌ Ошибка запуска: ${error.message}`);
+      logger.info(`[${service.name}] ❌ Ошибка запуска: ${error.message}`);
     });
 
     // Добавляем в список запущенных процессов
@@ -234,75 +241,90 @@ function checkPort(port) {
 
 // Функция для отображения статуса сервисов
 async function showStatus() {
-  console.log('\n📊 Статус сервисов:');
-  console.log('━'.repeat(50));
+  try {
+  logger.info('\n📊 Статус сервисов:');
+  logger.info('━'.repeat(50));
   
   for (const service of services) {
     const isPortFree = await checkPort(service.port);
     const status = isPortFree ? '❌ Остановлен' : '✅ Запущен';
-    console.log(`${service.icon} ${service.name.padEnd(15)} ${service.port.toString().padEnd(6)} ${status}`);
+    logger.info(`${service.icon  } catch (error) {
+    logger.error('Error:', error);
+    throw error;
+  }
+} ${service.name.padEnd(15)} ${service.port.toString().padEnd(6)} ${status}`);
   }
   
-  console.log('━'.repeat(50));
-  console.log(`📈 Запущено сервисов: ${runningProcesses.length}/${services.length}`);
+  logger.info('━'.repeat(50));
+  logger.info(`📈 Запущено сервисов: ${runningProcesses.length}/${services.length}`);
 }
 
 // Основная функция запуска
 async function startAllServices() {
-  console.log('🔧 Установка зависимостей для всех сервисов...\n');
+  try {
+  logger.info('🔧 Установка зависимостей для всех сервисов...\n');
   
   // Устанавливаем зависимости параллельно
   const installPromises = services.map(service => installDependencies(service));
   await Promise.all(installPromises);
   
-  console.log('\n🚀 Запуск всех сервисов...\n');
+  logger.info('\n🚀 Запуск всех сервисов...\n');
   
   // Запускаем сервисы последовательно с задержкой
   for (const service of services) {
     await startService(service);
+    } catch (error) {
+    logger.error('Error:', error);
+    throw error;
   }
+}
   
-  console.log('\n🎉 Все доступные сервисы запущены!\n');
+  logger.info('\n🎉 Все доступные сервисы запущены!\n');
   
   // Показываем статус
   await showStatus();
   
-  console.log('\n🌐 Основные URL:');
-  console.log(`   Gateway:    http://localhost:${services[0].port}`);
-  console.log(`   Dashboard:  http://localhost:3000 (запустите отдельно)`);
-  console.log(`   Audit:      http://localhost:${services.find(s => s.name === 'Audit').port}`);
-  console.log(`   WebSocket:  ws://localhost:${services[0].port}/ws`);
+  logger.info('\n🌐 Основные URL:');
+  logger.info(`   Gateway:    http://localhost:${services[0].port}`);
+  logger.info(`   Dashboard:  http://localhost:3000 (запустите отдельно)`);
+  logger.info(`   Audit:      http://localhost:${services.find(s => s.name === 'Audit').port}`);
+  logger.info(`   WebSocket:  ws://localhost:${services[0].port}/ws`);
   
-  console.log('\n📝 Команды:');
-  console.log('   Ctrl+C     - Остановить все сервисы');
-  console.log('   npm run dashboard - Запустить веб-дашборд');
-  console.log('   npm run test-audit - Тестировать систему аудита');
+  logger.info('\n📝 Команды:');
+  logger.info('   Ctrl+C     - Остановить все сервисы');
+  logger.info('   npm run dashboard - Запустить веб-дашборд');
+  logger.info('   npm run test-audit - Тестировать систему аудита');
   
   // Периодически показываем статус
   setInterval(async () => {
+  try {
     await showStatus();
-  }, 30000); // Каждые 30 секунд
+    } catch (error) {
+    logger.error('Error:', error);
+    throw error;
+  }
+}, 30000); // Каждые 30 секунд
 }
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-  console.log('\n🛑 Остановка всех сервисов...');
+  logger.info('\n🛑 Остановка всех сервисов...');
   
   runningProcesses.forEach((proc, index) => {
     if (proc && !proc.killed) {
-      console.log(`🛑 Остановка сервиса ${services[index]?.name || index}...`);
+      logger.info(`🛑 Остановка сервиса ${services[index]?.name || index}...`);
       proc.kill('SIGINT');
     }
   });
   
   setTimeout(() => {
-    console.log('👋 Все сервисы остановлены');
+    logger.info('👋 Все сервисы остановлены');
     process.exit(0);
   }, 3000);
 });
 
 process.on('SIGTERM', () => {
-  console.log('\n🛑 Получен сигнал SIGTERM, остановка сервисов...');
+  logger.info('\n🛑 Получен сигнал SIGTERM, остановка сервисов...');
   runningProcesses.forEach(proc => {
     if (proc && !proc.killed) {
       proc.kill('SIGTERM');
@@ -313,15 +335,15 @@ process.on('SIGTERM', () => {
 
 // Обработка необработанных ошибок
 process.on('uncaughtException', (error) => {
-  console.error('💥 Необработанная ошибка:', error);
+  logger.error('💥 Необработанная ошибка:', error);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('💥 Необработанное отклонение промиса:', reason);
+  logger.error('💥 Необработанное отклонение промиса:', reason);
 });
 
 // Запуск
 startAllServices().catch((error) => {
-  console.error('💥 Критическая ошибка при запуске сервисов:', error);
+  logger.error('💥 Критическая ошибка при запуске сервисов:', error);
   process.exit(1);
 });

@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 /**
  * VHM24 - Test All Services
  * Comprehensive test script for all microservices
@@ -21,28 +23,28 @@ const SERVICES = {
 // Test credentials
 const TEST_USER = {
   email: 'admin@vhm24.ru',
-  password: 'admin123'
+  password: '${process.env.PASSWORD_869}'
 };
 
 let authToken = null;
 
 // Helper functions
 function logSuccess(message) {
-  console.log(colors.green('✓ ' + message));
+  logger.info(colors.green('✓ ' + message));
 }
 
 function logError(message) {
-  console.log(colors.red('✗ ' + message));
+  logger.info(colors.red('✗ ' + message));
 }
 
 function logInfo(message) {
-  console.log(colors.blue('ℹ ' + message));
+  logger.info(colors.blue('ℹ ' + message));
 }
 
 function logSection(title) {
-  console.log('\n' + colors.yellow('═'.repeat(50)));
-  console.log(colors.yellow(title));
-  console.log(colors.yellow('═'.repeat(50)));
+  logger.info('\n' + colors.yellow('═'.repeat(50)));
+  logger.info(colors.yellow(title));
+  logger.info(colors.yellow('═'.repeat(50)));
 }
 
 // Test functions
@@ -69,7 +71,7 @@ async function testGatewayHealth() {
     
     // Check individual services through gateway
     if (response.data.services) {
-      console.log('\nService Status through Gateway:');
+      logger.info('\nService Status through Gateway:');
       Object.entries(response.data.services).forEach(([service, status]) => {
         if (status === 'ok') {
           logSuccess(`  ${service}: ${status}`);
@@ -240,7 +242,7 @@ async function testDashboardStats() {
     if (response.data.success) {
       logSuccess('Dashboard stats endpoint working');
       const stats = response.data.data;
-      console.log('\nDashboard Statistics:');
+      logger.info('\nDashboard Statistics:');
       logInfo(`  Total Machines: ${stats.totalMachines}`);
       logInfo(`  Online Machines: ${stats.onlineMachines}`);
       logInfo(`  Total Tasks: ${stats.totalTasks}`);
@@ -267,7 +269,7 @@ async function testWebSocket() {
 
 // Main test runner
 async function runAllTests() {
-  console.log(colors.cyan('\n🚀 VHM24 Platform - Service Test Suite\n'));
+  logger.info(colors.cyan('\n🚀 VHM24 Platform - Service Test Suite\n'));
   
   let totalTests = 0;
   let passedTests = 0;
@@ -332,19 +334,19 @@ async function runAllTests() {
   
   // Summary
   logSection('Test Summary');
-  console.log(`\nTotal Tests: ${totalTests}`);
-  console.log(colors.green(`Passed: ${passedTests}`));
-  console.log(colors.red(`Failed: ${totalTests - passedTests}`));
+  logger.info(`\nTotal Tests: ${totalTests}`);
+  logger.info(colors.green(`Passed: ${passedTests}`));
+  logger.info(colors.red(`Failed: ${totalTests - passedTests}`));
   
   const successRate = (passedTests / totalTests * 100).toFixed(1);
   if (passedTests === totalTests) {
-    console.log(colors.green(`\n✅ All tests passed! (${successRate}%)`));
+    logger.info(colors.green(`\n✅ All tests passed! (${successRate}%)`));
   } else {
-    console.log(colors.yellow(`\n⚠️  ${successRate}% tests passed`));
+    logger.info(colors.yellow(`\n⚠️  ${successRate}% tests passed`));
   }
   
   // Additional information
-  console.log('\n' + colors.cyan('Additional Information:'));
+  logger.info('\n' + colors.cyan('Additional Information:'));
   logInfo('Default credentials: admin@vhm24.ru / admin123');
   logInfo('API Documentation: http://localhost:8000/docs (if enabled)');
   logInfo('MinIO Console: http://localhost:9001 (minioadmin/minioadmin)');
@@ -354,6 +356,6 @@ async function runAllTests() {
 
 // Run tests
 runAllTests().catch(error => {
-  console.error(colors.red('\n❌ Test suite failed with error:'), error);
+  logger.error(colors.red('\n❌ Test suite failed with error:'), error);
   process.exit(1);
 });

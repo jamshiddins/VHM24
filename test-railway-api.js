@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
 /**
@@ -56,8 +58,8 @@ function makeRequest(path, options = {}) {
 
 // Тесты
 async function runTests() {
-  console.log(`${colors.blue}🧪 Тестирование VHM24 API на Railway${colors.reset}\n`);
-  console.log(`URL: ${API_URL}\n`);
+  logger.info(`${colors.blue}🧪 Тестирование VHM24 API на Railway${colors.reset}\n`);
+  logger.info(`URL: ${API_URL}\n`);
   
   const tests = [
     {
@@ -97,44 +99,44 @@ async function runTests() {
   
   for (const test of tests) {
     try {
-      console.log(`Testing: ${test.name}...`);
+      logger.info(`Testing: ${test.name}...`);
       const result = await makeRequest(test.path);
       
       if (test.check(result)) {
-        console.log(`${colors.green}✅ ${test.name} - PASSED${colors.reset}`);
+        logger.info(`${colors.green}✅ ${test.name} - PASSED${colors.reset}`);
         if (result.data) {
-          console.log(`   Response: ${JSON.stringify(result.data, null, 2).split('\n').join('\n   ')}`);
+          logger.info(`   Response: ${JSON.stringify(result.data, null, 2).split('\n').join('\n   ')}`);
         }
         passed++;
       } else {
-        console.log(`${colors.red}❌ ${test.name} - FAILED${colors.reset}`);
-        console.log(`   Status: ${result.status}`);
-        console.log(`   Response: ${JSON.stringify(result.data, null, 2).split('\n').join('\n   ')}`);
+        logger.info(`${colors.red}❌ ${test.name} - FAILED${colors.reset}`);
+        logger.info(`   Status: ${result.status}`);
+        logger.info(`   Response: ${JSON.stringify(result.data, null, 2).split('\n').join('\n   ')}`);
         failed++;
       }
     } catch (error) {
-      console.log(`${colors.red}❌ ${test.name} - ERROR${colors.reset}`);
-      console.log(`   Error: ${error.message}`);
+      logger.info(`${colors.red}❌ ${test.name} - ERROR${colors.reset}`);
+      logger.info(`   Error: ${error.message}`);
       failed++;
     }
     
-    console.log('');
+    logger.info('');
   }
   
   // Итоги
-  console.log(`${colors.blue}📊 Результаты тестирования:${colors.reset}`);
-  console.log(`${colors.green}Passed: ${passed}${colors.reset}`);
-  console.log(`${colors.red}Failed: ${failed}${colors.reset}`);
+  logger.info(`${colors.blue}📊 Результаты тестирования:${colors.reset}`);
+  logger.info(`${colors.green}Passed: ${passed}${colors.reset}`);
+  logger.info(`${colors.red}Failed: ${failed}${colors.reset}`);
   
   // Рекомендации
   if (failed > 0) {
-    console.log(`\n${colors.yellow}💡 Рекомендации:${colors.reset}`);
+    logger.info(`\n${colors.yellow}💡 Рекомендации:${colors.reset}`);
     
     const healthResult = await makeRequest('/health').catch(() => null);
     if (healthResult && healthResult.data) {
       // Проверяем статус БД
       if (healthResult.data.dbStatus !== 'connected') {
-        console.log('1. База данных не подключена - проверьте DATABASE_URL в Railway Variables');
+        logger.info('1. База данных не подключена - проверьте DATABASE_URL в Railway Variables');
       }
       
       // Проверяем сервисы
@@ -143,22 +145,22 @@ async function runTests() {
         .map(([name]) => name);
         
       if (offlineServices.length > 0) {
-        console.log(`2. Сервисы offline: ${offlineServices.join(', ')}`);
-        console.log('   Проверьте логи: railway logs');
+        logger.info(`2. Сервисы offline: ${offlineServices.join(', ')}`);
+        logger.info('   Проверьте логи: railway logs');
       }
     } else {
-      console.log('1. API Gateway не отвечает - проверьте деплой и логи');
+      logger.info('1. API Gateway не отвечает - проверьте деплой и логи');
     }
     
-    console.log('\nИспользуйте команду: railway logs -f');
+    logger.info('\nИспользуйте команду: railway logs -f');
   } else {
-    console.log(`\n${colors.green}🎉 Все тесты пройдены успешно!${colors.reset}`);
-    console.log('API готов к использованию.');
+    logger.info(`\n${colors.green}🎉 Все тесты пройдены успешно!${colors.reset}`);
+    logger.info('API готов к использованию.');
   }
 }
 
 // Запуск тестов
 runTests().catch(error => {
-  console.error(`${colors.red}Критическая ошибка:${colors.reset}`, error);
+  logger.error(`${colors.red}Критическая ошибка:${colors.reset}`, error);
   process.exit(1);
 });

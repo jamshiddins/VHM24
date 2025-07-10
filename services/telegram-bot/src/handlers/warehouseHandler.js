@@ -5,6 +5,10 @@
 
 const fsmManager = require('../fsm/manager');
 const { WAREHOUSE_STATES, COMMON_STATES } = require('../fsm/states');
+const qrScanner = require('../utils/qrScanner');
+const fs = require('fs')
+const { promises: fsPromises } = fs;
+const path = require('path');
 
 /**
  * Главное меню складского работника
@@ -63,7 +67,11 @@ async function showWarehouseMenu(bot, msg) {
     });
 
   } catch (error) {
-    global.logger.error('Warehouse menu error:', error);
+    if (global.logger) {
+      global.logger.error('Warehouse menu error:', error);
+    } else {
+      console.error('Warehouse menu error:', error);
+    }
     await bot.sendMessage(chatId,
       `❌ Ошибка при загрузке меню склада. Попробуйте позже.`
     );
@@ -107,7 +115,11 @@ async function receiveItems(bot, callbackQuery) {
     await bot.answerCallbackQuery(callbackQuery.id);
 
   } catch (error) {
-    global.logger.error('Receive items error:', error);
+    if (global.logger) {
+      global.logger.error('Receive items error:', error);
+    } else {
+      console.error('Receive items error:', error);
+    }
     await bot.answerCallbackQuery(callbackQuery.id, {
       text: '❌ Ошибка при начале приёма товара',
       show_alert: true
@@ -133,12 +145,133 @@ async function handleItemScan(bot, msg) {
 
     // Обработка фото (штрих-код/QR-код)
     if (msg.photo) {
-      // В реальной реализации здесь будет распознавание штрих-кода
-      await bot.sendMessage(chatId,
-        `📸 Фото получено. Распознавание штрих-кода...\n\n` +
-        `⚠️ Функция распознавания в разработке.\n` +
-        `Пожалуйста, введите артикул вручную:`
-      );
+      await bot.sendMessage(chatId, `📸 Фото получено. Распознавание QR-кода...`);
+      
+      try {
+        // Получаем информацию о файле
+        const photo = msg.photo[msg.photo.length - 1]; // Берем самое большое фото
+        const fileInfo = await bot.getFile(photo.file_id);
+        const fileUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${fileInfo.file_path}`;
+        
+        // Создаем временную директорию, если она не существует
+        const tempDir = path.join(__dirname, '../../../temp');
+        if (!fs.existsSync(tempDir)) {
+          fs.mkdirSync(tempDir, { recursive: true });
+        }
+        
+        // Скачиваем файл
+        const axios = require('axios');
+        const response = await axios({
+          method: 'GET',
+          url: fileUrl,
+          responseType: 'arraybuffer'
+        });
+        
+        // Сохраняем файл
+        const tempFilePath = path.join(tempDir, `temp_${Date.now()}.jpg`);
+        await fsPromises.writeFile(tempFilePath, response.data);
+        
+        // Распознаем QR-код
+        const qrData = await qrScanner.scanQRCodeFromFile(tempFilePath);
+        
+        // Удаляем временный файл
+        fs.unlinkSync(tempFilePath);
+        
+        if (qrData) {
+          // Парсим данные QR-кода
+          const parsedData = qrScanner.parseQRData(qrData);
+          
+          if (parsedData.success) {
+            if (global.logger) {
+              global.logger.info('QR code detected:', parsedData);
+            } else {
+              console.info('QR code detected:', parsedData);
+            }
+            
+            // Обрабатываем разные типы QR-кодов
+            if (parsedData.type === 'inventory') {
+              // Получаем ID товара
+              const itemId = parsedData.data.id;
+              
+              // Ищем товар по ID
+              const item = await findItemById(itemId);
+              
+              if (item) {
+                // Переходим к вводу количества
+                await fsmManager.setUserState(userId, WAREHOUSE_STATES.WAITING_QUANTITY_INPUT);
+                await fsmManager.updateUserData(userId, {
+                  currentItem: item
+                });
+                
+                await bot.sendMessage(chatId,
+                  `✅ *Товар найден по QR-коду:*\n\n` +
+                  `📦 ${item.name}\n` +
+                  `🏷️ Артикул: ${item.sku}\n` +
+                  `📊 Текущий остаток: ${item.quantity} ${item.unit}\n\n` +
+                  `📝 Введите количество для приёма:`,
+                  { 
+                    parse_mode: 'Markdown',
+                    reply_markup: {
+                      inline_keyboard: [
+                        [{ text: '❌ Отмена', callback_data: 'warehouse_cancel' }]
+                      ]
+                    }
+                  }
+                );
+                
+                return true;
+              }
+            } else if (parsedData.type === 'machine') {
+              // Получаем ID машины
+              const machineId = parsedData.data.id;
+              
+              await bot.sendMessage(chatId,
+                `✅ *Распознан QR-код машины:*\n\n` +
+                `🆔 ID: ${machineId}\n\n` +
+                `⚠️ Для приёма товара необходимо отсканировать QR-код товара или ввести артикул.`
+              );
+              
+              return true;
+            } else if (parsedData.type === 'task') {
+              // Получаем ID задачи
+              const taskId = parsedData.data.id;
+              
+              await bot.sendMessage(chatId,
+                `✅ *Распознан QR-код задачи:*\n\n` +
+                `🆔 ID: ${taskId}\n\n` +
+                `⚠️ Для приёма товара необходимо отсканировать QR-код товара или ввести артикул.`
+              );
+              
+              return true;
+            } else {
+              // Неизвестный тип QR-кода
+              await bot.sendMessage(chatId,
+                `⚠️ Распознан QR-код неизвестного типа.\n\n` +
+                `Пожалуйста, отсканируйте QR-код товара или введите артикул вручную:`
+              );
+              
+              return true;
+            }
+          }
+        }
+        
+        // Если QR-код не распознан или не найден товар
+        await bot.sendMessage(chatId,
+          `⚠️ QR-код не распознан или товар не найден.\n\n` +
+          `Пожалуйста, введите артикул товара вручную:`
+        );
+      } catch (error) {
+        if (global.logger) {
+          global.logger.error('QR code scanning error:', error);
+        } else {
+          console.error('QR code scanning error:', error);
+        }
+        await bot.sendMessage(chatId,
+          `❌ Ошибка при распознавании QR-кода.\n\n` +
+          `Пожалуйста, введите артикул товара вручную:`
+        );
+      }
+      
       return true;
     }
 
@@ -189,7 +322,11 @@ async function handleItemScan(bot, msg) {
 
     return true;
   } catch (error) {
-    global.logger.error('Handle item scan error:', error);
+    if (global.logger) {
+      global.logger.error('Handle item scan error:', error);
+    } else {
+      console.error('Handle item scan error:', error);
+    }
     await bot.sendMessage(chatId,
       `❌ Ошибка при обработке товара. Попробуйте еще раз.`
     );
@@ -248,7 +385,11 @@ async function handleQuantityInput(bot, msg) {
 
     return true;
   } catch (error) {
-    global.logger.error('Handle quantity input error:', error);
+    if (global.logger) {
+      global.logger.error('Handle quantity input error:', error);
+    } else {
+      console.error('Handle quantity input error:', error);
+    }
     await bot.sendMessage(chatId,
       `❌ Ошибка при обработке количества. Попробуйте еще раз.`
     );
@@ -287,6 +428,10 @@ async function handleConfirmationPhoto(bot, msg) {
     const photoUrl = `https://api.telegram.org/file/bot${bot.token}/${fileInfo.file_path}`;
 
     // Создаем движение товара
+    if (!global.apiClient) {
+      throw new Error('API client is not available');
+    }
+    
     const stockMovement = await global.apiClient.post('/stock-movements', {
       itemId: item.id,
       type: 'IN',
@@ -319,7 +464,11 @@ async function handleConfirmationPhoto(bot, msg) {
 
     return true;
   } catch (error) {
-    global.logger.error('Handle confirmation photo error:', error);
+    if (global.logger) {
+      global.logger.error('Handle confirmation photo error:', error);
+    } else {
+      console.error('Handle confirmation photo error:', error);
+    }
     await bot.sendMessage(chatId,
       `❌ Ошибка при сохранении товара. Попробуйте еще раз.`
     );
@@ -371,7 +520,11 @@ async function fillBunker(bot, callbackQuery) {
     await bot.answerCallbackQuery(callbackQuery.id);
 
   } catch (error) {
-    global.logger.error('Fill bunker error:', error);
+    if (global.logger) {
+      global.logger.error('Fill bunker error:', error);
+    } else {
+      console.error('Fill bunker error:', error);
+    }
     await bot.answerCallbackQuery(callbackQuery.id, {
       text: '❌ Ошибка при загрузке бункеров',
       show_alert: true
@@ -411,7 +564,11 @@ async function weighItems(bot, callbackQuery) {
     await bot.answerCallbackQuery(callbackQuery.id);
 
   } catch (error) {
-    global.logger.error('Weigh items error:', error);
+    if (global.logger) {
+      global.logger.error('Weigh items error:', error);
+    } else {
+      console.error('Weigh items error:', error);
+    }
     await bot.answerCallbackQuery(callbackQuery.id, {
       text: '❌ Ошибка при начале взвешивания',
       show_alert: true
@@ -444,6 +601,10 @@ async function handleWeightInput(bot, msg) {
     }
 
     // Сохраняем результат взвешивания
+    if (!global.apiClient) {
+      throw new Error('API client is not available');
+    }
+    
     const weighingResult = await global.apiClient.post('/warehouse-logs', {
       type: 'WEIGHING',
       description: `Взвешивание товара: ${weight} кг`,
@@ -467,7 +628,11 @@ async function handleWeightInput(bot, msg) {
 
     return true;
   } catch (error) {
-    global.logger.error('Handle weight input error:', error);
+    if (global.logger) {
+      global.logger.error('Handle weight input error:', error);
+    } else {
+      console.error('Handle weight input error:', error);
+    }
     await bot.sendMessage(chatId,
       `❌ Ошибка при сохранении веса. Попробуйте еще раз.`
     );
@@ -493,7 +658,11 @@ async function cancelAction(bot, callbackQuery) {
       from: { id: userId }
     });
   } catch (error) {
-    global.logger.error('Cancel action error:', error);
+    if (global.logger) {
+      global.logger.error('Cancel action error:', error);
+    } else {
+      console.error('Cancel action error:', error);
+    }
   }
 }
 
@@ -501,6 +670,11 @@ async function cancelAction(bot, callbackQuery) {
 
 async function getUserInfo(userId) {
   try {
+    if (!global.apiClient) {
+      console.warn('API client is not available');
+      return null;
+    }
+    
     const response = await global.apiClient.get('/auth/me');
     return response.data.data;
   } catch (error) {
@@ -510,6 +684,11 @@ async function getUserInfo(userId) {
 
 async function getWarehouseStats() {
   try {
+    if (!global.apiClient) {
+      console.warn('API client is not available');
+      return {};
+    }
+    
     const response = await global.apiClient.get('/warehouse/stats');
     return response.data.data || {};
   } catch (error) {
@@ -519,6 +698,11 @@ async function getWarehouseStats() {
 
 async function findItemByCode(code) {
   try {
+    if (!global.apiClient) {
+      console.warn('API client is not available');
+      return null;
+    }
+    
     const response = await global.apiClient.get(`/inventory/items?sku=${code}`);
     return response.data.data[0] || null;
   } catch (error) {
@@ -526,8 +710,27 @@ async function findItemByCode(code) {
   }
 }
 
+async function findItemById(id) {
+  try {
+    if (!global.apiClient) {
+      console.warn('API client is not available');
+      return null;
+    }
+    
+    const response = await global.apiClient.get(`/inventory/items/${id}`);
+    return response.data.data || null;
+  } catch (error) {
+    return null;
+  }
+}
+
 async function getAvailableBunkers() {
   try {
+    if (!global.apiClient) {
+      console.warn('API client is not available');
+      return [];
+    }
+    
     const response = await global.apiClient.get('/machine-inventory?needsRefill=true');
     return response.data.data || [];
   } catch (error) {

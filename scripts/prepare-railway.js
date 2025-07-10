@@ -1,4 +1,7 @@
-const fs = require('fs');
+const logger = require('@vhm24/shared/logger');
+
+const fs = require('fs')
+const { promises: fsPromises } = fs;
 const path = require('path');
 
 class RailwayPreparation {
@@ -8,7 +11,7 @@ class RailwayPreparation {
   }
 
   async prepare() {
-    console.log('🚂 Подготовка к деплою на Railway...\n');
+    logger.info('🚂 Подготовка к деплою на Railway...\n');
     
     try {
       // 1. Проверка и создание необходимых файлов
@@ -33,13 +36,13 @@ class RailwayPreparation {
       this.generateDeploymentGuide();
       
     } catch (error) {
-      console.error('❌ Error during preparation:', error);
+      logger.error('❌ Error during preparation:', error);
       throw error;
     }
   }
 
   createRailwayConfig() {
-    console.log('📝 Создание Railway конфигурации...');
+    logger.info('📝 Создание Railway конфигурации...');
     
     // Обновляем nixpacks.toml для monorepo
     const nixpacksConfig = `[phases.setup]
@@ -54,7 +57,7 @@ cmds = ["npm run build --if-present"]
 [start]
 cmd = "npm run start:production"`;
     
-    fs.writeFileSync('nixpacks.toml', nixpacksConfig);
+    fs.await fsPromises.writeFile('nixpacks.toml', nixpacksConfig);
     this.tasks.push('Updated nixpacks.toml for monorepo');
     
     // Создаем railway.toml для конфигурации сервисов
@@ -71,14 +74,14 @@ restartPolicyType = "always"
 [env]
 NODE_ENV = "production"`;
     
-    fs.writeFileSync('railway.toml', railwayConfig);
+    fs.await fsPromises.writeFile('railway.toml', railwayConfig);
     this.tasks.push('Created railway.toml');
   }
 
   updatePackageJson() {
-    console.log('📦 Обновление package.json...');
+    logger.info('📦 Обновление package.json...');
     
-    const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+    const pkg = JSON.parse(fs.await fsPromises.readFile('package.json', 'utf8'));
     
     // Добавляем production скрипты
     pkg.scripts = pkg.scripts || {};
@@ -100,12 +103,12 @@ NODE_ENV = "production"`;
       ];
     }
     
-    fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+    fs.await fsPromises.writeFile('package.json', JSON.stringify(pkg, null, 2));
     this.tasks.push('Updated root package.json');
   }
 
   prepareEnvironmentVariables() {
-    console.log('🔐 Подготовка переменных окружения...');
+    logger.info('🔐 Подготовка переменных окружения...');
     
     const envExample = `# Railway Environment Variables for VHM24
 
@@ -166,7 +169,7 @@ MAX_REQUEST_SIZE=52428800
 # Кэширование
 CACHE_TTL=3600`;
     
-    fs.writeFileSync('.env.railway.example', envExample);
+    fs.await fsPromises.writeFile('.env.railway.example', envExample);
     this.tasks.push('Created .env.railway.example');
     
     // Создаем скрипт для проверки переменных
@@ -184,44 +187,44 @@ const optional = [
   'SENTRY_DSN'
 ];
 
-console.log('🔍 Checking environment variables...');
+logger.info('🔍 Checking environment variables...');
 
 const missing = required.filter(key => !process.env[key]);
 const missingOptional = optional.filter(key => !process.env[key]);
 
 if (missing.length > 0) {
-  console.error('❌ Missing required environment variables:');
-  missing.forEach(key => console.error(\`  - \${key}\`));
+  logger.error('❌ Missing required environment variables:');
+  missing.forEach(key => logger.error(\`  - \${key}\`));
   process.exit(1);
 }
 
 if (missingOptional.length > 0) {
-  console.warn('⚠️ Missing optional environment variables:');
-  missingOptional.forEach(key => console.warn(\`  - \${key}\`));
+  logger.warn('⚠️ Missing optional environment variables:');
+  missingOptional.forEach(key => logger.warn(\`  - \${key}\`));
 }
 
 // Проверка JWT секрета
 if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
-  console.error('❌ JWT_SECRET must be at least 32 characters long');
+  logger.error('❌ JWT_SECRET must be at least 32 characters long');
   process.exit(1);
 }
 
 // Проверка S3 конфигурации
 if (process.env.S3_BUCKET && (!process.env.S3_ACCESS_KEY || !process.env.S3_SECRET_KEY)) {
-  console.error('❌ S3_BUCKET requires S3_ACCESS_KEY and S3_SECRET_KEY');
+  logger.error('❌ S3_BUCKET requires S3_ACCESS_KEY and S3_SECRET_KEY');
   process.exit(1);
 }
 
-console.log('✅ All required environment variables are set');
-console.log(\`📊 \${required.length - missing.length}/\${required.length} required variables configured\`);
-console.log(\`📊 \${optional.length - missingOptional.length}/\${optional.length} optional variables configured\`);`;
+logger.info('✅ All required environment variables are set');
+logger.info(\`📊 \${required.length - missing.length}/\${required.length} required variables configured\`);
+logger.info(\`📊 \${optional.length - missingOptional.length}/\${optional.length} optional variables configured\`);`;
     
-    fs.writeFileSync('scripts/check-env.js', envChecker);
+    fs.await fsPromises.writeFile('scripts/check-env.js', envChecker);
     this.tasks.push('Created environment checker script');
   }
 
   adaptForRailwayLimitations() {
-    console.log('🔧 Адаптация под ограничения Railway...');
+    logger.info('🔧 Адаптация под ограничения Railway...');
     
     // Railway не поддерживает персистентное хранилище
     this.warnings.push('MinIO заменен на внешний S3 - настройте S3_BUCKET, S3_ACCESS_KEY, S3_SECRET_KEY');
@@ -249,9 +252,9 @@ const railwayMiddleware = (fastify, options, done) => {
   
   // Graceful shutdown для Railway
   const gracefulShutdown = () => {
-    console.log('🛑 Received shutdown signal, closing server gracefully...');
+    logger.info('🛑 Received shutdown signal, closing server gracefully...');
     fastify.close(() => {
-      console.log('✅ Server closed successfully');
+      logger.info('✅ Server closed successfully');
       process.exit(0);
     });
   };
@@ -269,7 +272,7 @@ module.exports = railwayMiddleware;`;
       fs.mkdirSync(middlewareDir, { recursive: true });
     }
     
-    fs.writeFileSync(path.join(middlewareDir, 'railway.js'), railwayMiddleware);
+    fs.await fsPromises.writeFile(path.join(middlewareDir, 'railway.js'), railwayMiddleware);
     this.tasks.push('Created Railway-specific middleware');
     
     // Обновляем .railwayignore
@@ -315,12 +318,12 @@ scripts/test-*
 scripts/dev-*
 scripts/local-*`;
     
-    fs.writeFileSync('.railwayignore', railwayIgnore);
+    fs.await fsPromises.writeFile('.railwayignore', railwayIgnore);
     this.tasks.push('Updated .railwayignore');
   }
 
   createDeploymentScripts() {
-    console.log('📜 Создание скриптов деплоя...');
+    logger.info('📜 Создание скриптов деплоя...');
     
     // Скрипт для production запуска
     const productionStarter = `// Production starter for Railway deployment
@@ -328,13 +331,13 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Starting VHM24 in production mode on Railway...');
+logger.info('🚀 Starting VHM24 in production mode on Railway...');
 
 // Проверка переменных окружения
 try {
   require('./check-env');
 } catch (error) {
-  console.error('❌ Environment check failed:', error.message);
+  logger.error('❌ Environment check failed:', error.message);
   process.exit(1);
 }
 
@@ -344,7 +347,7 @@ const SERVICE = process.env.RAILWAY_SERVICE_NAME ||
                detectServiceFromPath() ||
                'gateway';
 
-console.log(\`🎯 Detected service: \${SERVICE}\`);
+logger.info(\`🎯 Detected service: \${SERVICE}\`);
 
 const serviceMap = {
   'gateway': { path: 'services/gateway', port: 8000, public: true },
@@ -367,24 +370,24 @@ const serviceMap = {
 const service = serviceMap[SERVICE];
 
 if (!service) {
-  console.error(\`❌ Unknown service: \${SERVICE}\`);
-  console.log('Available services:', Object.keys(serviceMap).join(', '));
+  logger.error(\`❌ Unknown service: \${SERVICE}\`);
+  logger.info('Available services:', Object.keys(serviceMap).join(', '));
   process.exit(1);
 }
 
 // Проверяем существование сервиса
 if (!fs.existsSync(service.path)) {
-  console.error(\`❌ Service path not found: \${service.path}\`);
+  logger.error(\`❌ Service path not found: \${service.path}\`);
   process.exit(1);
 }
 
 // Устанавливаем PORT для Railway
 process.env.PORT = process.env.PORT || service.port.toString();
 
-console.log(\`🚀 Starting \${SERVICE} service...\`);
-console.log(\`📁 Path: \${service.path}\`);
-console.log(\`🌐 Port: \${process.env.PORT}\`);
-console.log(\`🔓 Public: \${service.public ? 'Yes' : 'No'}\`);
+logger.info(\`🚀 Starting \${SERVICE} service...\`);
+logger.info(\`📁 Path: \${service.path}\`);
+logger.info(\`🌐 Port: \${process.env.PORT}\`);
+logger.info(\`🔓 Public: \${service.public ? 'Yes' : 'No'}\`);
 
 // Устанавливаем дополнительные переменные для сервиса
 process.env.SERVICE_NAME = SERVICE;
@@ -398,23 +401,23 @@ const child = spawn('npm', ['start'], {
 });
 
 child.on('error', (error) => {
-  console.error('❌ Failed to start service:', error);
+  logger.error('❌ Failed to start service:', error);
   process.exit(1);
 });
 
 child.on('exit', (code) => {
-  console.log(\`🛑 Service \${SERVICE} exited with code \${code}\`);
+  logger.info(\`🛑 Service \${SERVICE} exited with code \${code}\`);
   process.exit(code);
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('🛑 Received SIGTERM, shutting down gracefully...');
+  logger.info('🛑 Received SIGTERM, shutting down gracefully...');
   child.kill('SIGTERM');
 });
 
 process.on('SIGINT', () => {
-  console.log('🛑 Received SIGINT, shutting down gracefully...');
+  logger.info('🛑 Received SIGINT, shutting down gracefully...');
   child.kill('SIGINT');
 });
 
@@ -428,17 +431,17 @@ function detectServiceFromPath() {
   return servicePath || null;
 }`;
     
-    fs.writeFileSync('scripts/start-production.js', productionStarter);
+    fs.await fsPromises.writeFile('scripts/start-production.js', productionStarter);
     this.tasks.push('Created production starter script');
   }
 
   finalCheck() {
-    console.log('\n🔍 Финальная проверка...');
+    logger.info('\n🔍 Финальная проверка...');
     
     const checklist = {
       'Root package.json': fs.existsSync('package.json'),
-      'Start script': JSON.parse(fs.readFileSync('package.json', 'utf8')).scripts?.['start:production'],
-      'Node version specified': JSON.parse(fs.readFileSync('package.json', 'utf8')).engines?.node,
+      'Start script': JSON.parse(fs.await fsPromises.readFile('package.json', 'utf8')).scripts?.['start:production'],
+      'Node version specified': JSON.parse(fs.await fsPromises.readFile('package.json', 'utf8')).engines?.node,
       'Environment example': fs.existsSync('.env.railway.example'),
       'Railway config': fs.existsSync('railway.toml'),
       'Nixpacks config': fs.existsSync('nixpacks.toml'),
@@ -449,17 +452,17 @@ function detectServiceFromPath() {
     };
     
     Object.entries(checklist).forEach(([item, status]) => {
-      console.log(`${status ? '✅' : '❌'} ${item}`);
+      logger.info(`${status ? '✅' : '❌'} ${item}`);
     });
     
     const passed = Object.values(checklist).filter(Boolean).length;
     const total = Object.keys(checklist).length;
     
-    console.log(`\n📊 Readiness: ${passed}/${total} (${Math.round(passed/total*100)}%)`);
+    logger.info(`\n📊 Readiness: ${passed}/${total} (${Math.round(passed/total*100)}%)`);
   }
 
   generateDeploymentGuide() {
-    console.log('\n📚 Генерация руководства по деплою...');
+    logger.info('\n📚 Генерация руководства по деплою...');
     
     const guide = `# Railway Deployment Guide for VHM24
 
@@ -521,28 +524,28 @@ railway status
 - Railway Docs: https://docs.railway.app
 `;
     
-    fs.writeFileSync('RAILWAY_DEPLOYMENT_GUIDE.md', guide);
+    fs.await fsPromises.writeFile('RAILWAY_DEPLOYMENT_GUIDE.md', guide);
     this.tasks.push('Created comprehensive deployment guide');
     
-    console.log('\n✅ Railway preparation completed!');
-    console.log('\n📋 Completed tasks:');
-    this.tasks.forEach(task => console.log(`  ✅ ${task}`));
+    logger.info('\n✅ Railway preparation completed!');
+    logger.info('\n📋 Completed tasks:');
+    this.tasks.forEach(task => logger.info(`  ✅ ${task}`));
     
     if (this.warnings.length > 0) {
-      console.log('\n⚠️ Important warnings:');
-      this.warnings.forEach(warning => console.log(`  ⚠️ ${warning}`));
+      logger.info('\n⚠️ Important warnings:');
+      this.warnings.forEach(warning => logger.info(`  ⚠️ ${warning}`));
     }
     
-    console.log('\n📖 Next steps:');
-    console.log('1. Review RAILWAY_DEPLOYMENT_GUIDE.md');
-    console.log('2. Set up external services (S3, Telegram Bot)');
-    console.log('3. Create Railway project: railway new vhm24-production');
-    console.log('4. Add databases: railway add postgresql && railway add redis');
-    console.log('5. Set environment variables from .env.railway.example');
-    console.log('6. Deploy: railway up');
+    logger.info('\n📖 Next steps:');
+    logger.info('1. Review RAILWAY_DEPLOYMENT_GUIDE.md');
+    logger.info('2. Set up external services (S3, Telegram Bot)');
+    logger.info('3. Create Railway project: railway new vhm24-production');
+    logger.info('4. Add databases: railway add postgresql && railway add redis');
+    logger.info('5. Set environment variables from .env.railway.example');
+    logger.info('6. Deploy: railway up');
     
-    console.log('\n🎯 Quick start command:');
-    console.log('railway variables set RAILWAY_SERVICE_NAME=gateway && railway up');
+    logger.info('\n🎯 Quick start command:');
+    logger.info('railway variables set RAILWAY_SERVICE_NAME=gateway && railway up');
   }
 }
 

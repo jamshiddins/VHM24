@@ -1,9 +1,12 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
-const fs = require('fs');
+const fs = require('fs')
+const { promises: fsPromises } = fs;
 const path = require('path');
 
-console.log('🔧 Fixing Railway deployment compatibility issues...\n');
+logger.info('🔧 Fixing Railway deployment compatibility issues...\n');
 
 // Исправления для зависимостей
 const fixes = {
@@ -28,17 +31,17 @@ function fixPackageJson(filePath, serviceName = 'root') {
   if (!fs.existsSync(filePath)) return;
   
   try {
-    const packageJson = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const packageJson = JSON.parse(fs.await fsPromises.readFile(filePath, 'utf8'));
     let modified = false;
     
-    console.log(`📦 Fixing ${serviceName}...`);
+    logger.info(`📦 Fixing ${serviceName}...`);
     
     // Исправление dependencies
     if (packageJson.dependencies) {
       Object.keys(packageJson.dependencies).forEach(name => {
         // Исправление версий
         if (fixes[name] && packageJson.dependencies[name] !== fixes[name]) {
-          console.log(`  🔧 ${name}: ${packageJson.dependencies[name]} → ${fixes[name]}`);
+          logger.info(`  🔧 ${name}: ${packageJson.dependencies[name]} → ${fixes[name]}`);
           packageJson.dependencies[name] = fixes[name];
           modified = true;
           issuesFixed++;
@@ -46,7 +49,7 @@ function fixPackageJson(filePath, serviceName = 'root') {
         
         // Удаление ненужных зависимостей из backend сервисов
         if (removeFromBackend.includes(name) && serviceName.includes('services/')) {
-          console.log(`  🗑️  Removing ${name} from backend service`);
+          logger.info(`  🗑️  Removing ${name} from backend service`);
           delete packageJson.dependencies[name];
           modified = true;
           issuesFixed++;
@@ -59,7 +62,7 @@ function fixPackageJson(filePath, serviceName = 'root') {
       Object.keys(packageJson.devDependencies).forEach(name => {
         // Исправление версий
         if (fixes[name] && packageJson.devDependencies[name] !== fixes[name]) {
-          console.log(`  🔧 ${name}: ${packageJson.devDependencies[name]} → ${fixes[name]}`);
+          logger.info(`  🔧 ${name}: ${packageJson.devDependencies[name]} → ${fixes[name]}`);
           packageJson.devDependencies[name] = fixes[name];
           modified = true;
           issuesFixed++;
@@ -67,7 +70,7 @@ function fixPackageJson(filePath, serviceName = 'root') {
         
         // Удаление ненужных зависимостей из backend сервисов
         if (removeFromBackend.includes(name) && serviceName.includes('services/')) {
-          console.log(`  🗑️  Removing ${name} from backend service`);
+          logger.info(`  🗑️  Removing ${name} from backend service`);
           delete packageJson.devDependencies[name];
           modified = true;
           issuesFixed++;
@@ -76,17 +79,17 @@ function fixPackageJson(filePath, serviceName = 'root') {
     }
     
     if (modified) {
-      fs.writeFileSync(filePath, JSON.stringify(packageJson, null, 2) + '\n');
+      fs.await fsPromises.writeFile(filePath, JSON.stringify(packageJson, null, 2) + '\n');
       filesFixed++;
-      console.log(`  ✅ Fixed and saved`);
+      logger.info(`  ✅ Fixed and saved`);
     } else {
-      console.log(`  ✅ No issues found`);
+      logger.info(`  ✅ No issues found`);
     }
     
-    console.log('');
+    logger.info('');
     
   } catch (error) {
-    console.log(`  ❌ Error fixing ${filePath}: ${error.message}\n`);
+    logger.info(`  ❌ Error fixing ${filePath}: ${error.message}\n`);
   }
 }
 
@@ -123,17 +126,17 @@ if (fs.existsSync(appsDir)) {
         // Только исправляем версии, но не удаляем next
         if (fs.existsSync(packagePath)) {
           try {
-            const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+            const packageJson = JSON.parse(fs.await fsPromises.readFile(packagePath, 'utf8'));
             let modified = false;
             
-            console.log(`📦 Fixing apps/${app}...`);
+            logger.info(`📦 Fixing apps/${app}...`);
             
             // Исправляем только версии, не удаляем next
             ['dependencies', 'devDependencies'].forEach(depType => {
               if (packageJson[depType]) {
                 Object.keys(packageJson[depType]).forEach(name => {
                   if (fixes[name] && packageJson[depType][name] !== fixes[name]) {
-                    console.log(`  🔧 ${name}: ${packageJson[depType][name]} → ${fixes[name]}`);
+                    logger.info(`  🔧 ${name}: ${packageJson[depType][name]} → ${fixes[name]}`);
                     packageJson[depType][name] = fixes[name];
                     modified = true;
                     issuesFixed++;
@@ -143,17 +146,17 @@ if (fs.existsSync(appsDir)) {
             });
             
             if (modified) {
-              fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2) + '\n');
+              fs.await fsPromises.writeFile(packagePath, JSON.stringify(packageJson, null, 2) + '\n');
               filesFixed++;
-              console.log(`  ✅ Fixed and saved`);
+              logger.info(`  ✅ Fixed and saved`);
             } else {
-              console.log(`  ✅ No issues found`);
+              logger.info(`  ✅ No issues found`);
             }
             
-            console.log('');
+            logger.info('');
             
           } catch (error) {
-            console.log(`  ❌ Error fixing ${packagePath}: ${error.message}\n`);
+            logger.info(`  ❌ Error fixing ${packagePath}: ${error.message}\n`);
           }
         }
       } else {
@@ -179,14 +182,14 @@ if (fs.existsSync(packagesDir)) {
 }
 
 // Итоговый отчёт
-console.log('=' .repeat(50));
-console.log(`📊 SUMMARY:`);
-console.log(`   Files fixed: ${filesFixed}`);
-console.log(`   Issues fixed: ${issuesFixed}`);
+logger.info('=' .repeat(50));
+logger.info(`📊 SUMMARY:`);
+logger.info(`   Files fixed: ${filesFixed}`);
+logger.info(`   Issues fixed: ${issuesFixed}`);
 
 if (issuesFixed > 0) {
-  console.log(`   ✅ Fixed ${issuesFixed} compatibility issues!`);
-  console.log(`   🚀 Project is now Railway deployment ready`);
+  logger.info(`   ✅ Fixed ${issuesFixed} compatibility issues!`);
+  logger.info(`   🚀 Project is now Railway deployment ready`);
 } else {
-  console.log(`   ✅ No issues found - project is already Railway compatible!`);
+  logger.info(`   ✅ No issues found - project is already Railway compatible!`);
 }

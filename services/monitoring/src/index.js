@@ -396,8 +396,8 @@ const start = async () => {
       port: process.env.MONITORING_PORT || 3008,
       host: '0.0.0.0'
     });
-    console.log('VHM24 Monitoring Service running 24/7 on port', process.env.MONITORING_PORT || 3008);
-    console.log('Prometheus metrics available at /metrics');
+    logger.info('VHM24 Monitoring Service running 24/7 on port', process.env.MONITORING_PORT || 3008);
+    logger.info('Prometheus metrics available at /metrics');
     
     // Первоначальное обновление метрик
     await updateMetrics();

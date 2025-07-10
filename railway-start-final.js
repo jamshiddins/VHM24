@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
 /**
@@ -13,12 +15,12 @@ const fs = require('fs');
 try {
   require('dotenv').config();
 } catch (error) {
-  console.log('⚠️  dotenv not available, using environment variables');
+  logger.info('⚠️  dotenv not available, using environment variables');
 }
 
-console.log('🚂 VHM24 Railway Final Start...');
-console.log(`📍 Environment: ${process.env.NODE_ENV || 'production'}`);
-console.log(`🔌 Port: ${process.env.PORT || 8000}`);
+logger.info('🚂 VHM24 Railway Final Start...');
+logger.info(`📍 Environment: ${process.env.NODE_ENV || 'production'}`);
+logger.info(`🔌 Port: ${process.env.PORT || 8000}`);
 
 // Устанавливаем переменные окружения
 process.env.NODE_ENV = process.env.NODE_ENV || 'production';
@@ -26,14 +28,14 @@ process.env.PORT = process.env.PORT || '8000';
 
 // Проверяем обязательные переменные
 if (!process.env.DATABASE_URL) {
-  console.error('❌ DATABASE_URL is required for Railway deployment');
+  logger.error('❌ DATABASE_URL is required for Railway deployment');
   process.exit(1);
 }
 
 // Функция для запуска команды
 function runCommand(command, args = [], options = {}) {
   return new Promise((resolve, reject) => {
-    console.log(`🔧 Running: ${command} ${args.join(' ')}`);
+    logger.info(`🔧 Running: ${command} ${args.join(' ')}`);
     
     const child = spawn(command, args, {
       stdio: 'inherit',
@@ -56,7 +58,7 @@ function runCommand(command, args = [], options = {}) {
 // Функция для запуска сервиса
 async function startService(serviceName, servicePath, port) {
   try {
-    console.log(`🚀 Starting ${serviceName} service on port ${port}...`);
+    logger.info(`🚀 Starting ${serviceName} service on port ${port}...`);
     
     // Устанавливаем порт для сервиса
     process.env[`${serviceName.toUpperCase()}_PORT`] = port;
@@ -64,10 +66,10 @@ async function startService(serviceName, servicePath, port) {
     // Запускаем сервис
     require(servicePath);
     
-    console.log(`✅ ${serviceName} service started successfully`);
+    logger.info(`✅ ${serviceName} service started successfully`);
     return true;
   } catch (error) {
-    console.error(`❌ Failed to start ${serviceName} service:`, error.message);
+    logger.error(`❌ Failed to start ${serviceName} service:`, error.message);
     return false;
   }
 }
@@ -75,7 +77,7 @@ async function startService(serviceName, servicePath, port) {
 // Основная функция
 async function startRailwayApp() {
   try {
-    console.log('🗄️  === DATABASE MIGRATION PHASE ===');
+    logger.info('🗄️  === DATABASE MIGRATION PHASE ===');
     
     // Проверяем наличие schema.prisma
     const schemaPath = path.join(__dirname, 'packages/database/prisma/schema.prisma');
@@ -83,37 +85,37 @@ async function startRailwayApp() {
       throw new Error('Prisma schema not found at packages/database/prisma/schema.prisma');
     }
     
-    console.log('✅ Prisma schema found');
+    logger.info('✅ Prisma schema found');
     
     // Генерируем Prisma клиент
-    console.log('🔧 Generating Prisma client...');
+    logger.info('🔧 Generating Prisma client...');
     await runCommand('npx', ['prisma', 'generate'], {
       cwd: path.join(__dirname, 'packages/database')
     });
-    console.log('✅ Prisma client generated');
+    logger.info('✅ Prisma client generated');
     
     // Запускаем миграции
-    console.log('🔧 Running database migrations...');
+    logger.info('🔧 Running database migrations...');
     await runCommand('npx', ['prisma', 'migrate', 'deploy'], {
       cwd: path.join(__dirname, 'packages/database')
     });
-    console.log('✅ Database migrations completed');
+    logger.info('✅ Database migrations completed');
     
     // Проверяем подключение к базе данных
-    console.log('🔧 Testing database connection...');
+    logger.info('🔧 Testing database connection...');
     const { getAuthClient } = require('./packages/database');
     const prisma = getAuthClient();
     
     await prisma.$connect();
-    console.log('✅ Database connection successful');
+    logger.info('✅ Database connection successful');
     
     // Проверяем наличие пользователей
     const userCount = await prisma.user.count();
-    console.log(`📊 Users in database: ${userCount}`);
+    logger.info(`📊 Users in database: ${userCount}`);
     
     // Создаем администратора если нет пользователей
     if (userCount === 0) {
-      console.log('🔧 Creating default admin user...');
+      logger.info('🔧 Creating default admin user...');
       const bcrypt = require('bcrypt');
       
       const adminUser = await prisma.user.create({
@@ -127,16 +129,16 @@ async function startRailwayApp() {
         }
       });
       
-      console.log('✅ Default admin user created');
-      console.log(`📧 Email: admin@vhm24.ru`);
-      console.log(`🔑 Password: admin123`);
-      console.log(`📱 Telegram ID: ${adminUser.telegramId}`);
+      logger.info('✅ Default admin user created');
+      logger.info(`📧 Email: admin@vhm24.ru`);
+      logger.info(`🔑 Password: admin123`);
+      logger.info(`📱 Telegram ID: ${adminUser.telegramId}`);
     }
     
     await prisma.$disconnect();
-    console.log('🎉 Database migration completed successfully!');
+    logger.info('🎉 Database migration completed successfully!');
     
-    console.log('\n🚂 === APPLICATION DEPLOYMENT PHASE ===');
+    logger.info('\n🚂 === APPLICATION DEPLOYMENT PHASE ===');
     
     // Запускаем сервисы последовательно
     const services = [
@@ -155,52 +157,52 @@ async function startRailwayApp() {
           startService(service.name, service.path, service.port);
         }, 1000); // Небольшая задержка между запусками
       } else {
-        console.log(`⚠️  Service ${service.name} not found at ${service.path}`);
+        logger.info(`⚠️  Service ${service.name} not found at ${service.path}`);
       }
     }
 
     // Запускаем Telegram Bot если токен есть
     if (process.env.TELEGRAM_BOT_TOKEN && fs.existsSync('./services/telegram-bot/src/index.js')) {
       setTimeout(() => {
-        console.log('🤖 Starting Telegram Bot...');
+        logger.info('🤖 Starting Telegram Bot...');
         require('./services/telegram-bot/src/index.js');
       }, 2000);
     }
 
     // Запускаем Gateway последним (основной сервис)
     setTimeout(() => {
-      console.log('📡 Starting Gateway service (main)...');
+      logger.info('📡 Starting Gateway service (main)...');
       require('./services/gateway/src/index.js');
     }, 3000);
 
-    console.log('🎉 All services initialization started!');
-    console.log(`🌐 Application will be available on port ${process.env.PORT}`);
+    logger.info('🎉 All services initialization started!');
+    logger.info(`🌐 Application will be available on port ${process.env.PORT}`);
     
   } catch (error) {
-    console.error('❌ Railway deployment failed:', error.message);
-    console.error('Stack trace:', error.stack);
+    logger.error('❌ Railway deployment failed:', error.message);
+    logger.error('Stack trace:', error.stack);
     process.exit(1);
   }
 }
 
 // Обработка сигналов
 process.on('SIGTERM', () => {
-  console.log('🛑 Received SIGTERM, shutting down...');
+  logger.info('🛑 Received SIGTERM, shutting down...');
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('🛑 Received SIGINT, shutting down...');
+  logger.info('🛑 Received SIGINT, shutting down...');
   process.exit(0);
 });
 
 process.on('uncaughtException', (error) => {
-  console.error('❌ Uncaught Exception:', error);
+  logger.error('❌ Uncaught Exception:', error);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Rejection:', reason);
+  logger.error('❌ Unhandled Rejection:', reason);
   process.exit(1);
 });
 

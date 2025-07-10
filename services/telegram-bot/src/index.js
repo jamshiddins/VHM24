@@ -5,13 +5,41 @@ const axios = require('axios');
 const path = require('path');
 
 // Handlers
-const { handleStart } = require('./handlers/startHandler.js');
-const { handleMachines } = require('./handlers/machinesHandler.js');
-const { handleInventory } = require('./handlers/inventoryHandler.js');
-const { handleTasks } = require('./handlers/tasksHandler.js');
-const { handleReports } = require('./handlers/reportsHandler.js');
-const { handleSettings } = require('./handlers/settingsHandler.js');
-const { handleCallbackQuery } = require('./handlers/callbackHandler.js');
+const { handleStart 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('./handlers/startHandler.js');
+const { handleMachines 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('./handlers/machinesHandler.js');
+const { handleInventory 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('./handlers/inventoryHandler.js');
+const { handleTasks 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('./handlers/tasksHandler.js');
+const { handleReports 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('./handlers/reportsHandler.js');
+const { handleSettings 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('./handlers/settingsHandler.js');
+const { handleCallbackQuery 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('./handlers/callbackHandler.js');
 const UploadHandler = require('./handlers/uploadHandler.js');
 
 // FSM Handlers
@@ -19,7 +47,11 @@ const registrationHandler = require('./handlers/registrationHandler.js');
 const driverHandler = require('./handlers/driverHandler.js');
 const warehouseHandler = require('./handlers/warehouseHandler.js');
 const operatorHandler = require('./handlers/operatorHandler.js');
-const { TechnicianHandler } = require('./handlers/technicianHandler.js');
+const { TechnicianHandler 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('./handlers/technicianHandler.js');
 
 // FSM
 const fsmManager = require('./fsm/manager.js');
@@ -34,14 +66,30 @@ const {
   isWarehouseState, 
   isOperatorState,
   isTechnicianState 
-} = require('./fsm/states.js');
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('./fsm/states.js');
 
 // Utils
-const { checkAuth } = require('./utils/auth.js');
-const { errorHandler } = require('./utils/errorHandler.js');
+const { checkAuth 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('./utils/auth.js');
+const { errorHandler 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('./utils/errorHandler.js');
 
 // Load environment variables
-dotenv.config({ path: path.join(__dirname, '../../../.env') });
+dotenv.config({ path: path.join(__dirname, '../../../.env') 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Configure logger
 const logger = winston.createLogger({
@@ -66,7 +114,11 @@ const logger = winston.createLogger({
       filename: path.join(__dirname, '../logs/combined.log') 
     })
   ]
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Configuration
 const config = {
@@ -86,13 +138,21 @@ const config = {
     port: process.env.TELEGRAM_WEBHOOK_PORT || 8443,
     url: process.env.TELEGRAM_WEBHOOK_URL || ''
   }
-};
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }};
 
 // Validate required configuration
 if (!config.telegramToken) {
   logger.error('TELEGRAM_BOT_TOKEN is not set in environment variables');
   process.exit(1);
-}
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 
 // Create bot instance
 let bot;
@@ -108,19 +168,35 @@ if (config.mode === 'webhook' && config.webhook.url) {
   bot.setWebHook(config.webhook.url)
     .then(() => logger.info('Webhook set successfully'))
     .catch(error => logger.error('Failed to set webhook:', error));
-} else {
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} else {
   logger.info('Starting bot in polling mode');
   bot = new TelegramBot(config.telegramToken, { polling: config.polling });
-}
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 
 // Global error handler
 bot.on('polling_error', (error) => {
   logger.error('Polling error:', error);
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 bot.on('webhook_error', (error) => {
   logger.error('Webhook error:', error);
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // API client setup
 const apiClient = axios.create({
@@ -129,7 +205,11 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json'
   }
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Request interceptor to add auth token
 apiClient.interceptors.request.use((config) => {
@@ -138,7 +218,11 @@ apiClient.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Response interceptor for error handling
 apiClient.interceptors.response.use(
@@ -146,7 +230,11 @@ apiClient.interceptors.response.use(
   (error) => {
     logger.error('API Error:', error.response?.data || error.message);
     throw error;
-  }
+  
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 );
 
 // Store user tokens (in production, use Redis or similar)
@@ -161,6 +249,8 @@ let uploadHandler;
 
 // Initialize FSM Manager
 (async () => {
+    try {
+      
   try {
     await fsmManager.initRedis();
     logger.info('FSM Manager initialized');
@@ -386,6 +476,8 @@ bot.onText(/\/report_problem/, async (msg) => {
 });
 
 bot.onText(/\/help/, async (msg) => {
+    try {
+      
   const helpText = `
 🤖 VHM24 Bot Commands
 
@@ -435,6 +527,8 @@ bot.on('callback_query', async (callbackQuery) => {
 
 // FSM Message Handler - обрабатывает все сообщения через FSM
 bot.on('message', async (msg) => {
+    try {
+      
   try {
     const userId = msg.from.id;
     const currentState = await fsmManager.getUserState(userId);
@@ -637,16 +731,54 @@ const express = require('express');
 const healthApp = express();
 const healthPort = process.env.PORT || 3005;
 
-healthApp.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    service: 'telegram-bot',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    bot: bot ? 'connected' : 'disconnected'
-  });
+healthApp.get('/health', async (req, res) => {
+    try {
+      
+  try {
+    // Проверяем соединение с Redis
+    let redisStatus = 'disconnected';
+    try {
+      if (fsmManager && fsmManager.redisClient) {
+        await fsmManager.redisClient.ping();
+        redisStatus = 'connected';
+      }
+    } catch (redisError) {
+      logger.error('Redis health check failed:', redisError);
+    }
+    
+    // Проверяем соединение с API
+    let apiStatus = 'disconnected';
+    try {
+      const apiResponse = await apiClient.get('/health', { timeout: 3000 });
+      if (apiResponse.status === 200) {
+        apiStatus = 'connected';
+      }
+    } catch (apiError) {
+      logger.error('API health check failed:', apiError);
+    }
+    
+    res.json({
+      status: 'ok',
+      service: 'telegram-bot',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      version: process.env.npm_package_version || '1.0.0',
+      bot: bot ? 'connected' : 'disconnected',
+      redis: redisStatus,
+      api: apiStatus,
+      mode: config.mode
+    });
+  } catch (error) {
+    logger.error('Health check failed:', error);
+    res.status(503).json({
+      status: 'error',
+      service: 'telegram-bot',
+      timestamp: new Date().toISOString(),
+      error: error.message
+    });
+  }
 });
 
 healthApp.listen(healthPort, () => {
-  console.log(`Health check server running on port ${healthPort}`);
+  logger.info(`Health check server running on port ${healthPort}`);
 });

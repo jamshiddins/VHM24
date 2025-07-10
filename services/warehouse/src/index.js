@@ -3,33 +3,62 @@
  * Микросервис для управления складскими операциями
  */
 
-const fastify = require('fastify')({ logger: true });
-const { PrismaClient } = require('@prisma/client');
+const fastify = require('fastify')({ logger: true 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
+const { PrismaClient 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
 // Регистрируем плагины
 fastify.register(require('@fastify/cors'), {
   origin: true
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 fastify.register(require('@fastify/jwt'), {
   secret: process.env.JWT_SECRET || 'your-secret-key'
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Middleware для аутентификации
 fastify.decorate('authenticate', async function (request, reply) {
   try {
     await request.jwtVerify();
   } catch (err) {
-    reply.send(err);
+    reply.code(err.statusCode || 500).send({
+          error: err.name || 'Internal Server Error',
+          message: process.env.NODE_ENV === 'development' ? err.message : 'An error occurred'
+        });
   }
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Получить статистику склада
 fastify.get('/warehouse/stats', {
   preHandler: [fastify.authenticate]
-}, async (request, reply) => {
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}, async (request, reply) => {
+    try {
+      
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -92,6 +121,8 @@ fastify.get('/warehouse/stats', {
 fastify.get('/stock-movements', {
   preHandler: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
   try {
     const { type, itemId, userId, limit = 50, offset = 0 } = request.query;
     
@@ -134,9 +165,19 @@ fastify.get('/stock-movements', {
 });
 
 // Создать движение товара
-fastify.post('/stock-movements', {
-  preHandler: [fastify.authenticate]
-}, async (request, reply) => {
+
+// Схема валидации для POST /stock-movements
+const poststock-movementsSchema = {
+  body: {
+    type: 'object',
+    required: [],
+    properties: {}
+  }
+};
+
+fastify.post('/stock-movements', { preHandler: [fastify.authenticate], schema: poststock-movementsSchema }, async (request, reply) => {
+    try {
+      
   try {
     const { 
       itemId, 
@@ -172,6 +213,8 @@ fastify.post('/stock-movements', {
 
     // Создаем движение в транзакции
     const result = await prisma.$transaction(async (tx) => {
+    try {
+      
       // Создаем запись о движении
       const movement = await tx.stockMovement.create({
         data: {
@@ -234,6 +277,8 @@ fastify.post('/stock-movements', {
 fastify.get('/warehouse-logs', {
   preHandler: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
   try {
     const { type, userId, limit = 50, offset = 0 } = request.query;
     
@@ -278,9 +323,19 @@ fastify.get('/warehouse-logs', {
 });
 
 // Создать складской лог
-fastify.post('/warehouse-logs', {
-  preHandler: [fastify.authenticate]
-}, async (request, reply) => {
+
+// Схема валидации для POST /warehouse-logs
+const postwarehouse-logsSchema = {
+  body: {
+    type: 'object',
+    required: [],
+    properties: {}
+  }
+};
+
+fastify.post('/warehouse-logs', { preHandler: [fastify.authenticate], schema: postwarehouse-logsSchema }, async (request, reply) => {
+    try {
+      
   try {
     const { type, description, weight, photos, metadata } = request.body;
 
@@ -328,6 +383,8 @@ fastify.post('/warehouse-logs', {
 fastify.get('/machine-inventory', {
   preHandler: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
   try {
     const { machineId, needsRefill, limit = 20, offset = 0 } = request.query;
     
@@ -373,9 +430,19 @@ fastify.get('/machine-inventory', {
 });
 
 // Обновить остатки в бункере
-fastify.patch('/machine-inventory/:id', {
-  preHandler: [fastify.authenticate]
-}, async (request, reply) => {
+
+// Схема валидации для PATCH /machine-inventory/:id
+const patchmachine-inventory:idSchema = {
+  body: {
+    type: 'object',
+    required: [],
+    properties: {}
+  }
+};
+
+fastify.patch('/machine-inventory/:id', { preHandler: [fastify.authenticate], schema: patchmachine-inventory:idSchema }, async (request, reply) => {
+    try {
+      
   try {
     const { id } = request.params;
     const { quantity } = request.body;
@@ -453,6 +520,8 @@ fastify.patch('/machine-inventory/:id', {
 fastify.get('/inventory/items', {
   preHandler: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
   try {
     const { sku, name, limit = 20, offset = 0 } = request.query;
     
@@ -497,11 +566,15 @@ fastify.get('/inventory/items', {
 
 // Health check
 fastify.get('/health', async (request, reply) => {
+    try {
+      
   reply.send({ status: 'ok', service: 'warehouse', timestamp: new Date().toISOString() });
 });
 
 // Запуск сервера
 const start = async () => {
+    try {
+      
   try {
     const port = process.env.PORT || 3006;
     await fastify.listen({ port, host: '0.0.0.0' });

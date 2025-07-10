@@ -1,9 +1,12 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
-const fs = require('fs');
+const fs = require('fs')
+const { promises: fsPromises } = fs;
 const path = require('path');
 
-console.log('🔍 Checking Railway deployment compatibility...\n');
+logger.info('🔍 Checking Railway deployment compatibility...\n');
 
 // Проблемные зависимости и их исправления
 const knownIssues = {
@@ -71,10 +74,10 @@ function checkPackageJson(filePath, serviceName = 'root') {
   if (!fs.existsSync(filePath)) return;
   
   try {
-    const packageJson = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const packageJson = JSON.parse(fs.await fsPromises.readFile(filePath, 'utf8'));
     const dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
     
-    console.log(`📦 Checking ${serviceName}...`);
+    logger.info(`📦 Checking ${serviceName}...`);
     servicesChecked++;
     
     let serviceIssues = 0;
@@ -89,31 +92,31 @@ function checkPackageJson(filePath, serviceName = 'root') {
           return; // Разрешено в этом контексте
         }
         
-        console.log(`  ❌ ${name}: ${version}`);
-        console.log(`     Issue: ${issue.reason}`);
-        console.log(`     Fix: Use ${issue.recommended}`);
+        logger.info(`  ❌ ${name}: ${version}`);
+        logger.info(`     Issue: ${issue.reason}`);
+        logger.info(`     Fix: Use ${issue.recommended}`);
         issuesFound++;
         serviceIssues++;
       }
       
       // Проверка ненужных зависимостей в backend сервисах
       if (serviceName.includes('services/') && backendUnnecessary.includes(name)) {
-        console.log(`  ⚠️  ${name}: ${version}`);
-        console.log(`     Warning: Unnecessary for backend service`);
-        console.log(`     Fix: Remove this dependency`);
+        logger.info(`  ⚠️  ${name}: ${version}`);
+        logger.info(`     Warning: Unnecessary for backend service`);
+        logger.info(`     Fix: Remove this dependency`);
         issuesFound++;
         serviceIssues++;
       }
     });
     
     if (serviceIssues === 0) {
-      console.log(`  ✅ No issues found`);
+      logger.info(`  ✅ No issues found`);
     }
     
-    console.log('');
+    logger.info('');
     
   } catch (error) {
-    console.log(`  ❌ Error reading ${filePath}: ${error.message}\n`);
+    logger.info(`  ❌ Error reading ${filePath}: ${error.message}\n`);
   }
 }
 
@@ -166,16 +169,16 @@ if (fs.existsSync(packagesDir)) {
 }
 
 // Итоговый отчёт
-console.log('=' .repeat(50));
-console.log(`📊 SUMMARY:`);
-console.log(`   Services checked: ${servicesChecked}`);
-console.log(`   Issues found: ${issuesFound}`);
+logger.info('=' .repeat(50));
+logger.info(`📊 SUMMARY:`);
+logger.info(`   Services checked: ${servicesChecked}`);
+logger.info(`   Issues found: ${issuesFound}`);
 
 if (issuesFound === 0) {
-  console.log(`   ✅ All dependencies are Railway compatible!`);
+  logger.info(`   ✅ All dependencies are Railway compatible!`);
   process.exit(0);
 } else {
-  console.log(`   ❌ Found ${issuesFound} compatibility issues`);
-  console.log(`   🔧 Please fix the issues above before deploying to Railway`);
+  logger.info(`   ❌ Found ${issuesFound} compatibility issues`);
+  logger.info(`   🔧 Please fix the issues above before deploying to Railway`);
   process.exit(1);
 }

@@ -4,14 +4,38 @@
  * Provides secure 24/7 authentication for vending machine operators
  */
 
-require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
+require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') 
+    
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}});
 
 // Устанавливаем SERVICE_NAME для конфигурации
 process.env.SERVICE_NAME = 'auth';
 
 const Fastify = require('fastify');
 const bcrypt = require('bcrypt');
-const { getAuthClient } = require('@vhm24/database');
+const { getAuthClient 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('@vhm24/database');
 
 // Импортируем наш новый shared пакет
 const {
@@ -41,7 +65,11 @@ const {
   logger,
   config,
   createFastifyConfig
-} = require('@vhm24/shared');
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('@vhm24/shared');
 
 // Security utilities
 const { 
@@ -51,7 +79,11 @@ const {
   validatePasswordStrength,
   sanitizeInput,
   maskSensitiveData
-} = require('@vhm24/shared-types/src/security');
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('@vhm24/shared-types/src/security');
 
 // Настройка глобальных обработчиков ошибок
 setupGlobalErrorHandlers();
@@ -71,7 +103,11 @@ setupCORS(fastify);
 setupRateLimit(fastify, {
   max: 50, // Более строгий лимит для auth сервиса
   timeWindow: '1 minute'
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 setupJWT(fastify);
 
 // Middleware для логирования и санитизации
@@ -106,11 +142,41 @@ fastify.decorate('authenticate', async function(request, reply) {
       message: err.message || 'Invalid or expired token'
     });
   }
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Health check
 fastify.get('/health', async (request, reply) => {
-  return { status: 'ok', service: 'auth' };
+    try {
+      
+    try {
+      
+    try {
+      
+  try {
+    // Проверяем соединение с базой данных
+    await prisma.$queryRaw`SELECT 1`;
+    
+    return { 
+      status: 'ok', 
+      service: 'auth', 
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      version: process.env.npm_package_version || '1.0.0',
+      database: 'connected'
+    };
+  } catch (error) {
+    fastify.log.error('Health check failed:', error);
+    return reply.code(503).send({ 
+      status: 'error', 
+      service: 'auth',
+      timestamp: new Date().toISOString(),
+      error: 'Database connection failed'
+    });
+  }
 });
 
 // Регистрация нового пользователя
@@ -120,10 +186,26 @@ fastify.post('/api/v1/auth/register', {
       type: 'object',
       required: ['email', 'password', 'name'],
       properties: {
-        email: { type: 'string', format: 'email' },
-        password: { type: 'string', minLength: 6 },
-        name: { type: 'string', minLength: 2 },
-        phoneNumber: { type: 'string' },
+        email: { type: 'string', format: 'email' 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }},
+        password: { type: 'string', minLength: 6 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }},
+        name: { type: 'string', minLength: 2 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }},
+        phoneNumber: { type: 'string' 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }},
         roles: { 
           type: 'array', 
           items: { 
@@ -131,11 +213,21 @@ fastify.post('/api/v1/auth/register', {
             enum: ['ADMIN', 'MANAGER', 'WAREHOUSE', 'OPERATOR', 'TECHNICIAN', 'DRIVER'] 
           },
           default: ['OPERATOR']
-        }
+        
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
       }
     }
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const { email, password, name, phoneNumber, roles } = request.body;
   
   try {
@@ -145,7 +237,11 @@ fastify.post('/api/v1/auth/register', {
         success: false,
         error: 'Invalid email format'
       });
-    }
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
     
     // Валидация пароля
     const passwordValidation = validatePasswordStrength(password);
@@ -154,7 +250,11 @@ fastify.post('/api/v1/auth/register', {
         success: false,
         error: passwordValidation.message
       });
-    }
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
     
     // Валидация телефона (если указан)
     if (phoneNumber && !validatePhoneNumber(phoneNumber)) {
@@ -162,7 +262,11 @@ fastify.post('/api/v1/auth/register', {
         success: false,
         error: 'Invalid phone number format. Use format: +998XXXXXXXXX'
       });
-    }
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
     
     // Санитизация имени
     const sanitizedName = sanitizeInput(name);
@@ -175,14 +279,22 @@ fastify.post('/api/v1/auth/register', {
           phoneNumber ? { phoneNumber } : {}
         ].filter(Boolean)
       }
-    });
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
     
     if (existingUser) {
       return reply.code(400).send({
         success: false,
         error: 'User with this email or phone number already exists'
       });
-    }
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
     
     // Хешируем пароль с более высокой стоимостью для production
     const saltRounds = process.env.NODE_ENV === 'production' ? 12 : 10;
@@ -190,6 +302,12 @@ fastify.post('/api/v1/auth/register', {
     
     // Используем транзакцию для создания пользователя и логирования
     const result = await prisma.$transaction(async (tx) => {
+    try {
+      
+    try {
+      
+    try {
+      
       // Создаем пользователя
       const user = await tx.user.create({
         data: {
@@ -230,10 +348,8 @@ fastify.post('/api/v1/auth/register', {
       roles: result.roles
     });
     
-    const refreshToken = fastify.jwt.sign(
-      { id: result.id, type: 'refresh' }, 
-      { expiresIn: '7d' }
-    );
+    const refreshToken = fastify.jwt.sign({ id: result.id, type: 'refresh' }, { expiresIn: '7d' }
+    , { expiresIn: '1d' });
     
     return {
       success: true,
@@ -257,10 +373,20 @@ fastify.post('/api/v1/auth/register', {
     
     throw createError.database('Registration failed');
   }
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Вход в систему
 fastify.post('/api/v1/auth/login', async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const { email, password, phoneNumber, telegramId } = request.body;
   
   try {
@@ -387,6 +513,12 @@ fastify.post('/api/v1/auth/refresh', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const { refreshToken } = request.body;
   
   try {
@@ -419,10 +551,8 @@ fastify.post('/api/v1/auth/refresh', {
       roles: user.roles
     });
     
-    const newRefreshToken = fastify.jwt.sign(
-      { id: user.id },
-      { expiresIn: '7d' }
-    );
+    const newRefreshToken = fastify.jwt.sign({ id: user.id }, { expiresIn: '7d' }
+    , { expiresIn: '1d' });
     
     return {
       success: true,
@@ -443,6 +573,12 @@ fastify.post('/api/v1/auth/refresh', {
 fastify.get('/api/v1/auth/me', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     const user = await prisma.user.findUnique({
       where: { id: request.user.id },
@@ -469,9 +605,17 @@ fastify.get('/api/v1/auth/me', {
       success: true,
       data: user
     };
-  } catch (error) {
+  
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} catch (error) {
     throw createError.database('Failed to fetch user data');
-  }
+  
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 });
 
 // Изменить пароль
@@ -486,8 +630,18 @@ fastify.post('/api/v1/auth/change-password', {
         newPassword: { type: 'string', minLength: 6 }
       }
     }
-  }
+  
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const { currentPassword, newPassword } = request.body;
   const userId = request.user.id;
   
@@ -540,6 +694,12 @@ fastify.post('/api/v1/auth/change-password', {
 fastify.post('/api/v1/auth/logout', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     // Логируем действие
     await prisma.auditLog.create({
@@ -578,6 +738,12 @@ fastify.post('/api/v1/auth/link-telegram', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const { telegramId } = request.body;
   const userId = request.user.id;
   
@@ -657,15 +823,21 @@ async function createDefaultAdmin() {
         }
       });
       
-      console.log('Default admin user created: admin@vhm24.ru / admin123');
+      logger.info('Default admin user created: admin@vhm24.ru / admin123');
     }
   } catch (error) {
-    console.error('Failed to create default admin:', error);
+    logger.error('Failed to create default admin:', error);
   }
 }
 
 // Start server
 const start = async () => {
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     // Создаем администратора по умолчанию
     await createDefaultAdmin();
@@ -674,7 +846,7 @@ const start = async () => {
       port: process.env.PORT || 3001,
       host: '0.0.0.0'
     });
-    console.log('VHM24 Auth Service running 24/7 on port', process.env.PORT || 3001);
+    logger.info('VHM24 Auth Service running 24/7 on port', process.env.PORT || 3001);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
@@ -685,6 +857,12 @@ start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
+    try {
+      
+    try {
+      
+    try {
+      
   await fastify.close();
   await prisma.$disconnect();
   process.exit(0);

@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
 /**
@@ -38,39 +40,87 @@ async function loadNewClients() {
     tasksClient = getTasksClient();
     sharedClient = getSharedClient();
   } catch (error) {
-    console.error('Error loading new clients. Make sure to run "npm run generate" first.');
+    logger.error('Error loading new clients. Make sure to run "npm run generate" first.');
     throw error;
   }
 }
 
 async function exportData() {
-  console.log('📤 Exporting data from Supabase...');
+  logger.info('📤 Exporting data from Supabase...');
   
   const data = {
-    users: await supabaseClient.user.findMany(),
-    locations: await supabaseClient.location.findMany(),
-    machines: await supabaseClient.machine.findMany(),
-    tasks: await supabaseClient.task.findMany(),
-    taskActions: await supabaseClient.taskAction.findMany(),
-    inventoryItems: await supabaseClient.inventoryItem.findMany(),
-    stockMovements: await supabaseClient.stockMovement.findMany(),
-    machineTelemetry: await supabaseClient.machineTelemetry.findMany(),
-    auditLogs: await supabaseClient.auditLog.findMany(),
-    transactions: await supabaseClient.transaction.findMany(),
-    machineInventory: await supabaseClient.machineInventory.findMany(),
-    serviceHistory: await supabaseClient.serviceHistory.findMany(),
+    users: await supabaseClient.user.findMany({
+      skip: (request.query.page - 1) * request.query.limit,
+      take: request.query.limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    locations: await supabaseClient.location.findMany({
+      skip: (request.query.page - 1) * request.query.limit,
+      take: request.query.limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    machines: await supabaseClient.machine.findMany({
+      skip: (request.query.page - 1) * request.query.limit,
+      take: request.query.limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    tasks: await supabaseClient.task.findMany({
+      skip: (request.query.page - 1) * request.query.limit,
+      take: request.query.limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    taskActions: await supabaseClient.taskAction.findMany({
+      skip: (request.query.page - 1) * request.query.limit,
+      take: request.query.limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    inventoryItems: await supabaseClient.inventoryItem.findMany({
+      skip: (request.query.page - 1) * request.query.limit,
+      take: request.query.limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    stockMovements: await supabaseClient.stockMovement.findMany({
+      skip: (request.query.page - 1) * request.query.limit,
+      take: request.query.limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    machineTelemetry: await supabaseClient.machineTelemetry.findMany({
+      skip: (request.query.page - 1) * request.query.limit,
+      take: request.query.limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    auditLogs: await supabaseClient.auditLog.findMany({
+      skip: (request.query.page - 1) * request.query.limit,
+      take: request.query.limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    transactions: await supabaseClient.transaction.findMany({
+      skip: (request.query.page - 1) * request.query.limit,
+      take: request.query.limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    machineInventory: await supabaseClient.machineInventory.findMany({
+      skip: (request.query.page - 1) * request.query.limit,
+      take: request.query.limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    serviceHistory: await supabaseClient.serviceHistory.findMany({
+      skip: (request.query.page - 1) * request.query.limit,
+      take: request.query.limit,
+      orderBy: { createdAt: 'desc' }
+    }),
   };
 
   // Save backup
   const backupPath = path.join(__dirname, 'supabase-backup.json');
   await fs.writeFile(backupPath, JSON.stringify(data, null, 2));
-  console.log(`✅ Data exported to ${backupPath}`);
+  logger.info(`✅ Data exported to ${backupPath}`);
 
   return data;
 }
 
 async function migrateAuthData(data) {
-  console.log('🔐 Migrating auth data...');
+  logger.info('🔐 Migrating auth data...');
   
   // Migrate users
   for (const user of data.users) {
@@ -112,11 +162,11 @@ async function migrateAuthData(data) {
     });
   }
 
-  console.log(`✅ Migrated ${data.users.length} users and ${authAuditLogs.length} audit logs`);
+  logger.info(`✅ Migrated ${data.users.length} users and ${authAuditLogs.length} audit logs`);
 }
 
 async function migrateMachinesData(data) {
-  console.log('🤖 Migrating machines data...');
+  logger.info('🤖 Migrating machines data...');
   
   // Migrate locations
   for (const location of data.locations) {
@@ -187,11 +237,11 @@ async function migrateMachinesData(data) {
     });
   }
 
-  console.log(`✅ Migrated ${data.locations.length} locations, ${data.machines.length} machines`);
+  logger.info(`✅ Migrated ${data.locations.length} locations, ${data.machines.length} machines`);
 }
 
 async function migrateInventoryData(data) {
-  console.log('📦 Migrating inventory data...');
+  logger.info('📦 Migrating inventory data...');
   
   // Migrate inventory items
   for (const item of data.inventoryItems) {
@@ -254,11 +304,11 @@ async function migrateInventoryData(data) {
     });
   }
 
-  console.log(`✅ Migrated ${data.inventoryItems.length} items, ${data.stockMovements.length} movements`);
+  logger.info(`✅ Migrated ${data.inventoryItems.length} items, ${data.stockMovements.length} movements`);
 }
 
 async function migrateTasksData(data) {
-  console.log('📋 Migrating tasks data...');
+  logger.info('📋 Migrating tasks data...');
   
   // Migrate tasks
   for (const task of data.tasks) {
@@ -297,11 +347,11 @@ async function migrateTasksData(data) {
     });
   }
 
-  console.log(`✅ Migrated ${data.tasks.length} tasks and ${data.taskActions.length} actions`);
+  logger.info(`✅ Migrated ${data.tasks.length} tasks and ${data.taskActions.length} actions`);
 }
 
 async function migrateSharedData(data) {
-  console.log('🌐 Migrating shared data...');
+  logger.info('🌐 Migrating shared data...');
   
   // Migrate transactions
   for (const transaction of data.transactions) {
@@ -320,12 +370,12 @@ async function migrateSharedData(data) {
     });
   }
 
-  console.log(`✅ Migrated ${data.transactions.length} transactions`);
+  logger.info(`✅ Migrated ${data.transactions.length} transactions`);
 }
 
 async function main() {
   try {
-    console.log('🚀 Starting migration from Supabase...\n');
+    logger.info('🚀 Starting migration from Supabase...\n');
 
     // Check environment
     if (!process.env.DATABASE_URL && !process.env.SUPABASE_DATABASE_URL) {
@@ -345,14 +395,14 @@ async function main() {
     await migrateTasksData(data);
     await migrateSharedData(data);
 
-    console.log('\n✅ Migration completed successfully!');
-    console.log('📝 Next steps:');
-    console.log('1. Update your services to use the new database clients');
-    console.log('2. Test all functionality');
-    console.log('3. Remove Supabase dependencies');
+    logger.info('\n✅ Migration completed successfully!');
+    logger.info('📝 Next steps:');
+    logger.info('1. Update your services to use the new database clients');
+    logger.info('2. Test all functionality');
+    logger.info('3. Remove Supabase dependencies');
 
   } catch (error) {
-    console.error('❌ Migration failed:', error);
+    logger.error('❌ Migration failed:', error);
     process.exit(1);
   } finally {
     await supabaseClient.$disconnect();

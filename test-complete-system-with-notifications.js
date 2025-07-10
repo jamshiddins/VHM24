@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
 /**
@@ -6,7 +8,8 @@
  */
 
 const axios = require('axios');
-const fs = require('fs');
+const fs = require('fs')
+const { promises: fsPromises } = fs;
 const path = require('path');
 
 // Конфигурация тестирования
@@ -45,7 +48,7 @@ const colors = {
 };
 
 function log(message, color = 'reset') {
-  console.log(`${colors[color]}${message}${colors.reset}`);
+  logger.info(`${colors[color]}${message}${colors.reset}`);
 }
 
 function logSuccess(message) {
@@ -425,7 +428,7 @@ async function generateReport(results) {
 
   // Сохраняем отчет
   const reportPath = path.join(__dirname, 'test-report.json');
-  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  fs.await fsPromises.writeFile(reportPath, JSON.stringify(report, null, 2));
 
   log('\n📊 РЕЗУЛЬТАТЫ ТЕСТИРОВАНИЯ:', 'bright');
   log(`✅ Пройдено: ${report.summary.passed}`, 'green');

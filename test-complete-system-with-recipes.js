@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
 /**
@@ -6,7 +8,8 @@
  */
 
 const axios = require('axios');
-const fs = require('fs');
+const fs = require('fs')
+const { promises: fsPromises } = fs;
 
 // Конфигурация
 const config = {
@@ -34,7 +37,7 @@ const testData = {
     firstName: 'Test',
     lastName: 'User',
     email: 'test@vhm24.uz',
-    password: 'test123456',
+    password: '${process.env.PASSWORD_787}',
     roles: ['MANAGER']
   },
   recipe: {
@@ -77,7 +80,7 @@ function log(message, type = 'info') {
     reset: '\x1b[0m'
   };
   
-  console.log(`${colors[type]}[${timestamp}] ${message}${colors.reset}`);
+  logger.info(`${colors[type]}[${timestamp}] ${message}${colors.reset}`);
 }
 
 function addTestResult(name, passed, message = '') {
@@ -499,7 +502,7 @@ function generateTestReport() {
   
   // Сохранение отчёта
   const reportFile = `test-report-complete-${Date.now()}.json`;
-  fs.writeFileSync(reportFile, JSON.stringify(report, null, 2));
+  fs.await fsPromises.writeFile(reportFile, JSON.stringify(report, null, 2));
   
   // Вывод результатов
   log('\n' + '=' * 80, 'info');

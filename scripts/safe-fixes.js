@@ -1,4 +1,7 @@
-const fs = require('fs');
+const logger = require('@vhm24/shared/logger');
+
+const fs = require('fs')
+const { promises: fsPromises } = fs;
 const path = require('path');
 
 class SafeFixer {
@@ -10,15 +13,15 @@ class SafeFixer {
   // Создание резервных копий перед изменениями
   backup(filePath) {
     if (!fs.existsSync(filePath)) {
-      console.log(`⚠️ File not found: ${filePath}`);
+      logger.info(`⚠️ File not found: ${filePath}`);
       return false;
     }
     
-    const content = fs.readFileSync(filePath, 'utf8');
+    const content = fs.await fsPromises.readFile(filePath, 'utf8');
     const backupPath = `${filePath}.backup.${Date.now()}`;
-    fs.writeFileSync(backupPath, content);
+    fs.await fsPromises.writeFile(backupPath, content);
     this.backups.push({ original: filePath, backup: backupPath });
-    console.log(`📦 Backup created: ${backupPath}`);
+    logger.info(`📦 Backup created: ${backupPath}`);
     return true;
   }
 
@@ -30,41 +33,41 @@ class SafeFixer {
         return;
       }
       
-      const content = fs.readFileSync(filePath, 'utf8');
+      const content = fs.await fsPromises.readFile(filePath, 'utf8');
       const modified = modifier(content);
       
       if (content === modified) {
-        console.log(`ℹ️ No changes needed: ${filePath}`);
+        logger.info(`ℹ️ No changes needed: ${filePath}`);
         this.changes.push({ file: filePath, success: true, description, noChanges: true });
         return;
       }
       
-      fs.writeFileSync(filePath, modified);
+      fs.await fsPromises.writeFile(filePath, modified);
       this.changes.push({ file: filePath, success: true, description });
-      console.log(`✅ Modified: ${filePath} - ${description}`);
+      logger.info(`✅ Modified: ${filePath} - ${description}`);
     } catch (error) {
-      console.error(`❌ Failed to modify ${filePath}: ${error.message}`);
+      logger.error(`❌ Failed to modify ${filePath}: ${error.message}`);
       this.changes.push({ file: filePath, success: false, error: error.message, description });
     }
   }
 
   // Откат изменений
   rollback() {
-    console.log('🔄 Rolling back changes...');
+    logger.info('🔄 Rolling back changes...');
     for (const { original, backup } of this.backups.reverse()) {
       try {
         fs.copyFileSync(backup, original);
         fs.unlinkSync(backup);
-        console.log(`↩️ Restored: ${original}`);
+        logger.info(`↩️ Restored: ${original}`);
       } catch (error) {
-        console.error(`❌ Failed to restore ${original}: ${error.message}`);
+        logger.error(`❌ Failed to restore ${original}: ${error.message}`);
       }
     }
   }
 
   // Исправление PORT для Railway
   fixPortConfiguration() {
-    console.log('\n🔧 Fixing PORT configuration for Railway...');
+    logger.info('\n🔧 Fixing PORT configuration for Railway...');
     
     const services = fs.readdirSync('services');
     
@@ -108,7 +111,7 @@ class SafeFixer {
 
   // Добавление health checks
   addHealthChecks() {
-    console.log('\n🏥 Adding health checks...');
+    logger.info('\n🏥 Adding health checks...');
     
     const services = fs.readdirSync('services');
     
@@ -143,7 +146,7 @@ healthApp.get('/health', (req, res) => {
 });
 
 healthApp.listen(healthPort, () => {
-  console.log(\`Health check server running on port \${healthPort}\`);
+  logger.info(\`Health check server running on port \${healthPort}\`);
 });
 
 `;
@@ -214,7 +217,7 @@ app.get('/health', (req, res) => {
 
   // Исправление start script для reconciliation
   fixReconciliationStartScript() {
-    console.log('\n📝 Fixing reconciliation start script...');
+    logger.info('\n📝 Fixing reconciliation start script...');
     
     const reconciliationPkgPath = 'services/reconciliation/package.json';
     
@@ -234,13 +237,13 @@ app.get('/health', (req, res) => {
         return JSON.stringify(pkg, null, 2);
       }, 'Added start script to reconciliation service');
     } else {
-      console.log('⚠️ Reconciliation service package.json not found');
+      logger.info('⚠️ Reconciliation service package.json not found');
     }
   }
 
   // Создание S3 адаптера
   createS3Adapter() {
-    console.log('\n☁️ Creating S3 adapter...');
+    logger.info('\n☁️ Creating S3 adapter...');
     
     const storageDir = 'packages/shared/storage';
     if (!fs.existsSync(storageDir)) {
@@ -267,7 +270,7 @@ class S3StorageAdapter {
     this.bucket = process.env.S3_BUCKET;
     
     if (!this.bucket) {
-      console.warn('⚠️ S3_BUCKET not configured, using local storage fallback');
+      logger.warn('⚠️ S3_BUCKET not configured, using local storage fallback');
     }
   }
 
@@ -292,7 +295,7 @@ class S3StorageAdapter {
         key: result.Key
       };
     } catch (error) {
-      console.error('S3 upload error:', error);
+      logger.error('S3 upload error:', error);
       return this.localFallback('upload', key, buffer);
     }
   }
@@ -315,7 +318,7 @@ class S3StorageAdapter {
         contentType: result.ContentType
       };
     } catch (error) {
-      console.error('S3 download error:', error);
+      logger.error('S3 download error:', error);
       return this.localFallback('download', key);
     }
   }
@@ -332,7 +335,7 @@ class S3StorageAdapter {
         Expires: expires
       });
     } catch (error) {
-      console.error('S3 signed URL error:', error);
+      logger.error('S3 signed URL error:', error);
       return \`/uploads/\${key}\`;
     }
   }
@@ -350,7 +353,7 @@ class S3StorageAdapter {
       
       return { success: true };
     } catch (error) {
-      console.error('S3 delete error:', error);
+      logger.error('S3 delete error:', error);
       return { success: false, error: error.message };
     }
   }
@@ -367,7 +370,7 @@ class S3StorageAdapter {
     
     switch (operation) {
       case 'upload':
-        fs.writeFileSync(filePath, data);
+        fs.await fsPromises.writeFile(filePath, data);
         return {
           success: true,
           url: \`/uploads/\${key}\`,
@@ -379,7 +382,7 @@ class S3StorageAdapter {
         if (fs.existsSync(filePath)) {
           return {
             success: true,
-            data: fs.readFileSync(filePath),
+            data: fs.await fsPromises.readFile(filePath),
             fallback: true
           };
         }
@@ -401,14 +404,14 @@ module.exports = S3StorageAdapter;
 `;
     
     const s3AdapterPath = path.join(storageDir, 's3.js');
-    fs.writeFileSync(s3AdapterPath, s3AdapterContent.trim());
+    fs.await fsPromises.writeFile(s3AdapterPath, s3AdapterContent.trim());
     this.changes.push({ 
       file: s3AdapterPath, 
       success: true, 
       description: 'Created S3 storage adapter',
       created: true 
     });
-    console.log(`✅ Created S3 adapter: ${s3AdapterPath}`);
+    logger.info(`✅ Created S3 adapter: ${s3AdapterPath}`);
     
     // Создаем индексный файл для storage
     const indexContent = `
@@ -422,19 +425,19 @@ module.exports = {
 `;
     
     const indexPath = path.join(storageDir, 'index.js');
-    fs.writeFileSync(indexPath, indexContent.trim());
+    fs.await fsPromises.writeFile(indexPath, indexContent.trim());
     this.changes.push({ 
       file: indexPath, 
       success: true, 
       description: 'Created storage index file',
       created: true 
     });
-    console.log(`✅ Created storage index: ${indexPath}`);
+    logger.info(`✅ Created storage index: ${indexPath}`);
   }
 
   // Обновление зависимостей
   updateDependencies() {
-    console.log('\n📦 Updating problematic dependencies...');
+    logger.info('\n📦 Updating problematic dependencies...');
     
     const problematicServices = [
       { service: 'data-import', dependency: 'xlsx', currentVersion: '^0.18.5', newVersion: '^0.20.0' },
@@ -452,7 +455,7 @@ module.exports = {
           
           if (pkg.dependencies && pkg.dependencies[dependency] === currentVersion) {
             pkg.dependencies[dependency] = newVersion;
-            console.log(`  📈 ${service}: ${dependency} ${currentVersion} → ${newVersion}`);
+            logger.info(`  📈 ${service}: ${dependency} ${currentVersion} → ${newVersion}`);
           }
           
           return JSON.stringify(pkg, null, 2);
@@ -472,7 +475,7 @@ module.exports = {
         
         if (!pkg.dependencies['aws-sdk']) {
           pkg.dependencies['aws-sdk'] = '^2.1691.0';
-          console.log('  📈 Added aws-sdk to shared package');
+          logger.info('  📈 Added aws-sdk to shared package');
         }
         
         return JSON.stringify(pkg, null, 2);
@@ -495,20 +498,20 @@ module.exports = {
       }
     };
     
-    fs.writeFileSync('safe-fixes-report.json', JSON.stringify(report, null, 2));
-    console.log('\n📄 Report saved: safe-fixes-report.json');
+    fs.await fsPromises.writeFile('safe-fixes-report.json', JSON.stringify(report, null, 2));
+    logger.info('\n📄 Report saved: safe-fixes-report.json');
     
     // Вывод статистики
-    console.log('\n📊 Summary:');
-    console.log(`  ✅ Successful changes: ${report.summary.successful}`);
-    console.log(`  ❌ Failed changes: ${report.summary.failed}`);
-    console.log(`  📁 Files created: ${report.summary.created}`);
-    console.log(`  ℹ️ No changes needed: ${report.summary.noChanges}`);
+    logger.info('\n📊 Summary:');
+    logger.info(`  ✅ Successful changes: ${report.summary.successful}`);
+    logger.info(`  ❌ Failed changes: ${report.summary.failed}`);
+    logger.info(`  📁 Files created: ${report.summary.created}`);
+    logger.info(`  ℹ️ No changes needed: ${report.summary.noChanges}`);
     
     if (report.summary.failed > 0) {
-      console.log('\n❌ Failed changes:');
+      logger.info('\n❌ Failed changes:');
       this.changes.filter(c => !c.success).forEach(change => {
-        console.log(`  - ${change.file}: ${change.error}`);
+        logger.info(`  - ${change.file}: ${change.error}`);
       });
     }
   }
@@ -519,20 +522,20 @@ const fixer = new SafeFixer();
 
 // Обработка rollback
 if (process.argv.includes('--rollback')) {
-  console.log('🔄 Rollback mode activated');
+  logger.info('🔄 Rollback mode activated');
   // Загружаем предыдущий отчет для rollback
   if (fs.existsSync('safe-fixes-report.json')) {
-    const report = JSON.parse(fs.readFileSync('safe-fixes-report.json', 'utf8'));
+    const report = JSON.parse(fs.await fsPromises.readFile('safe-fixes-report.json', 'utf8'));
     fixer.backups = report.backups;
     fixer.rollback();
   } else {
-    console.log('❌ No backup report found');
+    logger.info('❌ No backup report found');
   }
   process.exit(0);
 }
 
 try {
-  console.log('🚀 Starting safe fixes for Railway deployment...\n');
+  logger.info('🚀 Starting safe fixes for Railway deployment...\n');
   
   // 1. Исправление конфигурации портов
   fixer.fixPortConfiguration();
@@ -552,13 +555,13 @@ try {
   // 6. Генерация отчета
   fixer.generateReport();
   
-  console.log('\n✅ Safe fixes completed successfully!');
-  console.log('💡 To rollback changes, run: node scripts/safe-fixes.js --rollback');
-  console.log('🔍 Next step: Run comprehensive test to verify changes');
+  logger.info('\n✅ Safe fixes completed successfully!');
+  logger.info('💡 To rollback changes, run: node scripts/safe-fixes.js --rollback');
+  logger.info('🔍 Next step: Run comprehensive test to verify changes');
   
 } catch (error) {
-  console.error('\n❌ Error during fixes:', error);
-  console.log('🔄 Rolling back changes...');
+  logger.error('\n❌ Error during fixes:', error);
+  logger.info('🔄 Rolling back changes...');
   fixer.rollback();
   process.exit(1);
 }

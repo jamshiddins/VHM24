@@ -1,15 +1,17 @@
+const logger = require('@vhm24/shared/logger');
+
 // Production starter for Railway deployment
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Starting VHM24 in production mode on Railway...');
+logger.info('🚀 Starting VHM24 in production mode on Railway...');
 
 // Проверка переменных окружения
 try {
   require('./check-env');
 } catch (error) {
-  console.error('❌ Environment check failed:', error.message);
+  logger.error('❌ Environment check failed:', error.message);
   process.exit(1);
 }
 
@@ -19,7 +21,7 @@ const SERVICE = process.env.RAILWAY_SERVICE_NAME ||
                detectServiceFromPath() ||
                'gateway';
 
-console.log(`🎯 Detected service: ${SERVICE}`);
+logger.info(`🎯 Detected service: ${SERVICE}`);
 
 const serviceMap = {
   'gateway': { path: 'services/gateway', port: 8000, public: true },
@@ -42,24 +44,24 @@ const serviceMap = {
 const service = serviceMap[SERVICE];
 
 if (!service) {
-  console.error(`❌ Unknown service: ${SERVICE}`);
-  console.log('Available services:', Object.keys(serviceMap).join(', '));
+  logger.error(`❌ Unknown service: ${SERVICE}`);
+  logger.info('Available services:', Object.keys(serviceMap).join(', '));
   process.exit(1);
 }
 
 // Проверяем существование сервиса
 if (!fs.existsSync(service.path)) {
-  console.error(`❌ Service path not found: ${service.path}`);
+  logger.error(`❌ Service path not found: ${service.path}`);
   process.exit(1);
 }
 
 // Устанавливаем PORT для Railway
 process.env.PORT = process.env.PORT || service.port.toString();
 
-console.log(`🚀 Starting ${SERVICE} service...`);
-console.log(`📁 Path: ${service.path}`);
-console.log(`🌐 Port: ${process.env.PORT}`);
-console.log(`🔓 Public: ${service.public ? 'Yes' : 'No'}`);
+logger.info(`🚀 Starting ${SERVICE} service...`);
+logger.info(`📁 Path: ${service.path}`);
+logger.info(`🌐 Port: ${process.env.PORT}`);
+logger.info(`🔓 Public: ${service.public ? 'Yes' : 'No'}`);
 
 // Устанавливаем дополнительные переменные для сервиса
 process.env.SERVICE_NAME = SERVICE;
@@ -73,23 +75,23 @@ const child = spawn('npm', ['start'], {
 });
 
 child.on('error', (error) => {
-  console.error('❌ Failed to start service:', error);
+  logger.error('❌ Failed to start service:', error);
   process.exit(1);
 });
 
 child.on('exit', (code) => {
-  console.log(`🛑 Service ${SERVICE} exited with code ${code}`);
+  logger.info(`🛑 Service ${SERVICE} exited with code ${code}`);
   process.exit(code);
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('🛑 Received SIGTERM, shutting down gracefully...');
+  logger.info('🛑 Received SIGTERM, shutting down gracefully...');
   child.kill('SIGTERM');
 });
 
 process.on('SIGINT', () => {
-  console.log('🛑 Received SIGINT, shutting down gracefully...');
+  logger.info('🛑 Received SIGINT, shutting down gracefully...');
   child.kill('SIGINT');
 });
 

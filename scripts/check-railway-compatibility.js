@@ -1,7 +1,10 @@
-const fs = require('fs');
+const logger = require('@vhm24/shared/logger');
+
+const fs = require('fs')
+const { promises: fsPromises } = fs;
 const path = require('path');
 
-console.log('🔍 Проверка совместимости с Railway...\n');
+logger.info('🔍 Проверка совместимости с Railway...\n');
 
 const checks = {
   'Monorepo structure': checkMonorepoStructure(),
@@ -28,7 +31,7 @@ function checkStartScripts() {
     services.forEach(service => {
       const pkgPath = path.join('services', service, 'package.json');
       if (fs.existsSync(pkgPath)) {
-        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+        const pkg = JSON.parse(fs.await fsPromises.readFile(pkgPath, 'utf8'));
         const hasStart = pkg.scripts && (pkg.scripts.start || pkg.scripts.dev);
         serviceScripts[service] = hasStart;
         if (!hasStart) allHaveScripts = false;
@@ -38,14 +41,14 @@ function checkStartScripts() {
       }
     });
     
-    console.log('📦 Service start scripts:');
+    logger.info('📦 Service start scripts:');
     Object.entries(serviceScripts).forEach(([service, hasScript]) => {
-      console.log(`  ${hasScript ? '✅' : '❌'} ${service}`);
+      logger.info(`  ${hasScript ? '✅' : '❌'} ${service}`);
     });
     
     return allHaveScripts;
   } catch (error) {
-    console.error('Error checking start scripts:', error.message);
+    logger.error('Error checking start scripts:', error.message);
     return false;
   }
 }
@@ -58,7 +61,7 @@ function checkPortConfig() {
     services.forEach(service => {
       const indexPath = path.join('services', service, 'src', 'index.js');
       if (fs.existsSync(indexPath)) {
-        const content = fs.readFileSync(indexPath, 'utf8');
+        const content = fs.await fsPromises.readFile(indexPath, 'utf8');
         
         // Проверяем на hardcoded порты
         if (content.includes('const PORT =') && !content.includes('process.env.PORT')) {
@@ -68,13 +71,13 @@ function checkPortConfig() {
     });
     
     if (portIssues.length > 0) {
-      console.log('⚠️ Port configuration issues:');
-      portIssues.forEach(issue => console.log(`  - ${issue}`));
+      logger.info('⚠️ Port configuration issues:');
+      portIssues.forEach(issue => logger.info(`  - ${issue}`));
     }
     
     return portIssues.length === 0;
   } catch (error) {
-    console.error('Error checking port config:', error.message);
+    logger.error('Error checking port config:', error.message);
     return false;
   }
 }
@@ -84,12 +87,12 @@ function checkDatabase() {
   const hasPrisma = fs.existsSync('packages/database/prisma/schema.prisma');
   
   if (hasEnv) {
-    const envContent = fs.readFileSync('.env', 'utf8');
+    const envContent = fs.await fsPromises.readFile('.env', 'utf8');
     const hasDatabaseUrl = envContent.includes('DATABASE_URL');
     
-    console.log('🗄️ Database configuration:');
-    console.log(`  ${hasDatabaseUrl ? '✅' : '❌'} DATABASE_URL found`);
-    console.log(`  ${hasPrisma ? '✅' : '❌'} Prisma schema exists`);
+    logger.info('🗄️ Database configuration:');
+    logger.info(`  ${hasDatabaseUrl ? '✅' : '❌'} DATABASE_URL found`);
+    logger.info(`  ${hasPrisma ? '✅' : '❌'} Prisma schema exists`);
     
     return hasDatabaseUrl && hasPrisma;
   }
@@ -100,15 +103,15 @@ function checkDatabase() {
 function checkFileStorage() {
   // MinIO не будет работать на Railway - нужен внешний S3
   const hasMinIO = fs.existsSync('docker-compose.yml') && 
-    fs.readFileSync('docker-compose.yml', 'utf8').includes('minio');
+    fs.await fsPromises.readFile('docker-compose.yml', 'utf8').includes('minio');
   
   const hasS3Adapter = fs.existsSync('packages/shared/storage') ||
     fs.existsSync('packages/shared/utils') && 
-    fs.readFileSync('packages/shared/utils/index.js', 'utf8').includes('s3');
+    fs.await fsPromises.readFile('packages/shared/utils/index.js', 'utf8').includes('s3');
   
-  console.log('📁 File storage:');
-  console.log(`  ${hasMinIO ? '⚠️' : '✅'} MinIO detected (needs S3 replacement)`);
-  console.log(`  ${hasS3Adapter ? '✅' : '❌'} S3 adapter available`);
+  logger.info('📁 File storage:');
+  logger.info(`  ${hasMinIO ? '⚠️' : '✅'} MinIO detected (needs S3 replacement)`);
+  logger.info(`  ${hasS3Adapter ? '✅' : '❌'} S3 adapter available`);
   
   return !hasMinIO || hasS3Adapter;
 }
@@ -128,21 +131,21 @@ function checkEnvVars() {
   ];
   
   if (!fs.existsSync('.env')) {
-    console.log('❌ .env file not found');
+    logger.info('❌ .env file not found');
     return false;
   }
   
-  const env = fs.readFileSync('.env', 'utf8');
+  const env = fs.await fsPromises.readFile('.env', 'utf8');
   const missing = required.filter(v => !env.includes(v));
   const missingOptional = optional.filter(v => !env.includes(v));
   
-  console.log('🔐 Environment variables:');
+  logger.info('🔐 Environment variables:');
   required.forEach(v => {
-    console.log(`  ${env.includes(v) ? '✅' : '❌'} ${v} (required)`);
+    logger.info(`  ${env.includes(v) ? '✅' : '❌'} ${v} (required)`);
   });
   
   optional.forEach(v => {
-    console.log(`  ${env.includes(v) ? '✅' : '⚠️'} ${v} (optional)`);
+    logger.info(`  ${env.includes(v) ? '✅' : '⚠️'} ${v} (optional)`);
   });
   
   return missing.length === 0;
@@ -152,9 +155,9 @@ function checkDockerConfig() {
   const hasDockerCompose = fs.existsSync('docker-compose.yml');
   const hasDockerfile = fs.existsSync('Dockerfile');
   
-  console.log('🐳 Docker configuration:');
-  console.log(`  ${hasDockerCompose ? '✅' : '❌'} docker-compose.yml`);
-  console.log(`  ${hasDockerfile ? '✅' : '❌'} Dockerfile`);
+  logger.info('🐳 Docker configuration:');
+  logger.info(`  ${hasDockerCompose ? '✅' : '❌'} docker-compose.yml`);
+  logger.info(`  ${hasDockerfile ? '✅' : '❌'} Dockerfile`);
   
   return hasDockerCompose;
 }
@@ -167,7 +170,7 @@ function checkServiceDependencies() {
     services.forEach(service => {
       const pkgPath = path.join('services', service, 'package.json');
       if (fs.existsSync(pkgPath)) {
-        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+        const pkg = JSON.parse(fs.await fsPromises.readFile(pkgPath, 'utf8'));
         
         // Проверяем на устаревшие зависимости
         if (pkg.dependencies) {
@@ -181,23 +184,23 @@ function checkServiceDependencies() {
     });
     
     if (dependencyIssues.length > 0) {
-      console.log('⚠️ Dependency issues:');
-      dependencyIssues.forEach(issue => console.log(`  - ${issue}`));
+      logger.info('⚠️ Dependency issues:');
+      dependencyIssues.forEach(issue => logger.info(`  - ${issue}`));
     }
     
     return dependencyIssues.length === 0;
   } catch (error) {
-    console.error('Error checking dependencies:', error.message);
+    logger.error('Error checking dependencies:', error.message);
     return false;
   }
 }
 
 // Вывод результатов
-console.log('\n📊 Railway Compatibility Report:');
-console.log('================================');
+logger.info('\n📊 Railway Compatibility Report:');
+logger.info('================================');
 
 Object.entries(checks).forEach(([check, passed]) => {
-  console.log(`${passed ? '✅' : '❌'} ${check}`);
+  logger.info(`${passed ? '✅' : '❌'} ${check}`);
 });
 
 // Подсчет совместимости
@@ -205,14 +208,14 @@ const passedChecks = Object.values(checks).filter(Boolean).length;
 const totalChecks = Object.keys(checks).length;
 const compatibilityScore = Math.round((passedChecks / totalChecks) * 100);
 
-console.log(`\n🎯 Compatibility Score: ${compatibilityScore}%`);
+logger.info(`\n🎯 Compatibility Score: ${compatibilityScore}%`);
 
 if (compatibilityScore >= 80) {
-  console.log('✅ Project is ready for Railway deployment with minor fixes');
+  logger.info('✅ Project is ready for Railway deployment with minor fixes');
 } else if (compatibilityScore >= 60) {
-  console.log('⚠️ Project needs moderate changes for Railway deployment');
+  logger.info('⚠️ Project needs moderate changes for Railway deployment');
 } else {
-  console.log('❌ Project needs significant changes for Railway deployment');
+  logger.info('❌ Project needs significant changes for Railway deployment');
 }
 
 // Сохранение результатов
@@ -223,8 +226,8 @@ const report = {
   recommendations: generateRecommendations(checks)
 };
 
-fs.writeFileSync('railway-compatibility-report.json', JSON.stringify(report, null, 2));
-console.log('\n📄 Detailed report saved to: railway-compatibility-report.json');
+fs.await fsPromises.writeFile('railway-compatibility-report.json', JSON.stringify(report, null, 2));
+logger.info('\n📄 Detailed report saved to: railway-compatibility-report.json');
 
 function generateRecommendations(checks) {
   const recommendations = [];

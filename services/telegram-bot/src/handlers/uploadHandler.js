@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const path = require('path');
@@ -158,10 +160,10 @@ _Ссылка публичная и будет работать всегда_`;
       });
 
       // Логируем успешную загрузку
-      console.log(`✅ Photo uploaded by user ${msg.from.id}: ${uploadedUrl}`);
+      logger.info(`✅ Photo uploaded by user ${msg.from.id}: ${uploadedUrl}`);
 
     } catch (error) {
-      console.error('❌ Error uploading photo:', error);
+      logger.error('❌ Error uploading photo:', error);
       
       await this.bot.sendMessage(chatId, `❌ Ошибка при загрузке фото: ${error.message}`, {
         reply_to_message_id: messageId
@@ -228,10 +230,10 @@ _Ссылка публичная и будет работать всегда_`;
       });
 
       // Логируем успешную загрузку
-      console.log(`✅ Document uploaded by user ${msg.from.id}: ${uploadedUrl}`);
+      logger.info(`✅ Document uploaded by user ${msg.from.id}: ${uploadedUrl}`);
 
     } catch (error) {
-      console.error('❌ Error uploading document:', error);
+      logger.error('❌ Error uploading document:', error);
       
       await this.bot.sendMessage(chatId, `❌ Ошибка при загрузке документа: ${error.message}`, {
         reply_to_message_id: messageId
@@ -321,11 +323,11 @@ _Ссылка публичная и будет работать всегда_`;
         // Удаляем файлы старше 1 часа
         if (now - stats.mtime.getTime() > 60 * 60 * 1000) {
           fs.unlinkSync(filePath);
-          console.log(`🗑️ Cleaned up temp file: ${file}`);
+          logger.info(`🗑️ Cleaned up temp file: ${file}`);
         }
       });
     } catch (error) {
-      console.error('❌ Error cleaning up temp files:', error);
+      logger.error('❌ Error cleaning up temp files:', error);
     }
   }
 }

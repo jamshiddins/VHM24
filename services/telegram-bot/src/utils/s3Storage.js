@@ -1,6 +1,9 @@
+const logger = require('@vhm24/shared/logger');
+
 const AWS = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
+const fs = require('fs')
+const { promises: fsPromises } = fs;
 const path = require('path');
 
 /**
@@ -38,7 +41,7 @@ class S3Storage {
       const key = `${folder}/${uniqueFileName}`;
 
       // Читаем файл
-      const fileContent = fs.readFileSync(filePath);
+      const fileContent = await fsPromises.readFile(filePath);
 
       // Определяем MIME тип
       const mimeType = this.getMimeType(fileExtension);
@@ -59,11 +62,11 @@ class S3Storage {
       // Возвращаем CDN URL
       const cdnUrl = `${this.cdnUrl}/${key}`;
       
-      console.log(`✅ File uploaded successfully: ${cdnUrl}`);
+      logger.info(`✅ File uploaded successfully: ${cdnUrl}`);
       return cdnUrl;
 
     } catch (error) {
-      console.error('❌ Error uploading file to S3:', error);
+      logger.error('❌ Error uploading file to S3:', error);
       throw new Error(`Failed to upload file: ${error.message}`);
     }
   }
@@ -139,11 +142,11 @@ class S3Storage {
       };
 
       await this.s3.deleteObject(deleteParams).promise();
-      console.log(`✅ File deleted successfully: ${fileUrl}`);
+      logger.info(`✅ File deleted successfully: ${fileUrl}`);
       return true;
 
     } catch (error) {
-      console.error('❌ Error deleting file from S3:', error);
+      logger.error('❌ Error deleting file from S3:', error);
       return false;
     }
   }
@@ -172,7 +175,7 @@ class S3Storage {
       };
 
     } catch (error) {
-      console.error('❌ Error getting file info:', error);
+      logger.error('❌ Error getting file info:', error);
       return null;
     }
   }

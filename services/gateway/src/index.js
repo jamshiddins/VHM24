@@ -4,7 +4,11 @@
  * Secure API Gateway with WebSocket support
  */
 
-require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
+require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Устанавливаем SERVICE_NAME для конфигурации
 process.env.SERVICE_NAME = 'gateway';
@@ -13,11 +17,28 @@ const Fastify = require('fastify');
 const httpProxy = require('@fastify/http-proxy');
 const multipart = require('@fastify/multipart');
 const websocket = require('@fastify/websocket');
-const { getPrismaClient } = require('@vhm24/database');
-const { validateFileType, sanitizeInput } = require('@vhm24/shared-types/src/security');
+const { getPrismaClient 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('@vhm24/database');
+const { validateFileType, sanitizeInput 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('@vhm24/shared-types/src/security');
 const path = require('path');
-const fs = require('fs');
-const { v4: uuidv4 } = require('uuid');
+const fs = require('fs')
+const { promises: fsPromises 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = fs;
+const { v4: uuidv4 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('uuid');
 
 // Импортируем наш новый shared пакет
 const {
@@ -47,7 +68,11 @@ const {
   logger,
   config: sharedConfig,
   createFastifyConfig
-} = require('@vhm24/shared');
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('@vhm24/shared');
 
 // Импортируем middleware аудита
 const AuditMiddleware = require('@vhm24/shared/middleware/auditMiddleware');
@@ -60,7 +85,11 @@ setupGlobalErrorHandlers();
 const fastify = Fastify({
   ...createFastifyConfig(),
   bodyLimit: parseInt(process.env.MAX_FILE_SIZE) || 10485760 // 10MB по умолчанию
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 const prisma = getPrismaClient();
 
@@ -78,17 +107,29 @@ setupHelmet(fastify, {
       connectSrc: ["'self'", "ws:", "wss:"],
     },
   },
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 setupCORS(fastify);
 setupRateLimit(fastify, {
   max: 200, // Более высокий лимит для gateway
   timeWindow: '1 minute'
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 setupJWT(fastify, {
   verify: {
     issuer: ['vhm24-gateway', 'vhm24-auth'] // Принимаем токены от auth сервиса
   }
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Middleware для логирования и санитизации
 fastify.addHook('preHandler', securityLogger);
@@ -101,7 +142,11 @@ fastify.register(multipart, {
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB
   }
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 fastify.register(websocket);
 
@@ -113,6 +158,8 @@ fastify.decorate('authenticate', authenticate);
 
 // Health check
 fastify.get('/health', async (request, reply) => {
+    try {
+      
   const services = {
     auth: 'unknown',
     machines: 'unknown',
@@ -167,7 +214,7 @@ fastify.get('/health', async (request, reply) => {
 // WebSocket endpoint для real-time обновлений
 fastify.register(async function (fastify) {
   fastify.get('/ws', { websocket: true }, (connection, req) => {
-    console.log('WebSocket client connected');
+    logger.info('WebSocket client connected');
     
     // Добавляем клиента в список
     wsClients.add(connection.socket);
@@ -181,9 +228,11 @@ fastify.register(async function (fastify) {
     
     // Обработка сообщений от клиента
     connection.socket.on('message', async (message) => {
+    try {
+      
       try {
         const data = JSON.parse(message.toString());
-        console.log('WebSocket message:', data);
+        logger.info('WebSocket message:', data);
         
         // Echo обратно
         connection.socket.send(JSON.stringify({
@@ -192,13 +241,13 @@ fastify.register(async function (fastify) {
           timestamp: new Date()
         }));
       } catch (error) {
-        console.error('WebSocket message error:', error);
+        logger.error('WebSocket message error:', error);
       }
     });
     
     // Очистка при отключении
     connection.socket.on('close', () => {
-      console.log('WebSocket client disconnected');
+      logger.info('WebSocket client disconnected');
       wsClients.delete(connection.socket);
     });
   });
@@ -223,6 +272,8 @@ function broadcastToClients(type, data) {
 fastify.post('/api/v1/upload', {
   preValidation: [fastify.authenticate],
   handler: async (request, reply) => {
+    try {
+      
     const parts = request.parts();
     const uploadedFiles = [];
     const maxFileSize = parseInt(process.env.MAX_FILE_SIZE) || 10485760; // 10MB
@@ -266,7 +317,7 @@ fastify.post('/api/v1/upload', {
         
         // Сохраняем файл
         const buffer = Buffer.concat(chunks);
-        fs.writeFileSync(filepath, buffer);
+        await fsPromises.writeFile(filepath, buffer);
         
         // Логируем загрузку файла
         await prisma.auditLog.create({
@@ -396,6 +447,8 @@ fastify.register(httpProxy, {
 fastify.get('/api/v1/dashboard/stats', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
   try {
     const [
       totalMachines,
@@ -467,6 +520,8 @@ fastify.get('/api/v1/dashboard/stats', {
 
 // Тестовый endpoint для проверки базы данных
 fastify.get('/api/v1/test-db', async (request, reply) => {
+    try {
+      
   try {
     const [machines, tasks, users] = await Promise.all([
       prisma.machine.count(),
@@ -495,6 +550,8 @@ fastify.get('/api/v1/test-db', async (request, reply) => {
 fastify.get('/api/v1/audit-log', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
   try {
     const { entity, entityId, userId, from, to, skip = 0, take = 50 } = request.query;
     
@@ -544,6 +601,8 @@ fastify.get('/api/v1/audit-log', {
 
 // Start server
 const start = async () => {
+    try {
+      
   try {
     // Создаем директорию для загрузок
     const uploadDir = path.join(process.cwd(), 'uploads');
@@ -556,12 +615,12 @@ const start = async () => {
       port: port,
       host: '0.0.0.0'
     });
-    console.log('Gateway is running on port', port);
-    console.log('WebSocket available at ws://localhost:' + port + '/ws');
+    logger.info('Gateway is running on port', port);
+    logger.info('WebSocket available at ws://localhost:' + port + '/ws');
     
     // Railway specific logging
     if (process.env.RAILWAY_ENVIRONMENT) {
-      console.log('Running on Railway:', process.env.RAILWAY_STATIC_URL);
+      logger.info('Running on Railway:', process.env.RAILWAY_STATIC_URL);
     }
   } catch (err) {
     fastify.log.error(err);
@@ -573,6 +632,8 @@ start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
+    try {
+      
   // Закрываем все WebSocket соединения
   wsClients.forEach(client => {
     client.close();

@@ -1,10 +1,13 @@
+const logger = require('@vhm24/shared/logger');
+
 /**
  * VHM24 - Comprehensive System Testing
  * Полная проверка всех компонентов системы
  */
 
 const axios = require('axios');
-const fs = require('fs');
+const fs = require('fs')
+const { promises: fsPromises } = fs;
 const path = require('path');
 
 // Конфигурация тестирования
@@ -57,7 +60,7 @@ class TestRunner {
       reset: '\x1b[0m'
     };
     
-    console.log(`${colors[type]}[${timestamp}] ${message}${colors.reset}`);
+    logger.info(`${colors[type]}[${timestamp}] ${message}${colors.reset}`);
   }
 
   async sleep(ms) {
@@ -631,7 +634,7 @@ async function generateTestReport(runner) {
   };
 
   const reportPath = path.join(__dirname, `test-report-${Date.now()}.json`);
-  fs.writeFileSync(reportPath, JSON.stringify(reportData, null, 2));
+  fs.await fsPromises.writeFile(reportPath, JSON.stringify(reportData, null, 2));
   
   runner.log(`\n📄 Detailed report saved to: ${reportPath}`, 'info');
 
@@ -663,7 +666,7 @@ async function generateTestReport(runner) {
 // Запускаем тесты
 if (require.main === module) {
   runComprehensiveTests().catch(error => {
-    console.error('❌ Test runner failed:', error);
+    logger.error('❌ Test runner failed:', error);
     process.exit(1);
   });
 }

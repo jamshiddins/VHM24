@@ -11,8 +11,8 @@
   "scripts": {
     "dev": "node start.js",
     "build": "npm install --workspaces && npm run build --workspaces --if-present",
-    "start": "node railway-start-final.js",
-    "railway": "node railway-start-final.js",
+    "start": "node railway-start-monolith.js",
+    "railway": "node railway-start-monolith.js",
     "clean": "rimraf node_modules packages/*/node_modules services/*/node_modules apps/*/node_modules",
     "db:setup": "cd packages/database && npm run generate && npm run migrate:dev",
     "db:generate": "cd packages/database && npx prisma generate",
@@ -20,7 +20,12 @@
     "db:seed": "cd packages/database && npm run seed",
     "db:studio": "cd packages/database && npx prisma studio",
     "install:all": "npm install && npm install --workspaces",
-    "test": "node test-all-services.js",
+    "kill-ports": "node scripts/kill-ports.js",
+    "pretest": "npm run kill-ports",
+    "test": "jest --forceExit --detectOpenHandles",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --forceExit --detectOpenHandles",
+    "test:services": "node test-all-services.js",
     "monitor": "node monitor-24-7.js",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "lint": "echo 'Linting not configured yet'",
@@ -28,19 +33,26 @@
     "railway:deploy": "npm run build && npm run start:production"
   },
   "dependencies": {
+    "@fastify/cors": "^8.4.0",
+    "@fastify/multipart": "^9.0.3",
+    "@prisma/client": "^5.7.0",
+    "aws-sdk": "^2.1691.0",
     "axios": "^1.10.0",
+    "bcrypt": "^5.1.1",
     "caniuse-lite": "^1.0.30001727",
     "colors": "^1.4.0",
     "dotenv": "^16.3.1",
     "fastify": "^4.24.3",
-    "ioredis": "^5.3.2"
+    "ioredis": "^5.3.2",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "prettier": "^3.1.0",
     "rimraf": "^5.0.5"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=20.0.0",
     "npm": ">=9.0.0"
   },
   "packageManager": "npm@9.8.1"

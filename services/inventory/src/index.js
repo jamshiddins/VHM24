@@ -1,20 +1,67 @@
-require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
+require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') 
+    
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}});
 const Fastify = require('fastify');
 const cors = require('@fastify/cors');
 const jwt = require('@fastify/jwt');
-const { getInventoryClient } = require('@vhm24/database');
+const { getInventoryClient 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('@vhm24/database');
 const prisma = getInventoryClient();
-const fastify = Fastify({ logger: true });
+const fastify = Fastify({ logger: true 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
+
+// Создаем логгер
+const logger = {
+  info: (message, ...args) => console.info(`[INFO] ${message}`, ...args),
+  warn: (message, ...args) => logger.warn(`[WARN] ${message}`, ...args),
+  error: (message, ...args) => logger.error(`[ERROR] ${message}`, ...args)
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }};
 
 // Plugins
 fastify.register(cors, {
   origin: true,
   credentials: true
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 fastify.register(jwt, {
   secret: process.env.JWT_SECRET || 'your-secret-key'
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Декоратор для проверки авторизации
 fastify.decorate('authenticate', async function(request, reply) {
@@ -43,11 +90,41 @@ fastify.decorate('authenticate', async function(request, reply) {
       message: err.message || 'Invalid or expired token'
     });
   }
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Health check
 fastify.get('/health', async (request, reply) => {
-  return { status: 'ok', service: 'inventory' };
+    try {
+      
+    try {
+      
+    try {
+      
+  try {
+    // Проверяем соединение с базой данных
+    await prisma.$queryRaw`SELECT 1`;
+    
+    return { 
+      status: 'ok', 
+      service: 'inventory', 
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      version: process.env.npm_package_version || '1.0.0',
+      database: 'connected'
+    };
+  } catch (error) {
+    fastify.log.error('Health check failed:', error);
+    return reply.code(503).send({ 
+      status: 'error', 
+      service: 'inventory',
+      timestamp: new Date().toISOString(),
+      error: 'Database connection failed'
+    });
+  }
 });
 
 // Получить все товары/ингредиенты
@@ -66,6 +143,12 @@ fastify.get('/api/v1/inventory/items', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const { category, search, inStock, skip, take } = request.query;
   
   try {
@@ -74,12 +157,40 @@ fastify.get('/api/v1/inventory/items', {
     if (category) where.category = category;
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { sku: { contains: search, mode: 'insensitive' } }
+        { name: { contains: search, mode: 'insensitive' } 
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}},
+        { sku: { contains: search, mode: 'insensitive' 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
       ];
     }
     if (inStock !== undefined) {
-      where.quantity = inStock ? { gt: 0 } : { lte: 0 };
+      where.quantity = inStock ? { gt: 0 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} : { lte: 0 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }};
     }
 
     const [items, total] = await Promise.all([
@@ -87,13 +198,21 @@ fastify.get('/api/v1/inventory/items', {
         where,
         skip,
         take,
-        orderBy: { name: 'asc' },
+        orderBy: { name: 'asc' 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }},
         include: {
           stockMovements: {
             take: 5,
             orderBy: { createdAt: 'desc' }
           }
-        }
+        
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
       }),
       prisma.inventoryItem.count({ where })
     ]);
@@ -105,7 +224,11 @@ fastify.get('/api/v1/inventory/items', {
         total,
         skip,
         take
-      }
+      
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
     };
   } catch (error) {
     fastify.log.error(error);
@@ -120,7 +243,17 @@ fastify.get('/api/v1/inventory/items', {
 fastify.get('/api/v1/inventory/items/:id', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
-  const { id } = request.params;
+    try {
+      
+    try {
+      
+    try {
+      
+  const { id 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = request.params;
   
   try {
     const item = await prisma.inventoryItem.findUnique({
@@ -152,13 +285,21 @@ fastify.get('/api/v1/inventory/items/:id', {
       success: true,
       data: item
     };
-  } catch (error) {
+  
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} catch (error) {
     fastify.log.error(error);
     reply.code(500).send({
       success: false,
       error: 'Failed to fetch item'
     });
-  }
+  
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 });
 
 // Создать новый товар
@@ -179,8 +320,18 @@ fastify.post('/api/v1/inventory/items', {
         price: { type: 'number', minimum: 0 }
       }
     }
-  }
+  
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const data = request.body;
   
   try {
@@ -239,6 +390,12 @@ fastify.patch('/api/v1/inventory/items/:id', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const { id } = request.params;
   const updates = request.body;
   
@@ -291,6 +448,12 @@ fastify.post('/api/v1/inventory/stock-movement', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const { itemId, type, quantity, reason, reference, fromLocation, toLocation, machineId } = request.body;
   const userId = request.user.id;
   
@@ -298,20 +461,32 @@ fastify.post('/api/v1/inventory/stock-movement', {
     // Получаем текущий товар
     const item = await prisma.inventoryItem.findUnique({
       where: { id: itemId }
-    });
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
     if (!item) {
       return reply.code(404).send({
         success: false,
         error: 'Item not found'
       });
-    }
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 
     // Вычисляем новое количество
     let newQuantity = item.quantity;
     if (type === 'IN') {
       newQuantity += quantity;
-    } else if (type === 'OUT') {
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} else if (type === 'OUT') {
       newQuantity -= quantity;
       if (newQuantity < 0) {
         return reply.code(400).send({
@@ -319,7 +494,11 @@ fastify.post('/api/v1/inventory/stock-movement', {
           error: 'Insufficient stock'
         });
       }
-    }
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 
     // Создаем транзакцию
     const [movement, updatedItem] = await prisma.$transaction([
@@ -337,14 +516,22 @@ fastify.post('/api/v1/inventory/stock-movement', {
           toLocation,
           machineId
         }
-      }),
+      
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}),
       prisma.inventoryItem.update({
         where: { id: itemId },
         data: {
           quantity: newQuantity,
           lastUpdated: new Date()
         }
-      })
+      
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }})
     ]);
 
     return {
@@ -353,13 +540,21 @@ fastify.post('/api/v1/inventory/stock-movement', {
         movement,
         item: updatedItem
       }
-    };
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }};
   } catch (error) {
     fastify.log.error(error);
     reply.code(500).send({
       success: false,
       error: 'Failed to process stock movement'
-    });
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
   }
 });
 
@@ -378,9 +573,19 @@ fastify.get('/api/v1/inventory/movements', {
         skip: { type: 'integer', minimum: 0, default: 0 },
         take: { type: 'integer', minimum: 1, maximum: 100, default: 20 }
       }
-    }
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const { itemId, type, machineId, dateFrom, dateTo, skip, take } = request.query;
   
   try {
@@ -445,6 +650,12 @@ fastify.get('/api/v1/inventory/movements', {
 fastify.get('/api/v1/inventory/low-stock', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     const items = await prisma.inventoryItem.findMany({
       where: {
@@ -477,6 +688,12 @@ fastify.get('/api/v1/inventory/low-stock', {
 fastify.get('/api/v1/inventory/stats', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     const [
       totalItems,
@@ -562,6 +779,12 @@ fastify.post('/api/v1/inventory/bulk-import', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const { items } = request.body;
   
   try {
@@ -606,12 +829,18 @@ fastify.post('/api/v1/inventory/bulk-import', {
 
 // Start server
 const start = async () => {
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     await fastify.listen({ 
       port: process.env.PORT || 3003,
       host: '0.0.0.0'
     });
-    console.log('Inventory service is running on port', process.env.PORT || 3003);
+    logger.info('Inventory service is running on port', process.env.PORT || 3003);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
@@ -622,7 +851,17 @@ start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
+    try {
+      
+    try {
+      
+    try {
+      
   await fastify.close();
   await prisma.$disconnect();
   process.exit(0);
 });
+
+
+// Экспортируем только необходимые компоненты
+module.exports = { fastify, prisma, start };

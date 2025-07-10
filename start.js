@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 /**
  * VHM24 Platform - Unified Start Script
  * Handles both development and production (Railway) environments
@@ -11,21 +13,21 @@ if (!process.env.RAILWAY_ENVIRONMENT) {
 const { spawn } = require('child_process');
 const path = require('path');
 
-console.log('🚀 VHM24 Platform starting...');
-console.log('Environment:', process.env.RAILWAY_ENVIRONMENT || 'development');
-console.log('Mode:', process.env.RAILWAY_ENVIRONMENT ? 'Single Process (Railway)' : 'Multi Process (Development)');
-console.log('Port:', process.env.PORT || 8000);
+logger.info('🚀 VHM24 Platform starting...');
+logger.info('Environment:', process.env.RAILWAY_ENVIRONMENT || 'development');
+logger.info('Mode:', process.env.RAILWAY_ENVIRONMENT ? 'Single Process (Railway)' : 'Multi Process (Development)');
+logger.info('Port:', process.env.PORT || 8000);
 
 // Check critical environment variables
 const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
 const missingVars = requiredEnvVars.filter(v => !process.env[v]);
 
 if (missingVars.length > 0) {
-  console.error('❌ Missing required environment variables:', missingVars.join(', '));
-  console.error('Please set them in your .env file or Railway dashboard');
+  logger.error('❌ Missing required environment variables:', missingVars.join(', '));
+  logger.error('Please set them in your .env file or Railway dashboard');
   
   // Start Gateway in limited mode (no database)
-  console.log('⚠️  Starting in limited mode (Gateway only, no database)...');
+  logger.info('⚠️  Starting in limited mode (Gateway only, no database)...');
 }
 
 // Services configuration
@@ -87,16 +89,16 @@ const gatewayService = {
 
 // Railway mode - single process
 if (process.env.RAILWAY_ENVIRONMENT) {
-  console.log('\n📦 Running in Railway mode (single process)...\n');
+  logger.info('\n📦 Running in Railway mode (single process)...\n');
   
   // Function to start service in the same process
   function startServiceInProcess(servicePath, serviceName) {
     try {
-      console.log(`Starting ${serviceName}...`);
+      logger.info(`Starting ${serviceName}...`);
       require(servicePath);
-      console.log(`✅ ${serviceName} started`);
+      logger.info(`✅ ${serviceName} started`);
     } catch (error) {
-      console.error(`❌ Failed to start ${serviceName}:`, error.message);
+      logger.error(`❌ Failed to start ${serviceName}:`, error.message);
     }
   }
   
@@ -112,29 +114,29 @@ if (process.env.RAILWAY_ENVIRONMENT) {
     }
     
     // Gateway starts last
-    console.log('Starting Gateway (main service)...');
+    logger.info('Starting Gateway (main service)...');
     require(gatewayService.path);
     
-    console.log('\n✅ All services started!');
-    console.log('\n📍 Access your API at:');
-    console.log(`${process.env.RAILWAY_STATIC_URL || 'http://localhost:' + gatewayService.port}`);
+    logger.info('\n✅ All services started!');
+    logger.info('\n📍 Access your API at:');
+    logger.info(`${process.env.RAILWAY_STATIC_URL || 'http://localhost:' + gatewayService.port}`);
   }
   
   // Start in single process mode
   startAllInProcess().catch(error => {
-    console.error('Failed to start services:', error);
+    logger.error('Failed to start services:', error);
     process.exit(1);
   });
   
 } else {
   // Development mode - multiple processes
-  console.log('\n🔧 Running in development mode (multiple processes)...\n');
+  logger.info('\n🔧 Running in development mode (multiple processes)...\n');
   
   const processes = [];
   
   // Function to start a service in separate process
   function startService(service) {
-    console.log(`Starting ${service.name} service...`);
+    logger.info(`Starting ${service.name} service...`);
     
     const child = spawn('node', [service.path], {
       env: { ...process.env, ...service.env },
@@ -142,13 +144,13 @@ if (process.env.RAILWAY_ENVIRONMENT) {
     });
 
     child.on('error', (error) => {
-      console.error(`Error starting ${service.name}:`, error);
+      logger.error(`Error starting ${service.name}:`, error);
       process.exit(1);
     });
 
     child.on('exit', (code) => {
       if (code !== 0) {
-        console.error(`${service.name} exited with code ${code}`);
+        logger.error(`${service.name} exited with code ${code}`);
         process.exit(code);
       }
     });
@@ -171,26 +173,26 @@ if (process.env.RAILWAY_ENVIRONMENT) {
     const gatewayProcess = startService(gatewayService);
     processes.push(gatewayProcess);
     
-    console.log('\n✅ All services started successfully!');
-    console.log('\n📍 Service URLs:');
-    console.log(`Gateway: http://localhost:${gatewayService.port}`);
-    console.log(`Health: http://localhost:${gatewayService.port}/health`);
-    console.log(`API: http://localhost:${gatewayService.port}/api/v1`);
+    logger.info('\n✅ All services started successfully!');
+    logger.info('\n📍 Service URLs:');
+    logger.info(`Gateway: http://localhost:${gatewayService.port}`);
+    logger.info(`Health: http://localhost:${gatewayService.port}/health`);
+    logger.info(`API: http://localhost:${gatewayService.port}/api/v1`);
     
     if (process.env.TELEGRAM_BOT_TOKEN) {
-      console.log('\n🤖 Telegram Bot is active');
+      logger.info('\n🤖 Telegram Bot is active');
     }
   }
   
   // Start services
   startAllServices().catch(error => {
-    console.error('Failed to start services:', error);
+    logger.error('Failed to start services:', error);
     process.exit(1);
   });
   
   // Handle graceful shutdown
   process.on('SIGTERM', () => {
-    console.log('\n🛑 Shutting down services...');
+    logger.info('\n🛑 Shutting down services...');
     processes.forEach(child => {
       child.kill('SIGTERM');
     });
@@ -198,7 +200,7 @@ if (process.env.RAILWAY_ENVIRONMENT) {
   });
 
   process.on('SIGINT', () => {
-    console.log('\n🛑 Shutting down services...');
+    logger.info('\n🛑 Shutting down services...');
     processes.forEach(child => {
       child.kill('SIGTERM');
     });
@@ -208,9 +210,9 @@ if (process.env.RAILWAY_ENVIRONMENT) {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
+  logger.error('Uncaught Exception:', error);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });

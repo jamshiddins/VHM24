@@ -117,6 +117,7 @@ function getSharedClient() {
 
 // Disconnect functions
 async function disconnectAllClients() {
+  try {
   const clients = [
     prismaClient,
     authClient,
@@ -135,6 +136,10 @@ async function disconnectAllClients() {
   inventoryClient = null;
   tasksClient = null;
   sharedClient = null;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
 }
 
 module.exports = {

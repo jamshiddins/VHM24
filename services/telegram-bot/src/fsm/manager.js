@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 /**
  * VHM24 Telegram Bot FSM Manager
  * Управление состояниями пользователей с поддержкой Redis
@@ -28,9 +30,9 @@ class FSMManager {
       try {
         const Redis = require('ioredis');
         this.redis = new Redis(process.env.REDIS_URL);
-        console.log('FSM Manager: Redis connected');
+        logger.info('FSM Manager: Redis connected');
       } catch (error) {
-        console.error('FSM Manager: Redis connection failed, falling back to memory:', error);
+        logger.error('FSM Manager: Redis connection failed, falling back to memory:', error);
         this.useRedis = false;
         this.userStates = new Map();
         this.userData = new Map();
@@ -50,7 +52,7 @@ class FSMManager {
         return this.userStates.get(userId) || COMMON_STATES.IDLE;
       }
     } catch (error) {
-      console.error('FSM Manager: Error getting user state:', error);
+      logger.error('FSM Manager: Error getting user state:', error);
       return COMMON_STATES.IDLE;
     }
   }
@@ -67,13 +69,13 @@ class FSMManager {
 
       if (this.useRedis && this.redis) {
         await this.redis.setex(`fsm:state:${userId}`, 3600, state); // TTL 1 час
-        console.log(`FSM: User ${userId} state set to ${state}`);
+        logger.info(`FSM: User ${userId} state set to ${state}`);
       } else {
         this.userStates.set(userId, state);
-        console.log(`FSM: User ${userId} state set to ${state}`);
+        logger.info(`FSM: User ${userId} state set to ${state}`);
       }
     } catch (error) {
-      console.error('FSM Manager: Error setting user state:', error);
+      logger.error('FSM Manager: Error setting user state:', error);
       throw error;
     }
   }
@@ -90,9 +92,9 @@ class FSMManager {
         this.userStates.delete(userId);
         this.userData.delete(userId);
       }
-      console.log(`FSM: User ${userId} state cleared`);
+      logger.info(`FSM: User ${userId} state cleared`);
     } catch (error) {
-      console.error('FSM Manager: Error clearing user state:', error);
+      logger.error('FSM Manager: Error clearing user state:', error);
     }
   }
 
@@ -108,7 +110,7 @@ class FSMManager {
         return this.userData.get(userId) || {};
       }
     } catch (error) {
-      console.error('FSM Manager: Error getting user data:', error);
+      logger.error('FSM Manager: Error getting user data:', error);
       return {};
     }
   }
@@ -124,7 +126,7 @@ class FSMManager {
         this.userData.set(userId, data);
       }
     } catch (error) {
-      console.error('FSM Manager: Error setting user data:', error);
+      logger.error('FSM Manager: Error setting user data:', error);
       throw error;
     }
   }
@@ -138,7 +140,7 @@ class FSMManager {
       const newData = { ...currentData, ...updates };
       await this.setUserData(userId, newData);
     } catch (error) {
-      console.error('FSM Manager: Error updating user data:', error);
+      logger.error('FSM Manager: Error updating user data:', error);
       throw error;
     }
   }
@@ -151,7 +153,7 @@ class FSMManager {
       const currentState = await this.getUserState(userId);
       return currentState === state;
     } catch (error) {
-      console.error('FSM Manager: Error checking user state:', error);
+      logger.error('FSM Manager: Error checking user state:', error);
       return false;
     }
   }
@@ -164,7 +166,7 @@ class FSMManager {
       const currentState = await this.getUserState(userId);
       return stateGroup.includes(currentState);
     } catch (error) {
-      console.error('FSM Manager: Error checking user state group:', error);
+      logger.error('FSM Manager: Error checking user state group:', error);
       return false;
     }
   }
@@ -195,7 +197,7 @@ class FSMManager {
       
       return users;
     } catch (error) {
-      console.error('FSM Manager: Error getting users in state:', error);
+      logger.error('FSM Manager: Error getting users in state:', error);
       return [];
     }
   }
@@ -208,13 +210,13 @@ class FSMManager {
       setTimeout(async () => {
         const currentState = await this.getUserState(userId);
         if (currentState !== COMMON_STATES.IDLE) {
-          console.log(`FSM: State timeout for user ${userId}, resetting to ${fallbackState}`);
+          logger.info(`FSM: State timeout for user ${userId}, resetting to ${fallbackState}`);
           await this.setUserState(userId, fallbackState);
           await this.clearUserData(userId);
         }
       }, timeoutMs);
     } catch (error) {
-      console.error('FSM Manager: Error setting state timeout:', error);
+      logger.error('FSM Manager: Error setting state timeout:', error);
     }
   }
 
@@ -229,7 +231,7 @@ class FSMManager {
         this.userData.delete(userId);
       }
     } catch (error) {
-      console.error('FSM Manager: Error clearing user data:', error);
+      logger.error('FSM Manager: Error clearing user data:', error);
     }
   }
 
@@ -254,7 +256,7 @@ class FSMManager {
       
       return stats;
     } catch (error) {
-      console.error('FSM Manager: Error getting state statistics:', error);
+      logger.error('FSM Manager: Error getting state statistics:', error);
       return {};
     }
   }
@@ -276,9 +278,9 @@ class FSMManager {
         this.userStates.clear();
         this.userData.clear();
       }
-      console.log('FSM: All states cleared');
+      logger.info('FSM: All states cleared');
     } catch (error) {
-      console.error('FSM Manager: Error clearing all states:', error);
+      logger.error('FSM Manager: Error clearing all states:', error);
     }
   }
 }

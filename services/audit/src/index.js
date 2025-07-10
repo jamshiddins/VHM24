@@ -30,7 +30,10 @@ fastify.decorate('authenticate', async function(request, reply) {
   try {
     await request.jwtVerify();
   } catch (err) {
-    reply.send(err);
+    reply.code(err.statusCode || 500).send({
+          error: err.name || 'Internal Server Error',
+          message: process.env.NODE_ENV === 'development' ? err.message : 'An error occurred'
+        });
   }
 });
 
@@ -110,7 +113,7 @@ const start = async () => {
   try {
     const port = process.env.AUDIT_SERVICE_PORT || 3009;
     await fastify.listen({ port, host: '0.0.0.0' });
-    console.log(`🔍 Audit service запущен на порту ${port}`);
+    logger.info(`🔍 Audit service запущен на порту ${port}`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

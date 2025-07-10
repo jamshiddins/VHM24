@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const path = require('path');
@@ -8,8 +10,8 @@ require('dotenv').config({ path: path.join(__dirname, '../../../.env') });
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding database...');
-  console.log('Database URL:', process.env.DATABASE_URL ? 'Connected' : 'Not found');
+  logger.info('🌱 Seeding database...');
+  logger.info('Database URL:', process.env.DATABASE_URL ? 'Connected' : 'Not found');
   
   try {
     // Check if admin already exists
@@ -23,7 +25,7 @@ async function main() {
     });
 
     if (existingAdmin) {
-      console.log('✅ Admin already exists:', existingAdmin.email);
+      logger.info('✅ Admin already exists:', existingAdmin.email);
       return;
     }
 
@@ -42,14 +44,14 @@ async function main() {
       }
     });
     
-    console.log('✅ Admin created successfully!');
-    console.log('Email:', admin.email);
-    console.log('Password: admin123');
-    console.log('Telegram ID:', admin.telegramId);
-    console.log('Roles:', admin.roles);
+    logger.info('✅ Admin created successfully!');
+    logger.info('Email:', admin.email);
+    logger.info('Password: admin123');
+    logger.info('Telegram ID:', admin.telegramId);
+    logger.info('Roles:', admin.roles);
 
     // Create some test data
-    console.log('\n📦 Creating test data...');
+    logger.info('\n📦 Creating test data...');
 
     // Create a location
     const location = await prisma.location.create({
@@ -73,7 +75,7 @@ async function main() {
       }
     });
 
-    console.log('✅ Test machine created:', machine.name);
+    logger.info('✅ Test machine created:', machine.name);
 
     // Create inventory items
     const items = await Promise.all([
@@ -112,7 +114,7 @@ async function main() {
       })
     ]);
 
-    console.log('✅ Inventory items created:', items.length);
+    logger.info('✅ Inventory items created:', items.length);
 
     // Create machine inventory (bunkers)
     for (const item of items) {
@@ -127,7 +129,7 @@ async function main() {
       });
     }
 
-    console.log('✅ Machine bunkers configured');
+    logger.info('✅ Machine bunkers configured');
 
     // Create a sample task
     const task = await prisma.task.create({
@@ -141,25 +143,25 @@ async function main() {
       }
     });
 
-    console.log('✅ Sample task created:', task.title);
+    logger.info('✅ Sample task created:', task.title);
 
-    console.log('\n🎉 Database seeded successfully!');
-    console.log('\n📱 Telegram Bot Usage:');
-    console.log('1. Send /start to your bot');
-    console.log('2. Login with Telegram ID: 42283329');
-    console.log('\n🌐 Web Login:');
-    console.log('Email: admin@vhm24.ru');
-    console.log('Password: admin123');
+    logger.info('\n🎉 Database seeded successfully!');
+    logger.info('\n📱 Telegram Bot Usage:');
+    logger.info('1. Send /start to your bot');
+    logger.info('2. Login with Telegram ID: 42283329');
+    logger.info('\n🌐 Web Login:');
+    logger.info('Email: admin@vhm24.ru');
+    logger.info('Password: admin123');
 
   } catch (error) {
-    console.error('❌ Error seeding database:', error);
+    logger.error('❌ Error seeding database:', error);
     throw error;
   }
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    logger.error(e);
     process.exit(1);
   })
   .finally(async () => {

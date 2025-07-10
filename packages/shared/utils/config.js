@@ -340,7 +340,7 @@ const printConfig = () => {
     safeToPrint.email.smtp.auth.pass = '***';
   }
   
-  console.log('Configuration loaded:', JSON.stringify(safeToPrint, null, 2));
+  logger.info('Configuration loaded:', JSON.stringify(safeToPrint, null, 2));
 };
 
 /**
@@ -351,7 +351,7 @@ const isReady = () => {
     validateServiceConfig(config.server.name);
     return true;
   } catch (error) {
-    console.error('Configuration not ready:', error.message);
+    logger.error('Configuration not ready:', error.message);
     return false;
   }
 };

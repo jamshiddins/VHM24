@@ -1,26 +1,65 @@
-const fastify = require('fastify')({ logger: true });
+const logger = require('@vhm24/shared/logger');
+
+const fastify = require('fastify')({ logger: true 
+    
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}});
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs')
+const { promises: fsPromises 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = fs;
 const csv = require('csv-parser');
-const XLSX = require('xlsx');
+const ExcelJS = require('exceljs');
 const moment = require('moment');
 
 // Регистрация плагинов
 fastify.register(require('@fastify/cors'), {
   origin: true,
   credentials: true
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 fastify.register(require('@fastify/multipart'), {
   limits: {
     fileSize: 100 * 1024 * 1024, // 100MB
   }
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 fastify.register(require('@fastify/static'), {
   root: path.join(__dirname, '../templates'),
   prefix: '/templates/',
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Хранилище для задач импорта (в production использовать Redis/Database)
 const importJobs = new Map();
@@ -52,7 +91,11 @@ const dataSchemas = {
     required: ['date', 'time', 'title', 'type', 'assigned_to', 'status', 'description'],
     optional: ['priority', 'machine_id', 'estimated_duration', 'actual_duration']
   }
-};
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }};
 
 // Генерация шаблонов CSV
 const generateTemplate = (dataType) => {
@@ -68,7 +111,11 @@ const generateTemplate = (dataType) => {
   csv += sampleData.map(row => headers.map(header => row[header] || '').join(',')).join('\n');
   
   return csv;
-};
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }};
 
 // Генерация примеров данных
 const generateSampleData = (dataType) => {
@@ -178,10 +225,20 @@ const generateSampleData = (dataType) => {
     default:
       return [];
   }
-};
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }};
 
 // Парсинг файлов
 const parseFile = async (filePath, dataType) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const ext = path.extname(filePath).toLowerCase();
   let data = [];
 
@@ -215,15 +272,40 @@ const parseCSV = (filePath) => {
   });
 };
 
-const parseExcel = (filePath) => {
-  const workbook = XLSX.readFile(filePath);
-  const sheetName = workbook.SheetNames[0];
-  const worksheet = workbook.Sheets[sheetName];
-  return XLSX.utils.sheet_to_json(worksheet);
+const parseExcel = async (filePath) => {
+    try {
+      
+    try {
+      
+    try {
+      
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.readFile(filePath);
+  const worksheet = workbook.getWorksheet(1); // Получаем первый лист
+  
+  const data = [];
+  worksheet.eachRow({ includeEmpty: false, headerRow: 1 }, (row, rowNumber) => {
+    if (rowNumber > 1) { // Пропускаем заголовок
+      const rowData = {};
+      row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        const header = worksheet.getRow(1).getCell(colNumber).value;
+        rowData[header] = cell.value;
+      });
+      data.push(rowData);
+    }
+  });
+  
+  return data;
 };
 
-const parseJSON = (filePath) => {
-  const content = fs.readFileSync(filePath, 'utf8');
+const parseJSON = async (filePath) => {
+    try {
+      
+    try {
+      
+    try {
+      
+  const content = await fsPromises.readFile(filePath, 'utf8');
   return JSON.parse(content);
 };
 
@@ -241,36 +323,84 @@ const validateData = (data, dataType) => {
       if (!record[field] || record[field].toString().trim() === '') {
         recordErrors.push(`Missing required field: ${field}`);
       }
-    });
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
     // Валидация даты и времени
     if (record.date && !moment(record.date, 'YYYY-MM-DD', true).isValid()) {
       recordErrors.push(`Invalid date format: ${record.date}. Expected: YYYY-MM-DD`);
-    }
+    
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}}
     
     if (record.time && !moment(record.time, 'HH:mm:ss', true).isValid()) {
-      recordErrors.push(`Invalid time format: ${record.time}. Expected: HH:mm:ss`);
-    }
+      recordErrors.push(`Invalid time format: ${record.time
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}. Expected: HH:mm:ss`);
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 
     // Специфичная валидация по типу данных
     if (dataType === 'SALES') {
       if (record.amount && isNaN(parseFloat(record.amount))) {
-        recordErrors.push(`Invalid amount: ${record.amount}`);
+        recordErrors.push(`Invalid amount: ${record.amount
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}`);
       }
       if (record.quantity && isNaN(parseInt(record.quantity))) {
-        recordErrors.push(`Invalid quantity: ${record.quantity}`);
+        recordErrors.push(`Invalid quantity: ${record.quantity
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}`);
       }
-    }
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
 
     if (recordErrors.length > 0) {
       errors.push(`Row ${index + 1}: ${recordErrors.join(', ')}`);
-    } else {
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} else {
       validRecords.push({
         ...record,
         originalIndex: index + 1,
         importedAt: new Date().toISOString()
       });
-    }
+    
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }}
   });
 
   return {
@@ -283,6 +413,12 @@ const validateData = (data, dataType) => {
 
 // Обработка импорта
 const processImport = async (jobId) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const job = importJobs.get(jobId);
   if (!job) return;
 
@@ -313,12 +449,22 @@ const processImport = async (jobId) => {
     job.errors = [error.message];
     job.completedAt = new Date().toISOString();
   }
-};
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }};
 
 // API Routes
 
 // Получение списка задач импорта
 fastify.get('/api/v1/data-import/jobs', async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const jobs = Array.from(importJobs.values()).sort((a, b) => 
     new Date(b.createdAt) - new Date(a.createdAt)
   );
@@ -331,6 +477,12 @@ fastify.get('/api/v1/data-import/jobs', async (request, reply) => {
 
 // Получение исторических данных
 fastify.get('/api/v1/data-import/historical', async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   // В production здесь будет запрос к базе данных
   return {
     success: true,
@@ -339,7 +491,23 @@ fastify.get('/api/v1/data-import/historical', async (request, reply) => {
 });
 
 // Предварительный просмотр файла
-fastify.post('/api/v1/data-import/preview', async (request, reply) => {
+
+// Схема валидации для POST /api/v1/data-import/preview
+const postapiv1data-importpreviewSchema = {
+  body: {
+    type: 'object',
+    required: [],
+    properties: {}
+  }
+};
+
+fastify.post('/api/v1/data-import/preview', { schema: postapiv1data-importpreviewSchema }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     const data = await request.file();
     const dataType = request.body?.dataType || 'SALES';
@@ -377,7 +545,23 @@ fastify.post('/api/v1/data-import/preview', async (request, reply) => {
 });
 
 // Загрузка файла для импорта
-fastify.post('/api/v1/data-import/upload', async (request, reply) => {
+
+// Схема валидации для POST /api/v1/data-import/upload
+const postapiv1data-importuploadSchema = {
+  body: {
+    type: 'object',
+    required: [],
+    properties: {}
+  }
+};
+
+fastify.post('/api/v1/data-import/upload', { schema: postapiv1data-importuploadSchema }, async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     const data = await request.file();
     const { dataType, startDate, endDate } = request.body;
@@ -443,6 +627,12 @@ fastify.post('/api/v1/data-import/upload', async (request, reply) => {
 
 // Скачивание шаблона
 fastify.get('/api/v1/data-import/template/:dataType', async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     const { dataType } = request.params;
     
@@ -469,6 +659,12 @@ fastify.get('/api/v1/data-import/template/:dataType', async (request, reply) => 
 
 // Получение деталей задачи
 fastify.get('/api/v1/data-import/jobs/:jobId', async (request, reply) => {
+    try {
+      
+    try {
+      
+    try {
+      
   const { jobId } = request.params;
   const job = importJobs.get(parseInt(jobId));
   
@@ -487,17 +683,54 @@ fastify.get('/api/v1/data-import/jobs/:jobId', async (request, reply) => {
 
 // Health check
 fastify.get('/health', async (request, reply) => {
-  return { status: 'ok', service: 'data-import', timestamp: new Date().toISOString() };
+    try {
+      
+    try {
+      
+    try {
+      
+  try {
+    // В этом сервисе нет прямого подключения к базе данных через Prisma
+    // Но мы можем проверить доступность директории для временных файлов
+    const tempDir = path.join(__dirname, '../temp');
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true });
+    }
+    
+    return { 
+      status: 'ok', 
+      service: 'data-import', 
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      version: process.env.npm_package_version || '1.0.0',
+      storage: 'connected',
+      activeJobs: importJobs.size
+    };
+  } catch (error) {
+    fastify.log.error('Health check failed:', error);
+    return reply.code(503).send({ 
+      status: 'error', 
+      service: 'data-import',
+      timestamp: new Date().toISOString(),
+      error: 'Storage access failed'
+    });
+  }
 });
 
 // Запуск сервера
 const start = async () => {
+    try {
+      
+    try {
+      
+    try {
+      
   try {
     const port = process.env.PORT || 3009;
     const host = process.env.HOST || '0.0.0.0';
     
     await fastify.listen({ port, host });
-    console.log(`🚀 Data Import Service running on http://${host}:${port}`);
+    logger.info(`🚀 Data Import Service running on http://${host}:${port}`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
@@ -505,3 +738,23 @@ const start = async () => {
 };
 
 start();
+
+// Graceful shutdown
+let server;
+
+const gracefulShutdown = async () => {
+    try {
+      
+    try {
+      
+    try {
+      
+  logger.info('Gracefully shutting down...');
+  if (server) {
+    await server.close();
+  }
+  process.exit(0);
+};
+
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);

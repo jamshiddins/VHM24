@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
 /**
@@ -9,38 +11,38 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔧 Установка зависимостей VHM24...\n');
+logger.info('🔧 Установка зависимостей VHM24...\n');
 
 // Функция для выполнения команды с выводом
 function runCommand(command, cwd = process.cwd()) {
   try {
-    console.log(`📦 Выполняется: ${command} в ${cwd}`);
+    logger.info(`📦 Выполняется: ${command} в ${cwd}`);
     const result = execSync(command, { 
       cwd, 
       stdio: 'inherit',
       encoding: 'utf8'
     });
-    console.log(`✅ Команда выполнена успешно\n`);
+    logger.info(`✅ Команда выполнена успешно\n`);
     return true;
   } catch (error) {
-    console.log(`❌ Ошибка выполнения команды: ${error.message}\n`);
+    logger.info(`❌ Ошибка выполнения команды: ${error.message}\n`);
     return false;
   }
 }
 
 // Проверяем наличие Node.js и npm
 function checkPrerequisites() {
-  console.log('🔍 Проверка предварительных требований...');
+  logger.info('🔍 Проверка предварительных требований...');
   
   try {
     const nodeVersion = execSync('node --version', { encoding: 'utf8' }).trim();
     const npmVersion = execSync('npm --version', { encoding: 'utf8' }).trim();
     
-    console.log(`✅ Node.js: ${nodeVersion}`);
-    console.log(`✅ npm: ${npmVersion}\n`);
+    logger.info(`✅ Node.js: ${nodeVersion}`);
+    logger.info(`✅ npm: ${npmVersion}\n`);
     return true;
   } catch (error) {
-    console.log('❌ Node.js или npm не установлены');
+    logger.info('❌ Node.js или npm не установлены');
     return false;
   }
 }
@@ -62,9 +64,9 @@ async function main() {
   }
 
   // Устанавливаем зависимости в корне
-  console.log('📦 Установка корневых зависимостей...');
+  logger.info('📦 Установка корневых зависимостей...');
   if (!runCommand('npm install')) {
-    console.log('⚠️  Ошибка установки корневых зависимостей, продолжаем...\n');
+    logger.info('⚠️  Ошибка установки корневых зависимостей, продолжаем...\n');
   }
 
   // Устанавливаем зависимости для каждого пакета
@@ -73,22 +75,22 @@ async function main() {
     const packageJsonPath = path.join(pkgPath, 'package.json');
     
     if (fs.existsSync(packageJsonPath)) {
-      console.log(`📦 Установка зависимостей для ${pkg}...`);
+      logger.info(`📦 Установка зависимостей для ${pkg}...`);
       if (!runCommand('npm install', pkgPath)) {
-        console.log(`⚠️  Ошибка установки зависимостей для ${pkg}, продолжаем...\n`);
+        logger.info(`⚠️  Ошибка установки зависимостей для ${pkg}, продолжаем...\n`);
       }
     } else {
-      console.log(`⚠️  package.json не найден для ${pkg}\n`);
+      logger.info(`⚠️  package.json не найден для ${pkg}\n`);
     }
   }
 
-  console.log('🎉 Установка зависимостей завершена!');
-  console.log('\n🚀 Теперь можно запускать:');
-  console.log('   node start-all-services-with-audit.js');
-  console.log('   node test-complete-system-with-notifications.js');
+  logger.info('🎉 Установка зависимостей завершена!');
+  logger.info('\n🚀 Теперь можно запускать:');
+  logger.info('   node start-all-services-with-audit.js');
+  logger.info('   node test-complete-system-with-notifications.js');
 }
 
 main().catch(error => {
-  console.error('💥 Критическая ошибка:', error);
+  logger.error('💥 Критическая ошибка:', error);
   process.exit(1);
 });

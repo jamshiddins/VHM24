@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
 const { spawn } = require('child_process');
@@ -8,14 +10,14 @@ const fs = require('fs');
 const isRailway = process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_STATIC_URL || process.env.RAILWAY_PROJECT_ID;
 const isProduction = process.env.NODE_ENV === 'production' || isRailway;
 
-console.log('🚀 VHM24 Platform Starting...');
-console.log(`📍 Environment: ${isProduction ? 'Production' : 'Development'}`);
-console.log(`🚂 Railway: ${isRailway ? 'Yes' : 'No'}`);
+logger.info('🚀 VHM24 Platform Starting...');
+logger.info(`📍 Environment: ${isProduction ? 'Production' : 'Development'}`);
+logger.info(`🚂 Railway: ${isRailway ? 'Yes' : 'No'}`);
 
 // Функция для запуска процесса
 function startProcess(command, args = [], options = {}) {
   return new Promise((resolve, reject) => {
-    console.log(`🔧 Running: ${command} ${args.join(' ')}`);
+    logger.info(`🔧 Running: ${command} ${args.join(' ')}`);
     
     const child = spawn(command, args, {
       stdio: 'inherit',
@@ -43,7 +45,7 @@ async function start() {
     process.env.NODE_ENV = process.env.NODE_ENV || (isRailway ? 'production' : 'development');
 
     if (isRailway) {
-      console.log('🚂 Starting in Railway mode...');
+      logger.info('🚂 Starting in Railway mode...');
       
       // Проверяем наличие необходимых переменных
       if (!process.env.DATABASE_URL) {
@@ -52,37 +54,37 @@ async function start() {
       
       // Генерируем Prisma клиент
       if (fs.existsSync('packages/database/prisma/schema.prisma')) {
-        console.log('🔧 Generating Prisma client...');
+        logger.info('🔧 Generating Prisma client...');
         try {
           await startProcess('npx', ['prisma', 'generate'], {
             cwd: 'packages/database'
           });
-          console.log('✅ Prisma client generated successfully');
+          logger.info('✅ Prisma client generated successfully');
         } catch (error) {
-          console.error('❌ Failed to generate Prisma client:', error.message);
+          logger.error('❌ Failed to generate Prisma client:', error.message);
           // Продолжаем выполнение, возможно клиент уже сгенерирован
         }
       }
 
       // В Railway запускаем только Gateway (основной сервис)
-      console.log('📡 Starting Gateway service for Railway...');
+      logger.info('📡 Starting Gateway service for Railway...');
       
       // Загружаем dotenv для Railway
       try {
         require('dotenv').config();
       } catch (error) {
-        console.log('⚠️  dotenv not available, using environment variables');
+        logger.info('⚠️  dotenv not available, using environment variables');
       }
       
       // Запускаем Gateway
       require('./services/gateway/src/index.js');
       
     } else {
-      console.log('💻 Starting in local development mode...');
+      logger.info('💻 Starting in local development mode...');
       
       // Проверяем наличие .env файла
       if (!fs.existsSync('.env')) {
-        console.log('⚠️  .env file not found, using environment variables');
+        logger.info('⚠️  .env file not found, using environment variables');
       }
       
       // Локально запускаем все сервисы через start.js
@@ -90,30 +92,30 @@ async function start() {
     }
 
   } catch (error) {
-    console.error('❌ Failed to start application:', error.message);
-    console.error('Stack trace:', error.stack);
+    logger.error('❌ Failed to start application:', error.message);
+    logger.error('Stack trace:', error.stack);
     process.exit(1);
   }
 }
 
 // Обработка сигналов завершения
 process.on('SIGTERM', () => {
-  console.log('🛑 Received SIGTERM, shutting down gracefully...');
+  logger.info('🛑 Received SIGTERM, shutting down gracefully...');
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('🛑 Received SIGINT, shutting down gracefully...');
+  logger.info('🛑 Received SIGINT, shutting down gracefully...');
   process.exit(0);
 });
 
 process.on('uncaughtException', (error) => {
-  console.error('❌ Uncaught Exception:', error);
+  logger.error('❌ Uncaught Exception:', error);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });
 

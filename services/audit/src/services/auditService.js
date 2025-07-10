@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 const { PrismaClient } = require('@prisma/client');
 const moment = require('moment');
 const _ = require('lodash');
@@ -34,7 +36,7 @@ class AuditService {
 
       return auditLog;
     } catch (error) {
-      console.error('Ошибка при логировании системного действия:', error);
+      logger.error('Ошибка при логировании системного действия:', error);
       // Не прерываем выполнение основной логики при ошибке логирования
     }
   }
@@ -61,7 +63,7 @@ class AuditService {
       await this.checkIncompleteData(userId, entity, entityId, newData);
 
     } catch (error) {
-      console.error('Ошибка при логировании изменений данных:', error);
+      logger.error('Ошибка при логировании изменений данных:', error);
     }
   }
 
@@ -148,7 +150,7 @@ class AuditService {
         });
       }
     } catch (error) {
-      console.error('Ошибка при проверке незаполненных данных:', error);
+      logger.error('Ошибка при проверке незаполненных данных:', error);
     }
   }
 
@@ -209,7 +211,7 @@ class AuditService {
       });
 
     } catch (error) {
-      console.error('Ошибка при логировании входа пользователя:', error);
+      logger.error('Ошибка при логировании входа пользователя:', error);
     }
   }
 
@@ -242,7 +244,7 @@ class AuditService {
       });
 
     } catch (error) {
-      console.error('Ошибка при логировании выхода пользователя:', error);
+      logger.error('Ошибка при логировании выхода пользователя:', error);
     }
   }
 
@@ -262,7 +264,7 @@ class AuditService {
         }
       });
     } catch (error) {
-      console.error('Ошибка при обновлении активности пользователя:', error);
+      logger.error('Ошибка при обновлении активности пользователя:', error);
     }
   }
 
@@ -330,7 +332,7 @@ class AuditService {
       };
 
     } catch (error) {
-      console.error('Ошибка при получении логов аудита:', error);
+      logger.error('Ошибка при получении логов аудита:', error);
       throw error;
     }
   }
@@ -422,7 +424,7 @@ class AuditService {
       };
 
     } catch (error) {
-      console.error('Ошибка при получении статистики активности:', error);
+      logger.error('Ошибка при получении статистики активности:', error);
       throw error;
     }
   }
@@ -452,7 +454,7 @@ class AuditService {
         })
       ]);
 
-      console.log(`Очищено ${deletedAuditLogs.count} старых audit логов и ${deletedSystemLogs.count} системных логов`);
+      logger.info(`Очищено ${deletedAuditLogs.count} старых audit логов и ${deletedSystemLogs.count} системных логов`);
 
       return {
         deletedAuditLogs: deletedAuditLogs.count,
@@ -460,7 +462,7 @@ class AuditService {
       };
 
     } catch (error) {
-      console.error('Ошибка при очистке старых логов:', error);
+      logger.error('Ошибка при очистке старых логов:', error);
       throw error;
     }
   }
@@ -528,7 +530,7 @@ class AuditService {
       return { isValid, errorMessage };
 
     } catch (error) {
-      console.error('Ошибка при валидации данных:', error);
+      logger.error('Ошибка при валидации данных:', error);
       return { isValid: false, errorMessage: 'Ошибка валидации' };
     }
   }

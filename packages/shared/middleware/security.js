@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 /**
  * VHM24 Security Middleware
  * Критически важные middleware для безопасности всех сервисов
@@ -19,14 +21,17 @@ const prisma = new PrismaClient();
 
 /**
  * Безопасный обработчик ошибок
- * Заменяет все reply.send(err) на безопасные responses
+ * Заменяет все reply.code(err.statusCode || 500).send({
+          error: err.name || 'Internal Server Error',
+          message: process.env.NODE_ENV === 'development' ? err.message : 'An error occurred'
+        }) на безопасные responses
  */
 const securityErrorHandler = (error, request, reply) => {
   const isDev = process.env.NODE_ENV === 'development';
   
   // Логируем полную ошибку для разработки
   if (isDev) {
-    console.error('Security Error:', {
+    logger.error('Security Error:', {
       error: error.message,
       stack: error.stack,
       url: request.url,
@@ -36,7 +41,7 @@ const securityErrorHandler = (error, request, reply) => {
     });
   } else {
     // В production логируем только основную информацию
-    console.error('Security Error:', {
+    logger.error('Security Error:', {
       error: error.name || 'Internal Server Error',
       url: request.url,
       method: request.method,
@@ -345,13 +350,13 @@ const securityLogger = async (request, reply) => {
     if (logData.query.token) logData.query.token = '***';
   }
 
-  console.log('Security Request:', logData);
+  logger.info('Security Request:', logData);
 
   // В Fastify 5.x используем reply.hijack() для логирования response
   const originalSend = reply.send;
   reply.send = function(payload) {
     const duration = Date.now() - startTime;
-    console.log('Security Response:', {
+    logger.info('Security Response:', {
       method: request.method,
       url: request.url,
       statusCode: reply.statusCode,

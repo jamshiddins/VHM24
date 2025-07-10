@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 const { PrismaClient } = require('@prisma/client');
 const moment = require('moment');
 
@@ -75,7 +77,7 @@ class IncompleteDataService {
       };
 
     } catch (error) {
-      console.error('Ошибка при получении отчета по незаполненным данным:', error);
+      logger.error('Ошибка при получении отчета по незаполненным данным:', error);
       throw error;
     }
   }
@@ -173,7 +175,7 @@ class IncompleteDataService {
       };
 
     } catch (error) {
-      console.error('Ошибка при получении статистики по незаполненным данным:', error);
+      logger.error('Ошибка при получении статистики по незаполненным данным:', error);
       throw error;
     }
   }
@@ -241,15 +243,15 @@ class IncompleteDataService {
           });
 
         } catch (error) {
-          console.error(`Ошибка при отправке напоминания для ${item.id}:`, error);
+          logger.error(`Ошибка при отправке напоминания для ${item.id}:`, error);
         }
       }
 
-      console.log(`Отправлено ${reminders.length} напоминаний о незаполненных данных`);
+      logger.info(`Отправлено ${reminders.length} напоминаний о незаполненных данных`);
       return reminders;
 
     } catch (error) {
-      console.error('Ошибка при отправке напоминаний:', error);
+      logger.error('Ошибка при отправке напоминаний:', error);
       throw error;
     }
   }
@@ -259,7 +261,7 @@ class IncompleteDataService {
    */
   async processIncompleteData() {
     try {
-      console.log('Запуск обработки незаполненных данных...');
+      logger.info('Запуск обработки незаполненных данных...');
 
       // Отправляем напоминания
       const reminders = await this.sendReminders();
@@ -288,7 +290,7 @@ class IncompleteDataService {
         }
       });
 
-      console.log(`Обработка завершена:
+      logger.info(`Обработка завершена:
         - Отправлено напоминаний: ${reminders.length}
         - Помечено как просроченные: ${expiredResult.count}
         - Помечено как завершенные: ${completedResult.count}`);
@@ -300,7 +302,7 @@ class IncompleteDataService {
       };
 
     } catch (error) {
-      console.error('Ошибка при обработке незаполненных данных:', error);
+      logger.error('Ошибка при обработке незаполненных данных:', error);
       throw error;
     }
   }
@@ -349,7 +351,7 @@ class IncompleteDataService {
       };
 
     } catch (error) {
-      console.error('Ошибка при получении деталей незаполненной записи:', error);
+      logger.error('Ошибка при получении деталей незаполненной записи:', error);
       throw error;
     }
   }
@@ -382,7 +384,7 @@ class IncompleteDataService {
       return updatedRecord;
 
     } catch (error) {
-      console.error('Ошибка при обновлении статуса незаполненной записи:', error);
+      logger.error('Ошибка при обновлении статуса незаполненной записи:', error);
       throw error;
     }
   }
@@ -427,7 +429,7 @@ class IncompleteDataService {
       };
 
     } catch (error) {
-      console.error('Ошибка при получении рекомендаций:', error);
+      logger.error('Ошибка при получении рекомендаций:', error);
       throw error;
     }
   }

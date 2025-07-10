@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 // Fallback Redis implementation для локальной разработки без Redis сервера
 const EventEmitter = require('events');
 
@@ -10,7 +12,7 @@ class MockRedis extends EventEmitter {
     
     // Эмулируем успешное подключение
     setTimeout(() => {
-      console.log('Connected to Redis (Mock)');
+      logger.info('Connected to Redis (Mock)');
       this.emit('connect');
     }, 100);
   }
@@ -116,18 +118,18 @@ if (useRealRedis) {
     });
 
     redis.on('error', (err) => {
-      console.error('Redis connection error:', err);
+      logger.error('Redis connection error:', err);
     });
 
     redis.on('connect', () => {
-      console.log('Connected to Redis');
+      logger.info('Connected to Redis');
     });
   } catch (error) {
-    console.warn('Failed to connect to Redis, using fallback:', error.message);
+    logger.warn('Failed to connect to Redis, using fallback:', error.message);
     redis = new MockRedis();
   }
 } else {
-  console.log('Using Redis fallback for local development');
+  logger.info('Using Redis fallback for local development');
   redis = new MockRedis();
 }
 
@@ -149,7 +151,7 @@ class CacheManager {
       const data = await redis.get(this.getKey(key));
       return data ? JSON.parse(data) : null;
     } catch (error) {
-      console.error('Redis get error:', error);
+      logger.error('Redis get error:', error);
       return null;
     }
   }
@@ -165,7 +167,7 @@ class CacheManager {
       }
       return true;
     } catch (error) {
-      console.error('Redis set error:', error);
+      logger.error('Redis set error:', error);
       return false;
     }
   }
@@ -176,7 +178,7 @@ class CacheManager {
       await redis.del(this.getKey(key));
       return true;
     } catch (error) {
-      console.error('Redis delete error:', error);
+      logger.error('Redis delete error:', error);
       return false;
     }
   }
@@ -190,7 +192,7 @@ class CacheManager {
       }
       return true;
     } catch (error) {
-      console.error('Redis delete pattern error:', error);
+      logger.error('Redis delete pattern error:', error);
       return false;
     }
   }
@@ -201,7 +203,7 @@ class CacheManager {
       const exists = await redis.exists(this.getKey(key));
       return exists === 1;
     } catch (error) {
-      console.error('Redis exists error:', error);
+      logger.error('Redis exists error:', error);
       return false;
     }
   }
@@ -212,7 +214,7 @@ class CacheManager {
       await redis.expire(this.getKey(key), ttl);
       return true;
     } catch (error) {
-      console.error('Redis expire error:', error);
+      logger.error('Redis expire error:', error);
       return false;
     }
   }
@@ -223,7 +225,7 @@ class CacheManager {
       const ttl = await redis.ttl(this.getKey(key));
       return ttl;
     } catch (error) {
-      console.error('Redis ttl error:', error);
+      logger.error('Redis ttl error:', error);
       return -1;
     }
   }
@@ -237,7 +239,7 @@ class CacheManager {
       }
       return true;
     } catch (error) {
-      console.error('Redis flush error:', error);
+      logger.error('Redis flush error:', error);
       return false;
     }
   }
@@ -266,7 +268,7 @@ class CacheManager {
       await Promise.all(promises);
       return true;
     } catch (error) {
-      console.error('Redis invalidate error:', error);
+      logger.error('Redis invalidate error:', error);
       return false;
     }
   }
@@ -336,7 +338,7 @@ function cacheMiddleware(options = {}) {
       // Кешируем успешные ответы
       if (reply.statusCode >= 200 && reply.statusCode < 300) {
         cache.set(key, payload, ttl).catch(err => {
-          console.error('Cache set error:', err);
+          logger.error('Cache set error:', err);
         });
       }
       reply.header('X-Cache', 'MISS');

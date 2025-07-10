@@ -1,3 +1,5 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
 /**
@@ -8,7 +10,7 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
-console.log('🚀 Быстрый запуск VHM24...\n');
+logger.info('🚀 Быстрый запуск VHM24...\n');
 
 // Сервисы для запуска
 const services = [
@@ -49,7 +51,7 @@ const processes = [];
 // Функция для запуска сервиса
 function startService(service) {
   return new Promise((resolve) => {
-    console.log(`${service.color}🔧 Запуск ${service.name}...\x1b[0m`);
+    logger.info(`${service.color}🔧 Запуск ${service.name}...\x1b[0m`);
     
     const childProcess = spawn('node', [service.script], {
       cwd: __dirname,
@@ -64,11 +66,11 @@ function startService(service) {
 
     childProcess.stdout.on('data', (data) => {
       const output = data.toString();
-      console.log(`${service.color}[${service.name}]\x1b[0m ${output.trim()}`);
+      logger.info(`${service.color}[${service.name}]\x1b[0m ${output.trim()}`);
       
       if (!started && (output.includes('listening') || output.includes('running') || output.includes('started'))) {
         started = true;
-        console.log(`${service.color}✅ ${service.name} запущен на порту ${service.port}\x1b[0m`);
+        logger.info(`${service.color}✅ ${service.name} запущен на порту ${service.port}\x1b[0m`);
         resolve(childProcess);
       }
     });
@@ -76,16 +78,16 @@ function startService(service) {
     childProcess.stderr.on('data', (data) => {
       const output = data.toString();
       if (!output.includes('ExperimentalWarning')) {
-        console.log(`${service.color}[${service.name} ERROR]\x1b[0m ${output.trim()}`);
+        logger.info(`${service.color}[${service.name} ERROR]\x1b[0m ${output.trim()}`);
       }
     });
 
     childProcess.on('close', (code) => {
-      console.log(`${service.color}❌ ${service.name} завершен с кодом ${code}\x1b[0m`);
+      logger.info(`${service.color}❌ ${service.name} завершен с кодом ${code}\x1b[0m`);
     });
 
     childProcess.on('error', (error) => {
-      console.log(`${service.color}💥 Ошибка запуска ${service.name}: ${error.message}\x1b[0m`);
+      logger.info(`${service.color}💥 Ошибка запуска ${service.name}: ${error.message}\x1b[0m`);
       if (!started) {
         resolve(null);
       }
@@ -96,7 +98,7 @@ function startService(service) {
     // Таймаут для запуска
     setTimeout(() => {
       if (!started) {
-        console.log(`${service.color}⚠️  ${service.name} запускается медленно...\x1b[0m`);
+        logger.info(`${service.color}⚠️  ${service.name} запускается медленно...\x1b[0m`);
         resolve(childProcess);
       }
     }, 5000);
@@ -105,56 +107,61 @@ function startService(service) {
 
 // Основная функция
 async function main() {
-  console.log('🔧 Запуск основных сервисов VHM24...\n');
+  try {
+  logger.info('🔧 Запуск основных сервисов VHM24...\n');
 
   // Запускаем сервисы последовательно
   for (const service of services) {
     await startService(service);
     // Небольшая пауза между запусками
     await new Promise(resolve => setTimeout(resolve, 1000));
+    } catch (error) {
+    logger.error('Error:', error);
+    throw error;
   }
+}
 
-  console.log('\n🎉 Все сервисы запущены!');
-  console.log('\n📋 Доступные endpoints:');
-  console.log('   🌐 API Gateway: http://localhost:8000');
-  console.log('   🔐 Auth Service: http://localhost:3001');
-  console.log('   🤖 Machines Service: http://localhost:3002');
-  console.log('   🔔 Notifications Service: http://localhost:3006');
-  console.log('   🔍 Audit Service: http://localhost:3007');
+  logger.info('\n🎉 Все сервисы запущены!');
+  logger.info('\n📋 Доступные endpoints:');
+  logger.info('   🌐 API Gateway: http://localhost:8000');
+  logger.info('   🔐 Auth Service: http://localhost:3001');
+  logger.info('   🤖 Machines Service: http://localhost:3002');
+  logger.info('   🔔 Notifications Service: http://localhost:3006');
+  logger.info('   🔍 Audit Service: http://localhost:3007');
   
-  console.log('\n🧪 Для тестирования запустите:');
-  console.log('   node test-complete-system-with-notifications.js');
+  logger.info('\n🧪 Для тестирования запустите:');
+  logger.info('   node test-complete-system-with-notifications.js');
   
-  console.log('\n📊 Для веб-интерфейса запустите:');
-  console.log('   npm run dashboard');
+  logger.info('\n📊 Для веб-интерфейса запустите:');
+  logger.info('   npm run dashboard');
   
-  console.log('\n⚠️  Для остановки нажмите Ctrl+C');
+  logger.info('\n⚠️  Для остановки нажмите Ctrl+C');
 }
 
 // Обработка сигналов завершения
 process.on('SIGINT', () => {
-  console.log('\n🛑 Остановка всех сервисов...');
+  logger.info('\n🛑 Остановка всех сервисов...');
   
   processes.forEach((proc, index) => {
     if (proc && !proc.killed) {
-      console.log(`🔴 Остановка ${services[index]?.name || 'сервиса'}...`);
+      logger.info(`🔴 Остановка ${services[index]?.name || 'сервиса'}...`);
       proc.kill('SIGTERM');
     }
   });
   
   setTimeout(() => {
-    console.log('👋 Все сервисы остановлены');
+    logger.info('👋 Все сервисы остановлены');
     process.exit(0);
   }, 2000);
 });
 
 process.on('SIGTERM', () => {
-  console.log('\n🛑 Получен сигнал завершения...');
+  logger.info('\n🛑 Получен сигнал завершения...');
   process.exit(0);
 });
 
 // Запуск
 main().catch(error => {
-  console.error('💥 Критическая ошибка:', error);
+  logger.error('💥 Критическая ошибка:', error);
   process.exit(1);
 });

@@ -1,0 +1,23 @@
+{
+  "name": "vhm24-error-fixing-system",
+  "version": "1.0.0",
+  "description": "Система исправления ошибок для проекта VHM24",
+  "main": "fix-all-errors.js",
+  "scripts": {
+    "analyze": "node scripts/project-analyzer.js",
+    "fix": "node scripts/auto-fixer.js",
+    "test-fixes": "node scripts/test-after-fixes.js",
+    "fix-all": "node fix-all-errors.js",
+    "setup": "node setup-error-fixing-system.js"
+  },
+  "dependencies": {
+    "glob": "^10.3.10",
+    "node-fetch": "^3.3.2",
+    "tap": "^18.5.0",
+    "pino": "^8.16.0",
+    "fastify": "^4.24.0",
+    "@fastify/jwt": "^7.2.4"
+  },
+  "author": "VHM24 Team",
+  "license": "MIT"
+}

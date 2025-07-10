@@ -1,5 +1,8 @@
+const logger = require('@vhm24/shared/logger');
+
 const { execSync } = require('child_process');
-const fs = require('fs');
+const fs = require('fs')
+const { promises: fsPromises } = fs;
 const path = require('path');
 
 class ProjectTester {
@@ -19,7 +22,7 @@ class ProjectTester {
   }
 
   async runAllTests() {
-    console.log('🧪 Запуск комплексного тестирования VHM24...\n');
+    logger.info('🧪 Запуск комплексного тестирования VHM24...\n');
     
     try {
       // 1. Проверка зависимостей
@@ -41,14 +44,14 @@ class ProjectTester {
       this.saveResults();
       
     } catch (error) {
-      console.error('❌ Error during testing:', error.message);
+      logger.error('❌ Error during testing:', error.message);
       this.results.error = error.message;
       this.saveResults();
     }
   }
 
   async testDependencies() {
-    console.log('📦 Проверка зависимостей...');
+    logger.info('📦 Проверка зависимостей...');
     
     try {
       // Проверка npm
@@ -87,7 +90,7 @@ class ProjectTester {
       services.forEach(service => {
         const pkgPath = path.join('services', service, 'package.json');
         if (fs.existsSync(pkgPath)) {
-          const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+          const pkg = JSON.parse(fs.await fsPromises.readFile(pkgPath, 'utf8'));
           this.results.tests.dependencies.services[service] = {
             hasPackageJson: true,
             hasStartScript: !!(pkg.scripts && (pkg.scripts.start || pkg.scripts.dev)),
@@ -107,7 +110,7 @@ class ProjectTester {
   }
 
   async testInfrastructure() {
-    console.log('🏗️ Проверка инфраструктуры...');
+    logger.info('🏗️ Проверка инфраструктуры...');
     
     // Docker
     try {
@@ -153,7 +156,7 @@ class ProjectTester {
   }
 
   async testDatabase() {
-    console.log('🗄️ Проверка базы данных...');
+    logger.info('🗄️ Проверка базы данных...');
     
     try {
       // Проверка Prisma
@@ -161,14 +164,14 @@ class ProjectTester {
       this.results.tests.database.prismaSchema = fs.existsSync(prismaSchemaPath);
       
       if (this.results.tests.database.prismaSchema) {
-        const schema = fs.readFileSync(prismaSchemaPath, 'utf8');
+        const schema = fs.await fsPromises.readFile(prismaSchemaPath, 'utf8');
         const models = schema.match(/model\s+(\w+)/g) || [];
         this.results.tests.database.models = models.map(m => m.replace('model ', ''));
       }
       
       // Проверка переменных окружения для БД
       if (fs.existsSync('.env')) {
-        const env = fs.readFileSync('.env', 'utf8');
+        const env = fs.await fsPromises.readFile('.env', 'utf8');
         this.results.tests.database.hasConnectionString = env.includes('DATABASE_URL');
         this.results.tests.database.hasRedisUrl = env.includes('REDIS_URL');
       }
@@ -200,7 +203,7 @@ class ProjectTester {
   }
 
   async testServices() {
-    console.log('🔧 Проверка сервисов...');
+    logger.info('🔧 Проверка сервисов...');
     
     const services = [
       { name: 'Gateway', port: 8000, path: 'services/gateway' },
@@ -226,7 +229,7 @@ class ProjectTester {
       // Проверка содержимого index.js
       const indexPath = path.join(service.path, 'src', 'index.js');
       if (fs.existsSync(indexPath)) {
-        const content = fs.readFileSync(indexPath, 'utf8');
+        const content = fs.await fsPromises.readFile(indexPath, 'utf8');
         serviceResult.hasHealthCheck = content.includes('/health');
         serviceResult.hasPortConfig = content.includes('process.env.PORT');
         serviceResult.usesFastify = content.includes('fastify');
@@ -270,12 +273,12 @@ class ProjectTester {
   }
 
   async testSecurity() {
-    console.log('🔒 Проверка безопасности...');
+    logger.info('🔒 Проверка безопасности...');
     
     try {
       // Проверка .env файла
       if (fs.existsSync('.env')) {
-        const env = fs.readFileSync('.env', 'utf8');
+        const env = fs.await fsPromises.readFile('.env', 'utf8');
         this.results.tests.security.hasJwtSecret = env.includes('JWT_SECRET');
         this.results.tests.security.hasStrongJwtSecret = env.includes('JWT_SECRET') && 
           env.match(/JWT_SECRET=.{32,}/);
@@ -290,7 +293,7 @@ class ProjectTester {
         if (fs.existsSync(servicePath)) {
           const files = this.getAllJsFiles(servicePath);
           files.forEach(file => {
-            const content = fs.readFileSync(file, 'utf8');
+            const content = fs.await fsPromises.readFile(file, 'utf8');
             
             // Поиск потенциальных проблем безопасности
             if (content.includes('password') && content.includes('=') && content.includes('"')) {
@@ -313,7 +316,7 @@ class ProjectTester {
       // Проверка CORS настроек
       const gatewayPath = 'services/gateway/src/index.js';
       if (fs.existsSync(gatewayPath)) {
-        const content = fs.readFileSync(gatewayPath, 'utf8');
+        const content = fs.await fsPromises.readFile(gatewayPath, 'utf8');
         this.results.tests.security.hasCors = content.includes('cors');
         this.results.tests.security.corsWildcard = content.includes('origin: "*"');
       }
@@ -346,40 +349,40 @@ class ProjectTester {
 
   saveResults() {
     const filename = `test-results-${Date.now()}.json`;
-    fs.writeFileSync(filename, JSON.stringify(this.results, null, 2));
+    fs.await fsPromises.writeFile(filename, JSON.stringify(this.results, null, 2));
     
-    console.log('\n📊 Результаты тестирования:');
-    console.log(`✅ Сохранено в: ${filename}`);
+    logger.info('\n📊 Результаты тестирования:');
+    logger.info(`✅ Сохранено в: ${filename}`);
     
     // Вывод summary
-    console.log('\n📈 Summary:');
+    logger.info('\n📈 Summary:');
     
     // Сервисы
     const servicesTotal = Object.keys(this.results.tests.services).length;
     const servicesExist = Object.values(this.results.tests.services)
       .filter(s => s.exists).length;
-    console.log(`- Сервисы: ${servicesExist}/${servicesTotal} существуют`);
+    logger.info(`- Сервисы: ${servicesExist}/${servicesTotal} существуют`);
     
     // Зависимости
     if (this.results.tests.dependencies.vulnerabilities) {
       const vuln = this.results.tests.dependencies.vulnerabilities;
       if (typeof vuln === 'object') {
-        console.log(`- Уязвимости: ${vuln.total} (критических: ${vuln.critical})`);
+        logger.info(`- Уязвимости: ${vuln.total} (критических: ${vuln.critical})`);
       }
     }
     
     // База данных
     if (this.results.tests.database.connection) {
-      console.log(`- База данных: ${this.results.tests.database.connection}`);
+      logger.info(`- База данных: ${this.results.tests.database.connection}`);
     }
     
     // Безопасность
     if (this.results.tests.security.issues) {
-      console.log(`- Проблемы безопасности: ${this.results.tests.security.issues.length}`);
+      logger.info(`- Проблемы безопасности: ${this.results.tests.security.issues.length}`);
     }
     
     // Рекомендации
-    console.log('\n💡 Рекомендации:');
+    logger.info('\n💡 Рекомендации:');
     this.generateRecommendations();
   }
 
@@ -426,11 +429,11 @@ class ProjectTester {
     }
     
     recommendations.forEach((rec, index) => {
-      console.log(`  ${index + 1}. ${rec}`);
+      logger.info(`  ${index + 1}. ${rec}`);
     });
     
     if (recommendations.length === 0) {
-      console.log('  ✅ Критических проблем не обнаружено');
+      logger.info('  ✅ Критических проблем не обнаружено');
     }
   }
 }

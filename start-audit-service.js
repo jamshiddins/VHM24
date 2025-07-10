@@ -1,15 +1,17 @@
+const logger = require('@vhm24/shared/logger');
+
 #!/usr/bin/env node
 
 const { spawn } = require('child_process');
 const path = require('path');
 
-console.log('🔍 Запуск сервиса аудита VHM24...\n');
+logger.info('🔍 Запуск сервиса аудита VHM24...\n');
 
 // Путь к сервису аудита
 const auditServicePath = path.join(__dirname, 'services', 'audit');
 
 // Установка зависимостей если нужно
-console.log('📦 Проверка зависимостей сервиса аудита...');
+logger.info('📦 Проверка зависимостей сервиса аудита...');
 const installProcess = spawn('npm', ['install'], {
   cwd: auditServicePath,
   stdio: 'inherit',
@@ -18,12 +20,12 @@ const installProcess = spawn('npm', ['install'], {
 
 installProcess.on('close', (code) => {
   if (code !== 0) {
-    console.error('❌ Ошибка при установке зависимостей сервиса аудита');
+    logger.error('❌ Ошибка при установке зависимостей сервиса аудита');
     process.exit(1);
   }
 
-  console.log('✅ Зависимости установлены');
-  console.log('🚀 Запуск сервиса аудита...\n');
+  logger.info('✅ Зависимости установлены');
+  logger.info('🚀 Запуск сервиса аудита...\n');
 
   // Запуск сервиса аудита
   const auditProcess = spawn('npm', ['start'], {
@@ -40,26 +42,26 @@ installProcess.on('close', (code) => {
   });
 
   auditProcess.on('close', (code) => {
-    console.log(`\n🔍 Сервис аудита завершен с кодом ${code}`);
+    logger.info(`\n🔍 Сервис аудита завершен с кодом ${code}`);
   });
 
   auditProcess.on('error', (error) => {
-    console.error('❌ Ошибка запуска сервиса аудита:', error);
+    logger.error('❌ Ошибка запуска сервиса аудита:', error);
   });
 
   // Graceful shutdown
   process.on('SIGINT', () => {
-    console.log('\n🛑 Остановка сервиса аудита...');
+    logger.info('\n🛑 Остановка сервиса аудита...');
     auditProcess.kill('SIGINT');
   });
 
   process.on('SIGTERM', () => {
-    console.log('\n🛑 Остановка сервиса аудита...');
+    logger.info('\n🛑 Остановка сервиса аудита...');
     auditProcess.kill('SIGTERM');
   });
 });
 
 installProcess.on('error', (error) => {
-  console.error('❌ Ошибка при установке зависимостей:', error);
+  logger.error('❌ Ошибка при установке зависимостей:', error);
   process.exit(1);
 });

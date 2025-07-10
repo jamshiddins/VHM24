@@ -1,9 +1,12 @@
+const logger = require('@vhm24/shared/logger');
+
 /**
  * VHM24 - Fix Prisma Imports Script
  * Replaces direct @prisma/client imports with centralized database clients
  */
 
-const fs = require('fs');
+const fs = require('fs')
+const { promises: fsPromises } = fs;
 const path = require('path');
 
 // Service to client mapping
@@ -31,19 +34,19 @@ const servicePaths = [
   'services/telegram-bot/src/utils/auth.js'
 ];
 
-console.log('🔧 Fixing Prisma imports in VHM24 services...\n');
+logger.info('🔧 Fixing Prisma imports in VHM24 services...\n');
 
 let fixedCount = 0;
 let errorCount = 0;
 
 servicePaths.forEach(filePath => {
   if (!fs.existsSync(filePath)) {
-    console.log(`⏭️  Skipped (not found): ${filePath}`);
+    logger.info(`⏭️  Skipped (not found): ${filePath}`);
     return;
   }
   
   try {
-    let content = fs.readFileSync(filePath, 'utf8');
+    let content = fs.await fsPromises.readFile(filePath, 'utf8');
     const originalContent = content;
     
     // Determine which client to use based on service
@@ -75,28 +78,31 @@ servicePaths.forEach(filePath => {
       
       // If content changed, write it back
       if (content !== originalContent) {
-        fs.writeFileSync(filePath, content, 'utf8');
-        console.log(`✅ Fixed: ${filePath} (using ${clientFunction})`);
+        fs.await fsPromises.writeFile(filePath, content, 'utf8');
+        logger.info(`✅ Fixed: ${filePath} (using ${clientFunction})`);
         fixedCount++;
       } else {
-        console.log(`ℹ️  Already fixed or no changes needed: ${filePath}`);
+        logger.info(`ℹ️  Already fixed or no changes needed: ${filePath}`);
       }
     } else {
-      console.log(`✓ No Prisma imports found: ${filePath}`);
+      logger.info(`✓ No Prisma imports found: ${filePath}`);
     }
   } catch (error) {
-    console.error(`❌ Error processing ${filePath}: ${error.message}`);
+    logger.error(`❌ Error processing ${filePath}: ${error.message}`);
     errorCount++;
   }
 });
 
-console.log('\n📊 Summary:');
-console.log(`- Files fixed: ${fixedCount}`);
-console.log(`- Errors: ${errorCount}`);
-console.log(`- Total files checked: ${servicePaths.length}`);
+logger.info('\n📊 Summary:');
+logger.info(`- Files fixed: ${fixedCount}`);
+logger.info(`- Errors: ${errorCount}`);
+logger.info(`- Total files checked: ${servicePaths.length}`);
 
 if (fixedCount > 0) {
-  console.log('\n⚠️  Important: Make sure to run "npm install" in the root directory to ensure all dependencies are installed.');
+  logger.info('\n⚠️  Important: Make sure to run "npm install" in the root directory to ensure all dependencies are installed.');
 }
 
-console.log('\n✨ Prisma import fix complete!');
+logger.info('\n✨ Prisma import fix complete!');
+
+
+module.exports = { fs, path, serviceClientMap, servicePaths, fixedCount, errorCount, content, originalContent, serviceName, clientFunction, prismaImportPattern, simplePrismaPattern };

@@ -4,15 +4,31 @@
  * Secure machine management with telemetry
  */
 
-require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
+require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Устанавливаем SERVICE_NAME для конфигурации
 process.env.SERVICE_NAME = 'machines';
 
 const Fastify = require('fastify');
-const { getMachinesClient } = require('@vhm24/database');
-const { sanitizeInput } = require('@vhm24/shared-types/src/security');
-const { cacheManagers, cacheMiddleware } = require('@vhm24/shared-types/src/redis');
+const { getMachinesClient 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('@vhm24/database');
+const { sanitizeInput 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('@vhm24/shared-types/src/security');
+const { cacheManagers, cacheMiddleware 
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('@vhm24/shared-types/src/redis');
 
 // Импортируем наш новый shared пакет
 const {
@@ -43,7 +59,11 @@ const {
   config: sharedConfig,
   createFastifyConfig,
   paginate
-} = require('@vhm24/shared');
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }} = require('@vhm24/shared');
 
 // Настройка глобальных обработчиков ошибок
 setupGlobalErrorHandlers();
@@ -63,12 +83,20 @@ setupCORS(fastify);
 setupRateLimit(fastify, {
   max: 150, // Средний лимит для machines сервиса
   timeWindow: '1 minute'
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 setupJWT(fastify, {
   verify: {
     issuer: ['vhm24-gateway', 'vhm24-auth']
   }
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Middleware для логирования и санитизации
 fastify.addHook('preHandler', securityLogger);
@@ -80,11 +108,49 @@ fastify.decorate('authenticate', authenticate);
 // Декоратор для проверки ролей (переопределяем для совместимости)
 fastify.decorate('requireRole', (roles) => {
   return authorize(roles);
-});
+
+    } catch (error) {
+      logger.error('Error:', error);
+      throw error;
+    }});
 
 // Health check
 fastify.get('/health', async (request, reply) => {
-  return { status: 'ok', service: 'machines' };
+    try {
+      
+  try {
+    // Проверяем соединение с базой данных
+    await prisma.$queryRaw`SELECT 1`;
+    
+    // Проверяем соединение с Redis
+    let redisStatus = 'disconnected';
+    try {
+      if (cache && cache.client) {
+        await cache.client.ping();
+        redisStatus = 'connected';
+      }
+    } catch (redisError) {
+      logger.error('Redis health check failed:', redisError);
+    }
+    
+    return { 
+      status: 'ok', 
+      service: 'machines', 
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      version: process.env.npm_package_version || '1.0.0',
+      database: 'connected',
+      redis: redisStatus
+    };
+  } catch (error) {
+    logger.error('Health check failed:', error);
+    return reply.code(503).send({ 
+      status: 'error', 
+      service: 'machines',
+      timestamp: new Date().toISOString(),
+      error: 'Database connection failed'
+    });
+  }
 });
 
 // Получить все машины с фильтрами
@@ -111,6 +177,8 @@ fastify.get('/api/v1/machines', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
   const { status, type, locationId, search, skip, take, orderBy } = request.query;
   
   try {
@@ -149,6 +217,8 @@ fastify.get('/api/v1/machines', {
     // Добавляем последнюю телеметрию
     const machinesWithTelemetry = await Promise.all(
       machines.map(async (machine) => {
+    try {
+      
         const lastTelemetry = await prisma.machineTelemetry.findFirst({
           where: { machineId: machine.id },
           orderBy: { createdAt: 'desc' }
@@ -178,6 +248,8 @@ fastify.get('/api/v1/machines', {
 fastify.get('/api/v1/machines/:id', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
   const { id } = request.params;
   
   try {
@@ -278,6 +350,8 @@ fastify.post('/api/v1/machines', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
   const data = request.body;
   
   try {
@@ -368,6 +442,8 @@ fastify.patch('/api/v1/machines/:id', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
   const { id } = request.params;
   const updates = request.body;
   
@@ -451,6 +527,8 @@ fastify.patch('/api/v1/machines/:id', {
 fastify.delete('/api/v1/machines/:id', {
   preValidation: [fastify.authenticate, fastify.requireRole(['ADMIN'])]
 }, async (request, reply) => {
+    try {
+      
   const { id } = request.params;
   
   try {
@@ -535,6 +613,8 @@ fastify.post('/api/v1/machines/:id/telemetry', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
   const { id } = request.params;
   const telemetryData = request.body;
   
@@ -605,6 +685,8 @@ fastify.get('/api/v1/machines/:id/telemetry', {
     }
   }
 }, async (request, reply) => {
+    try {
+      
   const { id } = request.params;
   const { from, to, limit } = request.query;
   
@@ -640,6 +722,8 @@ fastify.get('/api/v1/machines/:id/telemetry', {
 fastify.get('/api/v1/machines/stats', {
   preValidation: [fastify.authenticate]
 }, async (request, reply) => {
+    try {
+      
   try {
     // Пробуем получить из кеша
     const cacheKey = 'machines:stats';
@@ -712,13 +796,15 @@ fastify.get('/api/v1/machines/stats', {
 
 // Start server
 const start = async () => {
+    try {
+      
   try {
     const port = process.env.MACHINES_PORT || process.env.PORT || 3002;
     await fastify.listen({ 
       port: port,
       host: '0.0.0.0'
     });
-    console.log('Machines service is running on port', port);
+    logger.info('Machines service is running on port', port);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
@@ -729,6 +815,8 @@ start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
+    try {
+      
   await fastify.close();
   await prisma.$disconnect();
   process.exit(0);

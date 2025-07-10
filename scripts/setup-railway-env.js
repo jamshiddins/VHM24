@@ -1,6 +1,8 @@
+const logger = require('@vhm24/shared/logger');
+
 const { execSync } = require('child_process');
 
-console.log('🚂 Настройка переменных окружения для Railway...\n');
+logger.info('🚂 Настройка переменных окружения для Railway...\n');
 
 // Переменные из вашего .env файла
 const envVars = {
@@ -76,31 +78,31 @@ const digitalOceanVars = {
 
 function setRailwayVariable(key, value) {
   try {
-    console.log(`Setting ${key}...`);
+    logger.info(`Setting ${key}...`);
     execSync(`railway variables set ${key}="${value}"`, { stdio: 'pipe' });
-    console.log(`✅ ${key} set successfully`);
+    logger.info(`✅ ${key} set successfully`);
   } catch (error) {
-    console.error(`❌ Failed to set ${key}: ${error.message}`);
+    logger.error(`❌ Failed to set ${key}: ${error.message}`);
   }
 }
 
-console.log('🔧 Устанавливаем основные переменные...\n');
+logger.info('🔧 Устанавливаем основные переменные...\n');
 
 // Устанавливаем основные переменные
 Object.entries(envVars).forEach(([key, value]) => {
   setRailwayVariable(key, value);
 });
 
-console.log('\n⚠️ ВАЖНО: Нужно настроить DigitalOcean Spaces переменные:');
-console.log('После создания DigitalOcean Spaces выполните:');
-console.log('');
+logger.info('\n⚠️ ВАЖНО: Нужно настроить DigitalOcean Spaces переменные:');
+logger.info('После создания DigitalOcean Spaces выполните:');
+logger.info('');
 
 Object.entries(digitalOceanVars).forEach(([key, value]) => {
-  console.log(`railway variables set ${key}="${value}"`);
+  logger.info(`railway variables set ${key}="${value}"`);
 });
 
-console.log('\n✅ Основные переменные установлены!');
-console.log('\n📋 Следующие шаги:');
-console.log('1. Создайте DigitalOcean Spaces (инструкции ниже)');
-console.log('2. Установите DigitalOcean переменные');
-console.log('3. Запустите деплой: railway up');
+logger.info('\n✅ Основные переменные установлены!');
+logger.info('\n📋 Следующие шаги:');
+logger.info('1. Создайте DigitalOcean Spaces (инструкции ниже)');
+logger.info('2. Установите DigitalOcean переменные');
+logger.info('3. Запустите деплой: railway up');

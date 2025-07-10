@@ -1,6 +1,7 @@
 // S3 Storage Adapter for Railway deployment
 const AWS = require('aws-sdk');
-const fs = require('fs');
+const fs = require('fs')
+const { promises: fsPromises } = fs;
 const path = require('path');
 
 class S3StorageAdapter {
@@ -117,7 +118,7 @@ class S3StorageAdapter {
     
     switch (operation) {
       case 'upload':
-        fs.writeFileSync(filePath, data);
+        fs.await fsPromises.writeFile(filePath, data);
         return {
           success: true,
           url: `/uploads/${key}`,
@@ -129,7 +130,7 @@ class S3StorageAdapter {
         if (fs.existsSync(filePath)) {
           return {
             success: true,
-            data: fs.readFileSync(filePath),
+            data: fs.await fsPromises.readFile(filePath),
             fallback: true
           };
         }
