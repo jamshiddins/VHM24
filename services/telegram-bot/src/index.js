@@ -12,6 +12,7 @@ const { handleTasks } = require('./handlers/tasksHandler.js');
 const { handleReports } = require('./handlers/reportsHandler.js');
 const { handleSettings } = require('./handlers/settingsHandler.js');
 const { handleCallbackQuery } = require('./handlers/callbackHandler.js');
+const UploadHandler = require('./handlers/uploadHandler.js');
 
 // FSM Handlers
 const registrationHandler = require('./handlers/registrationHandler.js');
@@ -156,6 +157,7 @@ global.config = config;
 
 // Initialize handlers
 let technicianHandler;
+let uploadHandler;
 
 // Initialize FSM Manager
 (async () => {
@@ -167,6 +169,18 @@ let technicianHandler;
     // Note: prisma will be initialized when needed
     technicianHandler = new TechnicianHandler(bot, null);
     logger.info('TechnicianHandler initialized');
+    
+    // Initialize UploadHandler for DigitalOcean Spaces integration
+    uploadHandler = new UploadHandler(bot);
+    logger.info('UploadHandler initialized - DigitalOcean Spaces ready');
+    
+    // Setup cleanup interval for temporary files
+    setInterval(() => {
+      if (uploadHandler) {
+        uploadHandler.cleanupTempFiles();
+      }
+    }, 60 * 60 * 1000); // Cleanup every hour
+    
   } catch (error) {
     logger.error('FSM Manager initialization failed:', error);
   }
@@ -636,4 +650,3 @@ healthApp.get('/health', (req, res) => {
 healthApp.listen(healthPort, () => {
   console.log(`Health check server running on port ${healthPort}`);
 });
-
