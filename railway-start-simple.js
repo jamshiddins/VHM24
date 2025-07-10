@@ -7,6 +7,14 @@
 
 const Fastify = require('fastify');
 
+// Создаем простой логгер
+const logger = {
+  info: (...args) => console.log('[INFO]', ...args),
+  error: (...args) => console.error('[ERROR]', ...args),
+  warn: (...args) => console.warn('[WARN]', ...args),
+  debug: (...args) => console.debug('[DEBUG]', ...args)
+};
+
 logger.info('🚂 VHM24 Railway Simple Start...');
 logger.info(`📍 Environment: ${process.env.NODE_ENV || 'production'}`);
 logger.info(`🔌 Port: ${process.env.PORT || 8000}`);

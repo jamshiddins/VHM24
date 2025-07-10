@@ -3,7 +3,7 @@ builder = "nixpacks"
 buildCommand = "npm install"
 
 [deploy]
-startCommand = "node start-services.js --production"
+startCommand = "node railway-start-simple.js"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "on-failure"
