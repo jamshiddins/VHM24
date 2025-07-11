@@ -12,6 +12,7 @@ async function testSystemComponents() {
     'DATABASE_URL',
     'REDIS_URL', 
     'S3_BUCKET',
+    'S3_BUCKET_NAME',
     'S3_ACCESS_KEY',
     'S3_SECRET_KEY',
     'JWT_SECRET'
@@ -26,26 +27,49 @@ async function testSystemComponents() {
   
   // Test 2: Database Connection
   console.log('2. 🗄️ Database Connection:');
+  let prisma;
   try {
-    const prisma = new PrismaClient();
-    await prisma.$connect();
+    prisma = new PrismaClient({
+      log: ['error'],
+      errorFormat: 'minimal'
+    });
+    await Promise.race([
+      prisma.$connect(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Connection timeout')), 10000))
+    ]);
     console.log('   ✅ PostgreSQL connection successful');
     await prisma.$disconnect();
   } catch (error) {
     console.log(`   ❌ PostgreSQL connection failed: ${error.message}`);
+    if (prisma) {
+      try { await prisma.$disconnect(); } catch {}
+    }
   }
   
   console.log('');
   
   // Test 3: Redis Connection
   console.log('3. 🔴 Redis Connection:');
+  let redis;
   try {
-    const redis = new Redis(process.env.REDIS_URL);
-    await redis.ping();
+    redis = new Redis(process.env.REDIS_URL, {
+      connectTimeout: 5000,
+      lazyConnect: true,
+      maxRetriesPerRequest: 1,
+      retryDelayOnFailover: 100
+    });
+    
+    await Promise.race([
+      redis.ping(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Redis timeout')), 5000))
+    ]);
     console.log('   ✅ Redis connection successful');
     await redis.disconnect();
   } catch (error) {
     console.log(`   ❌ Redis connection failed: ${error.message}`);
+    if (redis) {
+      try { await redis.disconnect(); } catch {}
+    }
   }
   
   console.log('');

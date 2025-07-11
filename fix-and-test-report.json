@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-07-11T09:39:22.723Z",
+  "fixes": [
+    "Создана директория: apps/telegram-bot/logs",
+    "Установка зависимостей backend",
+    "Установка зависимостей telegram-bot",
+    "Проверка порта 8000 (Backend API)"
+  ],
+  "errors": [
+    {
+      "description": "Генерация Prisma клиента",
+      "error": "Command failed: cd backend && npx prisma generate\nError: \nEPERM: operation not permitted, rename 'D:\\Projects\\VHM24\\backend\\node_modules\\.prisma\\client\\query_engine-windows.dll.node.tmp22024' -> 'D:\\Projects\\VHM24\\backend\\node_modules\\.prisma\\client\\query_engine-windows.dll.node'\n\n\n"
+    },
+    {
+      "description": "Проверка порта 6379 (Redis)",
+      "error": "Command failed: netstat -an | findstr :6379"
+    }
+  ],
+  "testResults": {
+    "environment": true,
+    "database": true,
+    "redis": false,
+    "s3": true,
+    "backend": true,
+    "prisma": true,
+    "telegram": true,
+    "overall": true
+  },
+  "recommendations": "Система готова к запуску"
+}

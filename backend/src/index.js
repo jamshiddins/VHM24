@@ -32,6 +32,7 @@ const warehouseRoutes = require('./routes/warehouse');
 const auditRoutes = require('./routes/audit');
 const dataImportRoutes = require('./routes/data-import');
 const incompleteDataRoutes = require('./routes/incomplete-data');
+const telegramRoutes = require('./routes/telegram');
 
 // Health check
 app.get('/health', (req, res) => {
@@ -56,6 +57,7 @@ app.use('/api/v1/warehouse', warehouseRoutes);
 app.use('/api/v1/audit', auditRoutes);
 app.use('/api/v1/data-import', dataImportRoutes);
 app.use('/api/v1/incomplete-data', incompleteDataRoutes);
+app.use('/api/v1/telegram', telegramRoutes);
 
 // Error handling
 app.use((err, req, res, _next) => {
