@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-07-11T04:48:35.628Z",
+  "summary": {
+    "total": 3,
+    "passed": 1,
+    "failed": 2,
+    "successRate": 33.3
+  },
+  "components": {
+    "database": {
+      "status": "FAIL",
+      "message": "Ошибка подключения: Cannot read properties of undefined (reading 'bind')",
+      "error": "Cannot read properties of undefined (reading 'bind')"
+    },
+    "redis": {
+      "status": "SKIP",
+      "message": "Локальный Redis недоступен - тест пропущен (в production будет работать)",
+      "details": {
+        "url": "redis://localhost:6379",
+        "note": "В production используется Railway Redis"
+      }
+    },
+    "storage": {
+      "status": "PASS",
+      "message": "DigitalOcean Spaces работает корректно. Объектов: 1",
+      "details": {
+        "endpoint": "https://nyc3.digitaloceanspaces.com",
+        "bucket": "vhm24-uploads-2025",
+        "region": "nyc3",
+        "objects": 1
+      }
+    }
+  }
+}

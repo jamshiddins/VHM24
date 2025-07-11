@@ -300,6 +300,9 @@ class ComprehensiveTestSuite {
     this.log('Тестирование подключения к базе данных...', 'info');
     
     try {
+      // Загружаем переменные из .env файла
+      require('dotenv').config();
+      
       // Проверяем наличие DATABASE_URL
       if (!process.env.DATABASE_URL) {
         this.results.functionality.push({

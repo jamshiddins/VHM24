@@ -1,11 +1,11 @@
 {
-  "timestamp": "2025-07-11T03:42:52.178Z",
+  "timestamp": "2025-07-11T03:51:03.224Z",
   "summary": {
     "total": 24,
     "passed": 23,
-    "failed": 0,
+    "failed": 1,
     "warnings": 0,
-    "skipped": 1
+    "skipped": 0
   },
   "results": {
     "functionality": [
@@ -77,8 +77,8 @@
       },
       {
         "test": "Database Connection",
-        "status": "SKIP",
-        "message": "DATABASE_URL не настроен"
+        "status": "FAIL",
+        "message": "Ошибка подключения к БД: Cannot read properties of undefined (reading 'bind')"
       },
       {
         "test": "Logging System",
@@ -90,9 +90,9 @@
       {
         "test": "Response Time",
         "status": "PASS",
-        "message": "Среднее время отклика: 1.50ms (мин: 1ms, макс: 4ms)",
+        "message": "Среднее время отклика: 2.00ms (мин: 1ms, макс: 4ms)",
         "metrics": {
-          "avg": 1.5,
+          "avg": 2,
           "min": 1,
           "max": 4
         }
@@ -100,22 +100,22 @@
       {
         "test": "Load Capacity",
         "status": "PASS",
-        "message": "20/20 запросов успешно за 34ms",
+        "message": "20/20 запросов успешно за 41ms",
         "metrics": {
           "successful": 20,
           "failed": 0,
-          "totalTime": 34,
+          "totalTime": 41,
           "concurrentRequests": 20
         }
       },
       {
         "test": "Memory Usage",
         "status": "PASS",
-        "message": "Heap: 11.36MB/16.21MB, RSS: 51.75MB",
+        "message": "Heap: 12.72MB/17.41MB, RSS: 56.31MB",
         "metrics": {
-          "heapUsed": "11.36",
-          "heapTotal": "16.21",
-          "rss": "51.75"
+          "heapUsed": "12.72",
+          "heapTotal": "17.41",
+          "rss": "56.31"
         }
       }
     ],
