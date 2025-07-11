@@ -35,6 +35,7 @@ model User {
   routes         Route[]
   driverLogs     DriverLog[]
   notifications  Notification[]
+  bunkerOperations BunkerOperation[]
 }
 
 model Location {
@@ -68,6 +69,7 @@ model Machine {
   stockMovements StockMovement[]
   tasks          Task[]
   routeStops     RouteStop[]
+  bunkers        Bunker[]
 }
 
 model Task {
@@ -126,6 +128,7 @@ model InventoryItem {
   machineInventory MachineInventory[]
   stockMovements   StockMovement[]
   recipeIngredients RecipeIngredient[]
+  bunkers          Bunker[]
 
   @@index([category])
   @@index([sku])
@@ -144,6 +147,10 @@ model StockMovement {
   fromLocation   String?
   toLocation     String?
   machineId      String?
+  photos         String[]          // URLs фотографий операции
+  videos         String[]          // URLs видео операции
+  eventTime      DateTime          // Время реального события
+  inputTime      DateTime          @default(now()) // Время ввода данных
   metadata       Json?
   createdAt      DateTime          @default(now())
   item           InventoryItem     @relation(fields: [itemId], references: [id])
@@ -152,6 +159,7 @@ model StockMovement {
 
   @@index([itemId])
   @@index([type])
+  @@index([eventTime])
   @@index([createdAt])
 }
 
@@ -579,4 +587,64 @@ enum NotificationType {
   LOW_INVENTORY
   ROUTE_ASSIGNED
   SYSTEM_ALERT
+}
+
+model Bunker {
+  id            String       @id @default(cuid())
+  machineId     String
+  name          String
+  capacity      Float
+  currentLevel  Float        @default(0)
+  itemId        String?
+  status        BunkerStatus @default(EMPTY)
+  lastFilled    DateTime?
+  lastCleaned   DateTime?
+  photos        String[]     // URLs фотографий состояния
+  notes         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  machine       Machine      @relation(fields: [machineId], references: [id])
+  item          InventoryItem? @relation(fields: [itemId], references: [id])
+  operations    BunkerOperation[]
+  
+  @@index([machineId])
+  @@index([status])
+}
+
+model BunkerOperation {
+  id          String              @id @default(cuid())
+  bunkerId    String
+  userId      String
+  type        BunkerOperationType
+  description String
+  quantity    Float?
+  photos      String[]            // URLs фотографий операции
+  eventTime   DateTime            // Время реального события
+  inputTime   DateTime            @default(now()) // Время ввода данных
+  metadata    Json?
+  bunker      Bunker              @relation(fields: [bunkerId], references: [id])
+  user        User                @relation(fields: [userId], references: [id])
+  
+  @@index([bunkerId])
+  @@index([userId])
+  @@index([type])
+  @@index([eventTime])
+}
+
+enum BunkerStatus {
+  EMPTY
+  FILLING
+  FULL
+  MAINTENANCE
+  CLEANING
+  ERROR
+}
+
+enum BunkerOperationType {
+  FILL
+  EMPTY
+  CLEAN
+  MAINTENANCE
+  INSPECTION
+  REPAIR
 }
