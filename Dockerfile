@@ -20,7 +20,7 @@ COPY . .
 RUN npm install --workspaces || true
 
 # Generate Prisma client
-RUN cd packages/database && npx prisma generate || true
+RUN cd backend && npx prisma generate || true
 
 # Expose port
 EXPOSE 8000
