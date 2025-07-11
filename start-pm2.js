@@ -1,4 +1,4 @@
-const logger = require('@vhm24/shared/logger');
+const logger = require('./packages/shared/utils/logger');
 
 /**
  * VHM24 - PM2 Startup Script

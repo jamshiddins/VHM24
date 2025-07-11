@@ -1,4 +1,4 @@
-const logger = require('@vhm24/shared/logger');
+const logger = require('../packages/shared/utils/logger');
 
 // Production starter for Railway deployment
 const { spawn } = require('child_process');

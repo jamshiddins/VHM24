@@ -1,0 +1,23 @@
+{
+  "name": "@vhm24/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and types for VHM24 platform",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "keywords": ["vhm24", "shared", "utilities"],
+  "author": "VHM24 Team",
+  "license": "MIT",
+  "dependencies": {
+    "joi": "^17.9.2",
+    "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

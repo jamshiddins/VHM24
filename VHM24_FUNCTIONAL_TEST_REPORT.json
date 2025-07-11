@@ -1,0 +1,652 @@
+{
+  "timestamp": "2025-07-11T14:08:14.986Z",
+  "projectName": "VHM24 (VendHub Manager) - Functional Testing",
+  "categories": {
+    "api": {
+      "passed": 29,
+      "failed": 1,
+      "total": 30,
+      "tests": [
+        {
+          "name": "auth.login",
+          "status": "FAIL",
+          "message": "HTTP 400",
+          "endpoint": "/api/v1/auth/login"
+        },
+        {
+          "name": "auth.register",
+          "status": "PASS",
+          "message": "HTTP 201",
+          "endpoint": "/api/v1/auth/register"
+        },
+        {
+          "name": "auth.refresh",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/auth/refresh"
+        },
+        {
+          "name": "auth.logout",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/auth/logout"
+        },
+        {
+          "name": "users.list",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/users"
+        },
+        {
+          "name": "users.create",
+          "status": "PASS",
+          "message": "HTTP 201",
+          "endpoint": "/api/v1/users"
+        },
+        {
+          "name": "users.update",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/users/:id"
+        },
+        {
+          "name": "users.delete",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/users/:id"
+        },
+        {
+          "name": "machines.list",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/machines"
+        },
+        {
+          "name": "machines.create",
+          "status": "PASS",
+          "message": "HTTP 201",
+          "endpoint": "/api/v1/machines"
+        },
+        {
+          "name": "machines.update",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/machines/:id"
+        },
+        {
+          "name": "machines.status",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/machines/:id/status"
+        },
+        {
+          "name": "inventory.list",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/inventory"
+        },
+        {
+          "name": "inventory.create",
+          "status": "PASS",
+          "message": "HTTP 201",
+          "endpoint": "/api/v1/inventory"
+        },
+        {
+          "name": "inventory.update",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/inventory/:id"
+        },
+        {
+          "name": "inventory.movements",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/inventory/movements"
+        },
+        {
+          "name": "bunkers.list",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/bunkers"
+        },
+        {
+          "name": "bunkers.weigh",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/bunkers/:id/weigh"
+        },
+        {
+          "name": "bunkers.refill",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/bunkers/:id/refill"
+        },
+        {
+          "name": "recipes.list",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/recipes"
+        },
+        {
+          "name": "recipes.create",
+          "status": "PASS",
+          "message": "HTTP 201",
+          "endpoint": "/api/v1/recipes"
+        },
+        {
+          "name": "recipes.calculate",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/recipes/:id/calculate"
+        },
+        {
+          "name": "routes.list",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/routes"
+        },
+        {
+          "name": "routes.create",
+          "status": "PASS",
+          "message": "HTTP 201",
+          "endpoint": "/api/v1/routes"
+        },
+        {
+          "name": "routes.optimize",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/routes/optimize"
+        },
+        {
+          "name": "reports.daily",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/reports/daily"
+        },
+        {
+          "name": "reports.sales",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/reports/sales"
+        },
+        {
+          "name": "reports.inventory",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/reports/inventory"
+        },
+        {
+          "name": "upload.photo",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/upload/photo"
+        },
+        {
+          "name": "upload.document",
+          "status": "PASS",
+          "message": "HTTP 200",
+          "endpoint": "/api/v1/upload/document"
+        }
+      ]
+    },
+    "telegram": {
+      "passed": 28,
+      "failed": 0,
+      "total": 28,
+      "tests": [
+        {
+          "name": "telegram.admin./admin_panel",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "admin",
+          "command": "/admin_panel"
+        },
+        {
+          "name": "telegram.admin./approve_users",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "admin",
+          "command": "/approve_users"
+        },
+        {
+          "name": "telegram.admin./system_logs",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "admin",
+          "command": "/system_logs"
+        },
+        {
+          "name": "telegram.admin./global_reports",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "admin",
+          "command": "/global_reports"
+        },
+        {
+          "name": "telegram.manager./routes_management",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "manager",
+          "command": "/routes_management"
+        },
+        {
+          "name": "telegram.manager./task_assignment",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "manager",
+          "command": "/task_assignment"
+        },
+        {
+          "name": "telegram.manager./analytics",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "manager",
+          "command": "/analytics"
+        },
+        {
+          "name": "telegram.manager./cost_calculation",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "manager",
+          "command": "/cost_calculation"
+        },
+        {
+          "name": "telegram.manager./recipe_management",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "manager",
+          "command": "/recipe_management"
+        },
+        {
+          "name": "telegram.warehouse./receive_goods",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "warehouse",
+          "command": "/receive_goods"
+        },
+        {
+          "name": "telegram.warehouse./weight_bunkers",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "warehouse",
+          "command": "/weight_bunkers"
+        },
+        {
+          "name": "telegram.warehouse./inventory_check",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "warehouse",
+          "command": "/inventory_check"
+        },
+        {
+          "name": "telegram.warehouse./batch_tracking",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "warehouse",
+          "command": "/batch_tracking"
+        },
+        {
+          "name": "telegram.warehouse./expiry_alerts",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "warehouse",
+          "command": "/expiry_alerts"
+        },
+        {
+          "name": "telegram.operator./machine_status",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "operator",
+          "command": "/machine_status"
+        },
+        {
+          "name": "telegram.operator./refill_bunkers",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "operator",
+          "command": "/refill_bunkers"
+        },
+        {
+          "name": "telegram.operator./photo_reports",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "operator",
+          "command": "/photo_reports"
+        },
+        {
+          "name": "telegram.operator./problem_reporting",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "operator",
+          "command": "/problem_reporting"
+        },
+        {
+          "name": "telegram.operator./task_completion",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "operator",
+          "command": "/task_completion"
+        },
+        {
+          "name": "telegram.technician./maintenance_tasks",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "technician",
+          "command": "/maintenance_tasks"
+        },
+        {
+          "name": "telegram.technician./checklist_completion",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "technician",
+          "command": "/checklist_completion"
+        },
+        {
+          "name": "telegram.technician./parts_replacement",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "technician",
+          "command": "/parts_replacement"
+        },
+        {
+          "name": "telegram.technician./service_history",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "technician",
+          "command": "/service_history"
+        },
+        {
+          "name": "telegram.technician./technical_reports",
+          "status": "PASS",
+          "message": "Команда корректно сформирована",
+          "role": "technician",
+          "command": "/technical_reports"
+        },
+        {
+          "name": "fsm.checklists",
+          "status": "PASS",
+          "message": "5 состояний, 5 кнопок",
+          "process": "checklists",
+          "states": [
+            "start",
+            "item_selection",
+            "photo_capture",
+            "completion",
+            "report_generation"
+          ],
+          "buttons": [
+            "Начать чистку",
+            "Выбрать оборудование",
+            "Сделать фото",
+            "Завершить",
+            "Создать отчет"
+          ]
+        },
+        {
+          "name": "fsm.weighing",
+          "status": "PASS",
+          "message": "7 состояний, 7 кнопок",
+          "process": "weighing",
+          "states": [
+            "bunker_selection",
+            "weight_before",
+            "photo_before",
+            "filling",
+            "weight_after",
+            "photo_after",
+            "calculation"
+          ],
+          "buttons": [
+            "Выбрать бункер",
+            "Взвесить до",
+            "Фото до",
+            "Заправить",
+            "Взвесить после",
+            "Фото после",
+            "Рассчитать"
+          ]
+        },
+        {
+          "name": "fsm.bags",
+          "status": "PASS",
+          "message": "4 состояний, 4 кнопок",
+          "process": "bags",
+          "states": [
+            "bag_receipt",
+            "weighing",
+            "photo_documentation",
+            "warehouse_transfer"
+          ],
+          "buttons": [
+            "Принять сумку",
+            "Взвесить",
+            "Сфотографировать",
+            "Передать на склад"
+          ]
+        },
+        {
+          "name": "fsm.returns",
+          "status": "PASS",
+          "message": "4 состояний, 4 кнопок",
+          "process": "returns",
+          "states": [
+            "return_initiation",
+            "item_selection",
+            "reason_input",
+            "photo_confirmation"
+          ],
+          "buttons": [
+            "Начать возврат",
+            "Выбрать товар",
+            "Указать причину",
+            "Подтвердить фото"
+          ]
+        }
+      ]
+    },
+    "database": {
+      "passed": 12,
+      "failed": 0,
+      "total": 12,
+      "tests": [
+        {
+          "name": "read.User",
+          "status": "PASS",
+          "message": "Чтение из Пользователи: успешно",
+          "query": "SELECT COUNT(*) FROM \"User\"..."
+        },
+        {
+          "name": "structure.User",
+          "status": "PASS",
+          "message": "Структура Пользователи: успешно",
+          "query": "SELECT column_name, data_type FROM information_sch..."
+        },
+        {
+          "name": "read.Machine",
+          "status": "PASS",
+          "message": "Чтение из Автоматы: успешно",
+          "query": "SELECT COUNT(*) FROM \"Machine\"..."
+        },
+        {
+          "name": "structure.Machine",
+          "status": "PASS",
+          "message": "Структура Автоматы: успешно",
+          "query": "SELECT column_name, data_type FROM information_sch..."
+        },
+        {
+          "name": "read.Bunker",
+          "status": "PASS",
+          "message": "Чтение из Бункеры: успешно",
+          "query": "SELECT COUNT(*) FROM \"Bunker\"..."
+        },
+        {
+          "name": "structure.Bunker",
+          "status": "PASS",
+          "message": "Структура Бункеры: успешно",
+          "query": "SELECT column_name, data_type FROM information_sch..."
+        },
+        {
+          "name": "read.InventoryItem",
+          "status": "PASS",
+          "message": "Чтение из Товары: успешно",
+          "query": "SELECT COUNT(*) FROM \"InventoryItem\"..."
+        },
+        {
+          "name": "structure.InventoryItem",
+          "status": "PASS",
+          "message": "Структура Товары: успешно",
+          "query": "SELECT column_name, data_type FROM information_sch..."
+        },
+        {
+          "name": "read.Recipe",
+          "status": "PASS",
+          "message": "Чтение из Рецепты: успешно",
+          "query": "SELECT COUNT(*) FROM \"Recipe\"..."
+        },
+        {
+          "name": "structure.Recipe",
+          "status": "PASS",
+          "message": "Структура Рецепты: успешно",
+          "query": "SELECT column_name, data_type FROM information_sch..."
+        },
+        {
+          "name": "relations.foreign_keys",
+          "status": "PASS",
+          "message": "Внешние ключи: успешно",
+          "query": "\n      SELECT \n        tc.table_name, \n        kcu..."
+        },
+        {
+          "name": "performance.indexes",
+          "status": "PASS",
+          "message": "Индексы таблиц: успешно",
+          "query": "\n      SELECT schemaname, tablename, indexname, in..."
+        }
+      ]
+    },
+    "files": {
+      "passed": 3,
+      "failed": 0,
+      "total": 3,
+      "tests": [
+        {
+          "name": "digitalocean.upload",
+          "status": "PASS",
+          "message": "Загрузка в DigitalOcean Spaces работает",
+          "operation": "upload/delete"
+        },
+        {
+          "name": "local.file_operations",
+          "status": "PASS",
+          "message": "Локальные файловые операции работают",
+          "operation": "create/read/delete"
+        },
+        {
+          "name": "backup.scripts",
+          "status": "PASS",
+          "message": "Все 3 конфигурационных файлов найдены",
+          "operation": "backup_check"
+        }
+      ]
+    },
+    "business": {
+      "passed": 4,
+      "failed": 0,
+      "total": 4,
+      "tests": [
+        {
+          "name": "calculations.cost",
+          "status": "PASS",
+          "message": "Расчет себестоимости: 750 = 750",
+          "calculation": "cost_calculation"
+        },
+        {
+          "name": "calculations.inventory",
+          "status": "PASS",
+          "message": "Расчет остатков: 75 = 75",
+          "calculation": "inventory_calculation"
+        },
+        {
+          "name": "validation.email",
+          "status": "PASS",
+          "message": "Email валидация: 2/3 корректных",
+          "validation": "email_validation"
+        },
+        {
+          "name": "workflow.weighing",
+          "status": "PASS",
+          "message": "Процесс взвешивания: разница 25кг",
+          "workflow": "weighing_process"
+        }
+      ]
+    },
+    "security": {
+      "passed": 2,
+      "failed": 0,
+      "total": 2,
+      "tests": [
+        {
+          "name": "security.rbac",
+          "status": "PASS",
+          "message": "RBAC система настроена корректно",
+          "security": "rbac_check"
+        },
+        {
+          "name": "security.jwt",
+          "status": "PASS",
+          "message": "JWT секрет настроен корректно",
+          "security": "jwt_check"
+        }
+      ]
+    },
+    "integration": {
+      "passed": 2,
+      "failed": 0,
+      "total": 2,
+      "tests": [
+        {
+          "name": "integration.telegram",
+          "status": "PASS",
+          "message": "Telegram Bot: vendhubManagerbot",
+          "integration": "telegram_api"
+        },
+        {
+          "name": "integration.digitalocean",
+          "status": "PASS",
+          "message": "DigitalOcean Spaces доступен",
+          "integration": "digitalocean_api"
+        }
+      ]
+    },
+    "ui": {
+      "passed": 2,
+      "failed": 0,
+      "total": 2,
+      "tests": [
+        {
+          "name": "ui.frontend_access",
+          "status": "PASS",
+          "message": "Frontend доступен",
+          "ui": "frontend_check"
+        },
+        {
+          "name": "ui.cors",
+          "status": "PASS",
+          "message": "CORS настроен для 2 доменов",
+          "ui": "cors_check"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalTests": 83,
+    "passed": 82,
+    "failed": 1,
+    "score": 99,
+    "criticalIssues": [],
+    "recommendations": [
+      "Исправьте проблемы с API endpoints",
+      "Регулярно запускайте функциональные тесты",
+      "Документируйте все изменения в API"
+    ]
+  }
+}

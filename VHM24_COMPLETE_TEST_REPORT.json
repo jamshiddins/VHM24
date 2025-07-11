@@ -1,0 +1,157 @@
+{
+  "timestamp": "2025-07-11T12:47:55.096Z",
+  "projectName": "VHM24 (VendHub Manager)",
+  "environment": "development",
+  "timezone": "Asia/Tashkent",
+  "tests": {
+    "environment": {
+      "passed": 19,
+      "failed": 0,
+      "total": 19,
+      "details": [
+        "✅ NODE_ENV: установлен",
+        "✅ PORT: установлен",
+        "✅ TZ: установлен",
+        "✅ DATABASE_URL: установлен",
+        "✅ REDIS_URL: установлен",
+        "✅ JWT_SECRET: установлен",
+        "✅ TELEGRAM_BOT_TOKEN: установлен",
+        "✅ ADMIN_IDS: установлен",
+        "✅ S3_ENDPOINT: установлен",
+        "✅ S3_ACCESS_KEY: установлен",
+        "✅ S3_SECRET_KEY: установлен",
+        "✅ S3_BUCKET_NAME: установлен",
+        "✅ FRONTEND_PUBLIC_URL: установлен",
+        "✅ API_URL: установлен",
+        "✅ Часовой пояс: Asia/Tashkent",
+        "✅ Директория backend: существует",
+        "✅ Директория services: существует",
+        "✅ Директория packages: существует",
+        "✅ Директория apps: существует"
+      ]
+    },
+    "database": {
+      "passed": 8,
+      "failed": 0,
+      "total": 8,
+      "details": [
+        "✅ Подключение к PostgreSQL: успешно",
+        "✅ Таблица User (Пользователи): 1 записей",
+        "✅ Таблица Machine (Автоматы): 0 записей",
+        "✅ Таблица Bunker (Бункеры): 0 записей",
+        "✅ Таблица InventoryItem (Товары): 0 записей",
+        "✅ Таблица Recipe (Рецепты): 0 записей",
+        "✅ Таблица Route (Маршруты): 0 записей",
+        "✅ Таблица Task (Задачи): 0 записей"
+      ]
+    },
+    "redis": {
+      "passed": 0,
+      "failed": 1,
+      "total": 2,
+      "details": [
+        "❌ Ошибка подключения к Redis: Connection timeout"
+      ]
+    },
+    "telegramBot": {
+      "passed": 7,
+      "failed": 0,
+      "total": 7,
+      "details": [
+        "✅ Telegram Bot: vendhubManagerbot",
+        "✅ FSM Чек-листы чистки: 5 состояний, 4 переходов",
+        "✅ FSM Взвешивание бункеров: 7 состояний, 6 переходов",
+        "✅ FSM Сумки/комплекты: 4 состояний, 3 переходов",
+        "✅ FSM Возвраты: 4 состояний, 3 переходов",
+        "✅ FSM Ввод задним числом: 3 состояний, 2 переходов",
+        "✅ FSM Сверка остатков: 4 состояний, 3 переходов"
+      ]
+    },
+    "rbac": {
+      "passed": 6,
+      "failed": 0,
+      "total": 6,
+      "details": [
+        "✅ Роль admin: 4 команд, 1 разрешений",
+        "✅ Роль manager: 5 команд, 5 разрешений",
+        "✅ Роль warehouse: 5 команд, 4 разрешений",
+        "✅ Роль operator: 5 команд, 4 разрешений",
+        "✅ Роль technician: 5 команд, 4 разрешений",
+        "✅ Администратор: ID 42283329 настроен"
+      ]
+    },
+    "digitalOcean": {
+      "passed": 3,
+      "failed": 0,
+      "total": 3,
+      "details": [
+        "✅ Bucket vhm24-uploads: доступен",
+        "✅ Bucket vhm24-backups: доступен",
+        "✅ Загрузка файла: успешно"
+      ]
+    },
+    "railway": {
+      "passed": 2,
+      "failed": 1,
+      "total": 3,
+      "details": [
+        "✅ Railway Project ID: 9820e0f0-e39b-4719-9580-de68a0e3498f",
+        "❌ Health endpoint: getaddrinfo ENOTFOUND vendhub-api.vhm24.com",
+        "✅ Graceful shutdown: поддерживается"
+      ]
+    },
+    "businessLogic": {
+      "passed": 4,
+      "failed": 0,
+      "total": 4,
+      "details": [
+        "✅ Расчет себестоимости: корректен",
+        "✅ Сверка продаж: расхождение выявлено",
+        "✅ Обновление остатков: корректно",
+        "✅ Оптимизация маршрутов: логика корректна"
+      ]
+    },
+    "frontend": {
+      "passed": 1,
+      "failed": 1,
+      "total": 2,
+      "details": [
+        "❌ Frontend недоступен: getaddrinfo ENOTFOUND vendhub.vhm24.com",
+        "✅ CORS настроен правильно"
+      ]
+    },
+    "api": {
+      "passed": 0,
+      "failed": 11,
+      "total": 11,
+      "details": [
+        "❌ health: getaddrinfo ENOTFOUND vendhub-api.vhm24.com",
+        "❌ auth: getaddrinfo ENOTFOUND vendhub-api.vhm24.com",
+        "❌ users: getaddrinfo ENOTFOUND vendhub-api.vhm24.com",
+        "❌ machines: getaddrinfo ENOTFOUND vendhub-api.vhm24.com",
+        "❌ inventory: getaddrinfo ENOTFOUND vendhub-api.vhm24.com",
+        "❌ bunkers: getaddrinfo ENOTFOUND vendhub-api.vhm24.com",
+        "❌ recipes: getaddrinfo ENOTFOUND vendhub-api.vhm24.com",
+        "❌ routes: getaddrinfo ENOTFOUND vendhub-api.vhm24.com",
+        "❌ reports: getaddrinfo ENOTFOUND vendhub-api.vhm24.com",
+        "❌ upload: getaddrinfo ENOTFOUND vendhub-api.vhm24.com",
+        "❌ backup: getaddrinfo ENOTFOUND vendhub-api.vhm24.com"
+      ]
+    }
+  },
+  "summary": {
+    "total": 65,
+    "passed": 50,
+    "failed": 14,
+    "score": 77,
+    "criticalIssues": [
+      "Redis недоступен: Connection timeout"
+    ],
+    "recommendations": [
+      "Исправьте критические проблемы перед запуском в production",
+      "Настройте Redis для корректной работы FSM состояний",
+      "Регулярно запускайте тесты для поддержания качества",
+      "Настройте мониторинг в production окружении"
+    ]
+  }
+}

@@ -1,0 +1,209 @@
+{
+  "timestamp": "2025-07-11T11:37:33.516Z",
+  "projectName": "VHM24",
+  "gitRepo": "https://github.com/jamshiddins/VHM24.git",
+  "checks": {
+    "gitSync": {
+      "status": "WARNING",
+      "localChanges": false,
+      "remoteUrl": "https://github.com/jamshiddins/VHM24.git",
+      "lastCommit": "8fa19ba 🎯 COMPLETE SYSTEM TESTING & FIXES - VHM24 v1.0.0",
+      "behindAhead": "0\t0",
+      "issues": [
+        "Есть несохраненные изменения в рабочем дереве"
+      ]
+    },
+    "projectStructure": {
+      "status": "PASS",
+      "files": {
+        "package.json": true,
+        "README.md": true,
+        "docker-compose.yml": true,
+        ".env.example": true
+      },
+      "directories": {
+        "backend": true,
+        "services": true,
+        "packages": true,
+        "apps": true
+      },
+      "issues": []
+    },
+    "packageJson": {
+      "status": "PASS",
+      "exists": true,
+      "valid": true,
+      "data": {
+        "name": "vhm24-platform",
+        "version": "1.0.0",
+        "private": true,
+        "description": "VHM24 - VendHub Manager 24/7 Platform",
+        "workspaces": [
+          "apps/*"
+        ],
+        "scripts": {
+          "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+          "backend:dev": "cd backend && npm run dev",
+          "backend:start": "cd backend && npm start",
+          "frontend:dev": "cd apps/web-dashboard && npm run dev",
+          "frontend:build": "cd apps/web-dashboard && npm run build",
+          "build": "npm run frontend:build",
+          "start": "npm run backend:start",
+          "railway": "node railway-start-monolith.js",
+          "clean": "rimraf node_modules apps/*/node_modules backend/node_modules",
+          "db:setup": "cd backend && npm run prisma:generate && npm run prisma:migrate",
+          "db:generate": "cd backend && npx prisma generate",
+          "db:migrate": "cd backend && npx prisma migrate deploy",
+          "db:studio": "cd backend && npx prisma studio",
+          "install:all": "npm install && cd backend && npm install && cd ../apps/web-dashboard && npm install",
+          "test": "jest",
+          "test:watch": "jest --watch",
+          "test:coverage": "jest --coverage",
+          "test:all": "node test-all-components.js",
+          "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+          "lint": "eslint \"**/*.js\" --fix",
+          "lint:check": "eslint \"**/*.js\"",
+          "check-env": "node check-env.js",
+          "cleanup-analysis": "node scripts/cleanup-analysis.js",
+          "pre-commit": "npm run lint:check && npm run format && npm run test",
+          "start:production": "cd backend && npm start",
+          "railway:deploy": "npm run build && npm run start:production",
+          "docker:start": "docker-compose -f docker-compose.compatible.yml up --build",
+          "docker:stop": "docker-compose -f docker-compose.compatible.yml down",
+          "docker:shell": "docker-compose -f docker-compose.compatible.yml exec app sh"
+        },
+        "dependencies": {
+          "@fastify/cors": "^8.4.0",
+          "@fastify/multipart": "^9.0.3",
+          "aws-sdk": "^2.1692.0",
+          "axios": "^1.10.0",
+          "bcrypt": "^5.1.1",
+          "bcryptjs": "^2.4.3",
+          "caniuse-lite": "^1.0.30001727",
+          "colors": "^1.4.0",
+          "cors": "^2.8.5",
+          "dotenv": "^16.3.1",
+          "express": "^4.18.2",
+          "fastify": "^4.24.3",
+          "helmet": "^7.0.0",
+          "ioredis": "^5.6.1",
+          "joi": "^17.9.2",
+          "jsonwebtoken": "^9.0.2",
+          "multer": "^1.4.5-lts.1",
+          "pg": "^8.11.3",
+          "redis": "^4.6.7",
+          "sequelize": "^6.32.1",
+          "uuid": "^9.0.1",
+          "winston": "^3.10.0"
+        },
+        "devDependencies": {
+          "@babel/core": "^7.22.0",
+          "@babel/preset-env": "^7.22.0",
+          "@jest/globals": "^29.5.0",
+          "@prisma/client": "^6.11.1",
+          "babel-jest": "^29.5.0",
+          "eslint": "^8.55.0",
+          "eslint-config-prettier": "^9.1.0",
+          "eslint-plugin-node": "^11.1.0",
+          "jest": "^29.5.0",
+          "prettier": "^3.1.0",
+          "prisma": "^6.11.1",
+          "rimraf": "^5.0.5"
+        },
+        "engines": {
+          "node": ">=16",
+          "npm": ">=7"
+        },
+        "packageManager": "npm@9.8.1",
+        "overrides": {
+          "fast-jwt": {
+            "engines": {
+              "node": ">=16"
+            }
+          }
+        }
+      },
+      "issues": []
+    },
+    "nodeModules": {
+      "status": "PASS",
+      "nodeModulesExists": true,
+      "packageLockExists": true,
+      "issues": []
+    },
+    "dockerConfig": {
+      "status": "PASS",
+      "dockerCompose": true,
+      "dockerfile": true,
+      "issues": []
+    },
+    "environmentConfig": {
+      "status": "PASS",
+      "envFiles": {
+        ".env": true,
+        ".env.example": true,
+        ".env.production": true,
+        ".env.development": true
+      },
+      "issues": []
+    },
+    "services": {
+      "status": "PASS",
+      "services": {
+        "backups": {
+          "exists": true,
+          "hasPackageJson": true,
+          "issues": []
+        },
+        "monitoring": {
+          "exists": true,
+          "hasPackageJson": true,
+          "issues": []
+        },
+        "uploads": {
+          "exists": true,
+          "hasPackageJson": true,
+          "issues": []
+        }
+      },
+      "issues": []
+    },
+    "backend": {
+      "status": "PASS",
+      "exists": true,
+      "hasPackageJson": true,
+      "issues": []
+    },
+    "apps": {
+      "status": "PASS",
+      "exists": true,
+      "apps": {
+        "telegram-bot": {
+          "exists": true,
+          "hasPackageJson": true,
+          "issues": []
+        },
+        "web-dashboard": {
+          "exists": true,
+          "hasPackageJson": true,
+          "issues": []
+        }
+      },
+      "issues": []
+    }
+  },
+  "issues": [
+    "[gitSync] Есть несохраненные изменения в рабочем дереве"
+  ],
+  "recommendations": [
+    "Рекомендуется устранить предупреждения для повышения качества проекта"
+  ],
+  "summary": {
+    "status": "EXCELLENT",
+    "score": 97,
+    "totalChecks": 9,
+    "passedChecks": 8,
+    "failedChecks": 0,
+    "warningChecks": 1
+  }
+}

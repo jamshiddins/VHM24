@@ -1,4 +1,4 @@
-const logger = require('@vhm24/shared/logger');
+const logger = require('./packages/shared/utils/logger');
 
 require('dotenv').config();
 const { execSync } = require('child_process');
