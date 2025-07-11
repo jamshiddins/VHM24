@@ -1,66 +1,100 @@
 {
-  "timestamp": "2025-07-11T07:49:47.719Z",
-  "environment": "production",
+  "timestamp": "2025-07-11T08:53:25.474Z",
+  "environment": "development",
   "summary": {
-    "total": 15,
+    "total": 20,
     "passed": 10,
-    "failed": 5,
-    "successRate": 66.7
+    "failed": 10,
+    "successRate": 50
   },
   "categories": {
     "critical": {
-      "passed": 3,
-      "failed": 0,
-      "issues": []
-    },
-    "important": {
       "passed": 2,
       "failed": 1,
       "issues": [
         {
-          "name": "TELEGRAM_BOT_TOKEN",
-          "category": "important",
+          "name": "NODE_ENV",
+          "category": "critical",
           "status": "FAIL",
-          "message": "Invalid format for TELEGRAM_BOT_TOKEN: Telegram bot token (example: 123456789:ABCdefGHIjklMNOpqrsTUVwxyz)",
-          "value": "dev-***tion"
+          "message": "Missing required variable: Application environment (example: production)"
         }
       ]
     },
-    "optional": {
-      "passed": 5,
+    "important": {
+      "passed": 3,
       "failed": 0,
       "issues": []
+    },
+    "optional": {
+      "passed": 2,
+      "failed": 3,
+      "issues": [
+        {
+          "name": "S3_BUCKET",
+          "category": "optional",
+          "status": "FAIL",
+          "message": "Missing required variable: DigitalOcean Spaces bucket name (example: your-unique-bucket-name)"
+        },
+        {
+          "name": "EMAIL_USER",
+          "category": "optional",
+          "status": "FAIL",
+          "message": "Missing required variable: SMTP email username (example: your-email@gmail.com)"
+        },
+        {
+          "name": "EMAIL_PASS",
+          "category": "optional",
+          "status": "FAIL",
+          "message": "Missing required variable: SMTP email password (example: your-app-password)"
+        }
+      ]
     },
     "development": {
       "passed": 0,
-      "failed": 0,
-      "issues": []
-    },
-    "security": {
-      "passed": 0,
-      "failed": 4,
+      "failed": 6,
       "issues": [
         {
-          "name": "JWT_SECRET_STRENGTH",
+          "name": "AUTH_PORT",
+          "category": "development",
           "status": "FAIL",
-          "message": "Using development JWT secret in production"
+          "message": "Missing required variable: Auth service port"
         },
         {
-          "name": "TELEGRAM_TOKEN_VALIDITY",
+          "name": "MACHINES_PORT",
+          "category": "development",
           "status": "FAIL",
-          "message": "Using development Telegram token"
+          "message": "Missing required variable: Machines service port"
         },
         {
-          "name": "S3_CREDENTIALS_VALIDITY",
+          "name": "INVENTORY_PORT",
+          "category": "development",
           "status": "FAIL",
-          "message": "Using development S3 credentials"
+          "message": "Missing required variable: Inventory service port"
         },
         {
-          "name": "EMAIL_CREDENTIALS_VALIDITY",
+          "name": "TASKS_PORT",
+          "category": "development",
           "status": "FAIL",
-          "message": "Using development email credentials"
+          "message": "Missing required variable: Tasks service port"
+        },
+        {
+          "name": "WAREHOUSE_PORT",
+          "category": "development",
+          "status": "FAIL",
+          "message": "Missing required variable: Warehouse service port"
+        },
+        {
+          "name": "RECIPES_PORT",
+          "category": "development",
+          "status": "FAIL",
+          "message": "Missing required variable: Recipes service port"
         }
       ]
+    },
+    "security": {
+      "passed": 3,
+      "failed": 0,
+      "issues": []
     }
   }
 }

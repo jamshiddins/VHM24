@@ -1,8 +1,22 @@
 [phases.setup]
-nixPkgs = ["nodejs-20_x", "npm-10_x"]
+nixPkgs = ["nodejs_18", "npm", "python3", "gcc"]
 
 [phases.install]
-cmds = ["npm install"]
+cmds = [
+  "npm ci --only=production",
+  "cd backend && npm ci --only=production",
+  "cd apps/telegram-bot && npm ci --only=production"
+]
+
+[phases.build]
+cmds = [
+  "cd backend && npx prisma generate",
+  "mkdir -p logs uploads temp backups"
+]
 
 [start]
-cmd = "npm start"
+cmd = "node railway-start-production.js"
+
+[variables]
+NODE_ENV = "production"
+NPM_CONFIG_PRODUCTION = "true"

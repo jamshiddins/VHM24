@@ -1,0 +1,11 @@
+{
+  "name": "vhm24-backups-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.844.0",
+    "@prisma/client": "^6.11.1",
+    "express": "^4.21.2",
+    "node-cron": "^3.0.3"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "vhm24-monitoring-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "express": "^4.21.2"
+  }
+}

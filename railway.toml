@@ -1,54 +1,28 @@
 [build]
 builder = "nixpacks"
-buildCommand = "npm install && npx prisma generate"
+buildCommand = "npm install && cd backend && npm install && npm run prisma:generate"
 
 [deploy]
-startCommand = "node scripts/deploy-to-railway.js"
-healthcheckPath = "/health"
-healthcheckTimeout = 300
-restartPolicyType = "on_failure"
+startCommand = "node railway-start-production.js"
+restartPolicyType = "always"
 restartPolicyMaxRetries = 10
 
-[[services]]
-name = "gateway"
+[variables]
+NODE_ENV = "production"
+PORT = "8000"
+LOG_LEVEL = "INFO"
+TZ = "Asia/Tashkent"
+
+[healthcheck]
+path = "/health"
 port = 8000
+intervalSeconds = 30
+timeoutSeconds = 10
+retries = 3
 
-[[services]]
-name = "auth"
-port = 3001
+[resources]
+memory = "1GB"
+cpu = "1vCPU"
 
-[[services]]
-name = "machines"
-port = 3002
-
-[[services]]
-name = "inventory"
-port = 3003
-
-[[services]]
-name = "tasks"
-port = 3004
-
-[[services]]
-name = "routes"
-port = 3005
-
-[[services]]
-name = "warehouse"
-port = 3006
-
-[[services]]
-name = "recipes"
-port = 3007
-
-[[services]]
-name = "notifications"
-port = 3008
-
-[[services]]
-name = "audit"
-port = 3009
-
-[[services]]
-name = "monitoring"
-port = 3010
+[networking]
+serviceName = "vhm24-production"
