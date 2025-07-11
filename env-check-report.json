@@ -1,0 +1,66 @@
+{
+  "timestamp": "2025-07-11T04:57:25.557Z",
+  "environment": "production",
+  "summary": {
+    "total": 15,
+    "passed": 10,
+    "failed": 5,
+    "successRate": 66.7
+  },
+  "categories": {
+    "critical": {
+      "passed": 3,
+      "failed": 0,
+      "issues": []
+    },
+    "important": {
+      "passed": 2,
+      "failed": 1,
+      "issues": [
+        {
+          "name": "TELEGRAM_BOT_TOKEN",
+          "category": "important",
+          "status": "FAIL",
+          "message": "Invalid format for TELEGRAM_BOT_TOKEN: Telegram bot token (example: 123456789:ABCdefGHIjklMNOpqrsTUVwxyz)",
+          "value": "dev-***tion"
+        }
+      ]
+    },
+    "optional": {
+      "passed": 5,
+      "failed": 0,
+      "issues": []
+    },
+    "development": {
+      "passed": 0,
+      "failed": 0,
+      "issues": []
+    },
+    "security": {
+      "passed": 0,
+      "failed": 4,
+      "issues": [
+        {
+          "name": "JWT_SECRET_STRENGTH",
+          "status": "FAIL",
+          "message": "Using development JWT secret in production"
+        },
+        {
+          "name": "TELEGRAM_TOKEN_VALIDITY",
+          "status": "FAIL",
+          "message": "Using development Telegram token"
+        },
+        {
+          "name": "S3_CREDENTIALS_VALIDITY",
+          "status": "FAIL",
+          "message": "Using development S3 credentials"
+        },
+        {
+          "name": "EMAIL_CREDENTIALS_VALIDITY",
+          "status": "FAIL",
+          "message": "Using development email credentials"
+        }
+      ]
+    }
+  }
+}

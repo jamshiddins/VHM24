@@ -1,6 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
+// Загружаем переменные окружения из .env файла
+require('dotenv').config();
+
 // Цвета для консоли
 const colors = {
   reset: '\x1b[0m',
@@ -12,252 +15,372 @@ const colors = {
   cyan: '\x1b[36m'
 };
 
-// Конфигурация переменных окружения для каждого сервиса
-const envConfig = {
-  backend: {
-    required: ['DATABASE_URL', 'JWT_SECRET', 'NODE_ENV'],
-    optional: [
-      'PORT',
-      'LOG_LEVEL',
-      'REDIS_URL',
-      'AWS_ACCESS_KEY_ID',
-      'AWS_SECRET_ACCESS_KEY',
-      'AWS_REGION',
-      'TELEGRAM_BOT_TOKEN'
-    ]
+function log(message, type = 'info') {
+  const timestamp = new Date().toISOString();
+  const colorMap = {
+    info: colors.blue,
+    success: colors.green,
+    error: colors.red,
+    warning: colors.yellow,
+    debug: colors.magenta,
+    header: colors.cyan
+  };
+  console.log(`${colorMap[type]}[${timestamp}] ${message}${colors.reset}`);
+}
+
+// Конфигурация переменных окружения
+const ENV_CONFIG = {
+  // Критически важные переменные (обязательные для production)
+  critical: {
+    DATABASE_URL: {
+      description: 'PostgreSQL connection URL',
+      pattern: /^postgresql:\/\/.+/,
+      example: 'postgresql://user:pass@host:port/db'
+    },
+    JWT_SECRET: {
+      description: 'JWT signing secret',
+      minLength: 32,
+      example: 'your-super-secret-jwt-key-64-characters-or-more'
+    },
+    NODE_ENV: {
+      description: 'Application environment',
+      allowedValues: ['development', 'production', 'test'],
+      example: 'production'
+    }
   },
-  frontend: {
-    required: ['NEXT_PUBLIC_API_URL'],
-    optional: ['NEXT_PUBLIC_APP_NAME', 'NEXT_PUBLIC_VERSION']
+
+  // Важные переменные (рекомендуемые для production)
+  important: {
+    REDIS_URL: {
+      description: 'Redis connection URL',
+      pattern: /^redis:\/\/.+/,
+      example: 'redis://user:pass@host:port'
+    },
+    TELEGRAM_BOT_TOKEN: {
+      description: 'Telegram bot token',
+      pattern: /^\d+:[A-Za-z0-9_-]+$/,
+      example: '123456789:ABCdefGHIjklMNOpqrsTUVwxyz'
+    },
+    API_URL: {
+      description: 'Main API URL',
+      pattern: /^https?:\/\/.+/,
+      example: 'https://your-app.up.railway.app/api/v1'
+    }
   },
-  telegram: {
-    required: ['TELEGRAM_BOT_TOKEN', 'DATABASE_URL'],
-    optional: ['WEBHOOK_URL', 'WEBHOOK_PORT']
+
+  // Опциональные переменные
+  optional: {
+    S3_ACCESS_KEY: {
+      description: 'DigitalOcean Spaces access key',
+      example: 'your-digitalocean-spaces-access-key'
+    },
+    S3_SECRET_KEY: {
+      description: 'DigitalOcean Spaces secret key',
+      example: 'your-digitalocean-spaces-secret-key'
+    },
+    S3_BUCKET: {
+      description: 'DigitalOcean Spaces bucket name',
+      example: 'your-unique-bucket-name'
+    },
+    EMAIL_USER: {
+      description: 'SMTP email username',
+      pattern: /^.+@.+\..+$/,
+      example: 'your-email@gmail.com'
+    },
+    EMAIL_PASS: {
+      description: 'SMTP email password',
+      example: 'your-app-password'
+    }
   },
-  redis: {
-    required: ['REDIS_URL'],
-    optional: ['REDIS_PASSWORD', 'REDIS_DB']
+
+  // Переменные для локальной разработки
+  development: {
+    AUTH_PORT: { description: 'Auth service port', default: '3001' },
+    MACHINES_PORT: { description: 'Machines service port', default: '3002' },
+    INVENTORY_PORT: { description: 'Inventory service port', default: '3003' },
+    TASKS_PORT: { description: 'Tasks service port', default: '3004' },
+    WAREHOUSE_PORT: { description: 'Warehouse service port', default: '3006' },
+    RECIPES_PORT: { description: 'Recipes service port', default: '3007' }
   }
 };
 
-// Функция для загрузки .env файла
-function loadEnvFile(filePath) {
-  if (!fs.existsSync(filePath)) {
-    return {};
+class EnvironmentChecker {
+  constructor() {
+    this.results = {
+      critical: { passed: 0, failed: 0, issues: [] },
+      important: { passed: 0, failed: 0, issues: [] },
+      optional: { passed: 0, failed: 0, issues: [] },
+      development: { passed: 0, failed: 0, issues: [] },
+      security: { passed: 0, failed: 0, issues: [] }
+    };
+    this.isProduction = process.env.NODE_ENV === 'production';
   }
 
-  const envContent = fs.readFileSync(filePath, 'utf8');
-  const envVars = {};
+  checkVariable(name, config, category) {
+    const value = process.env[name];
+    const result = {
+      name,
+      category,
+      status: 'PASS',
+      message: '',
+      value: value ? this.maskSensitive(name, value) : undefined
+    };
 
-  envContent.split('\n').forEach(line => {
-    const trimmedLine = line.trim();
-    if (trimmedLine && !trimmedLine.startsWith('#')) {
-      const [key, ...valueParts] = trimmedLine.split('=');
-      if (key && valueParts.length > 0) {
-        envVars[key.trim()] = valueParts
-          .join('=')
-          .trim()
-          .replace(/^["']|["']$/g, '');
+    // Проверка наличия переменной
+    if (!value) {
+      result.status = 'FAIL';
+      result.message = `Missing required variable: ${config.description}`;
+      if (config.example) {
+        result.message += ` (example: ${config.example})`;
       }
+      this.results[category].failed++;
+      this.results[category].issues.push(result);
+      return result;
     }
-  });
 
-  return envVars;
-}
-
-// Функция для проверки переменных окружения
-function checkEnvironmentVariables(serviceName, config, envVars) {
-  console.log(
-    `${colors.cyan}🔍 Проверка переменных окружения для ${serviceName}:${colors.reset}`
-  );
-
-  let hasErrors = false;
-  let hasWarnings = false;
-
-  // Проверка обязательных переменных
-  console.log(`${colors.blue}  Обязательные переменные:${colors.reset}`);
-  config.required.forEach(varName => {
-    if (envVars[varName]) {
-      console.log(`    ${colors.green}✓${colors.reset} ${varName}`);
-    } else {
-      console.log(`    ${colors.red}✗${colors.reset} ${varName} - ОТСУТСТВУЕТ`);
-      hasErrors = true;
+    // Проверка паттерна
+    if (config.pattern && !config.pattern.test(value)) {
+      result.status = 'FAIL';
+      result.message = `Invalid format for ${name}: ${config.description}`;
+      if (config.example) {
+        result.message += ` (example: ${config.example})`;
+      }
+      this.results[category].failed++;
+      this.results[category].issues.push(result);
+      return result;
     }
-  });
 
-  // Проверка опциональных переменных
-  if (config.optional && config.optional.length > 0) {
-    console.log(`${colors.blue}  Опциональные переменные:${colors.reset}`);
-    config.optional.forEach(varName => {
-      if (envVars[varName]) {
-        console.log(`    ${colors.green}✓${colors.reset} ${varName}`);
+    // Проверка минимальной длины
+    if (config.minLength && value.length < config.minLength) {
+      result.status = 'FAIL';
+      result.message = `${name} too short (minimum ${config.minLength} characters)`;
+      this.results[category].failed++;
+      this.results[category].issues.push(result);
+      return result;
+    }
+
+    // Проверка допустимых значений
+    if (config.allowedValues && !config.allowedValues.includes(value)) {
+      result.status = 'FAIL';
+      result.message = `Invalid value for ${name}. Allowed: ${config.allowedValues.join(', ')}`;
+      this.results[category].failed++;
+      this.results[category].issues.push(result);
+      return result;
+    }
+
+    // Переменная прошла все проверки
+    result.status = 'PASS';
+    result.message = `✅ ${config.description}`;
+    this.results[category].passed++;
+    return result;
+  }
+
+  maskSensitive(name, value) {
+    const sensitiveVars = ['SECRET', 'PASSWORD', 'TOKEN', 'KEY'];
+    if (sensitiveVars.some(keyword => name.includes(keyword))) {
+      if (value.length <= 8) {
+        return '***';
+      }
+      return value.substring(0, 4) + '***' + value.substring(value.length - 4);
+    }
+    return value;
+  }
+
+  checkSecurity() {
+    log('🔒 Проверка безопасности переменных окружения...', 'header');
+
+    const securityChecks = [
+      {
+        name: 'JWT_SECRET_STRENGTH',
+        check: () => {
+          const secret = process.env.JWT_SECRET;
+          if (!secret) return { status: 'FAIL', message: 'JWT_SECRET not set' };
+          if (secret.includes('dev-') || secret.includes('development')) {
+            return { status: 'FAIL', message: 'Using development JWT secret in production' };
+          }
+          if (secret.length < 64) {
+            return { status: 'WARN', message: 'JWT secret should be at least 64 characters' };
+          }
+          return { status: 'PASS', message: 'JWT secret is strong' };
+        }
+      },
+      {
+        name: 'TELEGRAM_TOKEN_VALIDITY',
+        check: () => {
+          const token = process.env.TELEGRAM_BOT_TOKEN;
+          if (!token) return { status: 'SKIP', message: 'Telegram token not set' };
+          if (token.includes('dev-') || token === 'dev-telegram-token-change-in-production') {
+            return { status: 'FAIL', message: 'Using development Telegram token' };
+          }
+          return { status: 'PASS', message: 'Telegram token appears valid' };
+        }
+      },
+      {
+        name: 'S3_CREDENTIALS_VALIDITY',
+        check: () => {
+          const accessKey = process.env.S3_ACCESS_KEY;
+          const secretKey = process.env.S3_SECRET_KEY;
+          if (!accessKey || !secretKey) return { status: 'SKIP', message: 'S3 credentials not set' };
+          if (accessKey.includes('dev-') || secretKey.includes('dev-')) {
+            return { status: 'FAIL', message: 'Using development S3 credentials' };
+          }
+          return { status: 'PASS', message: 'S3 credentials appear valid' };
+        }
+      },
+      {
+        name: 'EMAIL_CREDENTIALS_VALIDITY',
+        check: () => {
+          const user = process.env.EMAIL_USER;
+          const pass = process.env.EMAIL_PASS;
+          if (!user || !pass) return { status: 'SKIP', message: 'Email credentials not set' };
+          if (user.includes('dev-') || pass.includes('dev-')) {
+            return { status: 'FAIL', message: 'Using development email credentials' };
+          }
+          return { status: 'PASS', message: 'Email credentials appear valid' };
+        }
+      }
+    ];
+
+    securityChecks.forEach(check => {
+      const result = check.check();
+      if (result.status === 'PASS') {
+        log(`✅ ${check.name}: ${result.message}`, 'success');
+        this.results.security.passed++;
+      } else if (result.status === 'FAIL') {
+        log(`❌ ${check.name}: ${result.message}`, 'error');
+        this.results.security.failed++;
+        this.results.security.issues.push({
+          name: check.name,
+          status: 'FAIL',
+          message: result.message
+        });
+      } else if (result.status === 'WARN') {
+        log(`⚠️ ${check.name}: ${result.message}`, 'warning');
       } else {
-        console.log(
-          `    ${colors.yellow}!${colors.reset} ${varName} - не установлена`
-        );
-        hasWarnings = true;
+        log(`⏭️ ${check.name}: ${result.message}`, 'debug');
       }
     });
   }
 
-  return { hasErrors, hasWarnings };
-}
-
-// Функция для проверки специфичных значений
-function validateSpecificValues(envVars) {
-  console.log(`${colors.cyan}🔧 Проверка специфичных значений:${colors.reset}`);
-
-  let hasErrors = false;
-
-  // Проверка NODE_ENV
-  if (envVars.NODE_ENV) {
-    const validNodeEnvs = ['development', 'production', 'test'];
-    if (validNodeEnvs.includes(envVars.NODE_ENV)) {
-      console.log(
-        `    ${colors.green}✓${colors.reset} NODE_ENV: ${envVars.NODE_ENV}`
-      );
-    } else {
-      console.log(
-        `    ${colors.red}✗${colors.reset} NODE_ENV: недопустимое значение "${envVars.NODE_ENV}"`
-      );
-      console.log(`      Допустимые значения: ${validNodeEnvs.join(', ')}`);
-      hasErrors = true;
-    }
+  checkCategory(categoryName, variables) {
+    log(`\n📋 Проверка ${categoryName} переменных...`, 'header');
+    
+    Object.entries(variables).forEach(([name, config]) => {
+      const result = this.checkVariable(name, config, categoryName);
+      
+      if (result.status === 'PASS') {
+        log(`✅ ${name}: ${result.message}`, 'success');
+      } else {
+        log(`❌ ${name}: ${result.message}`, 'error');
+      }
+    });
   }
 
-  // Проверка PORT
-  if (envVars.PORT) {
-    const port = parseInt(envVars.PORT);
-    if (isNaN(port) || port < 1 || port > 65535) {
-      console.log(
-        `    ${colors.red}✗${colors.reset} PORT: недопустимое значение "${envVars.PORT}"`
-      );
-      hasErrors = true;
+  generateReport() {
+    log('\n📊 Генерация отчета о проверке переменных окружения...', 'header');
+    
+    console.log('\n' + '='.repeat(80));
+    log('📋 РЕЗУЛЬТАТЫ ПРОВЕРКИ ПЕРЕМЕННЫХ ОКРУЖЕНИЯ', 'header');
+    console.log('='.repeat(80));
+
+    const categories = ['critical', 'important', 'optional', 'development', 'security'];
+    let totalPassed = 0;
+    let totalFailed = 0;
+
+    categories.forEach(category => {
+      const result = this.results[category];
+      totalPassed += result.passed;
+      totalFailed += result.failed;
+
+      const categoryName = {
+        critical: 'Критически важные',
+        important: 'Важные',
+        optional: 'Опциональные',
+        development: 'Для разработки',
+        security: 'Безопасность'
+      }[category];
+
+      if (result.passed > 0 || result.failed > 0) {
+        log(`\n${categoryName}: ${result.passed} ✅ / ${result.failed} ❌`, 'info');
+        
+        if (result.issues.length > 0) {
+          result.issues.forEach(issue => {
+            log(`  ❌ ${issue.name}: ${issue.message}`, 'error');
+          });
+        }
+      }
+    });
+
+    console.log('\n' + '-'.repeat(80));
+    
+    const totalChecks = totalPassed + totalFailed;
+    const successRate = totalChecks > 0 ? ((totalPassed / totalChecks) * 100).toFixed(1) : 0;
+    
+    log(`Всего проверок: ${totalChecks}`, 'info');
+    log(`Прошли: ${totalPassed}`, 'success');
+    log(`Не прошли: ${totalFailed}`, totalFailed > 0 ? 'error' : 'info');
+    log(`Готовность: ${successRate}%`, successRate >= 90 ? 'success' : 'warning');
+
+    // Сохранение отчета
+    const report = {
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      summary: {
+        total: totalChecks,
+        passed: totalPassed,
+        failed: totalFailed,
+        successRate: parseFloat(successRate)
+      },
+      categories: this.results
+    };
+
+    fs.writeFileSync('env-check-report.json', JSON.stringify(report, null, 2));
+    
+    console.log('\n' + '='.repeat(80));
+    log('Отчет сохранен в env-check-report.json', 'info');
+    
+    if (successRate >= 90) {
+      log('🎉 ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ НАСТРОЕНЫ КОРРЕКТНО!', 'success');
+    } else if (successRate >= 70) {
+      log('⚠️ ТРЕБУЕТСЯ НАСТРОЙКА НЕКОТОРЫХ ПЕРЕМЕННЫХ', 'warning');
     } else {
-      console.log(`    ${colors.green}✓${colors.reset} PORT: ${port}`);
+      log('❌ ТРЕБУЕТСЯ СЕРЬЕЗНАЯ НАСТРОЙКА ПЕРЕМЕННЫХ', 'error');
     }
+
+    return successRate >= 90;
   }
 
-  // Проверка DATABASE_URL
-  if (envVars.DATABASE_URL) {
-    if (
-      envVars.DATABASE_URL.startsWith('postgresql://') ||
-      envVars.DATABASE_URL.startsWith('postgres://')
-    ) {
-      console.log(
-        `    ${colors.green}✓${colors.reset} DATABASE_URL: корректный PostgreSQL URL`
-      );
-    } else {
-      console.log(
-        `    ${colors.yellow}!${colors.reset} DATABASE_URL: возможно некорректный формат`
-      );
+  checkAll() {
+    log('🔍 Запуск полной проверки переменных окружения VHM24', 'header');
+    log(`Режим: ${this.isProduction ? 'PRODUCTION' : 'DEVELOPMENT'}`, 'info');
+    
+    // Проверка критически важных переменных
+    this.checkCategory('critical', ENV_CONFIG.critical);
+    
+    // Проверка важных переменных
+    this.checkCategory('important', ENV_CONFIG.important);
+    
+    // Проверка опциональных переменных
+    this.checkCategory('optional', ENV_CONFIG.optional);
+    
+    // Проверка переменных для разработки (только в dev режиме)
+    if (!this.isProduction) {
+      this.checkCategory('development', ENV_CONFIG.development);
     }
-  }
-
-  // Проверка JWT_SECRET
-  if (envVars.JWT_SECRET) {
-    if (envVars.JWT_SECRET.length < 32) {
-      console.log(
-        `    ${colors.yellow}!${colors.reset} JWT_SECRET: рекомендуется использовать ключ длиной не менее 32 символов`
-      );
-    } else {
-      console.log(
-        `    ${colors.green}✓${colors.reset} JWT_SECRET: достаточная длина`
-      );
-    }
-  }
-
-  return hasErrors;
-}
-
-// Основная функция
-function main() {
-  console.log(
-    `${colors.magenta}🚀 VHM24 - Проверка переменных окружения${colors.reset}\n`
-  );
-
-  // Загружаем переменные окружения
-  const envFiles = ['.env', '.env.local', '.env.production'];
-  let allEnvVars = { ...process.env };
-
-  envFiles.forEach(fileName => {
-    const filePath = path.join(process.cwd(), fileName);
-    if (fs.existsSync(filePath)) {
-      console.log(`${colors.blue}📁 Загружен файл: ${fileName}${colors.reset}`);
-      const fileVars = loadEnvFile(filePath);
-      allEnvVars = { ...allEnvVars, ...fileVars };
-    }
-  });
-
-  console.log('');
-
-  let totalErrors = 0;
-  let totalWarnings = 0;
-
-  // Проверяем каждый сервис
-  Object.entries(envConfig).forEach(([serviceName, config]) => {
-    const { hasErrors, hasWarnings } = checkEnvironmentVariables(
-      serviceName,
-      config,
-      allEnvVars
-    );
-    if (hasErrors) totalErrors++;
-    if (hasWarnings) totalWarnings++;
-    console.log('');
-  });
-
-  // Проверяем специфичные значения
-  const hasValidationErrors = validateSpecificValues(allEnvVars);
-  if (hasValidationErrors) totalErrors++;
-
-  console.log('');
-
-  // Итоговый отчет
-  console.log(`${colors.cyan}📊 Итоговый отчет:${colors.reset}`);
-
-  if (totalErrors === 0 && totalWarnings === 0) {
-    console.log(
-      `${colors.green}✅ Все переменные окружения настроены корректно!${colors.reset}`
-    );
-    return true;
-  } else {
-    if (totalErrors > 0) {
-      console.log(
-        `${colors.red}❌ Найдено критических ошибок: ${totalErrors}${colors.reset}`
-      );
-    }
-    if (totalWarnings > 0) {
-      console.log(
-        `${colors.yellow}⚠️  Найдено предупреждений: ${totalWarnings}${colors.reset}`
-      );
-    }
-
-    console.log(`\n${colors.blue}💡 Рекомендации:${colors.reset}`);
-    console.log('   1. Создайте файл .env на основе .env.example');
-    console.log('   2. Заполните все обязательные переменные');
-    console.log('   3. Проверьте корректность значений');
-    console.log('   4. Запустите проверку повторно');
-
-    if (totalErrors > 0) {
-      throw new Error(`Найдено критических ошибок: ${totalErrors}`);
-    }
-    return false;
+    
+    // Проверка безопасности
+    this.checkSecurity();
+    
+    // Генерация отчета
+    return this.generateReport();
   }
 }
 
-// Запуск только если файл вызван напрямую
+// Запуск проверки
 if (require.main === module) {
-  try {
-    main();
-  } catch (error) {
-    console.error('Ошибка:', error.message);
-    process.exit(1);
-  }
+  const checker = new EnvironmentChecker();
+  const success = checker.checkAll();
+  process.exit(success ? 0 : 1);
 }
 
-module.exports = {
-  checkEnvironmentVariables,
-  validateSpecificValues,
-  loadEnvFile,
-  envConfig
-};
+module.exports = EnvironmentChecker;
