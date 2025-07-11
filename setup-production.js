@@ -10,7 +10,7 @@ console.log('🚀 VHM24 - Настройка для production с Railway и Dig
 // 1. Обновить .env для Railway
 async function updateEnvFile() {
   console.log('📝 Обновление .env файла для Railway...');
-  
+
   const envContent = `
 # Railway PostgreSQL
 DATABASE_URL="postgresql://postgres:ваш-пароль@ваш-хост.railway.app:порт/railway"
@@ -49,7 +49,11 @@ S3_REGION=nyc3
 NODE_ENV=production
 `;
 
-  await fs.writeFile(path.join(__dirname, '.env.production'), envContent.trim(), 'utf8');
+  await fs.writeFile(
+    path.join(__dirname, '.env.production'),
+    envContent.trim(),
+    'utf8'
+  );
   console.log('✅ Создан .env.production файл');
   console.log('\n⚠️  ВАЖНО: Заполните реальные данные в .env.production:');
   console.log('   - DATABASE_URL от Railway PostgreSQL');
@@ -60,17 +64,21 @@ NODE_ENV=production
 // 2. Генерация Prisma клиента
 async function generatePrismaClient() {
   console.log('\n🔧 Генерация Prisma клиента...');
-  console.log('ℹ️  Prisma клиент - это автогенерируемый код для работы с базой данных');
-  
+  console.log(
+    'ℹ️  Prisma клиент - это автогенерируемый код для работы с базой данных'
+  );
+
   try {
     // Установка Prisma CLI если нет
     console.log('📦 Установка Prisma CLI...');
     await exec('npm install -D prisma @prisma/client');
-    
+
     // Генерация клиента
     console.log('🔨 Генерация клиента из схемы...');
-    await exec('npx prisma generate --schema=packages/database/prisma/schema.prisma');
-    
+    await exec(
+      'npx prisma generate --schema=packages/database/prisma/schema.prisma'
+    );
+
     console.log('✅ Prisma клиент сгенерирован!');
   } catch (error) {
     console.error('❌ Ошибка генерации:', error.message);
@@ -91,7 +99,7 @@ async function fixBcrypt() {
 // 4. Создать railway.toml для деплоя
 async function createRailwayConfig() {
   console.log('\n📝 Создание конфигурации Railway...');
-  
+
   const railwayConfig = `[build]
 builder = "nixpacks"
 buildCommand = "npm install && npx prisma generate"
@@ -148,14 +156,18 @@ name = "monitoring"
 port = 3010
 `;
 
-  await fs.writeFile(path.join(__dirname, 'railway.toml'), railwayConfig, 'utf8');
+  await fs.writeFile(
+    path.join(__dirname, 'railway.toml'),
+    railwayConfig,
+    'utf8'
+  );
   console.log('✅ railway.toml создан');
 }
 
 // 5. Создать скрипт для запуска с Railway базой
 async function createRailwayStartScript() {
   console.log('\n📝 Создание скрипта для запуска с Railway...');
-  
+
   const startScript = `#!/usr/bin/env node
 
 const { spawn } = require('child_process');
@@ -244,29 +256,33 @@ process.on('SIGINT', () => {
 });
 `;
 
-  await fs.writeFile(path.join(__dirname, 'start-with-railway.js'), startScript, 'utf8');
+  await fs.writeFile(
+    path.join(__dirname, 'start-with-railway.js'),
+    startScript,
+    'utf8'
+  );
   console.log('✅ start-with-railway.js создан');
 }
 
 // Главная функция
 async function main() {
   console.log('🔧 Настройка VHM24 для работы с облачными сервисами...\n');
-  
+
   // 1. Обновить .env
   await updateEnvFile();
-  
+
   // 2. Сгенерировать Prisma клиент
   await generatePrismaClient();
-  
+
   // 3. Исправить bcrypt
   await fixBcrypt();
-  
+
   // 4. Создать railway.toml
   await createRailwayConfig();
-  
+
   // 5. Создать скрипт запуска
   await createRailwayStartScript();
-  
+
   console.log('\n✅ ВСЕ ГОТОВО!');
   console.log('\n📋 Дальнейшие шаги:');
   console.log('1. Откройте .env.production и заполните:');
@@ -276,7 +292,9 @@ async function main() {
   console.log('\n2. Скопируйте данные в основной .env:');
   console.log('   copy .env.production .env');
   console.log('\n3. Примените миграции к Railway базе:');
-  console.log('   npx prisma migrate deploy --schema=packages/database/prisma/schema.prisma');
+  console.log(
+    '   npx prisma migrate deploy --schema=packages/database/prisma/schema.prisma'
+  );
   console.log('\n4. Запустите проект локально:');
   console.log('   node start-with-railway.js');
   console.log('\n5. Для деплоя на Railway:');
@@ -284,7 +302,7 @@ async function main() {
   console.log('   - Создайте проект на Railway');
   console.log('   - Подключите репозиторий');
   console.log('   - Railway автоматически задеплоит');
-  
+
   console.log('\n🎉 Проект готов к работе с облачными сервисами!');
 }
 

@@ -1,9 +1,7 @@
 module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'node',
-  testMatch: [
-    '<rootDir>/simple-tests.test.js'
-  ],
+  testMatch: ['<rootDir>/simple-tests.test.js'],
   testPathIgnorePatterns: [
     '/node_modules/',
     '/services/',
@@ -33,9 +31,7 @@ module.exports = {
   // Увеличиваем таймаут для тестов
   testTimeout: 30000,
   // Игнорируем node_modules
-  transformIgnorePatterns: [
-    '/node_modules/(?!(fast-jwt|canvas|skia-canvas)/)'
-  ],
+  transformIgnorePatterns: ['/node_modules/(?!(fast-jwt|canvas|skia-canvas)/)'],
   // Мокаем модули, которые вызывают проблемы
   moduleNameMapper: {
     '^canvas$': '<rootDir>/mocks/canvas.js',

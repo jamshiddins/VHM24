@@ -52,10 +52,11 @@ export default function MachinesPage() {
 
   const fetchMachines = async () => {
     try {
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-        : 'http://localhost:8000';
-        
+      const baseUrl =
+        process.env.NODE_ENV === 'production'
+          ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+          : 'http://localhost:8000';
+
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
       if (statusFilter) params.append('status', statusFilter);
@@ -78,41 +79,61 @@ export default function MachinesPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ONLINE': return 'text-green-700 bg-green-50 ring-green-600/20';
-      case 'OFFLINE': return 'text-gray-700 bg-gray-50 ring-gray-600/20';
-      case 'MAINTENANCE': return 'text-yellow-700 bg-yellow-50 ring-yellow-600/20';
-      case 'ERROR': return 'text-red-700 bg-red-50 ring-red-600/20';
-      default: return 'text-gray-700 bg-gray-50 ring-gray-600/20';
+      case 'ONLINE':
+        return 'text-green-700 bg-green-50 ring-green-600/20';
+      case 'OFFLINE':
+        return 'text-gray-700 bg-gray-50 ring-gray-600/20';
+      case 'MAINTENANCE':
+        return 'text-yellow-700 bg-yellow-50 ring-yellow-600/20';
+      case 'ERROR':
+        return 'text-red-700 bg-red-50 ring-red-600/20';
+      default:
+        return 'text-gray-700 bg-gray-50 ring-gray-600/20';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'ONLINE': return <CheckCircleIcon className="h-4 w-4" />;
-      case 'OFFLINE': return <ClockIcon className="h-4 w-4" />;
-      case 'MAINTENANCE': return <CogIcon className="h-4 w-4" />;
-      case 'ERROR': return <ExclamationTriangleIcon className="h-4 w-4" />;
-      default: return <ClockIcon className="h-4 w-4" />;
+      case 'ONLINE':
+        return <CheckCircleIcon className="h-4 w-4" />;
+      case 'OFFLINE':
+        return <ClockIcon className="h-4 w-4" />;
+      case 'MAINTENANCE':
+        return <CogIcon className="h-4 w-4" />;
+      case 'ERROR':
+        return <ExclamationTriangleIcon className="h-4 w-4" />;
+      default:
+        return <ClockIcon className="h-4 w-4" />;
     }
   };
 
   const getTypeLabel = (type: string) => {
     switch (type) {
-      case 'COFFEE': return 'Кофе';
-      case 'SNACK': return 'Снеки';
-      case 'COMBO': return 'Комбо';
-      case 'OTHER': return 'Другое';
-      default: return type;
+      case 'COFFEE':
+        return 'Кофе';
+      case 'SNACK':
+        return 'Снеки';
+      case 'COMBO':
+        return 'Комбо';
+      case 'OTHER':
+        return 'Другое';
+      default:
+        return type;
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'ONLINE': return 'Онлайн';
-      case 'OFFLINE': return 'Офлайн';
-      case 'MAINTENANCE': return 'Обслуживание';
-      case 'ERROR': return 'Ошибка';
-      default: return status;
+      case 'ONLINE':
+        return 'Онлайн';
+      case 'OFFLINE':
+        return 'Офлайн';
+      case 'MAINTENANCE':
+        return 'Обслуживание';
+      case 'ERROR':
+        return 'Ошибка';
+      default:
+        return status;
     }
   };
 
@@ -136,7 +157,9 @@ export default function MachinesPage() {
       {/* Header */}
       <div className="sm:flex sm:items-center sm:justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Вендинговые автоматы</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Вендинговые автоматы
+          </h1>
           <p className="mt-2 text-sm text-gray-700">
             Управление и мониторинг всех автоматов в системе
           </p>
@@ -163,7 +186,7 @@ export default function MachinesPage() {
                 placeholder="Поиск по коду, названию или серийному номеру..."
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
               />
             </div>
           </div>
@@ -187,7 +210,7 @@ export default function MachinesPage() {
                 </label>
                 <select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
+                  onChange={e => setStatusFilter(e.target.value)}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">Все статусы</option>
@@ -203,7 +226,7 @@ export default function MachinesPage() {
                 </label>
                 <select
                   value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
+                  onChange={e => setTypeFilter(e.target.value)}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">Все типы</option>
@@ -233,17 +256,26 @@ export default function MachinesPage() {
 
       {/* Machines Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {machines.map((machine) => (
-          <div key={machine.id} className="bg-white overflow-hidden shadow rounded-lg">
+        {machines.map(machine => (
+          <div
+            key={machine.id}
+            className="bg-white overflow-hidden shadow rounded-lg"
+          >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
-                  <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ring-1 ring-inset ${getStatusColor(machine.status)}`}>
+                  <div
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ring-1 ring-inset ${getStatusColor(machine.status)}`}
+                  >
                     {getStatusIcon(machine.status)}
-                    <span className="ml-1">{getStatusLabel(machine.status)}</span>
+                    <span className="ml-1">
+                      {getStatusLabel(machine.status)}
+                    </span>
                   </div>
                 </div>
-                <span className="text-xs text-gray-500">{getTypeLabel(machine.type)}</span>
+                <span className="text-xs text-gray-500">
+                  {getTypeLabel(machine.type)}
+                </span>
               </div>
 
               <div className="mb-4">
@@ -296,42 +328,52 @@ export default function MachinesPage() {
 
               {machine.lastTelemetry && (
                 <div className="mb-4 p-3 bg-gray-50 rounded-md">
-                  <p className="text-xs font-medium text-gray-700 mb-2">Последняя телеметрия:</p>
+                  <p className="text-xs font-medium text-gray-700 mb-2">
+                    Последняя телеметрия:
+                  </p>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     {machine.lastTelemetry.temperature && (
                       <div>
                         <span className="text-gray-500">Температура:</span>
-                        <span className="ml-1 font-medium">{machine.lastTelemetry.temperature}°C</span>
+                        <span className="ml-1 font-medium">
+                          {machine.lastTelemetry.temperature}°C
+                        </span>
                       </div>
                     )}
                     {machine.lastTelemetry.humidity && (
                       <div>
                         <span className="text-gray-500">Влажность:</span>
-                        <span className="ml-1 font-medium">{machine.lastTelemetry.humidity}%</span>
+                        <span className="ml-1 font-medium">
+                          {machine.lastTelemetry.humidity}%
+                        </span>
                       </div>
                     )}
                     {machine.lastTelemetry.sales !== undefined && (
                       <div>
                         <span className="text-gray-500">Продажи:</span>
-                        <span className="ml-1 font-medium">{machine.lastTelemetry.sales}</span>
+                        <span className="ml-1 font-medium">
+                          {machine.lastTelemetry.sales}
+                        </span>
                       </div>
                     )}
-                    {machine.lastTelemetry.errors && machine.lastTelemetry.errors.length > 0 && (
-                      <div className="col-span-2">
-                        <span className="text-red-500">Ошибки:</span>
-                        <span className="ml-1 text-red-600">{machine.lastTelemetry.errors.length}</span>
-                      </div>
-                    )}
+                    {machine.lastTelemetry.errors &&
+                      machine.lastTelemetry.errors.length > 0 && (
+                        <div className="col-span-2">
+                          <span className="text-red-500">Ошибки:</span>
+                          <span className="ml-1 text-red-600">
+                            {machine.lastTelemetry.errors.length}
+                          </span>
+                        </div>
+                      )}
                   </div>
                 </div>
               )}
 
               <div className="flex justify-between items-center text-xs text-gray-500">
                 <span>
-                  {machine.lastPing ? 
-                    `Последний пинг: ${new Date(machine.lastPing).toLocaleString()}` :
-                    'Нет данных о пинге'
-                  }
+                  {machine.lastPing
+                    ? `Последний пинг: ${new Date(machine.lastPing).toLocaleString()}`
+                    : 'Нет данных о пинге'}
                 </span>
               </div>
             </div>
@@ -354,9 +396,11 @@ export default function MachinesPage() {
       {!loading && machines.length === 0 && (
         <div className="text-center py-12">
           <CogIcon className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">Автоматы не найдены</h3>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">
+            Автоматы не найдены
+          </h3>
           <p className="mt-1 text-sm text-gray-500">
-            {searchTerm || statusFilter || typeFilter 
+            {searchTerm || statusFilter || typeFilter
               ? 'Попробуйте изменить параметры поиска или фильтры.'
               : 'Начните с добавления первого автомата.'}
           </p>

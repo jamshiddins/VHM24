@@ -19,9 +19,9 @@ const services = [
 
 async function checkServices() {
   logger.info('🔍 VHM24 - Checking 24/7 service status...\n');
-  
+
   let allHealthy = true;
-  
+
   for (const service of services) {
     try {
       const response = await axios.get(service.url, { timeout: 5000 });
@@ -36,7 +36,7 @@ async function checkServices() {
       allHealthy = false;
     }
   }
-  
+
   logger.info('\n' + '='.repeat(40));
   if (allHealthy) {
     logger.info('✅ VHM24 System Status: FULLY OPERATIONAL 24/7');

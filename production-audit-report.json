@@ -6,9 +6,7 @@
     "performanceIssues": 654,
     "fixesApplied": 18
   },
-  "issues": [
-    "Missing error handling in inventory.js"
-  ],
+  "issues": ["Missing error handling in inventory.js"],
   "securityIssues": [],
   "performanceIssues": [
     "Sync FS operations in cleanup-project.js: fs.existsSync",

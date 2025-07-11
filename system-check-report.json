@@ -39,10 +39,6 @@
     "⚠️ services/telegram-bot/src/index.js - несоответствие try/catch блоков"
   ],
   "errors": [],
-  "processes": [
-    "Backend API (порт 8000)",
-    "Web Dashboard (порт 3000)",
-    "Telegram Bot"
-  ],
+  "processes": ["Backend API (порт 8000)", "Web Dashboard (порт 3000)", "Telegram Bot"],
   "status": "SUCCESS"
 }

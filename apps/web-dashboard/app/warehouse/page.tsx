@@ -1,7 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, Package, Scale, Truck, CheckCircle, AlertCircle, Clock, ArrowUpDown } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Package,
+  Scale,
+  Truck,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  ArrowUpDown
+} from 'lucide-react';
 
 interface WarehouseItem {
   id: number;
@@ -64,7 +74,9 @@ export default function WarehousePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
-  const [activeTab, setActiveTab] = useState<'inventory' | 'operations' | 'bunkers'>('inventory');
+  const [activeTab, setActiveTab] = useState<
+    'inventory' | 'operations' | 'bunkers'
+  >('inventory');
   const [showCreateItemModal, setShowCreateItemModal] = useState(false);
   const [showOperationModal, setShowOperationModal] = useState(false);
 
@@ -164,9 +176,9 @@ export default function WarehousePage() {
       const response = await fetch('/api/v1/warehouse/items', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(itemFormData),
+        body: JSON.stringify(itemFormData)
       });
 
       const data = await response.json();
@@ -185,9 +197,9 @@ export default function WarehousePage() {
       const response = await fetch('/api/v1/warehouse/operations', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(operationFormData),
+        body: JSON.stringify(operationFormData)
       });
 
       const data = await response.json();
@@ -250,49 +262,71 @@ export default function WarehousePage() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'IN_STOCK': return 'В наличии';
-      case 'LOW_STOCK': return 'Мало';
-      case 'OUT_OF_STOCK': return 'Нет в наличии';
-      case 'EXPIRED': return 'Просрочено';
-      case 'EMPTY': return 'Пустой';
-      case 'FILLING': return 'Заполняется';
-      case 'FULL': return 'Полный';
-      case 'MAINTENANCE': return 'Обслуживание';
-      default: return status;
+      case 'IN_STOCK':
+        return 'В наличии';
+      case 'LOW_STOCK':
+        return 'Мало';
+      case 'OUT_OF_STOCK':
+        return 'Нет в наличии';
+      case 'EXPIRED':
+        return 'Просрочено';
+      case 'EMPTY':
+        return 'Пустой';
+      case 'FILLING':
+        return 'Заполняется';
+      case 'FULL':
+        return 'Полный';
+      case 'MAINTENANCE':
+        return 'Обслуживание';
+      default:
+        return status;
     }
   };
 
   const getOperationTypeText = (type: string) => {
     switch (type) {
-      case 'RECEIVE': return 'Приём';
-      case 'DISPATCH': return 'Отгрузка';
-      case 'TRANSFER': return 'Перемещение';
-      case 'ADJUSTMENT': return 'Корректировка';
-      default: return type;
+      case 'RECEIVE':
+        return 'Приём';
+      case 'DISPATCH':
+        return 'Отгрузка';
+      case 'TRANSFER':
+        return 'Перемещение';
+      case 'ADJUSTMENT':
+        return 'Корректировка';
+      default:
+        return type;
     }
   };
 
   const getOperationIcon = (type: string) => {
     switch (type) {
-      case 'RECEIVE': return <Package className="w-4 h-4 text-green-500" />;
-      case 'DISPATCH': return <Truck className="w-4 h-4 text-blue-500" />;
-      case 'TRANSFER': return <ArrowUpDown className="w-4 h-4 text-purple-500" />;
-      case 'ADJUSTMENT': return <Scale className="w-4 h-4 text-orange-500" />;
-      default: return <Package className="w-4 h-4" />;
+      case 'RECEIVE':
+        return <Package className="w-4 h-4 text-green-500" />;
+      case 'DISPATCH':
+        return <Truck className="w-4 h-4 text-blue-500" />;
+      case 'TRANSFER':
+        return <ArrowUpDown className="w-4 h-4 text-purple-500" />;
+      case 'ADJUSTMENT':
+        return <Scale className="w-4 h-4 text-orange-500" />;
+      default:
+        return <Package className="w-4 h-4" />;
     }
   };
 
   const filteredItems = items.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !selectedCategory || item.category === selectedCategory;
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      !selectedCategory || item.category === selectedCategory;
     const matchesStatus = !selectedStatus || item.status === selectedStatus;
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
   const filteredOperations = operations.filter(operation => {
-    const matchesSearch = operation.item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         operation.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      operation.item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      operation.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
@@ -310,7 +344,9 @@ export default function WarehousePage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Склад</h1>
-          <p className="text-gray-600">Управление складскими запасами и операциями</p>
+          <p className="text-gray-600">
+            Управление складскими запасами и операциями
+          </p>
         </div>
         <div className="flex gap-2">
           <button
@@ -385,7 +421,7 @@ export default function WarehousePage() {
                 type="text"
                 placeholder={`Поиск ${activeTab === 'inventory' ? 'товаров' : activeTab === 'operations' ? 'операций' : 'бункеров'}...`}
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -394,21 +430,25 @@ export default function WarehousePage() {
             <>
               <select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={e => setSelectedCategory(e.target.value)}
                 className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Все категории</option>
                 {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
                 ))}
               </select>
               <select
                 value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
+                onChange={e => setSelectedStatus(e.target.value)}
                 className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 {statusOptions.map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </select>
             </>
@@ -444,12 +484,16 @@ export default function WarehousePage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredItems.map((item) => (
+                {filteredItems.map(item => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{item.name}</div>
-                        <div className="text-sm text-gray-500">{item.location || 'Не указано'}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {item.name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {item.location || 'Не указано'}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -464,7 +508,9 @@ export default function WarehousePage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(item.status)}`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(item.status)}`}
+                      >
                         {getStatusText(item.status)}
                       </span>
                     </td>
@@ -491,14 +537,18 @@ export default function WarehousePage() {
         <div className="bg-white rounded-lg shadow-sm border">
           <div className="p-6">
             <div className="space-y-4">
-              {filteredOperations.map((operation) => (
-                <div key={operation.id} className="border-l-4 border-blue-500 pl-4 py-3">
+              {filteredOperations.map(operation => (
+                <div
+                  key={operation.id}
+                  className="border-l-4 border-blue-500 pl-4 py-3"
+                >
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         {getOperationIcon(operation.type)}
                         <span className="font-medium text-gray-900">
-                          {getOperationTypeText(operation.type)} - {operation.item.name}
+                          {getOperationTypeText(operation.type)} -{' '}
+                          {operation.item.name}
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 mb-1">
@@ -529,17 +579,26 @@ export default function WarehousePage() {
 
       {activeTab === 'bunkers' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {bunkers.map((bunker) => (
-            <div key={bunker.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+          {bunkers.map(bunker => (
+            <div
+              key={bunker.id}
+              className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
+            >
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{bunker.name}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {bunker.name}
+                    </h3>
                     {bunker.machine && (
-                      <p className="text-sm text-gray-500">{bunker.machine.name}</p>
+                      <p className="text-sm text-gray-500">
+                        {bunker.machine.name}
+                      </p>
                     )}
                   </div>
-                  <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(bunker.status)}`}>
+                  <span
+                    className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(bunker.status)}`}
+                  >
                     {getStatusText(bunker.status)}
                   </span>
                 </div>
@@ -548,12 +607,19 @@ export default function WarehousePage() {
                   <div>
                     <div className="flex justify-between text-sm text-gray-600 mb-1">
                       <span>Заполнение</span>
-                      <span>{Math.round((bunker.currentLevel / bunker.capacity) * 100)}%</span>
+                      <span>
+                        {Math.round(
+                          (bunker.currentLevel / bunker.capacity) * 100
+                        )}
+                        %
+                      </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
                         className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${(bunker.currentLevel / bunker.capacity) * 100}%` }}
+                        style={{
+                          width: `${(bunker.currentLevel / bunker.capacity) * 100}%`
+                        }}
                       ></div>
                     </div>
                     <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -571,7 +637,8 @@ export default function WarehousePage() {
 
                   {bunker.lastFilled && (
                     <div className="text-xs text-gray-500">
-                      Последнее заполнение: {new Date(bunker.lastFilled).toLocaleString('ru-RU')}
+                      Последнее заполнение:{' '}
+                      {new Date(bunker.lastFilled).toLocaleString('ru-RU')}
                     </div>
                   )}
                 </div>
@@ -595,7 +662,9 @@ export default function WarehousePage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Добавить новый товар</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Добавить новый товар
+              </h2>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -605,7 +674,9 @@ export default function WarehousePage() {
                   <input
                     type="text"
                     value={itemFormData.name}
-                    onChange={(e) => setItemFormData({ ...itemFormData, name: e.target.value })}
+                    onChange={e =>
+                      setItemFormData({ ...itemFormData, name: e.target.value })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -616,12 +687,19 @@ export default function WarehousePage() {
                   </label>
                   <select
                     value={itemFormData.category}
-                    onChange={(e) => setItemFormData({ ...itemFormData, category: e.target.value })}
+                    onChange={e =>
+                      setItemFormData({
+                        ...itemFormData,
+                        category: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Выберите категорию</option>
                     {categories.map(category => (
-                      <option key={category} value={category}>{category}</option>
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -633,7 +711,12 @@ export default function WarehousePage() {
                   <input
                     type="number"
                     value={itemFormData.quantity}
-                    onChange={(e) => setItemFormData({ ...itemFormData, quantity: parseFloat(e.target.value) })}
+                    onChange={e =>
+                      setItemFormData({
+                        ...itemFormData,
+                        quantity: parseFloat(e.target.value)
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -645,7 +728,9 @@ export default function WarehousePage() {
                   <input
                     type="text"
                     value={itemFormData.unit}
-                    onChange={(e) => setItemFormData({ ...itemFormData, unit: e.target.value })}
+                    onChange={e =>
+                      setItemFormData({ ...itemFormData, unit: e.target.value })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="шт, кг, л"
                   />
@@ -658,7 +743,12 @@ export default function WarehousePage() {
                   <input
                     type="number"
                     value={itemFormData.minQuantity}
-                    onChange={(e) => setItemFormData({ ...itemFormData, minQuantity: parseFloat(e.target.value) })}
+                    onChange={e =>
+                      setItemFormData({
+                        ...itemFormData,
+                        minQuantity: parseFloat(e.target.value)
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -670,7 +760,12 @@ export default function WarehousePage() {
                   <input
                     type="number"
                     value={itemFormData.maxQuantity}
-                    onChange={(e) => setItemFormData({ ...itemFormData, maxQuantity: parseFloat(e.target.value) })}
+                    onChange={e =>
+                      setItemFormData({
+                        ...itemFormData,
+                        maxQuantity: parseFloat(e.target.value)
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -683,7 +778,12 @@ export default function WarehousePage() {
                     type="number"
                     step="0.01"
                     value={itemFormData.costPerUnit}
-                    onChange={(e) => setItemFormData({ ...itemFormData, costPerUnit: parseFloat(e.target.value) })}
+                    onChange={e =>
+                      setItemFormData({
+                        ...itemFormData,
+                        costPerUnit: parseFloat(e.target.value)
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -695,7 +795,12 @@ export default function WarehousePage() {
                   <input
                     type="text"
                     value={itemFormData.supplier}
-                    onChange={(e) => setItemFormData({ ...itemFormData, supplier: e.target.value })}
+                    onChange={e =>
+                      setItemFormData({
+                        ...itemFormData,
+                        supplier: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -707,7 +812,12 @@ export default function WarehousePage() {
                   <input
                     type="text"
                     value={itemFormData.location}
-                    onChange={(e) => setItemFormData({ ...itemFormData, location: e.target.value })}
+                    onChange={e =>
+                      setItemFormData({
+                        ...itemFormData,
+                        location: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Стеллаж А1, Полка 3"
                   />
@@ -720,7 +830,12 @@ export default function WarehousePage() {
                   <input
                     type="date"
                     value={itemFormData.expiryDate}
-                    onChange={(e) => setItemFormData({ ...itemFormData, expiryDate: e.target.value })}
+                    onChange={e =>
+                      setItemFormData({
+                        ...itemFormData,
+                        expiryDate: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -753,7 +868,9 @@ export default function WarehousePage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Новая складская операция</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Новая складская операция
+              </h2>
 
               <div className="space-y-4">
                 <div>
@@ -762,11 +879,18 @@ export default function WarehousePage() {
                   </label>
                   <select
                     value={operationFormData.type}
-                    onChange={(e) => setOperationFormData({ ...operationFormData, type: e.target.value as any })}
+                    onChange={e =>
+                      setOperationFormData({
+                        ...operationFormData,
+                        type: e.target.value as any
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     {operationTypes.map(type => (
-                      <option key={type.value} value={type.value}>{type.label}</option>
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -777,12 +901,19 @@ export default function WarehousePage() {
                   </label>
                   <select
                     value={operationFormData.itemId}
-                    onChange={(e) => setOperationFormData({ ...operationFormData, itemId: parseInt(e.target.value) })}
+                    onChange={e =>
+                      setOperationFormData({
+                        ...operationFormData,
+                        itemId: parseInt(e.target.value)
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value={0}>Выберите товар</option>
                     {items.map(item => (
-                      <option key={item.id} value={item.id}>{item.name}</option>
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -794,7 +925,12 @@ export default function WarehousePage() {
                   <input
                     type="number"
                     value={operationFormData.quantity}
-                    onChange={(e) => setOperationFormData({ ...operationFormData, quantity: parseFloat(e.target.value) })}
+                    onChange={e =>
+                      setOperationFormData({
+                        ...operationFormData,
+                        quantity: parseFloat(e.target.value)
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -807,7 +943,12 @@ export default function WarehousePage() {
                     type="number"
                     step="0.01"
                     value={operationFormData.weight}
-                    onChange={(e) => setOperationFormData({ ...operationFormData, weight: parseFloat(e.target.value) })}
+                    onChange={e =>
+                      setOperationFormData({
+                        ...operationFormData,
+                        weight: parseFloat(e.target.value)
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -818,7 +959,12 @@ export default function WarehousePage() {
                   </label>
                   <textarea
                     value={operationFormData.description}
-                    onChange={(e) => setOperationFormData({ ...operationFormData, description: e.target.value })}
+                    onChange={e =>
+                      setOperationFormData({
+                        ...operationFormData,
+                        description: e.target.value
+                      })
+                    }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Описание операции..."

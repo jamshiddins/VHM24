@@ -24,11 +24,11 @@ router.get('/:id', async (req, res) => {
     const ingredient = await prisma.inventoryItem.findUnique({
       where: { id: req.params.id }
     });
-    
+
     if (!ingredient) {
       return res.status(404).json({ error: 'Ингредиент не найден' });
     }
-    
+
     res.json(ingredient);
   } catch (error) {
     console.error('Ошибка получения ингредиента:', error);

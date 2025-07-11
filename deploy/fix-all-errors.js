@@ -8,10 +8,10 @@ try {
   logger = require('./utils/logger');
 } catch (error) {
   logger = {
-    info: (message) => console.log(message),
-    error: (message) => console.error('\x1b[31m%s\x1b[0m', message),
-    warn: (message) => console.warn('\x1b[33m%s\x1b[0m', message),
-    success: (message) => console.log('\x1b[32m%s\x1b[0m', message)
+    info: message => console.log(message),
+    error: message => console.error('\x1b[31m%s\x1b[0m', message),
+    warn: message => console.warn('\x1b[33m%s\x1b[0m', message),
+    success: message => console.log('\x1b[32m%s\x1b[0m', message)
   };
 }
 
@@ -47,12 +47,13 @@ async function runFullErrorFixingProcess() {
 
     // 5. Финальное сообщение
     logger.info('\n🎉 Процесс исправления ошибок успешно завершен!');
-    logger.info('Проверьте следующие файлы для получения подробной информации:');
+    logger.info(
+      'Проверьте следующие файлы для получения подробной информации:'
+    );
     logger.info('- analysis-report.json - отчет анализа');
     logger.info('- fix-report.json - отчет исправлений');
     logger.info('- test-report.json - отчет тестирования');
     logger.info('- VHM24_ERROR_FIXING_SYSTEM_REPORT.md - итоговый отчет');
-
   } catch (error) {
     logger.error(`\n❌ Критическая ошибка: ${error.message}`);
     if (error.stack) {
@@ -72,10 +73,14 @@ function checkRequiredFiles() {
     'scripts/test-after-fixes.js'
   ];
 
-  const missingFiles = requiredFiles.filter(file => !fs.existsSync(path.join(__dirname, file)));
-  
+  const missingFiles = requiredFiles.filter(
+    file => !fs.existsSync(path.join(__dirname, file))
+  );
+
   if (missingFiles.length > 0) {
-    throw new Error(`Отсутствуют необходимые файлы: ${missingFiles.join(', ')}`);
+    throw new Error(
+      `Отсутствуют необходимые файлы: ${missingFiles.join(', ')}`
+    );
   }
 }
 
@@ -85,29 +90,35 @@ function checkRequiredFiles() {
 async function runAnalysis() {
   return new Promise((resolve, reject) => {
     const analyzerPath = path.join(__dirname, 'scripts/project-analyzer.js');
-    
+
     try {
       logger.info('Запуск анализатора проекта...');
-      
+
       const analyzer = spawn('node', [analyzerPath], {
         stdio: 'inherit',
         cwd: process.cwd()
       });
-      
-      analyzer.on('close', (code) => {
+
+      analyzer.on('close', code => {
         if (code === 0) {
           logger.success('Анализ проекта успешно завершен');
           resolve();
         } else {
-          reject(new Error(`Анализатор проекта завершился с кодом ошибки: ${code}`));
+          reject(
+            new Error(`Анализатор проекта завершился с кодом ошибки: ${code}`)
+          );
         }
       });
-      
-      analyzer.on('error', (error) => {
-        reject(new Error(`Ошибка при запуске анализатора проекта: ${error.message}`));
+
+      analyzer.on('error', error => {
+        reject(
+          new Error(`Ошибка при запуске анализатора проекта: ${error.message}`)
+        );
       });
     } catch (error) {
-      reject(new Error(`Ошибка при запуске анализатора проекта: ${error.message}`));
+      reject(
+        new Error(`Ошибка при запуске анализатора проекта: ${error.message}`)
+      );
     }
   });
 }
@@ -118,29 +129,41 @@ async function runAnalysis() {
 async function runFixer() {
   return new Promise((resolve, reject) => {
     const fixerPath = path.join(__dirname, 'scripts/auto-fixer.js');
-    
+
     try {
       logger.info('Запуск автоматического фиксера...');
-      
+
       const fixer = spawn('node', [fixerPath], {
         stdio: 'inherit',
         cwd: process.cwd()
       });
-      
-      fixer.on('close', (code) => {
+
+      fixer.on('close', code => {
         if (code === 0) {
           logger.success('Исправление ошибок успешно завершено');
           resolve();
         } else {
-          reject(new Error(`Автоматический фиксер завершился с кодом ошибки: ${code}`));
+          reject(
+            new Error(
+              `Автоматический фиксер завершился с кодом ошибки: ${code}`
+            )
+          );
         }
       });
-      
-      fixer.on('error', (error) => {
-        reject(new Error(`Ошибка при запуске автоматического фиксера: ${error.message}`));
+
+      fixer.on('error', error => {
+        reject(
+          new Error(
+            `Ошибка при запуске автоматического фиксера: ${error.message}`
+          )
+        );
       });
     } catch (error) {
-      reject(new Error(`Ошибка при запуске автоматического фиксера: ${error.message}`));
+      reject(
+        new Error(
+          `Ошибка при запуске автоматического фиксера: ${error.message}`
+        )
+      );
     }
   });
 }
@@ -151,27 +174,29 @@ async function runFixer() {
 async function runTests() {
   return new Promise((resolve, reject) => {
     const testerPath = path.join(__dirname, 'scripts/test-after-fixes.js');
-    
+
     try {
       logger.info('Запуск тестирования после исправлений...');
-      
+
       const tester = spawn('node', [testerPath], {
         stdio: 'inherit',
         cwd: process.cwd()
       });
-      
-      tester.on('close', (code) => {
+
+      tester.on('close', code => {
         if (code === 0) {
           logger.success('Тестирование успешно завершено');
           resolve();
         } else {
           logger.warn(`Тестирование завершилось с кодом: ${code}`);
-          logger.warn('Некоторые тесты могли не пройти, но процесс продолжается');
+          logger.warn(
+            'Некоторые тесты могли не пройти, но процесс продолжается'
+          );
           resolve();
         }
       });
-      
-      tester.on('error', (error) => {
+
+      tester.on('error', error => {
         reject(new Error(`Ошибка при запуске тестирования: ${error.message}`));
       });
     } catch (error) {
@@ -189,25 +214,27 @@ function generateFinalReport() {
     let analysisReport = {};
     let fixReport = {};
     let testReport = {};
-    
+
     try {
-      analysisReport = JSON.parse(fs.readFileSync('analysis-report.json', 'utf8'));
+      analysisReport = JSON.parse(
+        fs.readFileSync('analysis-report.json', 'utf8')
+      );
     } catch (error) {
       logger.warn(`Не удалось загрузить отчет анализа: ${error.message}`);
     }
-    
+
     try {
       fixReport = JSON.parse(fs.readFileSync('fix-report.json', 'utf8'));
     } catch (error) {
       logger.warn(`Не удалось загрузить отчет исправлений: ${error.message}`);
     }
-    
+
     try {
       testReport = JSON.parse(fs.readFileSync('test-report.json', 'utf8'));
     } catch (error) {
       logger.warn(`Не удалось загрузить отчет тестирования: ${error.message}`);
     }
-    
+
     // Создаем итоговый отчет в формате Markdown
     const finalReport = `# VHM24 - Отчет о исправлении ошибок
 
@@ -220,51 +247,68 @@ function generateFinalReport() {
 ## 📈 Статистика
 
 ### Анализ проекта
-${analysisReport.stats ? `
+${
+  analysisReport.stats
+    ? `
 - **Проанализировано файлов**: ${analysisReport.stats.filesAnalyzed || 0}
 - **Найдено проблем**: ${analysisReport.stats.totalIssues || 0}
   - Критических: ${analysisReport.summary?.critical || 0}
   - Высокого приоритета: ${analysisReport.summary?.high || 0}
   - Среднего приоритета: ${analysisReport.summary?.medium || 0}
   - Низкого приоритета: ${analysisReport.summary?.low || 0}
-` : '- Данные отсутствуют'}
+`
+    : '- Данные отсутствуют'
+}
 
 ### Исправление ошибок
-${fixReport.summary ? `
+${
+  fixReport.summary
+    ? `
 - **Исправлено проблем**: ${fixReport.summary.totalFixed || 0}
 - **Не удалось исправить**: ${fixReport.summary.totalFailed || 0}
 - **Процент успеха**: ${fixReport.summary.successRate || 0}%
-` : '- Данные отсутствуют'}
+`
+    : '- Данные отсутствуют'
+}
 
 ### Тестирование
-${testReport.summary ? `
+${
+  testReport.summary
+    ? `
 - **Пройдено тестов**: ${testReport.summary.passed || 0}
 - **Не пройдено тестов**: ${testReport.summary.failed || 0}
 - **Процент успеха**: ${testReport.summary.successRate || 0}%
-` : '- Данные отсутствуют'}
+`
+    : '- Данные отсутствуют'
+}
 
 ## 🔍 Подробная информация
 
 ### Критические проблемы
-${analysisReport.issues?.critical?.length > 0 ? 
-  analysisReport.issues.critical.map((issue, index) => 
-    `${index + 1}. **${issue.issue}**${issue.file ? `\n   - Файл: \`${issue.file}\`` : ''}${issue.fix ? `\n   - Исправление: \`${issue.fix}\`` : ''}`
-  ).join('\n\n') : 
-  '- Критические проблемы не обнаружены'}
+${
+  analysisReport.issues?.critical?.length > 0
+    ? analysisReport.issues.critical
+        .map(
+          (issue, index) =>
+            `${index + 1}. **${issue.issue}**${issue.file ? `\n   - Файл: \`${issue.file}\`` : ''}${issue.fix ? `\n   - Исправление: \`${issue.fix}\`` : ''}`
+        )
+        .join('\n\n')
+    : '- Критические проблемы не обнаружены'
+}
 
 ### Исправленные проблемы
-${fixReport.fixed?.length > 0 ? 
-  fixReport.fixed.map((fix, index) => 
-    `${index + 1}. ${fix}`
-  ).join('\n') : 
-  '- Нет исправленных проблем'}
+${
+  fixReport.fixed?.length > 0
+    ? fixReport.fixed.map((fix, index) => `${index + 1}. ${fix}`).join('\n')
+    : '- Нет исправленных проблем'
+}
 
 ### Неисправленные проблемы
-${fixReport.failed?.length > 0 ? 
-  fixReport.failed.map((fail, index) => 
-    `${index + 1}. ${fail}`
-  ).join('\n') : 
-  '- Нет неисправленных проблем'}
+${
+  fixReport.failed?.length > 0
+    ? fixReport.failed.map((fail, index) => `${index + 1}. ${fail}`).join('\n')
+    : '- Нет неисправленных проблем'
+}
 
 ## 🚀 Рекомендации
 
@@ -281,11 +325,12 @@ ${fixReport.failed?.length > 0 ?
 
 *Отчет сгенерирован автоматически системой исправления ошибок VHM24*
 `;
-    
+
     // Сохраняем итоговый отчет
     fs.writeFileSync('VHM24_ERROR_FIXING_SYSTEM_REPORT.md', finalReport);
-    logger.info('Итоговый отчет сохранен в файл VHM24_ERROR_FIXING_SYSTEM_REPORT.md');
-    
+    logger.info(
+      'Итоговый отчет сохранен в файл VHM24_ERROR_FIXING_SYSTEM_REPORT.md'
+    );
   } catch (error) {
     logger.error(`Ошибка при генерации итогового отчета: ${error.message}`);
     throw error;

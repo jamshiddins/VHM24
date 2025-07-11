@@ -2,9 +2,9 @@
 
 /**
  * VHM24 - Настройка системы исправления ошибок
- * 
+ *
  * Этот скрипт устанавливает необходимые зависимости и настраивает систему исправления ошибок.
- * 
+ *
  * Использование:
  * node setup-error-fixing-system.js
  */
@@ -41,25 +41,22 @@ function ensureDirectoryExists(dir) {
 // Функция для настройки системы
 async function setupSystem() {
   log('\n🚀 VHM24 - НАСТРОЙКА СИСТЕМЫ ИСПРАВЛЕНИЯ ОШИБОК 🚀\n', 'bright');
-  
+
   try {
     // 1. Проверка наличия необходимых директорий
     log('📁 Проверка структуры директорий...', 'cyan');
-    
-    const requiredDirs = [
-      'scripts',
-      'packages/shared/logger'
-    ];
-    
+
+    const requiredDirs = ['scripts', 'packages/shared/logger'];
+
     requiredDirs.forEach(dir => {
       ensureDirectoryExists(dir);
     });
-    
+
     log('✅ Структура директорий проверена', 'green');
-    
+
     // 2. Проверка наличия необходимых файлов
     log('\n📄 Проверка наличия необходимых файлов...', 'cyan');
-    
+
     const requiredFiles = [
       'scripts/project-analyzer.js',
       'scripts/auto-fixer.js',
@@ -67,20 +64,20 @@ async function setupSystem() {
       'fix-all-errors.js',
       'packages/shared/logger/index.js'
     ];
-    
+
     const missingFiles = requiredFiles.filter(file => !fs.existsSync(file));
-    
+
     if (missingFiles.length > 0) {
       log('❌ Отсутствуют следующие файлы:', 'red');
       missingFiles.forEach(file => log(`  - ${file}`, 'red'));
       throw new Error('Отсутствуют необходимые файлы');
     }
-    
+
     log('✅ Все необходимые файлы присутствуют', 'green');
-    
+
     // 3. Установка зависимостей
     log('\n📦 Установка зависимостей...', 'cyan');
-    
+
     const dependencies = [
       'glob@10.3.10',
       'node-fetch@3.3.2',
@@ -89,7 +86,7 @@ async function setupSystem() {
       'fastify@4.24.0',
       '@fastify/jwt@7.2.4'
     ];
-    
+
     try {
       log('Установка глобальных зависимостей...', 'blue');
       execSync(`npm install ${dependencies.join(' ')}`, { stdio: 'inherit' });
@@ -97,7 +94,7 @@ async function setupSystem() {
     } catch (e) {
       log('⚠️ Не удалось установить глобальные зависимости', 'yellow');
       log('Попытка установки локальных зависимостей...', 'blue');
-      
+
       // Создаем package.json если его нет
       if (!fs.existsSync('package.json')) {
         const packageJson = {
@@ -106,29 +103,31 @@ async function setupSystem() {
           description: 'Система исправления ошибок для проекта VHM24',
           main: 'fix-all-errors.js',
           scripts: {
-            'analyze': 'node scripts/project-analyzer.js',
-            'fix': 'node scripts/auto-fixer.js',
+            analyze: 'node scripts/project-analyzer.js',
+            fix: 'node scripts/auto-fixer.js',
             'test-fixes': 'node scripts/test-after-fixes.js',
             'fix-all': 'node fix-all-errors.js',
-            'setup': 'node setup-error-fixing-system.js'
+            setup: 'node setup-error-fixing-system.js'
           },
           dependencies: {},
           author: 'VHM24 Team',
           license: 'MIT'
         };
-        
+
         fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
         log('✅ Создан package.json', 'green');
       }
-      
+
       // Устанавливаем зависимости локально
-      execSync(`npm install --save ${dependencies.join(' ')}`, { stdio: 'inherit' });
+      execSync(`npm install --save ${dependencies.join(' ')}`, {
+        stdio: 'inherit'
+      });
       log('✅ Локальные зависимости установлены', 'green');
     }
-    
+
     // 4. Создание .env файла если его нет
     log('\n🔧 Настройка переменных окружения...', 'cyan');
-    
+
     if (!fs.existsSync('.env')) {
       const envContent = `# Переменные окружения для VHM24
 NODE_ENV=development
@@ -139,16 +138,16 @@ PORT=3000
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/vhm24
 REDIS_URL=redis://localhost:6379
 `;
-      
+
       fs.writeFileSync('.env', envContent);
       log('✅ Создан файл .env с настройками по умолчанию', 'green');
     } else {
       log('✅ Файл .env уже существует', 'green');
     }
-    
+
     // 5. Создание чеклиста
     log('\n📋 Создание чеклиста...', 'cyan');
-    
+
     const checklistContent = `# VHM24 Fix Checklist
 
 ## 1. Анализ
@@ -182,13 +181,13 @@ REDIS_URL=redis://localhost:6379
 - [ ] API документация создана
 - [ ] Deployment guide написан
 `;
-    
+
     fs.writeFileSync('VHM24_FIX_CHECKLIST.md', checklistContent);
     log('✅ Создан чеклист VHM24_FIX_CHECKLIST.md', 'green');
-    
+
     // 6. Создание краткого руководства
     log('\n📚 Создание краткого руководства...', 'cyan');
-    
+
     const quickStartContent = `# VHM24 - Краткое руководство по исправлению ошибок
 
 ## Установка
@@ -231,17 +230,25 @@ node scripts/test-after-fixes.js
 
 Используйте \`VHM24_FIX_CHECKLIST.md\` для отслеживания прогресса.
 `;
-    
+
     fs.writeFileSync('QUICK_START_ERROR_FIXING.md', quickStartContent);
     log('✅ Создано краткое руководство QUICK_START_ERROR_FIXING.md', 'green');
-    
+
     // Завершение
-    log('\n🎉 НАСТРОЙКА СИСТЕМЫ ИСПРАВЛЕНИЯ ОШИБОК ЗАВЕРШЕНА УСПЕШНО!', 'bright');
-    log('📋 Для начала работы используйте команду: node fix-all-errors.js', 'green');
-    
+    log(
+      '\n🎉 НАСТРОЙКА СИСТЕМЫ ИСПРАВЛЕНИЯ ОШИБОК ЗАВЕРШЕНА УСПЕШНО!',
+      'bright'
+    );
+    log(
+      '📋 Для начала работы используйте команду: node fix-all-errors.js',
+      'green'
+    );
   } catch (error) {
     log(`\n❌ Критическая ошибка: ${error.message}`, 'red');
-    log('Проверьте логи выше для получения дополнительной информации', 'yellow');
+    log(
+      'Проверьте логи выше для получения дополнительной информации',
+      'yellow'
+    );
     process.exit(1);
   }
 }

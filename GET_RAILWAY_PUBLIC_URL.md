@@ -1,8 +1,9 @@
 # Как получить публичный DATABASE_URL из Railway
 
-## Важно! 
-URL вида `postgres.railway.internal` работает только внутри Railway контейнеров.
-Для локальной разработки нужен публичный URL.
+## Важно!
+
+URL вида `postgres.railway.internal` работает только внутри Railway контейнеров. Для локальной
+разработки нужен публичный URL.
 
 ## Шаги:
 
@@ -19,9 +20,11 @@ URL вида `postgres.railway.internal` работает только внут�
 
 6. **Скопируйте PUBLIC DATABASE_URL**
    - Он должен выглядеть примерно так:
+
    ```
    postgresql://postgres:PASSWORD@HOST.proxy.rlwy.net:PORT/railway
    ```
+
    - Где HOST обычно что-то вроде: roundhouse, monorail, viaduct и т.д.
 
 ## Альтернативный способ:
@@ -53,9 +56,13 @@ cd packages/database && npx prisma db pull
 ## Для production в Railway:
 
 Используйте внутренний URL в переменных Railway:
+
 ```
 DATABASE_URL=${{Postgres.DATABASE_URL}}
 ```
+
 или
+
 ```
 DATABASE_URL=postgresql://postgres:PASSWORD@postgres.railway.internal:5432/railway
+```

@@ -50,11 +50,11 @@ router.get('/:id', async (req, res) => {
         }
       }
     });
-    
+
     if (!machine) {
       return res.status(404).json({ error: 'Машина не найдена' });
     }
-    
+
     res.json(machine);
   } catch (error) {
     console.error('Ошибка получения машины:', error);

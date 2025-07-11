@@ -17,7 +17,7 @@
 // Вход в систему
 fastify.post('/api/v1/auth/login', async (request, reply) => {
   const { telegramId, username } = request.body;
-  
+
   try {
     // Поддержка входа только через Telegram
     if (!telegramId && !username) {
@@ -28,7 +28,7 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
     }
 
     let where = {};
-    
+
     if (telegramId) {
       // Валидация Telegram ID
       if (!validateTelegramId(telegramId)) {
@@ -65,7 +65,8 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
 
 ### 1.2. Обновление обработчика регистрации в Telegram-боте
 
-В файле `services/telegram-bot/src/handlers/registrationHandler.js` были внесены следующие изменения:
+В файле `services/telegram-bot/src/handlers/registrationHandler.js` были внесены следующие
+изменения:
 
 - Упрощен процесс регистрации (удален шаг с вводом пароля)
 - Добавлено сохранение `telegramUsername` при регистрации
@@ -105,13 +106,14 @@ const apiData = {
 Ключевые изменения:
 
 ```javascript
-await bot.sendMessage(chatId, 
+await bot.sendMessage(
+  chatId,
   `🎉 Добро пожаловать в *VHM24 - VendHub Manager 24/7*!\n\n` +
-  `⏰ Система работает круглосуточно без выходных\n\n` +
-  `👤 ${response.data.user.name}\n` +
-  `🆔 Telegram: @${response.data.user.telegramUsername || username}\n` +
-  `🔑 Роли: ${response.data.user.roles.join(', ')}\n\n` +
-  `Используйте /help для просмотра доступных команд.`,
+    `⏰ Система работает круглосуточно без выходных\n\n` +
+    `👤 ${response.data.user.name}\n` +
+    `🆔 Telegram: @${response.data.user.telegramUsername || username}\n` +
+    `🔑 Роли: ${response.data.user.roles.join(', ')}\n\n` +
+    `Используйте /help для просмотра доступных команд.`,
   { parse_mode: 'Markdown' }
 );
 ```
@@ -147,7 +149,9 @@ CREATE UNIQUE INDEX "User_telegramUsername_key" ON "User"("telegramUsername");
 
 ## 2. Заглушки для сложных интеграций
 
-Проверено наличие заглушек для интеграций с внешними системами. Например, в коде уже есть заглушки для интеграции с 1С, которые возвращают статические данные. Это позволяет сохранить возможность подключения реальных интеграций в будущем.
+Проверено наличие заглушек для интеграций с внешними системами. Например, в коде уже есть заглушки
+для интеграции с 1С, которые возвращают статические данные. Это позволяет сохранить возможность
+подключения реальных интеграций в будущем.
 
 ## 3. Отложенные QR-коды и поддержка штрих-кодов
 
@@ -155,16 +159,17 @@ CREATE UNIQUE INDEX "User_telegramUsername_key" ON "User"("telegramUsername");
 
 ```javascript
 // Обычная обработка фото
-if (!await checkAuth(bot, msg)) return;
+if (!(await checkAuth(bot, msg))) return;
 
-await bot.sendMessage(msg.chat.id, 
-  '📸 QR code scanning is under development.\n' +
-  'Please use /machines command to access machines.'
+await bot.sendMessage(
+  msg.chat.id,
+  '📸 QR code scanning is under development.\n' + 'Please use /machines command to access machines.'
 );
 return;
 ```
 
-В плане разработки мобильной версии предусмотрена реализация QR-кодов и штрих-кодов в будущих версиях:
+В плане разработки мобильной версии предусмотрена реализация QR-кодов и штрих-кодов в будущих
+версиях:
 
 ```markdown
 ## Будущие улучшения (Фаза 2)
@@ -174,36 +179,42 @@ return;
 
 ## 4. Ручной ввод данных
 
-Проверено наличие функциональности для ручного ввода данных о пополнении запасов и других операциях. В сервисе `inventory` есть API endpoint для движения товаров:
+Проверено наличие функциональности для ручного ввода данных о пополнении запасов и других операциях.
+В сервисе `inventory` есть API endpoint для движения товаров:
 
 ```javascript
 // Движение товара (приход/расход)
-fastify.post('/api/v1/inventory/stock-movement', {
-  preValidation: [fastify.authenticate],
-  schema: {
-    body: {
-      type: 'object',
-      required: ['itemId', 'type', 'quantity', 'reason'],
-      properties: {
-        itemId: { type: 'string' },
-        type: { type: 'string', enum: ['IN', 'OUT', 'ADJUSTMENT', 'TRANSFER'] },
-        quantity: { type: 'number', minimum: 0.01 },
-        reason: { type: 'string', minLength: 1 },
-        reference: { type: 'string' },
-        fromLocation: { type: 'string' },
-        toLocation: { type: 'string' },
-        machineId: { type: 'string' }
+fastify.post(
+  '/api/v1/inventory/stock-movement',
+  {
+    preValidation: [fastify.authenticate],
+    schema: {
+      body: {
+        type: 'object',
+        required: ['itemId', 'type', 'quantity', 'reason'],
+        properties: {
+          itemId: { type: 'string' },
+          type: { type: 'string', enum: ['IN', 'OUT', 'ADJUSTMENT', 'TRANSFER'] },
+          quantity: { type: 'number', minimum: 0.01 },
+          reason: { type: 'string', minLength: 1 },
+          reference: { type: 'string' },
+          fromLocation: { type: 'string' },
+          toLocation: { type: 'string' },
+          machineId: { type: 'string' }
+        }
       }
     }
+  },
+  async (request, reply) => {
+    // ... реализация ...
   }
-}, async (request, reply) => {
-  // ... реализация ...
-});
+);
 ```
 
 ## 5. Мобильная версия приложения
 
-Создан детальный план разработки мобильной версии приложения в файле `MOBILE_APP_PLAN.md`. План включает:
+Создан детальный план разработки мобильной версии приложения в файле `MOBILE_APP_PLAN.md`. План
+включает:
 
 - Технический стек (React Native)
 - Основные функции
@@ -238,26 +249,28 @@ npm error response status 403 Forbidden on https://skia-canvas.s3.us-east-1.amaz
 ```
 
 Для решения этой проблемы в будущем рекомендуется:
+
 1. Обновить зависимости постепенно, по одной
 2. Исключить проблемные пакеты из обновления
 3. Рассмотреть возможность замены пакета `skia-canvas` на альтернативный
 
 ## 7. Автоматическое резервное копирование
 
-Проверено наличие сервиса резервного копирования (`services/backup/src/index.js`). Сервис настроен на автоматическое резервное копирование базы данных с ротацией:
+Проверено наличие сервиса резервного копирования (`services/backup/src/index.js`). Сервис настроен
+на автоматическое резервное копирование базы данных с ротацией:
 
 ```javascript
 // Настройка расписания автоматических бэкапов
 if (process.env.BACKUP_ENABLED === 'true') {
   const schedule = process.env.BACKUP_SCHEDULE || '0 2 * * *'; // По умолчанию в 2 ночи
-  
+
   cron.schedule(schedule, async () => {
     fastify.log.info('Starting scheduled backup...');
-    
+
     try {
       const dbBackup = await createDatabaseBackup();
       const filesBackup = await createFilesBackup();
-      
+
       fastify.log.info('Scheduled backup completed successfully', {
         database: dbBackup,
         files: filesBackup
@@ -266,7 +279,7 @@ if (process.env.BACKUP_ENABLED === 'true') {
       fastify.log.error('Scheduled backup failed:', error);
     }
   });
-  
+
   fastify.log.info(`Backup schedule configured: ${schedule}`);
 }
 ```
@@ -279,14 +292,14 @@ async function cleanupOldBackups(backupDir) {
   const retentionDays = parseInt(process.env.BACKUP_RETENTION_DAYS) || 30;
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
-  
+
   try {
     const files = await fs.readdir(backupDir);
-    
+
     for (const file of files) {
       const filePath = path.join(backupDir, file);
       const stats = await fs.stat(filePath);
-      
+
       if (stats.mtime < cutoffDate) {
         await fs.unlink(filePath);
         fastify.log.info(`Deleted old backup: ${file}`);
@@ -308,10 +321,10 @@ fastify.get('/health', async (request, reply) => {
   try {
     // Проверяем соединение с базой данных
     await prisma.$queryRaw`SELECT 1`;
-    
-    return { 
-      status: 'ok', 
-      service: 'auth', 
+
+    return {
+      status: 'ok',
+      service: 'auth',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       version: process.env.npm_package_version || '1.0.0',
@@ -319,8 +332,8 @@ fastify.get('/health', async (request, reply) => {
     };
   } catch (error) {
     fastify.log.error('Health check failed:', error);
-    return reply.code(503).send({ 
-      status: 'error', 
+    return reply.code(503).send({
+      status: 'error',
       service: 'auth',
       timestamp: new Date().toISOString(),
       error: 'Database connection failed'
@@ -337,7 +350,7 @@ fastify.get('/health', async (request, reply) => {
   try {
     // Проверяем соединение с базой данных
     await prisma.$queryRaw`SELECT 1`;
-    
+
     // Проверяем соединение с Redis
     let redisStatus = 'disconnected';
     try {
@@ -348,10 +361,10 @@ fastify.get('/health', async (request, reply) => {
     } catch (redisError) {
       logger.error('Redis health check failed:', redisError);
     }
-    
-    return { 
-      status: 'ok', 
-      service: 'machines', 
+
+    return {
+      status: 'ok',
+      service: 'machines',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       version: process.env.npm_package_version || '1.0.0',
@@ -360,8 +373,8 @@ fastify.get('/health', async (request, reply) => {
     };
   } catch (error) {
     logger.error('Health check failed:', error);
-    return reply.code(503).send({ 
-      status: 'error', 
+    return reply.code(503).send({
+      status: 'error',
       service: 'machines',
       timestamp: new Date().toISOString(),
       error: 'Database connection failed'
@@ -466,4 +479,6 @@ BACKUP_S3_BUCKET=vhm24-backups
 
 ## Заключение
 
-Все поставленные задачи выполнены успешно. Система готова к деплою на Railway и DigitalOcean. Упрощена регистрация и аутентификация, настроено автоматическое резервное копирование, добавлены health check endpoints для всех микросервисов. Создан план разработки мобильной версии приложения.
+Все поставленные задачи выполнены успешно. Система готова к деплою на Railway и DigitalOcean.
+Упрощена регистрация и аутентификация, настроено автоматическое резервное копирование, добавлены
+health check endpoints для всех микросервисов. Создан план разработки мобильной версии приложения.

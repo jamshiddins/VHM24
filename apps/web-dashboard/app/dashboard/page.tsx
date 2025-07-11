@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  ChartBarIcon, 
-  CogIcon, 
+import {
+  ChartBarIcon,
+  CogIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
@@ -51,10 +51,11 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-        : 'http://localhost:8000';
-        
+      const baseUrl =
+        process.env.NODE_ENV === 'production'
+          ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+          : 'http://localhost:8000';
+
       const [statsResponse, machinesResponse] = await Promise.all([
         fetch(`${baseUrl}/api/v1/dashboard/stats`),
         fetch(`${baseUrl}/api/v1/machines?take=10`)
@@ -80,21 +81,31 @@ export default function Dashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ONLINE': return 'text-green-600 bg-green-100';
-      case 'OFFLINE': return 'text-gray-600 bg-gray-100';
-      case 'MAINTENANCE': return 'text-yellow-600 bg-yellow-100';
-      case 'ERROR': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'ONLINE':
+        return 'text-green-600 bg-green-100';
+      case 'OFFLINE':
+        return 'text-gray-600 bg-gray-100';
+      case 'MAINTENANCE':
+        return 'text-yellow-600 bg-yellow-100';
+      case 'ERROR':
+        return 'text-red-600 bg-red-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'ONLINE': return <CheckCircleIcon className="h-5 w-5" />;
-      case 'OFFLINE': return <ClockIcon className="h-5 w-5" />;
-      case 'MAINTENANCE': return <CogIcon className="h-5 w-5" />;
-      case 'ERROR': return <ExclamationTriangleIcon className="h-5 w-5" />;
-      default: return <ClockIcon className="h-5 w-5" />;
+      case 'ONLINE':
+        return <CheckCircleIcon className="h-5 w-5" />;
+      case 'OFFLINE':
+        return <ClockIcon className="h-5 w-5" />;
+      case 'MAINTENANCE':
+        return <CogIcon className="h-5 w-5" />;
+      case 'ERROR':
+        return <ExclamationTriangleIcon className="h-5 w-5" />;
+      default:
+        return <ClockIcon className="h-5 w-5" />;
     }
   };
 
@@ -111,9 +122,11 @@ export default function Dashboard() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <ExclamationTriangleIcon className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Ошибка загрузки</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Ошибка загрузки
+          </h2>
           <p className="text-gray-600 mb-4">{error}</p>
-          <button 
+          <button
             onClick={fetchDashboardData}
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
           >
@@ -164,7 +177,12 @@ export default function Dashboard() {
             <div className="bg-gray-50 px-5 py-3">
               <div className="text-sm">
                 <span className="font-medium text-green-600">
-                  {stats?.totalMachines ? Math.round((stats.onlineMachines / stats.totalMachines) * 100) : 0}%
+                  {stats?.totalMachines
+                    ? Math.round(
+                        (stats.onlineMachines / stats.totalMachines) * 100
+                      )
+                    : 0}
+                  %
                 </span>
                 <span className="text-gray-500"> работают</span>
               </div>
@@ -267,13 +285,15 @@ export default function Dashboard() {
             </p>
           </div>
           <ul className="divide-y divide-gray-200">
-            {machines.map((machine) => (
+            {machines.map(machine => (
               <li key={machine.id}>
                 <div className="px-4 py-4 sm:px-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="flex-shrink-0">
-                        <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(machine.status)}`}>
+                        <div
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(machine.status)}`}
+                        >
                           {getStatusIcon(machine.status)}
                           <span className="ml-1">{machine.status}</span>
                         </div>
@@ -292,10 +312,9 @@ export default function Dashboard() {
                         {machine.location?.name || 'Не указано'}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {machine.lastPing ? 
-                          `Последний пинг: ${new Date(machine.lastPing).toLocaleTimeString()}` :
-                          'Нет данных'
-                        }
+                        {machine.lastPing
+                          ? `Последний пинг: ${new Date(machine.lastPing).toLocaleTimeString()}`
+                          : 'Нет данных'}
                       </div>
                     </div>
                   </div>
@@ -308,7 +327,7 @@ export default function Dashboard() {
               <button className="text-sm text-blue-600 hover:text-blue-500">
                 Показать все автоматы
               </button>
-              <button 
+              <button
                 onClick={fetchDashboardData}
                 className="text-sm text-gray-500 hover:text-gray-700"
               >
@@ -327,28 +346,32 @@ export default function Dashboard() {
               </h3>
             </div>
             <ul className="divide-y divide-gray-200">
-              {stats.recentTransactions.slice(0, 5).map((transaction, index) => (
-                <li key={index} className="px-4 py-4 sm:px-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        Транзакция #{transaction.id?.slice(-8) || index}
+              {stats.recentTransactions
+                .slice(0, 5)
+                .map((transaction, index) => (
+                  <li key={index} className="px-4 py-4 sm:px-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          Транзакция #{transaction.id?.slice(-8) || index}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {new Date(transaction.createdAt).toLocaleString()}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {new Date(transaction.createdAt).toLocaleString()}
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-gray-900">
+                          ${transaction.amount?.toFixed(2) || '0.00'}
+                        </div>
+                        <div
+                          className={`text-sm ${transaction.status === 'SUCCESS' ? 'text-green-600' : 'text-red-600'}`}
+                        >
+                          {transaction.status || 'UNKNOWN'}
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium text-gray-900">
-                        ${transaction.amount?.toFixed(2) || '0.00'}
-                      </div>
-                      <div className={`text-sm ${transaction.status === 'SUCCESS' ? 'text-green-600' : 'text-red-600'}`}>
-                        {transaction.status || 'UNKNOWN'}
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                ))}
             </ul>
           </div>
         )}

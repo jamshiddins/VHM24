@@ -185,14 +185,14 @@ if (checkFileExists('package.json')) {
 
   // Проверка и добавление jest
   if (!packageJson.devDependencies.jest) {
-    packageJson.devDependencies.jest = "^29.5.0";
+    packageJson.devDependencies.jest = '^29.5.0';
     console.log('✅ Добавлена зависимость: jest');
     modified = true;
   }
 
   // Проверка и добавление @jest/globals
   if (!packageJson.devDependencies['@jest/globals']) {
-    packageJson.devDependencies['@jest/globals'] = "^29.5.0";
+    packageJson.devDependencies['@jest/globals'] = '^29.5.0';
     console.log('✅ Добавлена зависимость: @jest/globals');
     modified = true;
   }
@@ -284,7 +284,7 @@ const services = [
 // Создание тестов для каждого сервиса
 services.forEach(service => {
   ensureDirectoryExists(`tests/${service}`);
-  
+
   const healthTestContent = `// tests/${service}/health.test.js
 const { describe, test, expect, jest, beforeEach } = require('@jest/globals');
 

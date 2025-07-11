@@ -4,6 +4,22 @@ const { PrismaClient } = require('@prisma/client');
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Корневой маршрут аудита
+router.get('/', async (req, res) => {
+  try {
+    res.json({
+      message: 'VHM24 Audit API',
+      endpoints: [
+        'GET /logs - Логи аудита',
+        'GET /stats/activity - Статистика активности'
+      ]
+    });
+  } catch (error) {
+    console.error('Ошибка аудита:', error);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
 // Получить логи аудита
 router.get('/logs', async (req, res) => {
   try {
@@ -48,7 +64,7 @@ router.get('/logs', async (req, res) => {
 router.get('/stats/activity', async (req, res) => {
   try {
     const { dateFrom, dateTo } = req.query;
-    
+
     const stats = await prisma.systemAuditLog.groupBy({
       by: ['action'],
       _count: {

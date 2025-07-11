@@ -7,7 +7,7 @@ console.log('🔧 Создание монолитного backend для VHM24..
 
 async function createMonolithBackend() {
   const backendPath = path.join(__dirname, 'backend');
-  
+
   // 1. Создаем структуру папок
   console.log('📁 Создание структуры папок...');
   const dirs = [
@@ -19,49 +19,49 @@ async function createMonolithBackend() {
     'backend/src/services',
     'backend/src/utils'
   ];
-  
+
   for (const dir of dirs) {
     await fs.mkdir(path.join(__dirname, dir), { recursive: true });
   }
-  
+
   // 2. Создаем package.json
   console.log('📦 Создание package.json...');
   const packageJson = {
-    name: "@vhm24/backend",
-    version: "1.0.0",
-    main: "src/index.js",
+    name: '@vhm24/backend',
+    version: '1.0.0',
+    main: 'src/index.js',
     scripts: {
-      start: "node src/index.js",
-      dev: "nodemon src/index.js",
-      "prisma:generate": "prisma generate",
-      "prisma:migrate": "prisma migrate deploy"
+      start: 'node src/index.js',
+      dev: 'nodemon src/index.js',
+      'prisma:generate': 'prisma generate',
+      'prisma:migrate': 'prisma migrate deploy'
     },
     dependencies: {
-      "@prisma/client": "^6.11.1",
-      "express": "^4.18.2",
-      "cors": "^2.8.5",
-      "dotenv": "^16.0.3",
-      "jsonwebtoken": "^9.0.0",
-      "bcrypt": "^5.1.1",
-      "express-rate-limit": "^6.7.0",
-      "helmet": "^7.0.0",
-      "morgan": "^1.10.0",
-      "joi": "^17.9.2",
-      "redis": "^4.6.5",
-      "node-telegram-bot-api": "^0.61.0",
-      "aws-sdk": "^2.1329.0"
+      '@prisma/client': '^6.11.1',
+      express: '^4.18.2',
+      cors: '^2.8.5',
+      dotenv: '^16.0.3',
+      jsonwebtoken: '^9.0.0',
+      bcrypt: '^5.1.1',
+      'express-rate-limit': '^6.7.0',
+      helmet: '^7.0.0',
+      morgan: '^1.10.0',
+      joi: '^17.9.2',
+      redis: '^4.6.5',
+      'node-telegram-bot-api': '^0.61.0',
+      'aws-sdk': '^2.1329.0'
     },
     devDependencies: {
-      "nodemon": "^2.0.22",
-      "prisma": "^6.11.1"
+      nodemon: '^2.0.22',
+      prisma: '^6.11.1'
     }
   };
-  
+
   await fs.writeFile(
     path.join(backendPath, 'package.json'),
     JSON.stringify(packageJson, null, 2)
   );
-  
+
   // 3. Копируем Prisma схему
   console.log('📋 Копирование Prisma схемы...');
   await fs.mkdir(path.join(backendPath, 'prisma'), { recursive: true });
@@ -69,7 +69,7 @@ async function createMonolithBackend() {
     path.join(__dirname, 'packages/database/prisma/schema.prisma'),
     path.join(backendPath, 'prisma/schema.prisma')
   );
-  
+
   // 4. Создаем основной файл сервера
   console.log('🔨 Создание основного сервера...');
   const serverCode = `require('dotenv').config();
@@ -162,9 +162,9 @@ process.on('SIGINT', async () => {
 
 startServer();
 `;
-  
+
   await fs.writeFile(path.join(backendPath, 'src/index.js'), serverCode);
-  
+
   // 5. Создаем auth роут
   console.log('🔐 Создание auth роута...');
   const authRoute = `const express = require('express');
@@ -258,9 +258,9 @@ router.post('/login', async (req, res) => {
 
 module.exports = router;
 `;
-  
+
   await fs.writeFile(path.join(backendPath, 'src/routes/auth.js'), authRoute);
-  
+
   // 6. Создаем machines роут
   console.log('🏭 Создание machines роута...');
   const machinesRoute = `const express = require('express');
@@ -334,9 +334,12 @@ router.post('/', async (req, res) => {
 
 module.exports = router;
 `;
-  
-  await fs.writeFile(path.join(backendPath, 'src/routes/machines.js'), machinesRoute);
-  
+
+  await fs.writeFile(
+    path.join(backendPath, 'src/routes/machines.js'),
+    machinesRoute
+  );
+
   // 7. Создаем заглушки для остальных роутов
   const routeStub = `const express = require('express');
 const router = express.Router();
@@ -347,7 +350,7 @@ router.get('/', (req, res) => {
 
 module.exports = router;
 `;
-  
+
   const stubRoutes = ['inventory', 'tasks', 'recipes', 'users'];
   for (const route of stubRoutes) {
     await fs.writeFile(
@@ -355,7 +358,7 @@ module.exports = router;
       routeStub
     );
   }
-  
+
   // 8. Создаем .env файл для backend
   console.log('🔧 Создание .env для backend...');
   const envContent = `# Скопируйте сюда переменные из основного .env файла
@@ -364,9 +367,9 @@ JWT_SECRET="${process.env.JWT_SECRET || ''}"
 REDIS_URL="${process.env.REDIS_URL || ''}"
 PORT=8000
 `;
-  
+
   await fs.writeFile(path.join(backendPath, '.env'), envContent);
-  
+
   console.log('\n✅ Монолитный backend создан!');
   console.log('\n📋 Дальнейшие действия:');
   console.log('1. Перейдите в папку backend:');

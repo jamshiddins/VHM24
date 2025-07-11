@@ -419,23 +419,25 @@ fastify.setErrorHandler(async (error, request, reply) => {
 // Запускаем сервер
 const start = async () => {
   try {
-    await fastify.listen({ 
+    await fastify.listen({
       port: PORT,
       host: '0.0.0.0'
     });
-    
+
     logger.info(`🎉 VHM24 Production is running on port ${PORT}`);
     logger.info(`🌐 Health check: http://localhost:${PORT}/health`);
     logger.info(`📚 Documentation: http://localhost:${PORT}/docs`);
     logger.info(`📊 System status: http://localhost:${PORT}/api/status`);
-    
+
     // Railway specific logging
     if (process.env.RAILWAY_ENVIRONMENT) {
-      logger.info('🚂 Running on Railway environment:', process.env.RAILWAY_ENVIRONMENT);
+      logger.info(
+        '🚂 Running on Railway environment:',
+        process.env.RAILWAY_ENVIRONMENT
+      );
       logger.info('🔗 Railway static URL:', process.env.RAILWAY_STATIC_URL);
       logger.info('🆔 Deployment ID:', process.env.RAILWAY_DEPLOYMENT_ID);
     }
-    
   } catch (err) {
     logger.error('❌ Server failed to start:', err);
     process.exit(1);
@@ -468,7 +470,7 @@ process.on('SIGINT', async () => {
 });
 
 // Обработка необработанных ошибок
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
   logger.error('❌ Uncaught Exception:', error);
   process.exit(1);
 });

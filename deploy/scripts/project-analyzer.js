@@ -155,10 +155,16 @@ class ProjectAnalyzer {
 
     try {
       // npm audit
-      const auditResult = execSync('npm audit --json', { stdio: 'pipe' }).toString();
+      const auditResult = execSync('npm audit --json', {
+        stdio: 'pipe'
+      }).toString();
       const audit = JSON.parse(auditResult);
 
-      if (audit.metadata && audit.metadata.vulnerabilities && audit.metadata.vulnerabilities.total > 0) {
+      if (
+        audit.metadata &&
+        audit.metadata.vulnerabilities &&
+        audit.metadata.vulnerabilities.total > 0
+      ) {
         this.addIssue('critical', {
           issue: `Найдено ${audit.metadata.vulnerabilities.total} уязвимостей`,
           critical: audit.metadata.vulnerabilities.critical,
@@ -215,7 +221,10 @@ class ProjectAnalyzer {
       }
 
       // Проверка на синхронные операции
-      if (content.includes('readFileSync') || content.includes('writeFileSync')) {
+      if (
+        content.includes('readFileSync') ||
+        content.includes('writeFileSync')
+      ) {
         this.addIssue('medium', {
           file: filePath,
           issue: 'Синхронные операции файловой системы',
@@ -233,7 +242,11 @@ class ProjectAnalyzer {
       }
 
       // Проверка на N+1 проблемы
-      if (content.includes('.map') && content.includes('await') && content.includes('prisma')) {
+      if (
+        content.includes('.map') &&
+        content.includes('await') &&
+        content.includes('prisma')
+      ) {
         this.addIssue('high', {
           file: filePath,
           issue: 'Потенциальная N+1 проблема',
@@ -282,7 +295,9 @@ class ProjectAnalyzer {
       const codePatterns = new Map();
       await this.scanFiles('**/*.js', (filePath, content) => {
         // Ищем повторяющиеся паттерны
-        const functions = content.match(/function\s+\w+|const\s+\w+\s*=\s*(?:async\s*)?\(/g) || [];
+        const functions =
+          content.match(/function\s+\w+|const\s+\w+\s*=\s*(?:async\s*)?\(/g) ||
+          [];
         functions.forEach(func => {
           if (codePatterns.has(func)) {
             codePatterns.get(func).push(filePath);
@@ -393,7 +408,17 @@ class ProjectAnalyzer {
   }
 
   isBuiltinModule(module) {
-    const builtins = ['fs', 'path', 'http', 'https', 'crypto', 'os', 'util', 'stream', 'events'];
+    const builtins = [
+      'fs',
+      'path',
+      'http',
+      'https',
+      'crypto',
+      'os',
+      'util',
+      'stream',
+      'events'
+    ];
     return builtins.includes(module);
   }
 
@@ -413,7 +438,10 @@ class ProjectAnalyzer {
       };
 
       // Сохраняем детальный JSON отчет
-      await fsPromises.writeFile('analysis-report.json', JSON.stringify(report, null, 2));
+      await fsPromises.writeFile(
+        'analysis-report.json',
+        JSON.stringify(report, null, 2)
+      );
 
       // Создаем Markdown отчет
       let markdown = `# VHM24 Project Analysis Report

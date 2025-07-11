@@ -12,7 +12,9 @@ const logger = {
 
 class AutoFixer {
   constructor(analysisReport) {
-    this.report = analysisReport || { issues: { critical: [], high: [], medium: [], low: [] } };
+    this.report = analysisReport || {
+      issues: { critical: [], high: [], medium: [], low: [] }
+    };
     this.fixed = [];
     this.failed = [];
     this.backups = new Map();
@@ -20,29 +22,28 @@ class AutoFixer {
 
   async fixAllIssues() {
     logger.info('🔧 Starting Auto-Fix Process...\n');
-    
+
     // Создаем резервные копии
     await this.createBackups();
-    
+
     try {
       // 1. Исправляем критические проблемы безопасности
       await this.fixSecurityIssues();
-      
+
       // 2. Исправляем проблемы с зависимостями
       await this.fixDependencyIssues();
-      
+
       // 3. Исправляем проблемы кода
       await this.fixCodeIssues();
-      
+
       // 4. Добавляем отсутствующие компоненты
       await this.addMissingComponents();
-      
+
       // 5. Оптимизируем производительность
       await this.fixPerformanceIssues();
-      
+
       // 6. Генерируем отчет
       this.generateFixReport();
-      
     } catch (error) {
       logger.error('❌ Error during fix process:', error);
       await this.rollbackAll();
@@ -51,14 +52,16 @@ class AutoFixer {
 
   async createBackups() {
     logger.info('📦 Creating backups...');
-    
+
     const filesToBackup = new Set();
-    
+
     // Собираем все файлы из отчета
-    Object.values(this.report.issues).flat().forEach(issue => {
-      if (issue.file) filesToBackup.add(issue.file);
-    });
-    
+    Object.values(this.report.issues)
+      .flat()
+      .forEach(issue => {
+        if (issue.file) filesToBackup.add(issue.file);
+      });
+
     filesToBackup.forEach(file => {
       try {
         const content = fs.readFileSync(file, 'utf8');
@@ -67,15 +70,18 @@ class AutoFixer {
         logger.warn(`Could not backup file ${file}: ${error.message}`);
       }
     });
-    
+
     // Сохраняем бекап на диск
-    fs.writeFileSync('backup.json', JSON.stringify(Object.fromEntries(this.backups), null, 2));
+    fs.writeFileSync(
+      'backup.json',
+      JSON.stringify(Object.fromEntries(this.backups), null, 2)
+    );
     logger.info(`✅ Created backups for ${this.backups.size} files`);
   }
 
   async fixSecurityIssues() {
     logger.info('\n🔒 Fixing security issues...');
-    
+
     // Исправляем утечки информации об ошибках
     this.report.issues.critical.forEach(issue => {
       if (issue.file && issue.issue.includes('Утечка информации')) {
@@ -88,20 +94,21 @@ class AutoFixer {
         });
       }
     });
-    
+
     // Добавляем валидацию входных данных
     this.report.issues.high.forEach(issue => {
       if (issue.file && issue.issue.includes('Отсутствует валидация')) {
         this.addValidationSchemas(issue.file);
       }
     });
-    
+
     // Добавляем срок жизни JWT токенов
     this.report.issues.medium.forEach(issue => {
       if (issue.file && issue.issue.includes('JWT токены без срока жизни')) {
         this.fixInFile(issue.file, {
           pattern: /jwt\.sign\(\s*({[^}]+}|[^,]+),\s*([^,)]+)\s*\)/g,
-          replacement: 'jwt.sign($1, $2, { expiresIn: process.env.JWT_EXPIRES_IN || "1h" })'
+          replacement:
+            'jwt.sign($1, $2, { expiresIn: process.env.JWT_EXPIRES_IN || "1h" })'
         });
       }
     });
@@ -109,7 +116,7 @@ class AutoFixer {
 
   async fixDependencyIssues() {
     logger.info('\n📦 Fixing dependency issues...');
-    
+
     // Создаем .npmrc для настройки npm
     const npmrc = `
 # Настройки npm для исправления уязвимостей
@@ -119,7 +126,7 @@ loglevel=warn
     `;
     fs.writeFileSync('.npmrc', npmrc);
     this.fixed.push('Created .npmrc configuration');
-    
+
     // Автоматическое исправление уязвимостей
     try {
       logger.info('Running npm audit fix...');
@@ -132,7 +139,7 @@ loglevel=warn
 
   async fixCodeIssues() {
     logger.info('\n📝 Fixing code issues...');
-    
+
     // Замена console.log на logger
     this.report.issues.low.forEach(issue => {
       if (issue.file && issue.issue.includes('console.log')) {
@@ -143,7 +150,7 @@ loglevel=warn
 
   async addMissingComponents() {
     logger.info('\n➕ Adding missing components...');
-    
+
     // Создание .dockerignore
     if (!fs.existsSync('.dockerignore')) {
       const dockerignore = `
@@ -176,7 +183,7 @@ __tests__
 
   async fixPerformanceIssues() {
     logger.info('\n⚡ Fixing performance issues...');
-    
+
     // Добавление пагинации
     this.report.issues.high.forEach(issue => {
       if (issue.file && issue.issue.includes('findMany без пагинации')) {
@@ -192,16 +199,16 @@ __tests__
         this.failed.push(`File not found: ${filePath}`);
         return;
       }
-      
+
       let content = fs.readFileSync(filePath, 'utf8');
       const originalContent = content;
-      
+
       if (fix.pattern && fix.replacement) {
         content = content.replace(fix.pattern, fix.replacement);
       } else if (fix.fix) {
         content = fix.fix(content, filePath);
       }
-      
+
       if (content !== originalContent) {
         fs.writeFileSync(filePath, content);
         this.fixed.push(`Fixed: ${filePath} - ${fix.pattern || 'custom fix'}`);
@@ -214,7 +221,7 @@ __tests__
   addValidationSchemas(filePath) {
     try {
       let content = fs.readFileSync(filePath, 'utf8');
-      
+
       // Создаем базовые схемы для common endpoints
       const schemas = `
 const schemas = {
@@ -249,25 +256,35 @@ const schemas = {
   }
 };
 `;
-      
+
       // Добавляем схемы в начало файла
       if (!content.includes('schemas')) {
         content = schemas + '\n' + content;
       }
-      
+
       // Добавляем schema к routes
       content = content.replace(
         /fastify\.(get|post|put|patch|delete)\s*\(\s*['"][^'"]+['"]\s*,\s*async/g,
-        (match) => {
-          if (match.includes('post') || match.includes('put') || match.includes('patch')) {
-            return match.replace('async', '{ schema: schemas.createSchema }, async');
+        match => {
+          if (
+            match.includes('post') ||
+            match.includes('put') ||
+            match.includes('patch')
+          ) {
+            return match.replace(
+              'async',
+              '{ schema: schemas.createSchema }, async'
+            );
           } else if (match.includes('get') && !match.includes('/health')) {
-            return match.replace('async', '{ schema: schemas.querySchema }, async');
+            return match.replace(
+              'async',
+              '{ schema: schemas.querySchema }, async'
+            );
           }
           return match;
         }
       );
-      
+
       fs.writeFileSync(filePath, content);
       this.fixed.push(`Added validation schemas: ${filePath}`);
     } catch (error) {
@@ -278,18 +295,19 @@ const schemas = {
   replaceConsoleLog(filePath) {
     try {
       let content = fs.readFileSync(filePath, 'utf8');
-      
+
       // Добавляем logger если его нет
       if (!content.includes('logger')) {
-        content = `const logger = require('@vhm24/shared/logger');\n\n` + content;
+        content =
+          `const logger = require('@vhm24/shared/logger');\n\n` + content;
       }
-      
+
       // Заменяем console.log
       content = content.replace(/console\.log\(/g, 'logger.info(');
       content = content.replace(/console\.error\(/g, 'logger.error(');
       content = content.replace(/console\.warn\(/g, 'logger.warn(');
       content = content.replace(/console\.debug\(/g, 'logger.debug(');
-      
+
       fs.writeFileSync(filePath, content);
       this.fixed.push(`Replaced console.log with logger: ${filePath}`);
     } catch (error) {
@@ -300,7 +318,7 @@ const schemas = {
   addPagination(filePath) {
     try {
       let content = fs.readFileSync(filePath, 'utf8');
-      
+
       // Заменяем findMany() на findMany с пагинацией
       content = content.replace(
         /\.findMany\(\s*\)/g,
@@ -310,7 +328,7 @@ const schemas = {
       orderBy: { createdAt: 'desc' }
     })`
       );
-      
+
       // Также для findMany({})
       content = content.replace(
         /\.findMany\(\s*\{\s*\}\s*\)/g,
@@ -320,7 +338,7 @@ const schemas = {
       orderBy: { createdAt: 'desc' }
     })`
       );
-      
+
       fs.writeFileSync(filePath, content);
       this.fixed.push(`Added pagination: ${filePath}`);
     } catch (error) {
@@ -330,7 +348,7 @@ const schemas = {
 
   async rollbackAll() {
     logger.info('\n🔄 Rolling back all changes...');
-    
+
     this.backups.forEach((content, filePath) => {
       fs.writeFileSync(filePath, content);
       logger.info(`Restored: ${filePath}`);
@@ -345,17 +363,20 @@ const schemas = {
       summary: {
         totalFixed: this.fixed.length,
         totalFailed: this.failed.length,
-        successRate: Math.round((this.fixed.length / (this.fixed.length + this.failed.length || 1)) * 100)
+        successRate: Math.round(
+          (this.fixed.length / (this.fixed.length + this.failed.length || 1)) *
+            100
+        )
       }
     };
-    
+
     fs.writeFileSync('fix-report.json', JSON.stringify(report, null, 2));
-    
+
     logger.info('\n📊 Fix Report:');
     logger.info(`✅ Fixed: ${this.fixed.length} issues`);
     logger.info(`❌ Failed: ${this.failed.length} issues`);
     logger.info(`📈 Success rate: ${report.summary.successRate}%`);
-    
+
     if (this.failed.length > 0) {
       logger.info('\n❌ Failed fixes:');
       this.failed.forEach(fail => logger.info(`  - ${fail}`));
@@ -368,9 +389,11 @@ async function runAutoFix() {
   try {
     // Загружаем отчет анализа
     let analysisReport;
-    
+
     try {
-      analysisReport = JSON.parse(fs.readFileSync('analysis-report.json', 'utf8'));
+      analysisReport = JSON.parse(
+        fs.readFileSync('analysis-report.json', 'utf8')
+      );
     } catch (error) {
       logger.warn('Не удалось загрузить отчет анализа, создаем пустой отчет');
       analysisReport = {
@@ -382,11 +405,11 @@ async function runAutoFix() {
         }
       };
     }
-    
+
     // Запускаем исправление
     const fixer = new AutoFixer(analysisReport);
     await fixer.fixAllIssues();
-    
+
     logger.info('\n✅ Процесс исправления завершен!');
   } catch (error) {
     logger.error('Критическая ошибка:', error);

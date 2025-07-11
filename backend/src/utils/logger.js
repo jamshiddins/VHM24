@@ -42,15 +42,17 @@ const logger = winston.createLogger({
 
 // В development режиме также выводим в консоль
 if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple(),
-      winston.format.printf(({ timestamp, level, message, service }) => {
-        return `${timestamp} [${service}] ${level}: ${message}`;
-      })
-    )
-  }));
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple(),
+        winston.format.printf(({ timestamp, level, message, service }) => {
+          return `${timestamp} [${service}] ${level}: ${message}`;
+        })
+      )
+    })
+  );
 }
 
 // Создаем папку для логов если её нет

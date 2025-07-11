@@ -35,14 +35,14 @@ if (!process.env.DATABASE_URL) {
 function runCommand(command, args = [], options = {}) {
   return new Promise((resolve, reject) => {
     logger.info(`🔧 Running: ${command} ${args.join(' ')}`);
-    
+
     const child = spawn(command, args, {
       stdio: 'inherit',
       shell: true,
       ...options
     });
 
-    child.on('close', (code) => {
+    child.on('close', code => {
       if (code === 0) {
         resolve();
       } else {
@@ -58,48 +58,53 @@ function runCommand(command, args = [], options = {}) {
 async function startRailwayApp() {
   try {
     logger.info('🗄️ === DATABASE MIGRATION PHASE ===');
-    
+
     // Проверяем наличие schema.prisma
-    const schemaPath = path.join(__dirname, 'packages/database/prisma/schema.prisma');
+    const schemaPath = path.join(
+      __dirname,
+      'packages/database/prisma/schema.prisma'
+    );
     if (!fs.existsSync(schemaPath)) {
-      throw new Error('Prisma schema not found at packages/database/prisma/schema.prisma');
+      throw new Error(
+        'Prisma schema not found at packages/database/prisma/schema.prisma'
+      );
     }
-    
+
     logger.info('✅ Prisma schema found');
-    
+
     // Генерируем Prisma клиент
     logger.info('🔧 Generating Prisma client...');
     await runCommand('npx', ['prisma', 'generate'], {
       cwd: path.join(__dirname, 'packages/database')
     });
     logger.info('✅ Prisma client generated');
-    
+
     // Запускаем миграции
     logger.info('🔧 Running database migrations...');
     await runCommand('npx', ['prisma', 'migrate', 'deploy'], {
       cwd: path.join(__dirname, 'packages/database')
     });
     logger.info('✅ Database migrations completed');
-    
+
     // Проверяем подключение к базе данных
     logger.info('🔧 Testing database connection...');
     const { getPrismaClient } = require('./packages/database');
     let prisma;
-    
+
     try {
       prisma = getPrismaClient();
       await prisma.$connect();
       logger.info('✅ Database connection successful');
-      
+
       // Проверяем наличие пользователей
       const userCount = await prisma.user.count();
       logger.info(`📊 Users in database: ${userCount}`);
-      
+
       // Создаем администратора если нет пользователей
       if (userCount === 0) {
         logger.info('🔧 Creating default admin user...');
         const bcrypt = require('bcrypt');
-        
+
         const adminUser = await prisma.user.create({
           data: {
             email: 'admin@vhm24.ru',
@@ -110,22 +115,22 @@ async function startRailwayApp() {
             isActive: true
           }
         });
-        
+
         logger.info('✅ Default admin user created');
         logger.info(`📧 Email: admin@vhm24.ru`);
         logger.info(`🔑 Password: admin123`);
         logger.info(`📱 Telegram ID: ${adminUser.telegramId}`);
       }
-      
+
       await prisma.$disconnect();
       logger.info('🎉 Database migration completed successfully!');
     } catch (error) {
       logger.error('❌ Database connection failed:', error.message);
       logger.info('⚠️ Continuing without database setup...');
     }
-    
+
     logger.info('\n🚂 === MONOLITH APPLICATION START ===');
-    
+
     // Создаем единый Fastify сервер
     const fastify = Fastify({
       logger: true,
@@ -147,8 +152,8 @@ async function startRailwayApp() {
 
     // Health check endpoint
     fastify.get('/health', async (request, reply) => {
-      return { 
-        status: 'ok', 
+      return {
+        status: 'ok',
         service: 'vhm24-monolith',
         timestamp: new Date().toISOString(),
         database: 'connected'
@@ -220,85 +225,92 @@ async function startRailwayApp() {
     try {
       apiPrisma = getPrismaClient();
     } catch (error) {
-      logger.error('❌ Failed to initialize Prisma client for API:', error.message);
+      logger.error(
+        '❌ Failed to initialize Prisma client for API:',
+        error.message
+      );
       apiPrisma = null;
     }
 
     // Встраиваем основные API endpoints прямо в монолит
-    
+
     // Auth endpoints
-    
-// Схема валидации для POST /api/v1/auth/login
-const postapiv1authloginSchema = {
-  body: {
-    type: 'object',
-    required: [],
-    properties: {}
-  }
-};
 
-fastify.post('/api/v1/auth/login', { schema: postapiv1authloginSchema }, async (request, reply) => {
-      try {
-        if (!apiPrisma) {
-          return reply.code(503).send({
-            success: false,
-            error: 'Database not available'
+    // Схема валидации для POST /api/v1/auth/login
+    const postapiv1authloginSchema = {
+      body: {
+        type: 'object',
+        required: [],
+        properties: {}
+      }
+    };
+
+    fastify.post(
+      '/api/v1/auth/login',
+      { schema: postapiv1authloginSchema },
+      async (request, reply) => {
+        try {
+          if (!apiPrisma) {
+            return reply.code(503).send({
+              success: false,
+              error: 'Database not available'
+            });
+          }
+
+          const { email, password } = request.body;
+
+          if (!email || !password) {
+            return reply.code(400).send({
+              success: false,
+              error: 'Email and password are required'
+            });
+          }
+
+          const bcrypt = require('bcrypt');
+          const jwt = require('jsonwebtoken');
+
+          const user = await apiPrisma.user.findUnique({
+            where: { email }
           });
-        }
 
-        const { email, password } = request.body;
-        
-        if (!email || !password) {
-          return reply.code(400).send({
-            success: false,
-            error: 'Email and password are required'
-          });
-        }
+          if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+            return reply.code(401).send({
+              success: false,
+              error: 'Invalid credentials'
+            });
+          }
 
-        const bcrypt = require('bcrypt');
-        const jwt = require('jsonwebtoken');
-        
-        const user = await apiPrisma.user.findUnique({
-          where: { email }
-        });
-
-        if (!user || !await bcrypt.compare(password, user.passwordHash)) {
-          return reply.code(401).send({
-            success: false,
-            error: 'Invalid credentials'
-          });
-        }
-
-        const token = jwt.sign(
-          { 
-            id: user.id, 
-            email: user.email, 
-            roles: user.roles 
-          },
-          process.env.JWT_SECRET || 'vhm24-secret-key',
-          { expiresIn: '24h' }
-        );
-
-        return {
-          success: true,
-          data: {
-            token,
-            user: {
+          const token = jwt.sign(
+            {
               id: user.id,
               email: user.email,
-              name: user.name,
               roles: user.roles
+            },
+            process.env.JWT_SECRET || 'vhm24-secret-key',
+            { expiresIn: '24h' }
+          );
+
+          return {
+            success: true,
+            data: {
+              token,
+              user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                roles: user.roles
+              }
             }
-          }
-        };
-      } catch (error) {
-        logger.error('Login error:', error);
-        return reply.code(500).send({
-          success: false,
-          error: 'Internal server error'
-        });
+          };
+        } catch (error) {
+          logger.error('Login error:', error);
+          return reply.code(500).send({
+            success: false,
+            error: 'Internal server error'
+          });
+        }
       }
-    });
+    );
 
     // Dashboard stats
     fastify.get('/api/v1/dashboard/stats', async (request, reply) => {
@@ -321,7 +333,9 @@ fastify.post('/api/v1/auth/login', { schema: postapiv1authloginSchema }, async (
           apiPrisma.machine.count(),
           apiPrisma.machine.count({ where: { status: 'ONLINE' } }),
           apiPrisma.task.count(),
-          apiPrisma.task.count({ where: { status: { in: ['CREATED', 'ASSIGNED'] } } }),
+          apiPrisma.task.count({
+            where: { status: { in: ['CREATED', 'ASSIGNED'] } }
+          }),
           apiPrisma.user.count(),
           apiPrisma.user.count({ where: { isActive: true } })
         ]);
@@ -388,10 +402,10 @@ fastify.post('/api/v1/auth/login', { schema: postapiv1authloginSchema }, async (
         }
 
         const inventory = await apiPrisma.inventoryItem.findMany({
-      skip: (request.query.page - 1) * request.query.limit,
-      take: request.query.limit,
-      orderBy: { createdAt: 'desc' }
-    });
+          skip: (request.query.page - 1) * request.query.limit,
+          take: request.query.limit,
+          orderBy: { createdAt: 'desc' }
+        });
 
         return {
           success: true,
@@ -463,21 +477,23 @@ fastify.post('/api/v1/auth/login', { schema: postapiv1authloginSchema }, async (
 
     // Запускаем сервер
     const port = process.env.PORT || 8000;
-    await fastify.listen({ 
+    await fastify.listen({
       port: port,
       host: '0.0.0.0'
     });
-    
+
     logger.info(`🎉 VHM24 Monolith is running on port ${port}`);
     logger.info(`🌐 Health check: http://localhost:${port}/health`);
     logger.info(`📚 Documentation: http://localhost:${port}/docs`);
-    
+
     // Railway specific logging
     if (process.env.RAILWAY_ENVIRONMENT) {
       logger.info('🚂 Running on Railway:', process.env.RAILWAY_STATIC_URL);
-      logger.info('🔗 Public URL:', `https://${process.env.RAILWAY_STATIC_URL}`);
+      logger.info(
+        '🔗 Public URL:',
+        `https://${process.env.RAILWAY_STATIC_URL}`
+      );
     }
-    
   } catch (error) {
     logger.error('❌ Railway deployment failed:', error.message);
     logger.error('Stack trace:', error.stack);
@@ -496,7 +512,7 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
   logger.error('❌ Uncaught Exception:', error);
   process.exit(1);
 });

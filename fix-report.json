@@ -170,9 +170,7 @@
     "Made operations async: test-complete-system-with-recipes.js",
     "Made operations async: test-system-comprehensive.js"
   ],
-  "failed": [
-    "npm audit fix failed"
-  ],
+  "failed": ["npm audit fix failed"],
   "summary": {
     "totalFixed": 168,
     "totalFailed": 1,

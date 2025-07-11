@@ -3,12 +3,14 @@
 ## 📋 Обзор изменений
 
 ### Было (Supabase):
+
 - Единая база данных для всех сервисов
 - Проблемы с масштабированием
 - Зависимость от Supabase SDK
 - Сложности с миграциями Prisma
 
 ### Стало (Новая архитектура):
+
 - Разделенные схемы/базы для каждого микросервиса
 - Независимое масштабирование
 - Чистый PostgreSQL (Railway/Neon)
@@ -20,6 +22,7 @@
 ### Шаг 1: Подготовка инфраструктуры
 
 #### Вариант A: Railway PostgreSQL (рекомендуется)
+
 ```bash
 # В Railway Dashboard:
 1. Add Service → Database → PostgreSQL
@@ -30,6 +33,7 @@
 ```
 
 #### Вариант B: Neon PostgreSQL
+
 ```bash
 # Создайте проект на neon.tech
 # Получите connection string
@@ -77,6 +81,7 @@ node migrate-from-supabase.js
 ### Шаг 5: Обновление сервисов
 
 #### Auth Service (services/auth/src/index.js):
+
 ```javascript
 // Было:
 const { PrismaClient } = require('@prisma/client');
@@ -88,6 +93,7 @@ const prisma = getAuthClient();
 ```
 
 #### Machines Service (services/machines/src/index.js):
+
 ```javascript
 // Было:
 const { PrismaClient } = require('@prisma/client');
@@ -99,6 +105,7 @@ const prisma = getMachinesClient();
 ```
 
 #### Inventory Service (services/inventory/src/index.js):
+
 ```javascript
 // Было:
 const { PrismaClient } = require('@prisma/client');
@@ -110,6 +117,7 @@ const prisma = getInventoryClient();
 ```
 
 #### Tasks Service (services/tasks/src/index.js):
+
 ```javascript
 // Было:
 const { PrismaClient } = require('@prisma/client');
@@ -149,12 +157,14 @@ git push
 ## 🔧 Конфигурация для разных сценариев
 
 ### Сценарий 1: Единая БД с схемами (Railway)
+
 ```env
 DATABASE_URL=postgresql://user:pass@host:5432/vhm24
 USE_MULTIPLE_DATABASES=false
 ```
 
 ### Сценарий 2: Отдельные БД (Neon/Railway)
+
 ```env
 USE_MULTIPLE_DATABASES=true
 AUTH_DATABASE_URL=postgresql://...
@@ -167,6 +177,7 @@ SHARED_DATABASE_URL=postgresql://...
 ## 📊 Мониторинг после миграции
 
 ### Проверка работы:
+
 ```bash
 # Тест API
 node test-railway-api.js
@@ -179,6 +190,7 @@ railway run prisma studio --schema=packages/database/prisma/auth/schema.prisma
 ```
 
 ### Метрики для отслеживания:
+
 - Время ответа API
 - Использование памяти
 - Количество подключений к БД
@@ -194,6 +206,7 @@ railway run prisma studio --schema=packages/database/prisma/auth/schema.prisma
 ## 🎯 Результат
 
 После успешной миграции вы получите:
+
 - ✅ Независимые базы данных для каждого сервиса
 - ✅ Возможность масштабирования отдельных компонентов
 - ✅ Улучшенную производительность с Redis кешированием
@@ -203,6 +216,7 @@ railway run prisma studio --schema=packages/database/prisma/auth/schema.prisma
 ## 🆘 Troubleshooting
 
 ### Ошибка подключения к БД
+
 ```bash
 # Проверьте DATABASE_URL
 railway variables
@@ -212,6 +226,7 @@ railway run prisma db pull --schema=packages/database/prisma/auth/schema.prisma
 ```
 
 ### Ошибки миграции
+
 ```bash
 # Сбросьте миграции
 rm -rf packages/database/prisma/*/migrations
@@ -221,8 +236,10 @@ npm run migrate:dev:all
 ```
 
 ### Проблемы с типами TypeScript
+
 ```bash
 # Перегенерируйте клиенты
 cd packages/database
 npm run generate:all
 npm run build
+```

@@ -1,13 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, Clock, CheckCircle, AlertCircle, User, Calendar, Filter } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  User,
+  Calendar,
+  Filter
+} from 'lucide-react';
 
 interface Task {
   id: number;
   title: string;
   description: string;
-  type: 'MAINTENANCE' | 'REFILL' | 'REPAIR' | 'INSPECTION' | 'DELIVERY' | 'CLEANING';
+  type:
+    | 'MAINTENANCE'
+    | 'REFILL'
+    | 'REPAIR'
+    | 'INSPECTION'
+    | 'DELIVERY'
+    | 'CLEANING';
   priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
   status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'OVERDUE';
   assignedToId?: number;
@@ -55,7 +70,9 @@ export default function TasksPage() {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedPriority, setSelectedPriority] = useState('');
   const [selectedAssignee, setSelectedAssignee] = useState('');
-  const [activeTab, setActiveTab] = useState<'tasks' | 'templates' | 'calendar'>('tasks');
+  const [activeTab, setActiveTab] = useState<
+    'tasks' | 'templates' | 'calendar'
+  >('tasks');
   const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
   const [showCreateTemplateModal, setShowCreateTemplateModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -147,9 +164,9 @@ export default function TasksPage() {
       const response = await fetch('/api/v1/tasks', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(taskFormData),
+        body: JSON.stringify(taskFormData)
       });
 
       const data = await response.json();
@@ -168,9 +185,9 @@ export default function TasksPage() {
       const response = await fetch('/api/v1/tasks/templates', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(templateFormData),
+        body: JSON.stringify(templateFormData)
       });
 
       const data = await response.json();
@@ -184,21 +201,28 @@ export default function TasksPage() {
     }
   };
 
-  const handleUpdateTaskStatus = async (taskId: number, status: Task['status']) => {
+  const handleUpdateTaskStatus = async (
+    taskId: number,
+    status: Task['status']
+  ) => {
     try {
       const response = await fetch(`/api/v1/tasks/${taskId}/status`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status })
       });
 
       const data = await response.json();
       if (data.success) {
-        setTasks(tasks.map(task => 
-          task.id === taskId ? { ...task, status, updatedAt: new Date().toISOString() } : task
-        ));
+        setTasks(
+          tasks.map(task =>
+            task.id === taskId
+              ? { ...task, status, updatedAt: new Date().toISOString() }
+              : task
+          )
+        );
       }
     } catch (error) {
       console.error('Error updating task status:', error);
@@ -266,46 +290,73 @@ export default function TasksPage() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'PENDING': return 'Ожидает';
-      case 'IN_PROGRESS': return 'В работе';
-      case 'COMPLETED': return 'Завершено';
-      case 'CANCELLED': return 'Отменено';
-      case 'OVERDUE': return 'Просрочено';
-      default: return status;
+      case 'PENDING':
+        return 'Ожидает';
+      case 'IN_PROGRESS':
+        return 'В работе';
+      case 'COMPLETED':
+        return 'Завершено';
+      case 'CANCELLED':
+        return 'Отменено';
+      case 'OVERDUE':
+        return 'Просрочено';
+      default:
+        return status;
     }
   };
 
   const getPriorityText = (priority: string) => {
     switch (priority) {
-      case 'LOW': return 'Низкий';
-      case 'MEDIUM': return 'Средний';
-      case 'HIGH': return 'Высокий';
-      case 'URGENT': return 'Срочный';
-      default: return priority;
+      case 'LOW':
+        return 'Низкий';
+      case 'MEDIUM':
+        return 'Средний';
+      case 'HIGH':
+        return 'Высокий';
+      case 'URGENT':
+        return 'Срочный';
+      default:
+        return priority;
     }
   };
 
   const getTypeText = (type: string) => {
     switch (type) {
-      case 'MAINTENANCE': return 'ТО';
-      case 'REFILL': return 'Заправка';
-      case 'REPAIR': return 'Ремонт';
-      case 'INSPECTION': return 'Инспекция';
-      case 'DELIVERY': return 'Доставка';
-      case 'CLEANING': return 'Уборка';
-      default: return type;
+      case 'MAINTENANCE':
+        return 'ТО';
+      case 'REFILL':
+        return 'Заправка';
+      case 'REPAIR':
+        return 'Ремонт';
+      case 'INSPECTION':
+        return 'Инспекция';
+      case 'DELIVERY':
+        return 'Доставка';
+      case 'CLEANING':
+        return 'Уборка';
+      default:
+        return type;
     }
   };
 
   const filteredTasks = tasks.filter(task => {
-    const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         task.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = !selectedType || task.type === selectedType;
     const matchesStatus = !selectedStatus || task.status === selectedStatus;
-    const matchesPriority = !selectedPriority || task.priority === selectedPriority;
-    const matchesAssignee = !selectedAssignee || task.assignedToId?.toString() === selectedAssignee;
-    
-    return matchesSearch && matchesType && matchesStatus && matchesPriority && matchesAssignee;
+    const matchesPriority =
+      !selectedPriority || task.priority === selectedPriority;
+    const matchesAssignee =
+      !selectedAssignee || task.assignedToId?.toString() === selectedAssignee;
+
+    return (
+      matchesSearch &&
+      matchesType &&
+      matchesStatus &&
+      matchesPriority &&
+      matchesAssignee
+    );
   });
 
   const getTaskStats = () => {
@@ -314,7 +365,7 @@ export default function TasksPage() {
     const inProgress = tasks.filter(t => t.status === 'IN_PROGRESS').length;
     const completed = tasks.filter(t => t.status === 'COMPLETED').length;
     const overdue = tasks.filter(t => t.status === 'OVERDUE').length;
-    
+
     return { total, pending, inProgress, completed, overdue };
   };
 
@@ -363,7 +414,9 @@ export default function TasksPage() {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">Всего</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.total}</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {stats.total}
+              </p>
             </div>
           </div>
         </div>
@@ -375,7 +428,9 @@ export default function TasksPage() {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">Ожидают</p>
-              <p className="text-2xl font-semibold text-yellow-600">{stats.pending}</p>
+              <p className="text-2xl font-semibold text-yellow-600">
+                {stats.pending}
+              </p>
             </div>
           </div>
         </div>
@@ -387,7 +442,9 @@ export default function TasksPage() {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">В работе</p>
-              <p className="text-2xl font-semibold text-blue-600">{stats.inProgress}</p>
+              <p className="text-2xl font-semibold text-blue-600">
+                {stats.inProgress}
+              </p>
             </div>
           </div>
         </div>
@@ -399,7 +456,9 @@ export default function TasksPage() {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">Завершено</p>
-              <p className="text-2xl font-semibold text-green-600">{stats.completed}</p>
+              <p className="text-2xl font-semibold text-green-600">
+                {stats.completed}
+              </p>
             </div>
           </div>
         </div>
@@ -411,7 +470,9 @@ export default function TasksPage() {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">Просрочено</p>
-              <p className="text-2xl font-semibold text-red-600">{stats.overdue}</p>
+              <p className="text-2xl font-semibold text-red-600">
+                {stats.overdue}
+              </p>
             </div>
           </div>
         </div>
@@ -473,36 +534,42 @@ export default function TasksPage() {
                   type="text"
                   placeholder="Поиск задач..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             </div>
             <select
               value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
+              onChange={e => setSelectedType(e.target.value)}
               className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               {taskTypes.map(type => (
-                <option key={type.value} value={type.value}>{type.label}</option>
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
               ))}
             </select>
             <select
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
+              onChange={e => setSelectedStatus(e.target.value)}
               className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               {statusOptions.map(status => (
-                <option key={status.value} value={status.value}>{status.label}</option>
+                <option key={status.value} value={status.value}>
+                  {status.label}
+                </option>
               ))}
             </select>
             <select
               value={selectedPriority}
-              onChange={(e) => setSelectedPriority(e.target.value)}
+              onChange={e => setSelectedPriority(e.target.value)}
               className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               {priorityOptions.map(priority => (
-                <option key={priority.value} value={priority.value}>{priority.label}</option>
+                <option key={priority.value} value={priority.value}>
+                  {priority.label}
+                </option>
               ))}
             </select>
             <button
@@ -552,14 +619,20 @@ export default function TasksPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredTasks.map((task) => (
+                {filteredTasks.map(task => (
                   <tr key={task.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{task.title}</div>
-                        <div className="text-sm text-gray-500">{task.description}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {task.title}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {task.description}
+                        </div>
                         {task.machine && (
-                          <div className="text-xs text-gray-400">{task.machine.name}</div>
+                          <div className="text-xs text-gray-400">
+                            {task.machine.name}
+                          </div>
                         )}
                       </div>
                     </td>
@@ -567,7 +640,9 @@ export default function TasksPage() {
                       {getTypeText(task.type)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(task.priority)}`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(task.priority)}`}
+                      >
                         {getPriorityText(task.priority)}
                       </span>
                     </td>
@@ -581,20 +656,27 @@ export default function TasksPage() {
                           </div>
                           <div className="ml-3">
                             <div className="text-sm font-medium text-gray-900">
-                              {task.assignedTo.firstName} {task.assignedTo.lastName}
+                              {task.assignedTo.firstName}{' '}
+                              {task.assignedTo.lastName}
                             </div>
-                            <div className="text-sm text-gray-500">{task.assignedTo.role}</div>
+                            <div className="text-sm text-gray-500">
+                              {task.assignedTo.role}
+                            </div>
                           </div>
                         </div>
                       ) : (
-                        <span className="text-sm text-gray-500">Не назначен</span>
+                        <span className="text-sm text-gray-500">
+                          Не назначен
+                        </span>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(task.dueDate).toLocaleDateString('ru-RU')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(task.status)}`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(task.status)}`}
+                      >
                         {getStatusText(task.status)}
                       </span>
                     </td>
@@ -602,7 +684,9 @@ export default function TasksPage() {
                       <div className="flex gap-2">
                         {task.status === 'PENDING' && (
                           <button
-                            onClick={() => handleUpdateTaskStatus(task.id, 'IN_PROGRESS')}
+                            onClick={() =>
+                              handleUpdateTaskStatus(task.id, 'IN_PROGRESS')
+                            }
                             className="text-blue-600 hover:text-blue-900"
                           >
                             Начать
@@ -610,7 +694,9 @@ export default function TasksPage() {
                         )}
                         {task.status === 'IN_PROGRESS' && (
                           <button
-                            onClick={() => handleUpdateTaskStatus(task.id, 'COMPLETED')}
+                            onClick={() =>
+                              handleUpdateTaskStatus(task.id, 'COMPLETED')
+                            }
                             className="text-green-600 hover:text-green-900"
                           >
                             Завершить
@@ -634,31 +720,43 @@ export default function TasksPage() {
 
       {activeTab === 'templates' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {templates.map((template) => (
-            <div key={template.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+          {templates.map(template => (
+            <div
+              key={template.id}
+              className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
+            >
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{template.name}</h3>
-                    <p className="text-sm text-gray-500">{getTypeText(template.type)}</p>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {template.name}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {getTypeText(template.type)}
+                    </p>
                   </div>
-                  <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(template.priority)}`}>
+                  <span
+                    className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(template.priority)}`}
+                  >
                     {getPriorityText(template.priority)}
                   </span>
                 </div>
 
-                <p className="text-sm text-gray-600 mb-4">{template.description}</p>
+                <p className="text-sm text-gray-600 mb-4">
+                  {template.description}
+                </p>
 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Clock className="w-4 h-4" />
                     Время: {template.estimatedDuration} мин
                   </div>
-                  {template.requiredTools && template.requiredTools.length > 0 && (
-                    <div className="text-sm text-gray-600">
-                      Инструменты: {template.requiredTools.join(', ')}
-                    </div>
-                  )}
+                  {template.requiredTools &&
+                    template.requiredTools.length > 0 && (
+                      <div className="text-sm text-gray-600">
+                        Инструменты: {template.requiredTools.join(', ')}
+                      </div>
+                    )}
                 </div>
 
                 <div className="flex gap-2">
@@ -680,7 +778,10 @@ export default function TasksPage() {
           <div className="text-center text-gray-500">
             <Calendar className="w-16 h-16 mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">Календарь задач</h3>
-            <p>Календарное представление задач будет реализовано в следующей версии</p>
+            <p>
+              Календарное представление задач будет реализовано в следующей
+              версии
+            </p>
           </div>
         </div>
       )}
@@ -690,7 +791,9 @@ export default function TasksPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Создать новую задачу</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Создать новую задачу
+              </h2>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
@@ -700,7 +803,12 @@ export default function TasksPage() {
                   <input
                     type="text"
                     value={taskFormData.title}
-                    onChange={(e) => setTaskFormData({ ...taskFormData, title: e.target.value })}
+                    onChange={e =>
+                      setTaskFormData({
+                        ...taskFormData,
+                        title: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -711,7 +819,12 @@ export default function TasksPage() {
                   </label>
                   <textarea
                     value={taskFormData.description}
-                    onChange={(e) => setTaskFormData({ ...taskFormData, description: e.target.value })}
+                    onChange={e =>
+                      setTaskFormData({
+                        ...taskFormData,
+                        description: e.target.value
+                      })
+                    }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -723,11 +836,18 @@ export default function TasksPage() {
                   </label>
                   <select
                     value={taskFormData.type}
-                    onChange={(e) => setTaskFormData({ ...taskFormData, type: e.target.value as Task['type'] })}
+                    onChange={e =>
+                      setTaskFormData({
+                        ...taskFormData,
+                        type: e.target.value as Task['type']
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     {taskTypes.slice(1).map(type => (
-                      <option key={type.value} value={type.value}>{type.label}</option>
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -738,11 +858,18 @@ export default function TasksPage() {
                   </label>
                   <select
                     value={taskFormData.priority}
-                    onChange={(e) => setTaskFormData({ ...taskFormData, priority: e.target.value as Task['priority'] })}
+                    onChange={e =>
+                      setTaskFormData({
+                        ...taskFormData,
+                        priority: e.target.value as Task['priority']
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     {priorityOptions.slice(1).map(priority => (
-                      <option key={priority.value} value={priority.value}>{priority.label}</option>
+                      <option key={priority.value} value={priority.value}>
+                        {priority.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -754,7 +881,12 @@ export default function TasksPage() {
                   <input
                     type="datetime-local"
                     value={taskFormData.dueDate}
-                    onChange={(e) => setTaskFormData({ ...taskFormData, dueDate: e.target.value })}
+                    onChange={e =>
+                      setTaskFormData({
+                        ...taskFormData,
+                        dueDate: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -766,7 +898,12 @@ export default function TasksPage() {
                   <input
                     type="number"
                     value={taskFormData.estimatedDuration}
-                    onChange={(e) => setTaskFormData({ ...taskFormData, estimatedDuration: parseInt(e.target.value) })}
+                    onChange={e =>
+                      setTaskFormData({
+                        ...taskFormData,
+                        estimatedDuration: parseInt(e.target.value)
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -777,7 +914,12 @@ export default function TasksPage() {
                   </label>
                   <textarea
                     value={taskFormData.notes}
-                    onChange={(e) => setTaskFormData({ ...taskFormData, notes: e.target.value })}
+                    onChange={e =>
+                      setTaskFormData({
+                        ...taskFormData,
+                        notes: e.target.value
+                      })
+                    }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Дополнительные заметки..."
@@ -812,7 +954,9 @@ export default function TasksPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Создать шаблон задачи</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Создать шаблон задачи
+              </h2>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
@@ -822,7 +966,12 @@ export default function TasksPage() {
                   <input
                     type="text"
                     value={templateFormData.name}
-                    onChange={(e) => setTemplateFormData({ ...templateFormData, name: e.target.value })}
+                    onChange={e =>
+                      setTemplateFormData({
+                        ...templateFormData,
+                        name: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -833,7 +982,12 @@ export default function TasksPage() {
                   </label>
                   <textarea
                     value={templateFormData.description}
-                    onChange={(e) => setTemplateFormData({ ...templateFormData, description: e.target.value })}
+                    onChange={e =>
+                      setTemplateFormData({
+                        ...templateFormData,
+                        description: e.target.value
+                      })
+                    }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -845,11 +999,18 @@ export default function TasksPage() {
                   </label>
                   <select
                     value={templateFormData.type}
-                    onChange={(e) => setTemplateFormData({ ...templateFormData, type: e.target.value })}
+                    onChange={e =>
+                      setTemplateFormData({
+                        ...templateFormData,
+                        type: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     {taskTypes.slice(1).map(type => (
-                      <option key={type.value} value={type.value}>{type.label}</option>
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -861,7 +1022,12 @@ export default function TasksPage() {
                   <input
                     type="number"
                     value={templateFormData.estimatedDuration}
-                    onChange={(e) => setTemplateFormData({ ...templateFormData, estimatedDuration: parseInt(e.target.value) })}
+                    onChange={e =>
+                      setTemplateFormData({
+                        ...templateFormData,
+                        estimatedDuration: parseInt(e.target.value)
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -872,7 +1038,12 @@ export default function TasksPage() {
                   </label>
                   <textarea
                     value={templateFormData.instructions}
-                    onChange={(e) => setTemplateFormData({ ...templateFormData, instructions: e.target.value })}
+                    onChange={e =>
+                      setTemplateFormData({
+                        ...templateFormData,
+                        instructions: e.target.value
+                      })
+                    }
                     rows={4}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Подробные инструкции по выполнению..."

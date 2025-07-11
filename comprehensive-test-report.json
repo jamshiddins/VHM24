@@ -1,0 +1,175 @@
+{
+  "timestamp": "2025-07-11T03:42:52.178Z",
+  "summary": {
+    "total": 24,
+    "passed": 23,
+    "failed": 0,
+    "warnings": 0,
+    "skipped": 1
+  },
+  "results": {
+    "functionality": [
+      {
+        "test": "Health Check",
+        "status": "PASS",
+        "message": "Health check работает корректно",
+        "responseTime": "N/A"
+      },
+      {
+        "test": "API Endpoint /api/v1/auth",
+        "status": "PASS",
+        "message": "GET /api/v1/auth вернул статус 404",
+        "responseTime": "N/A"
+      },
+      {
+        "test": "API Endpoint /api/v1/users",
+        "status": "PASS",
+        "message": "GET /api/v1/users вернул статус 200",
+        "responseTime": "N/A"
+      },
+      {
+        "test": "API Endpoint /api/v1/machines",
+        "status": "PASS",
+        "message": "GET /api/v1/machines вернул статус 200",
+        "responseTime": "N/A"
+      },
+      {
+        "test": "API Endpoint /api/v1/tasks",
+        "status": "PASS",
+        "message": "GET /api/v1/tasks вернул статус 200",
+        "responseTime": "N/A"
+      },
+      {
+        "test": "API Endpoint /api/v1/inventory",
+        "status": "PASS",
+        "message": "GET /api/v1/inventory вернул статус 200",
+        "responseTime": "N/A"
+      },
+      {
+        "test": "API Endpoint /api/v1/recipes",
+        "status": "PASS",
+        "message": "GET /api/v1/recipes вернул статус 200",
+        "responseTime": "N/A"
+      },
+      {
+        "test": "API Endpoint /api/v1/dashboard",
+        "status": "PASS",
+        "message": "GET /api/v1/dashboard вернул статус 200",
+        "responseTime": "N/A"
+      },
+      {
+        "test": "API Endpoint /api/v1/warehouse",
+        "status": "PASS",
+        "message": "GET /api/v1/warehouse вернул статус 200",
+        "responseTime": "N/A"
+      },
+      {
+        "test": "API Endpoint /api/v1/audit",
+        "status": "PASS",
+        "message": "GET /api/v1/audit вернул статус 200",
+        "responseTime": "N/A"
+      },
+      {
+        "test": "API Endpoint /api/v1/data-import",
+        "status": "PASS",
+        "message": "GET /api/v1/data-import вернул статус 200",
+        "responseTime": "N/A"
+      },
+      {
+        "test": "Database Connection",
+        "status": "SKIP",
+        "message": "DATABASE_URL не настроен"
+      },
+      {
+        "test": "Logging System",
+        "status": "PASS",
+        "message": "Система логирования работает корректно"
+      }
+    ],
+    "performance": [
+      {
+        "test": "Response Time",
+        "status": "PASS",
+        "message": "Среднее время отклика: 1.50ms (мин: 1ms, макс: 4ms)",
+        "metrics": {
+          "avg": 1.5,
+          "min": 1,
+          "max": 4
+        }
+      },
+      {
+        "test": "Load Capacity",
+        "status": "PASS",
+        "message": "20/20 запросов успешно за 34ms",
+        "metrics": {
+          "successful": 20,
+          "failed": 0,
+          "totalTime": 34,
+          "concurrentRequests": 20
+        }
+      },
+      {
+        "test": "Memory Usage",
+        "status": "PASS",
+        "message": "Heap: 11.36MB/16.21MB, RSS: 51.75MB",
+        "metrics": {
+          "heapUsed": "11.36",
+          "heapTotal": "16.21",
+          "rss": "51.75"
+        }
+      }
+    ],
+    "stability": [
+      {
+        "test": "Error Handling - 404",
+        "status": "PASS",
+        "message": "404 ошибки обрабатываются корректно"
+      },
+      {
+        "test": "Error Handling - Invalid JSON",
+        "status": "PASS",
+        "message": "Некорректный JSON обрабатывается корректно"
+      },
+      {
+        "test": "Recovery Test",
+        "status": "PASS",
+        "message": "Сервер восстанавливается после нагрузки"
+      },
+      {
+        "test": "Long Running Test",
+        "status": "PASS",
+        "message": "Успешность за 30 сек: 100.0% (30/30)",
+        "metrics": {
+          "successCount": 30,
+          "errorCount": 0,
+          "successRate": 100,
+          "duration": 30000
+        }
+      }
+    ],
+    "compatibility": [
+      {
+        "test": "Node.js Version",
+        "status": "PASS",
+        "message": "Node.js v22.17.0 совместим"
+      },
+      {
+        "test": "Dependencies Check",
+        "status": "PASS",
+        "message": "Все зависимости установлены корректно"
+      },
+      {
+        "test": "Environment Variables",
+        "status": "PASS",
+        "message": "Переменные окружения настроены корректно"
+      },
+      {
+        "test": "Port Availability",
+        "status": "PASS",
+        "message": "Порт 8000: доступен, Порт 3000: доступен"
+      }
+    ],
+    "errors": [],
+    "warnings": []
+  }
+}

@@ -7,14 +7,14 @@ console.log('🔄 Перезапуск backend с всеми новыми роу
 function startProcess(command, args, cwd, name) {
   return new Promise((resolve, reject) => {
     console.log(`📦 Запуск ${name}...`);
-    
+
     const proc = spawn(command, args, {
       cwd,
       shell: true,
       stdio: 'inherit'
     });
 
-    proc.on('error', (error) => {
+    proc.on('error', error => {
       console.error(`❌ Ошибка запуска ${name}:`, error);
       reject(error);
     });
@@ -42,15 +42,22 @@ async function main() {
     console.log('\n');
 
     console.log('🛑 Остановка старых процессов...');
-    
+
     // Убиваем процессы на портах
     if (process.platform === 'win32') {
       try {
-        await new Promise((resolve) => {
-          spawn('cmd', ['/c', 'for /f "tokens=5" %a in (\'netstat -aon ^| find ":8000"\') do taskkill /F /PID %a'], {
-            shell: true,
-            stdio: 'ignore'
-          }).on('exit', resolve);
+        await new Promise(resolve => {
+          spawn(
+            'cmd',
+            [
+              '/c',
+              'for /f "tokens=5" %a in (\'netstat -aon ^| find ":8000"\') do taskkill /F /PID %a'
+            ],
+            {
+              shell: true,
+              stdio: 'ignore'
+            }
+          ).on('exit', resolve);
         });
       } catch (e) {
         // Игнорируем ошибки
@@ -61,17 +68,21 @@ async function main() {
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Запускаем backend
-    await startProcess('npm', ['start'], path.join(__dirname, 'backend'), 'Backend API');
+    await startProcess(
+      'npm',
+      ['start'],
+      path.join(__dirname, 'backend'),
+      'Backend API'
+    );
 
     console.log('\n✅ ВСЕ РОУТЫ УСПЕШНО ДОБАВЛЕНЫ И РАБОТАЮТ!\n');
     console.log('📍 Проверьте работу:');
     console.log('   http://localhost:8000/health - Health check');
     console.log('   http://localhost:8000/api/v1/dashboard/stats - Статистика');
     console.log('   http://localhost:3000 - Web Dashboard\n');
-    
+
     console.log('💡 Теперь все 404 ошибки должны быть исправлены!');
     console.log('   Обновите страницу в браузере для проверки.\n');
-
   } catch (error) {
     console.error('❌ Ошибка:', error);
     process.exit(1);

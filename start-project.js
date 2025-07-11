@@ -23,23 +23,23 @@ if (!fs.existsSync('backend')) {
 // Функция для запуска процесса
 function startProcess(command, args, cwd, name) {
   console.log(`📦 Запуск ${name}...`);
-  
+
   const proc = spawn(command, args, {
     cwd: path.join(__dirname, cwd),
     shell: true,
     stdio: 'inherit'
   });
-  
-  proc.on('error', (error) => {
+
+  proc.on('error', error => {
     console.error(`❌ Ошибка запуска ${name}:`, error);
   });
-  
-  proc.on('exit', (code) => {
+
+  proc.on('exit', code => {
     if (code !== 0) {
       console.error(`❌ ${name} завершился с кодом ${code}`);
     }
   });
-  
+
   return proc;
 }
 
@@ -49,8 +49,13 @@ const backend = startProcess('npm', ['start'], 'backend', 'Backend API');
 // Ждем немного перед запуском frontend
 setTimeout(() => {
   // Запускаем frontend
-  const frontend = startProcess('npm', ['run', 'dev'], 'apps/web-dashboard', 'Web Dashboard');
-  
+  const frontend = startProcess(
+    'npm',
+    ['run', 'dev'],
+    'apps/web-dashboard',
+    'Web Dashboard'
+  );
+
   console.log('\n✅ Все компоненты запущены!');
   console.log('\n📍 Доступ к системе:');
   console.log('   Web Dashboard: http://localhost:3000');

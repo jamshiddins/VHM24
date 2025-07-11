@@ -4,11 +4,7 @@ module.exports = {
     es2021: true,
     jest: true
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:node/recommended',
-    'prettier'
-  ],
+  extends: ['eslint:recommended', 'plugin:node/recommended', 'prettier'],
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module'
@@ -21,30 +17,30 @@ module.exports = {
     'no-var': 'error',
     'prefer-const': 'error',
     'no-process-exit': 'off', // Разрешаем process.exit в CLI скриптах
-    
+
     // Node.js специфичные правила
     'node/no-unpublished-require': 'off',
     'node/no-missing-require': 'off',
     'node/no-extraneous-require': 'off',
     'node/no-unsupported-features/es-syntax': 'off', // Разрешаем современный JS
     'node/shebang': 'off',
-    
+
     // Стиль кода
-    'indent': ['error', 2],
-    'quotes': ['error', 'single'],
-    'semi': ['error', 'always'],
+    indent: ['error', 2],
+    quotes: ['error', 'single'],
+    semi: ['error', 'always'],
     'comma-dangle': ['error', 'never'],
     'object-curly-spacing': ['error', 'always'],
     'array-bracket-spacing': ['error', 'never'],
-    'curly': 'off', // Отключаем обязательные скобки
-    
+    curly: 'off', // Отключаем обязательные скобки
+
     // Безопасность
     'no-eval': 'error',
     'no-implied-eval': 'error',
     'no-new-func': 'error',
-    
+
     // Лучшие практики
-    'eqeqeq': ['error', 'always'],
+    eqeqeq: ['error', 'always'],
     'no-throw-literal': 'error',
     'prefer-promise-reject-errors': 'error',
     'no-prototype-builtins': 'off',

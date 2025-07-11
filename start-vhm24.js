@@ -28,24 +28,24 @@ const processes = [];
 services.forEach((service, index) => {
   setTimeout(() => {
     console.log(`🚀 Запуск ${service.name} на порту ${service.port}...`);
-    
+
     const proc = spawn('npm', ['start'], {
       cwd: path.join(__dirname, service.path),
       shell: true,
       env: { ...process.env, PORT: service.port }
     });
-    
-    proc.stdout.on('data', (data) => {
+
+    proc.stdout.on('data', data => {
       console.log(`[${service.name}] ${data.toString().trim()}`);
     });
-    
-    proc.stderr.on('data', (data) => {
+
+    proc.stderr.on('data', data => {
       const msg = data.toString().trim();
       if (msg && !msg.includes('ExperimentalWarning')) {
         console.error(`[${service.name}] ⚠️  ${msg}`);
       }
     });
-    
+
     processes.push(proc);
   }, index * 1000); // Задержка между запусками
 });
@@ -53,23 +53,23 @@ services.forEach((service, index) => {
 // Запуск Web Dashboard через 15 секунд
 setTimeout(() => {
   console.log('\n🌐 Запуск Web Dashboard...');
-  
+
   const dashboard = spawn('npm', ['run', 'dev'], {
     cwd: path.join(__dirname, 'apps/web-dashboard'),
     shell: true
   });
-  
-  dashboard.stdout.on('data', (data) => {
+
+  dashboard.stdout.on('data', data => {
     console.log(`[Dashboard] ${data.toString().trim()}`);
   });
-  
-  dashboard.stderr.on('data', (data) => {
+
+  dashboard.stderr.on('data', data => {
     const msg = data.toString().trim();
     if (msg && !msg.includes('ExperimentalWarning')) {
       console.error(`[Dashboard] ⚠️  ${msg}`);
     }
   });
-  
+
   processes.push(dashboard);
 }, 15000);
 

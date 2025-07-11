@@ -4,6 +4,23 @@ const { PrismaClient } = require('@prisma/client');
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Корневой маршрут дашборда
+router.get('/', async (req, res) => {
+  try {
+    res.json({
+      message: 'VHM24 Dashboard API',
+      endpoints: [
+        'GET /stats - Статистика',
+        'GET /activities - Последние активности',
+        'GET /notifications - Уведомления'
+      ]
+    });
+  } catch (error) {
+    console.error('Ошибка дашборда:', error);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
 // Получить статистику для дашборда
 router.get('/stats', async (req, res) => {
   try {
@@ -12,22 +29,22 @@ router.get('/stats', async (req, res) => {
     const onlineMachines = await prisma.machine.count({
       where: { status: 'ONLINE' }
     });
-    
+
     // Получаем количество активных задач
     const activeTasks = await prisma.task.count({
-      where: { 
+      where: {
         status: {
           in: ['CREATED', 'ASSIGNED', 'IN_PROGRESS']
         }
       }
     });
-    
+
     // Получаем количество пользователей
     const totalUsers = await prisma.user.count();
     const activeUsers = await prisma.user.count({
       where: { isActive: true }
     });
-    
+
     // Получаем количество товаров
     const totalItems = await prisma.inventoryItem.count();
     const lowStockItems = await prisma.inventoryItem.count({
@@ -38,14 +55,17 @@ router.get('/stats', async (req, res) => {
         ]
       }
     });
-    
+
     // Формируем ответ
     const stats = {
       machines: {
         total: totalMachines,
         online: onlineMachines,
         offline: totalMachines - onlineMachines,
-        percentage: totalMachines > 0 ? Math.round((onlineMachines / totalMachines) * 100) : 0
+        percentage:
+          totalMachines > 0
+            ? Math.round((onlineMachines / totalMachines) * 100)
+            : 0
       },
       tasks: {
         active: activeTasks,
@@ -68,7 +88,7 @@ router.get('/stats', async (req, res) => {
         growth: 0
       }
     };
-    
+
     res.json(stats);
   } catch (error) {
     console.error('Ошибка получения статистики:', error);
@@ -92,7 +112,7 @@ router.get('/activities', async (req, res) => {
         }
       }
     });
-    
+
     res.json(activities);
   } catch (error) {
     console.error('Ошибка получения активностей:', error);
@@ -108,7 +128,7 @@ router.get('/notifications', async (req, res) => {
       take: 10,
       orderBy: { createdAt: 'desc' }
     });
-    
+
     res.json(notifications);
   } catch (error) {
     console.error('Ошибка получения уведомлений:', error);

@@ -3,6 +3,7 @@
 ## 📋 Что нужно от DigitalOcean
 
 ### 1. DigitalOcean Spaces (S3-совместимое хранилище)
+
 - **Назначение**: Замена MinIO для хранения файлов (изображения, документы, бэкапы)
 - **Стоимость**: $5/месяц за 250GB + $0.02/GB за трафик
 - **Регионы**: Рекомендуется Frankfurt (fra1) или Amsterdam (ams3) для лучшей скорости
@@ -16,9 +17,10 @@
    - Войдите в свой аккаунт
 
 2. **Создайте Spaces**
+
    ```
    Spaces → Create a Space
-   
+
    Настройки:
    - Datacenter region: Frankfurt (fra1) или Amsterdam (ams3)
    - Enable CDN: Yes (для быстрой загрузки файлов)
@@ -38,9 +40,10 @@
 ### Шаг 2: Создание API ключей
 
 1. **Перейдите в API раздел**
+
    ```
    API → Spaces access keys → Generate New Key
-   
+
    Name: VHM24 Production
    ```
 
@@ -94,6 +97,7 @@ railway variables set S3_CDN_URL="https://vhm24-uploads.fra1.cdn.digitaloceanspa
 ## 📁 Структура файлов в Spaces
 
 ### vhm24-uploads (основное хранилище)
+
 ```
 /uploads/
   /images/
@@ -107,6 +111,7 @@ railway variables set S3_CDN_URL="https://vhm24-uploads.fra1.cdn.digitaloceanspa
 ```
 
 ### vhm24-backups (бэкапы)
+
 ```
 /database/
   /daily/          # Ежедневные бэкапы БД
@@ -119,6 +124,7 @@ railway variables set S3_CDN_URL="https://vhm24-uploads.fra1.cdn.digitaloceanspa
 ## 🔒 Настройка безопасности
 
 ### 1. Bucket Policy для vhm24-uploads
+
 ```json
 {
   "Version": "2012-10-17",
@@ -142,6 +148,7 @@ railway variables set S3_CDN_URL="https://vhm24-uploads.fra1.cdn.digitaloceanspa
 ```
 
 ### 2. Bucket Policy для vhm24-backups
+
 ```json
 {
   "Version": "2012-10-17",
@@ -151,10 +158,7 @@ railway variables set S3_CDN_URL="https://vhm24-uploads.fra1.cdn.digitaloceanspa
       "Effect": "Deny",
       "Principal": "*",
       "Action": "s3:*",
-      "Resource": [
-        "arn:aws:s3:::vhm24-backups",
-        "arn:aws:s3:::vhm24-backups/*"
-      ]
+      "Resource": ["arn:aws:s3:::vhm24-backups", "arn:aws:s3:::vhm24-backups/*"]
     }
   ]
 }
@@ -178,14 +182,16 @@ const s3 = new AWS.S3({
 // Тест загрузки файла
 async function testUpload() {
   try {
-    const result = await s3.upload({
-      Bucket: 'vhm24-uploads',
-      Key: 'test/test-file.txt',
-      Body: 'Hello from VHM24!',
-      ContentType: 'text/plain',
-      ACL: 'public-read'
-    }).promise();
-    
+    const result = await s3
+      .upload({
+        Bucket: 'vhm24-uploads',
+        Key: 'test/test-file.txt',
+        Body: 'Hello from VHM24!',
+        ContentType: 'text/plain',
+        ACL: 'public-read'
+      })
+      .promise();
+
     console.log('✅ Upload successful:', result.Location);
   } catch (error) {
     console.error('❌ Upload failed:', error);
@@ -198,26 +204,28 @@ testUpload();
 ## 💰 Оптимизация расходов
 
 ### 1. Lifecycle правила
+
 ```json
 {
   "Rules": [
     {
       "ID": "DeleteTempFiles",
       "Status": "Enabled",
-      "Filter": {"Prefix": "temp/"},
-      "Expiration": {"Days": 7}
+      "Filter": { "Prefix": "temp/" },
+      "Expiration": { "Days": 7 }
     },
     {
       "ID": "ArchiveOldBackups",
       "Status": "Enabled",
-      "Filter": {"Prefix": "database/daily/"},
-      "Expiration": {"Days": 30}
+      "Filter": { "Prefix": "database/daily/" },
+      "Expiration": { "Days": 30 }
     }
   ]
 }
 ```
 
 ### 2. Мониторинг использования
+
 - Настройте алерты в DigitalOcean для контроля расходов
 - Регулярно очищайте временные файлы
 - Используйте сжатие для бэкапов
@@ -246,11 +254,13 @@ railway domain
 ## 🔍 Проверка работы
 
 1. **Проверьте health endpoint:**
+
    ```bash
    curl https://your-app.railway.app/health
    ```
 
 2. **Проверьте загрузку файлов:**
+
    ```bash
    curl -X POST https://your-app.railway.app/api/v1/upload \
      -H "Authorization: Bearer YOUR_TOKEN" \
@@ -275,4 +285,5 @@ railway domain
 
 ---
 
-После выполнения всех шагов ваш VHM24 будет полностью готов к production использованию на Railway с DigitalOcean Spaces!
+После выполнения всех шагов ваш VHM24 будет полностью готов к production использованию на Railway с
+DigitalOcean Spaces!

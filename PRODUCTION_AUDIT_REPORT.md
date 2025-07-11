@@ -43,34 +43,49 @@ Security проблемы не найдены
 - Sync FS operations in deploy\fix-all-errors.js: fs.readFileSync, fs.readFileSync, fs.readFileSync
 - Sync FS operations in deploy\fix-all-errors.js: fs.writeFileSync
 - Sync FS operations in deploy\fix-all-errors.js: fs.existsSync
-- Sync FS operations in deploy\scripts\auto-fixer.js: fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
-- Sync FS operations in deploy\scripts\auto-fixer.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in deploy\scripts\auto-fixer.js: fs.readFileSync, fs.readFileSync,
+  fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
+- Sync FS operations in deploy\scripts\auto-fixer.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync
 - Sync FS operations in deploy\scripts\auto-fixer.js: fs.existsSync, fs.existsSync
 - Sync FS operations in deploy\scripts\project-analyzer.js: fs.readFileSync
-- Sync FS operations in deploy\scripts\project-analyzer.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
-- Sync FS operations in deploy\scripts\project-analyzer.js: fs.readdirSync, fs.readdirSync, fs.readdirSync
-- Sync FS operations in deploy\scripts\test-after-fixes.js: fs.readFileSync, fs.readFileSync, fs.readFileSync
+- Sync FS operations in deploy\scripts\project-analyzer.js: fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in deploy\scripts\project-analyzer.js: fs.readdirSync, fs.readdirSync,
+  fs.readdirSync
+- Sync FS operations in deploy\scripts\test-after-fixes.js: fs.readFileSync, fs.readFileSync,
+  fs.readFileSync
 - Sync FS operations in deploy\scripts\test-after-fixes.js: fs.writeFileSync
-- Sync FS operations in deploy\scripts\test-after-fixes.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in deploy\scripts\test-after-fixes.js: fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync
 - Sync FS operations in deploy\scripts\test-after-fixes.js: fs.statSync
-- Sync FS operations in deploy\setup-error-fixing-system.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
-- Sync FS operations in deploy\setup-error-fixing-system.js: fs.existsSync, fs.existsSync, fs.existsSync
-- Sync FS operations in deploy-error-fixing-system-fixed.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
-- Sync FS operations in deploy-error-fixing-system-fixed.js: fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in deploy\setup-error-fixing-system.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in deploy\setup-error-fixing-system.js: fs.existsSync, fs.existsSync,
+  fs.existsSync
+- Sync FS operations in deploy-error-fixing-system-fixed.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in deploy-error-fixing-system-fixed.js: fs.existsSync, fs.existsSync,
+  fs.existsSync
 - Sync FS operations in deploy-error-fixing-system-fixed.js: fs.readdirSync
-- Sync FS operations in deploy-error-fixing-system.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in deploy-error-fixing-system.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync
 - Sync FS operations in deploy-error-fixing-system.js: fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in deploy-error-fixing-system.js: fs.readdirSync
 - Sync FS operations in final-prepare.js: fs.readFileSync
 - Sync FS operations in final-prepare.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
 - Sync FS operations in final-prepare.js: fs.existsSync, fs.existsSync
-- Sync FS operations in final-production-audit.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in final-production-audit.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in final-restart-all.js: fs.existsSync, fs.existsSync
 - Sync FS operations in fix-all-errors-and-start.js: fs.existsSync, fs.existsSync
 - Sync FS operations in fix-all-errors.js: fs.readFileSync, fs.readFileSync
 - Sync FS operations in fix-all-errors.js: fs.writeFileSync
-- Sync FS operations in fix-all-errors.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
-- Sync FS operations in fix-dependencies-and-start.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in fix-all-errors.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync
+- Sync FS operations in fix-dependencies-and-start.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in fix-fast-jwt.js: fs.existsSync
 - Sync FS operations in fix-prisma-imports.js: fs.existsSync
 - Sync FS operations in install-dependencies.js: fs.existsSync
@@ -78,114 +93,188 @@ Security проблемы не найдены
 - Sync FS operations in quick-setup.js: fs.existsSync
 - Sync FS operations in railway-deploy.js: fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in railway-migrate.js: fs.existsSync
-- Sync FS operations in railway-readiness-check.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in railway-readiness-check.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in railway-start-final.js: fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in railway-start-monolith.js: fs.existsSync
 - Sync FS operations in railway-start-unified.js: fs.existsSync, fs.existsSync
 - Sync FS operations in railway-start.js: fs.existsSync, fs.existsSync
-- Sync FS operations in scripts\auto-fixer.js: fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
-- Sync FS operations in scripts\auto-fixer.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
-- Sync FS operations in scripts\auto-fixer.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\auto-fixer.js: fs.readFileSync, fs.readFileSync, fs.readFileSync,
+  fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
+- Sync FS operations in scripts\auto-fixer.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in scripts\auto-fixer.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in scripts\auto-fixer.js: fs.readdirSync
-- Sync FS operations in scripts\check-railway-compatibility.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
-- Sync FS operations in scripts\check-railway-compatibility.js: fs.readdirSync, fs.readdirSync, fs.readdirSync
-- Sync FS operations in scripts\check-railway-dependencies.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\check-railway-compatibility.js: fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\check-railway-compatibility.js: fs.readdirSync, fs.readdirSync,
+  fs.readdirSync
+- Sync FS operations in scripts\check-railway-dependencies.js: fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync
 - Sync FS operations in scripts\check-railway-dependencies.js: fs.statSync, fs.statSync, fs.statSync
-- Sync FS operations in scripts\check-railway-dependencies.js: fs.readdirSync, fs.readdirSync, fs.readdirSync
-- Sync FS operations in scripts\check-system.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
-- Sync FS operations in scripts\comprehensive-fix.js: fs.readFileSync, fs.readFileSync, fs.readFileSync
-- Sync FS operations in scripts\comprehensive-fix.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in scripts\check-railway-dependencies.js: fs.readdirSync, fs.readdirSync,
+  fs.readdirSync
+- Sync FS operations in scripts\check-system.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\comprehensive-fix.js: fs.readFileSync, fs.readFileSync,
+  fs.readFileSync
+- Sync FS operations in scripts\comprehensive-fix.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync
 - Sync FS operations in scripts\comprehensive-fix.js: fs.existsSync, fs.existsSync
-- Sync FS operations in scripts\comprehensive-test.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\comprehensive-test.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in scripts\comprehensive-test.js: fs.statSync
-- Sync FS operations in scripts\comprehensive-test.js: fs.readdirSync, fs.readdirSync, fs.readdirSync
+- Sync FS operations in scripts\comprehensive-test.js: fs.readdirSync, fs.readdirSync,
+  fs.readdirSync
 - Sync FS operations in scripts\emergency-fix.js: fs.readFileSync, fs.readFileSync, fs.readFileSync
-- Sync FS operations in scripts\emergency-fix.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
-- Sync FS operations in scripts\emergency-fix.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\emergency-fix.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in scripts\emergency-fix.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in scripts\emergency-fix.js: fs.statSync
 - Sync FS operations in scripts\emergency-fix.js: fs.readdirSync
 - Sync FS operations in scripts\fix-babel.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
 - Sync FS operations in scripts\fix-babel.js: fs.existsSync, fs.existsSync
 - Sync FS operations in scripts\fix-canvas.js: fs.readFileSync
 - Sync FS operations in scripts\fix-canvas.js: fs.writeFileSync
-- Sync FS operations in scripts\fix-critical-issues.js: fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
-- Sync FS operations in scripts\fix-critical-issues.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
-- Sync FS operations in scripts\fix-critical-issues.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
-- Sync FS operations in scripts\fix-critical-remaining.js: fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
-- Sync FS operations in scripts\fix-critical-remaining.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
-- Sync FS operations in scripts\fix-critical-remaining.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
-- Sync FS operations in scripts\fix-dependencies.js: fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
-- Sync FS operations in scripts\fix-dependencies.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
-- Sync FS operations in scripts\fix-dependencies.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\fix-critical-issues.js: fs.readFileSync, fs.readFileSync,
+  fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync,
+  fs.readFileSync
+- Sync FS operations in scripts\fix-critical-issues.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync
+- Sync FS operations in scripts\fix-critical-issues.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\fix-critical-remaining.js: fs.readFileSync, fs.readFileSync,
+  fs.readFileSync, fs.readFileSync, fs.readFileSync
+- Sync FS operations in scripts\fix-critical-remaining.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in scripts\fix-critical-remaining.js: fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\fix-dependencies.js: fs.readFileSync, fs.readFileSync,
+  fs.readFileSync, fs.readFileSync, fs.readFileSync
+- Sync FS operations in scripts\fix-dependencies.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in scripts\fix-dependencies.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in scripts\fix-dependencies.js: fs.statSync, fs.statSync
 - Sync FS operations in scripts\fix-dependencies.js: fs.readdirSync, fs.readdirSync, fs.readdirSync
 - Sync FS operations in scripts\fix-env.js: fs.readFileSync, fs.readFileSync
-- Sync FS operations in scripts\fix-env.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in scripts\fix-env.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync
 - Sync FS operations in scripts\fix-env.js: fs.existsSync
 - Sync FS operations in scripts\fix-fast-jwt.js: fs.readFileSync
 - Sync FS operations in scripts\fix-fast-jwt.js: fs.writeFileSync
 - Sync FS operations in scripts\fix-jest-setup.js: fs.readFileSync, fs.readFileSync
-- Sync FS operations in scripts\fix-jest-setup.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in scripts\fix-jest-setup.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
 - Sync FS operations in scripts\fix-jest-setup.js: fs.existsSync
 - Sync FS operations in scripts\fix-jest-setup.js: fs.statSync
 - Sync FS operations in scripts\fix-jest-setup.js: fs.readdirSync
-- Sync FS operations in scripts\fix-railway-dependencies.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\fix-railway-dependencies.js: fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in scripts\fix-railway-dependencies.js: fs.statSync, fs.statSync, fs.statSync
-- Sync FS operations in scripts\fix-railway-dependencies.js: fs.readdirSync, fs.readdirSync, fs.readdirSync
-- Sync FS operations in scripts\fix-remaining-issues.js: fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
-- Sync FS operations in scripts\fix-remaining-issues.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
-- Sync FS operations in scripts\fix-remaining-issues.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\fix-railway-dependencies.js: fs.readdirSync, fs.readdirSync,
+  fs.readdirSync
+- Sync FS operations in scripts\fix-remaining-issues.js: fs.readFileSync, fs.readFileSync,
+  fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
+- Sync FS operations in scripts\fix-remaining-issues.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in scripts\fix-remaining-issues.js: fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in scripts\fix-tests.js: fs.readFileSync
-- Sync FS operations in scripts\fix-tests.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in scripts\fix-tests.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
 - Sync FS operations in scripts\fix-tests.js: fs.existsSync, fs.existsSync
-- Sync FS operations in scripts\prepare-railway.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
-- Sync FS operations in scripts\project-analyzer.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\prepare-railway.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync
+- Sync FS operations in scripts\project-analyzer.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in scripts\project-analyzer.js: fs.readdirSync, fs.readdirSync, fs.readdirSync
-- Sync FS operations in scripts\safe-fixes.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\safe-fixes.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync
 - Sync FS operations in scripts\safe-fixes.js: fs.readdirSync, fs.readdirSync
-- Sync FS operations in scripts\secure-credentials.js: fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
-- Sync FS operations in scripts\secure-credentials.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
-- Sync FS operations in scripts\secure-credentials.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in scripts\secure-credentials.js: fs.readFileSync, fs.readFileSync,
+  fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync,
+  fs.readFileSync
+- Sync FS operations in scripts\secure-credentials.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in scripts\secure-credentials.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync
 - Sync FS operations in scripts\standardize-modules.js: fs.readFileSync
 - Sync FS operations in scripts\standardize-modules.js: fs.writeFileSync
 - Sync FS operations in scripts\start-production.js: fs.existsSync
 - Sync FS operations in scripts\test-after-fixes.js: fs.readFileSync
 - Sync FS operations in scripts\test-after-fixes.js: fs.existsSync, fs.existsSync
-- Sync FS operations in scripts\verify-and-fix.js: fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
-- Sync FS operations in scripts\verify-and-fix.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in scripts\verify-and-fix.js: fs.readFileSync, fs.readFileSync,
+  fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
+- Sync FS operations in scripts\verify-and-fix.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
 - Sync FS operations in scripts\verify-and-fix.js: fs.existsSync, fs.existsSync
 - Sync FS operations in services\data-import\src\index.js: fs.existsSync, fs.existsSync
 - Sync FS operations in services\data-import\src\index.js: fs.statSync
 - Sync FS operations in services\telegram-bot\src\handlers\uploadHandler.js: fs.existsSync
-- Sync FS operations in services\telegram-bot\src\handlers\uploadHandler.js: fs.statSync, fs.statSync
+- Sync FS operations in services\telegram-bot\src\handlers\uploadHandler.js: fs.statSync,
+  fs.statSync
 - Sync FS operations in services\telegram-bot\src\handlers\uploadHandler.js: fs.readdirSync
 - Sync FS operations in services\telegram-bot\src\handlers\warehouseHandler.js: fs.existsSync
 - Sync FS operations in services\telegram-bot\src\utils\qrScanner.js: fs.existsSync
-- Sync FS operations in setup-error-fixing-system.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
-- Sync FS operations in setup-error-fixing-system.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in setup-error-fixing-system.js: fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in setup-error-fixing-system.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync
 - Sync FS operations in start-all-services-with-audit.js: fs.existsSync, fs.existsSync
 - Sync FS operations in start-all-services.js: fs.existsSync
 - Sync FS operations in start-dashboard.js: fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in start-full-system-with-bot.js: fs.existsSync, fs.existsSync, fs.existsSync
-- Sync FS operations in start-optimized.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in start-optimized.js: fs.existsSync, fs.existsSync, fs.existsSync,
+  fs.existsSync, fs.existsSync
 - Sync FS operations in start-project.js: fs.existsSync, fs.existsSync
 - Sync FS operations in start-services.js: fs.existsSync, fs.existsSync
 - Sync FS operations in test-new-features.js: fs.existsSync
 - Sync FS operations in update-fastify-dependencies.js: fs.existsSync
 - Sync FS operations in update-fastify.js: fs.existsSync, fs.existsSync
-- Sync FS operations in vhm24-error-fixing-system-2025-07-10\fix-all-errors.js: fs.readFileSync, fs.readFileSync
+- Sync FS operations in vhm24-error-fixing-system-2025-07-10\fix-all-errors.js: fs.readFileSync,
+  fs.readFileSync
 - Sync FS operations in vhm24-error-fixing-system-2025-07-10\fix-all-errors.js: fs.writeFileSync
-- Sync FS operations in vhm24-error-fixing-system-2025-07-10\fix-all-errors.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
-- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\auto-fixer.js: fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync
-- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\auto-fixer.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
-- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\auto-fixer.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in vhm24-error-fixing-system-2025-07-10\fix-all-errors.js: fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\auto-fixer.js: fs.readFileSync,
+  fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync, fs.readFileSync,
+  fs.readFileSync
+- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\auto-fixer.js:
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync,
+  fs.writeFileSync
+- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\auto-fixer.js: fs.existsSync,
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
 - Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\auto-fixer.js: fs.readdirSync
-- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\project-analyzer.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
-- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\project-analyzer.js: fs.readdirSync, fs.readdirSync, fs.readdirSync
-- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\test-after-fixes.js: fs.readFileSync
-- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\test-after-fixes.js: fs.existsSync, fs.existsSync
-- Sync FS operations in vhm24-error-fixing-system-2025-07-10\setup-error-fixing-system.js: fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
-- Sync FS operations in vhm24-error-fixing-system-2025-07-10\setup-error-fixing-system.js: fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\project-analyzer.js:
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
+- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\project-analyzer.js:
+  fs.readdirSync, fs.readdirSync, fs.readdirSync
+- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\test-after-fixes.js:
+  fs.readFileSync
+- Sync FS operations in vhm24-error-fixing-system-2025-07-10\scripts\test-after-fixes.js:
+  fs.existsSync, fs.existsSync
+- Sync FS operations in vhm24-error-fixing-system-2025-07-10\setup-error-fixing-system.js:
+  fs.writeFileSync, fs.writeFileSync, fs.writeFileSync, fs.writeFileSync
+- Sync FS operations in vhm24-error-fixing-system-2025-07-10\setup-error-fixing-system.js:
+  fs.existsSync, fs.existsSync, fs.existsSync, fs.existsSync
 - Potential logger recursion in cleanup-project.js:118
 - Potential logger recursion in create-telegram-user.js:81
 - Potential logger recursion in deploy\fix-all-errors.js:57
@@ -703,4 +792,4 @@ Security проблемы не найдены
 
 ---
 
-*Отчет создан: 2025-07-10T18:25:41.268Z*
+_Отчет создан: 2025-07-10T18:25:41.268Z_

@@ -1,13 +1,30 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Upload, Download, FileText, Calendar, Clock, CheckCircle, AlertCircle, XCircle, Eye, Trash2 } from 'lucide-react';
+import {
+  Upload,
+  Download,
+  FileText,
+  Calendar,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  XCircle,
+  Eye,
+  Trash2
+} from 'lucide-react';
 
 interface ImportJob {
   id: number;
   fileName: string;
   fileSize: number;
-  dataType: 'SALES' | 'INVENTORY' | 'MAINTENANCE' | 'ROUTES' | 'USERS' | 'TASKS';
+  dataType:
+    | 'SALES'
+    | 'INVENTORY'
+    | 'MAINTENANCE'
+    | 'ROUTES'
+    | 'USERS'
+    | 'TASKS';
   status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
   totalRecords: number;
   processedRecords: number;
@@ -35,9 +52,12 @@ export default function DataImportPage() {
   const [importJobs, setImportJobs] = useState<ImportJob[]>([]);
   const [historicalData, setHistoricalData] = useState<HistoricalData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'import' | 'history' | 'templates'>('import');
+  const [activeTab, setActiveTab] = useState<
+    'import' | 'history' | 'templates'
+  >('import');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedDataType, setSelectedDataType] = useState<ImportJob['dataType']>('SALES');
+  const [selectedDataType, setSelectedDataType] =
+    useState<ImportJob['dataType']>('SALES');
   const [dateRange, setDateRange] = useState({
     startDate: '',
     endDate: ''
@@ -47,12 +67,36 @@ export default function DataImportPage() {
   const [selectedJob, setSelectedJob] = useState<ImportJob | null>(null);
 
   const dataTypes = [
-    { value: 'SALES', label: 'Продажи', description: 'Исторические данные о продажах' },
-    { value: 'INVENTORY', label: 'Инвентарь', description: 'Остатки товаров на определённые даты' },
-    { value: 'MAINTENANCE', label: 'Обслуживание', description: 'История технического обслуживания' },
-    { value: 'ROUTES', label: 'Маршруты', description: 'Исторические маршруты водителей' },
-    { value: 'USERS', label: 'Пользователи', description: 'Данные о пользователях системы' },
-    { value: 'TASKS', label: 'Задачи', description: 'Выполненные задачи и их история' }
+    {
+      value: 'SALES',
+      label: 'Продажи',
+      description: 'Исторические данные о продажах'
+    },
+    {
+      value: 'INVENTORY',
+      label: 'Инвентарь',
+      description: 'Остатки товаров на определённые даты'
+    },
+    {
+      value: 'MAINTENANCE',
+      label: 'Обслуживание',
+      description: 'История технического обслуживания'
+    },
+    {
+      value: 'ROUTES',
+      label: 'Маршруты',
+      description: 'Исторические маршруты водителей'
+    },
+    {
+      value: 'USERS',
+      label: 'Пользователи',
+      description: 'Данные о пользователях системы'
+    },
+    {
+      value: 'TASKS',
+      label: 'Задачи',
+      description: 'Выполненные задачи и их история'
+    }
   ];
 
   useEffect(() => {
@@ -103,7 +147,7 @@ export default function DataImportPage() {
 
       const response = await fetch('/api/v1/data-import/preview', {
         method: 'POST',
-        body: formData,
+        body: formData
       });
 
       const data = await response.json();
@@ -128,7 +172,7 @@ export default function DataImportPage() {
 
       const response = await fetch('/api/v1/data-import/upload', {
         method: 'POST',
-        body: formData,
+        body: formData
       });
 
       const data = await response.json();
@@ -138,7 +182,9 @@ export default function DataImportPage() {
         setShowPreview(false);
         setPreviewData([]);
         // Сбросить форму
-        const fileInput = document.getElementById('file-input') as HTMLInputElement;
+        const fileInput = document.getElementById(
+          'file-input'
+        ) as HTMLInputElement;
         if (fileInput) fileInput.value = '';
       }
     } catch (error) {
@@ -180,11 +226,16 @@ export default function DataImportPage() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'PENDING': return 'Ожидает';
-      case 'PROCESSING': return 'Обрабатывается';
-      case 'COMPLETED': return 'Завершено';
-      case 'FAILED': return 'Ошибка';
-      default: return status;
+      case 'PENDING':
+        return 'Ожидает';
+      case 'PROCESSING':
+        return 'Обрабатывается';
+      case 'COMPLETED':
+        return 'Завершено';
+      case 'FAILED':
+        return 'Ошибка';
+      default:
+        return status;
     }
   };
 
@@ -215,7 +266,9 @@ export default function DataImportPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Импорт данных</h1>
-          <p className="text-gray-600">Импорт исторических данных с датой и временем</p>
+          <p className="text-gray-600">
+            Импорт исторических данных с датой и временем
+          </p>
         </div>
         <div className="flex gap-2">
           <button
@@ -279,7 +332,7 @@ export default function DataImportPage() {
           {/* Upload Form */}
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <h2 className="text-lg font-semibold mb-4">Загрузка файла</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -287,15 +340,22 @@ export default function DataImportPage() {
                 </label>
                 <select
                   value={selectedDataType}
-                  onChange={(e) => setSelectedDataType(e.target.value as ImportJob['dataType'])}
+                  onChange={e =>
+                    setSelectedDataType(e.target.value as ImportJob['dataType'])
+                  }
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   {dataTypes.map(type => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
                   ))}
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
-                  {dataTypes.find(dt => dt.value === selectedDataType)?.description}
+                  {
+                    dataTypes.find(dt => dt.value === selectedDataType)
+                      ?.description
+                  }
                 </p>
               </div>
 
@@ -322,7 +382,9 @@ export default function DataImportPage() {
                 <input
                   type="date"
                   value={dateRange.startDate}
-                  onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
+                  onChange={e =>
+                    setDateRange({ ...dateRange, startDate: e.target.value })
+                  }
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -334,7 +396,9 @@ export default function DataImportPage() {
                 <input
                   type="date"
                   value={dateRange.endDate}
-                  onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+                  onChange={e =>
+                    setDateRange({ ...dateRange, endDate: e.target.value })
+                  }
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -345,9 +409,12 @@ export default function DataImportPage() {
                 <div className="flex items-center gap-2">
                   <FileText className="w-5 h-5 text-blue-500" />
                   <div>
-                    <p className="font-medium text-blue-900">{selectedFile.name}</p>
+                    <p className="font-medium text-blue-900">
+                      {selectedFile.name}
+                    </p>
                     <p className="text-sm text-blue-700">
-                      Размер: {formatFileSize(selectedFile.size)} | Тип: {getDataTypeText(selectedDataType)}
+                      Размер: {formatFileSize(selectedFile.size)} | Тип:{' '}
+                      {getDataTypeText(selectedDataType)}
                     </p>
                   </div>
                 </div>
@@ -360,7 +427,9 @@ export default function DataImportPage() {
                   setSelectedFile(null);
                   setShowPreview(false);
                   setPreviewData([]);
-                  const fileInput = document.getElementById('file-input') as HTMLInputElement;
+                  const fileInput = document.getElementById(
+                    'file-input'
+                  ) as HTMLInputElement;
                   if (fileInput) fileInput.value = '';
                 }}
                 className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-50"
@@ -380,13 +449,18 @@ export default function DataImportPage() {
           {/* Preview */}
           {showPreview && previewData.length > 0 && (
             <div className="bg-white rounded-lg shadow-sm border p-6">
-              <h3 className="text-lg font-semibold mb-4">Предварительный просмотр</h3>
+              <h3 className="text-lg font-semibold mb-4">
+                Предварительный просмотр
+              </h3>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
                       {Object.keys(previewData[0] || {}).map(key => (
-                        <th key={key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th
+                          key={key}
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
                           {key}
                         </th>
                       ))}
@@ -396,7 +470,10 @@ export default function DataImportPage() {
                     {previewData.slice(0, 5).map((row, index) => (
                       <tr key={index}>
                         {Object.values(row).map((value: any, cellIndex) => (
-                          <td key={cellIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td
+                            key={cellIndex}
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                          >
                             {String(value)}
                           </td>
                         ))}
@@ -444,14 +521,18 @@ export default function DataImportPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {importJobs.map((job) => (
+                {importJobs.map(job => (
                   <tr key={job.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <FileText className="w-5 h-5 text-gray-400 mr-3" />
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{job.fileName}</div>
-                          <div className="text-sm text-gray-500">{formatFileSize(job.fileSize)}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {job.fileName}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {formatFileSize(job.fileSize)}
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -459,7 +540,9 @@ export default function DataImportPage() {
                       {getDataTypeText(job.dataType)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(job.status)}`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(job.status)}`}
+                      >
                         {getStatusText(job.status)}
                       </span>
                     </td>
@@ -471,7 +554,9 @@ export default function DataImportPage() {
                         <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
                           <div
                             className="bg-blue-600 h-2 rounded-full"
-                            style={{ width: `${(job.processedRecords / job.totalRecords) * 100}%` }}
+                            style={{
+                              width: `${(job.processedRecords / job.totalRecords) * 100}%`
+                            }}
                           ></div>
                         </div>
                       )}
@@ -484,9 +569,14 @@ export default function DataImportPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {job.startDate && job.endDate ? (
                         <div>
-                          <div>{new Date(job.startDate).toLocaleDateString('ru-RU')}</div>
+                          <div>
+                            {new Date(job.startDate).toLocaleDateString(
+                              'ru-RU'
+                            )}
+                          </div>
                           <div className="text-xs text-gray-500">
-                            до {new Date(job.endDate).toLocaleDateString('ru-RU')}
+                            до{' '}
+                            {new Date(job.endDate).toLocaleDateString('ru-RU')}
                           </div>
                         </div>
                       ) : (
@@ -522,14 +612,21 @@ export default function DataImportPage() {
       {/* Templates Tab */}
       {activeTab === 'templates' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dataTypes.map((dataType) => (
-            <div key={dataType.value} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+          {dataTypes.map(dataType => (
+            <div
+              key={dataType.value}
+              className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
+            >
               <div className="p-6">
                 <div className="flex items-center mb-4">
                   <FileText className="w-8 h-8 text-blue-500 mr-3" />
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{dataType.label}</h3>
-                    <p className="text-sm text-gray-500">{dataType.description}</p>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {dataType.label}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {dataType.description}
+                    </p>
                   </div>
                 </div>
 
@@ -538,12 +635,18 @@ export default function DataImportPage() {
                     <strong>Обязательные поля:</strong>
                   </div>
                   <div className="text-xs text-gray-500">
-                    {dataType.value === 'SALES' && 'date, time, machine_id, product_id, quantity, amount'}
-                    {dataType.value === 'INVENTORY' && 'date, time, item_id, quantity, location'}
-                    {dataType.value === 'MAINTENANCE' && 'date, time, machine_id, type, description, technician_id'}
-                    {dataType.value === 'ROUTES' && 'date, time, driver_id, route_name, start_location, end_location'}
-                    {dataType.value === 'USERS' && 'username, first_name, last_name, role, created_date'}
-                    {dataType.value === 'TASKS' && 'date, time, title, type, assigned_to, status, description'}
+                    {dataType.value === 'SALES' &&
+                      'date, time, machine_id, product_id, quantity, amount'}
+                    {dataType.value === 'INVENTORY' &&
+                      'date, time, item_id, quantity, location'}
+                    {dataType.value === 'MAINTENANCE' &&
+                      'date, time, machine_id, type, description, technician_id'}
+                    {dataType.value === 'ROUTES' &&
+                      'date, time, driver_id, route_name, start_location, end_location'}
+                    {dataType.value === 'USERS' &&
+                      'username, first_name, last_name, role, created_date'}
+                    {dataType.value === 'TASKS' &&
+                      'date, time, title, type, assigned_to, status, description'}
                   </div>
                 </div>
 
@@ -570,44 +673,78 @@ export default function DataImportPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Файл</label>
-                    <p className="text-sm text-gray-900">{selectedJob.fileName}</p>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Файл
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedJob.fileName}
+                    </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Размер</label>
-                    <p className="text-sm text-gray-900">{formatFileSize(selectedJob.fileSize)}</p>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Размер
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {formatFileSize(selectedJob.fileSize)}
+                    </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Тип данных</label>
-                    <p className="text-sm text-gray-900">{getDataTypeText(selectedJob.dataType)}</p>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Тип данных
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {getDataTypeText(selectedJob.dataType)}
+                    </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Статус</label>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedJob.status)}`}>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Статус
+                    </label>
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedJob.status)}`}
+                    >
                       {getStatusText(selectedJob.status)}
                     </span>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Всего записей</label>
-                    <p className="text-sm text-gray-900">{selectedJob.totalRecords}</p>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Всего записей
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedJob.totalRecords}
+                    </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Обработано</label>
-                    <p className="text-sm text-gray-900">{selectedJob.processedRecords}</p>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Обработано
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedJob.processedRecords}
+                    </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Ошибок</label>
-                    <p className="text-sm text-gray-900">{selectedJob.errorRecords}</p>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Ошибок
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedJob.errorRecords}
+                    </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Создан</label>
-                    <p className="text-sm text-gray-900">{new Date(selectedJob.createdAt).toLocaleString('ru-RU')}</p>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Создан
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {new Date(selectedJob.createdAt).toLocaleString('ru-RU')}
+                    </p>
                   </div>
                 </div>
 
                 {selectedJob.errors && selectedJob.errors.length > 0 && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Ошибки</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Ошибки
+                    </label>
                     <div className="bg-red-50 border border-red-200 rounded-lg p-3 max-h-40 overflow-y-auto">
                       {selectedJob.errors.map((error, index) => (
                         <div key={index} className="text-sm text-red-700 mb-1">

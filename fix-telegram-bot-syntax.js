@@ -84,19 +84,19 @@ content = content.replace(
 // Исправляем winston logger
 content = content.replace(
   /]\s*} catch \(error\) {\s*logger\.error\('Error:', error\);\s*throw error;\s*}\s*}\);/g,
-  "]);"
+  ']);'
 );
 
 // Исправляем config объект
 content = content.replace(
   /}\s*} catch \(error\) {\s*logger\.error\('Error:', error\);\s*throw error;\s*}\s*};/g,
-  "};"
+  '};'
 );
 
 // Исправляем if блоки
 content = content.replace(
   /process\.exit\(1\);\s*} catch \(error\) {\s*logger\.error\('Error:', error\);\s*throw error;\s*}\s*}/g,
-  "process.exit(1);"
+  'process.exit(1);'
 );
 
 // Исправляем bot создание
@@ -107,7 +107,7 @@ content = content.replace(
 
 content = content.replace(
   /bot = new TelegramBot\(config\.telegramToken, { polling: config\.polling }\);\s*} catch \(error\) {\s*logger\.error\('Error:', error\);\s*throw error;\s*}\s*}/g,
-  "bot = new TelegramBot(config.telegramToken, { polling: config.polling });"
+  'bot = new TelegramBot(config.telegramToken, { polling: config.polling });'
 );
 
 // Исправляем error handlers
@@ -124,35 +124,35 @@ content = content.replace(
 // Исправляем axios config
 content = content.replace(
   /}\s*} catch \(error\) {\s*logger\.error\('Error:', error\);\s*throw error;\s*}\s*}\);/g,
-  "});"
+  '});'
 );
 
 // Исправляем interceptors
 content = content.replace(
   /return config;\s*} catch \(error\) {\s*logger\.error\('Error:', error\);\s*throw error;\s*}\s*}\);/g,
-  "return config;\n});"
+  'return config;\n});'
 );
 
 content = content.replace(
   /throw error;\s*} catch \(error\) {\s*logger\.error\('Error:', error\);\s*throw error;\s*}\s*}/g,
-  "throw error;"
+  'throw error;'
 );
 
 // Исправляем async функции
 content = content.replace(
   /\(\(\) => {\s*try {\s*try {\s*try {/g,
-  "(async () => {\n  try {"
+  '(async () => {\n  try {'
 );
 
 // Исправляем /help команду
 content = content.replace(
   /bot\.onText\(\/\\\/help\/, async \(msg\) => {\s*try {\s*try {/g,
-  "bot.onText(/\\/help/, async (msg) => {\n  try {"
+  'bot.onText(/\\/help/, async (msg) => {\n  try {'
 );
 
 content = content.replace(
   /await bot\.sendMessage\(msg\.chat\.id, helpText\);\s*}\);/g,
-  "await bot.sendMessage(msg.chat.id, helpText);\n  } catch (error) {\n    await errorHandler(bot, msg, error);\n  }\n});"
+  'await bot.sendMessage(msg.chat.id, helpText);\n  } catch (error) {\n    await errorHandler(bot, msg, error);\n  }\n});'
 );
 
 // Исправляем message handler

@@ -116,4 +116,3 @@ Generated: 10.07.2025, 14:41:21
 8. **Использование console.log вместо logger**
    - File: `packages\shared\logger\index.js`
    - Fix: `Использовать структурированное логирование (pino/winston)`
-

@@ -28,7 +28,7 @@ async function updateAndRestart() {
     // 3. Генерируем Prisma клиент
     logger.info('\n3️⃣ Генерация Prisma клиента...');
     try {
-      execSync('cd packages/database && npx prisma generate', { 
+      execSync('cd packages/database && npx prisma generate', {
         stdio: 'inherit',
         env: { ...process.env, FORCE_COLOR: '0' }
       });
@@ -60,7 +60,6 @@ async function updateAndRestart() {
     logger.info('   pm2 monit - мониторинг в реальном времени');
     logger.info('   node test-all-services.js - тестирование сервисов');
     logger.info('   node test-redis-connection.js - тест Redis');
-
   } catch (error) {
     logger.error('\n❌ Ошибка:', error.message);
     process.exit(1);

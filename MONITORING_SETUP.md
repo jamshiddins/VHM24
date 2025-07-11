@@ -2,7 +2,9 @@
 
 ## Обзор
 
-Данная инструкция описывает процесс настройки мониторинга и алертинга для проекта VHM24. Мониторинг позволяет отслеживать состояние системы, выявлять проблемы до того, как они повлияют на пользователей, и получать уведомления о критических событиях.
+Данная инструкция описывает процесс настройки мониторинга и алертинга для проекта VHM24. Мониторинг
+позволяет отслеживать состояние системы, выявлять проблемы до того, как они повлияют на
+пользователей, и получать уведомления о критических событиях.
 
 ## Компоненты мониторинга
 
@@ -113,7 +115,7 @@ const Sentry = require('@sentry/node');
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: process.env.NODE_ENV || 'development',
-  tracesSampleRate: 1.0,
+  tracesSampleRate: 1.0
 });
 ```
 
@@ -149,10 +151,7 @@ const papertrailTransport = new winston.transports.Papertrail({
 });
 
 const logger = winston.createLogger({
-  transports: [
-    new winston.transports.Console(),
-    papertrailTransport
-  ]
+  transports: [new winston.transports.Console(), papertrailTransport]
 });
 ```
 
@@ -188,7 +187,7 @@ const bot = new TelegramBot(token);
 
 async function sendAlert(message, level = 'info') {
   let emoji = '📊';
-  
+
   switch (level) {
     case 'warning':
       emoji = '⚠️';
@@ -203,9 +202,9 @@ async function sendAlert(message, level = 'info') {
     default:
       emoji = 'ℹ️';
   }
-  
+
   const formattedMessage = `${emoji} *VHM24 Alert*\n\n${message}\n\n🕒 ${new Date().toISOString()}`;
-  
+
   try {
     await bot.sendMessage(chatId, formattedMessage, { parse_mode: 'Markdown' });
     console.log('Alert sent successfully');
@@ -218,7 +217,7 @@ async function sendAlert(message, level = 'info') {
 if (require.main === module) {
   const level = process.argv[2] || 'info';
   const message = process.argv[3] || 'Test alert';
-  
+
   sendAlert(message, level)
     .then(() => process.exit(0))
     .catch(err => {
@@ -273,25 +272,25 @@ const config = {
 async function checkServiceHealth(service) {
   try {
     const response = await axios.get(service.url, { timeout: config.timeout });
-    
+
     if (response.status === 200 && response.data.status === 'ok') {
       console.log(`✅ Service ${service.name} is healthy`);
       return { healthy: true, service, data: response.data };
     } else {
       console.error(`❌ Service ${service.name} returned non-ok status: ${response.data.status}`);
-      return { 
-        healthy: false, 
-        service, 
+      return {
+        healthy: false,
+        service,
         error: `Non-ok status: ${response.data.status}`,
         data: response.data
       };
     }
   } catch (error) {
     console.error(`❌ Failed to check service ${service.name}:`, error.message);
-    return { 
-      healthy: false, 
-      service, 
-      error: error.message 
+    return {
+      healthy: false,
+      service,
+      error: error.message
     };
   }
 }
@@ -299,22 +298,19 @@ async function checkServiceHealth(service) {
 // Проверка всех сервисов
 async function checkAllServices() {
   console.log(`🔍 Checking all services at ${new Date().toISOString()}`);
-  
-  const results = await Promise.all(
-    config.services.map(service => checkServiceHealth(service))
-  );
-  
+
+  const results = await Promise.all(config.services.map(service => checkServiceHealth(service)));
+
   const unhealthyServices = results.filter(result => !result.healthy);
-  
+
   if (unhealthyServices.length > 0) {
-    const message = `${unhealthyServices.length} services are unhealthy:\n\n` +
-      unhealthyServices.map(result => 
-        `- ${result.service.name}: ${result.error}`
-      ).join('\n');
-    
+    const message =
+      `${unhealthyServices.length} services are unhealthy:\n\n` +
+      unhealthyServices.map(result => `- ${result.service.name}: ${result.error}`).join('\n');
+
     await sendAlert(message, 'error');
   }
-  
+
   return results;
 }
 
@@ -339,16 +335,21 @@ checkAllServices()
 
 ### 2. Запуск сервиса мониторинга
 
-Добавьте сервис мониторинга в скрипт `start-services.js` и запустите его вместе с остальными сервисами.
+Добавьте сервис мониторинга в скрипт `start-services.js` и запустите его вместе с остальными
+сервисами.
 
 ## Рекомендации по мониторингу
 
 1. **Определите SLA** - установите целевые показатели доступности (например, 99.9%)
-2. **Мониторьте бизнес-метрики** - отслеживайте не только технические метрики, но и бизнес-показатели (количество продаж, активных пользователей и т.д.)
-3. **Настройте проактивный мониторинг** - выявляйте проблемы до того, как они повлияют на пользователей
+2. **Мониторьте бизнес-метрики** - отслеживайте не только технические метрики, но и
+   бизнес-показатели (количество продаж, активных пользователей и т.д.)
+3. **Настройте проактивный мониторинг** - выявляйте проблемы до того, как они повлияют на
+   пользователей
 4. **Регулярно проверяйте дашборды** - анализируйте тренды и выявляйте потенциальные проблемы
 5. **Документируйте инциденты** - ведите журнал инцидентов и извлекайте уроки
 
 ## Заключение
 
-Настроенная система мониторинга и алертинга позволяет оперативно выявлять и устранять проблемы в работе VHM24, обеспечивая высокую доступность и надежность сервиса. Регулярный анализ метрик помогает оптимизировать производительность и планировать развитие инфраструктуры.
+Настроенная система мониторинга и алертинга позволяет оперативно выявлять и устранять проблемы в
+работе VHM24, обеспечивая высокую доступность и надежность сервиса. Регулярный анализ метрик
+помогает оптимизировать производительность и планировать развитие инфраструктуры.

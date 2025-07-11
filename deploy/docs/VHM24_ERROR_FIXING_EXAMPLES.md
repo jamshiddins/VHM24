@@ -1,12 +1,14 @@
 # VHM24 - Примеры исправлений
 
-В этом документе приведены примеры типичных проблем, обнаруживаемых системой исправления ошибок VHM24, и способы их исправления.
+В этом документе приведены примеры типичных проблем, обнаруживаемых системой исправления ошибок
+VHM24, и способы их исправления.
 
 ## 🔒 Безопасность
 
 ### 1. Утечка информации об ошибках
 
 **Проблема:**
+
 ```javascript
 app.get('/api/users', async (request, reply) => {
   try {
@@ -20,6 +22,7 @@ app.get('/api/users', async (request, reply) => {
 ```
 
 **Исправление:**
+
 ```javascript
 app.get('/api/users', async (request, reply) => {
   try {
@@ -39,6 +42,7 @@ app.get('/api/users', async (request, reply) => {
 ### 2. Отсутствие валидации входных данных
 
 **Проблема:**
+
 ```javascript
 app.post('/api/users', async (request, reply) => {
   // Отсутствует валидация входных данных
@@ -50,6 +54,7 @@ app.post('/api/users', async (request, reply) => {
 ```
 
 **Исправление:**
+
 ```javascript
 const schemas = {
   createUserSchema: {
@@ -77,6 +82,7 @@ app.post('/api/users', { schema: schemas.createUserSchema }, async (request, rep
 ### 3. Hardcoded credentials
 
 **Проблема:**
+
 ```javascript
 const jwt = require('jsonwebtoken');
 
@@ -89,6 +95,7 @@ function generateToken(user) {
 ```
 
 **Исправление:**
+
 ```javascript
 const jwt = require('jsonwebtoken');
 
@@ -100,11 +107,9 @@ if (!JWT_SECRET) {
 }
 
 function generateToken(user) {
-  return jwt.sign(
-    { id: user.id, role: user.role },
-    JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
-  );
+  return jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || '1h'
+  });
 }
 ```
 
@@ -113,6 +118,7 @@ function generateToken(user) {
 ### 1. Смешивание ES6 и CommonJS модулей
 
 **Проблема:**
+
 ```javascript
 // Смешивание ES6 и CommonJS
 import express from 'express';
@@ -125,6 +131,7 @@ export default function createApp() {
 ```
 
 **Исправление:**
+
 ```javascript
 // Только CommonJS
 const express = require('express');
@@ -141,6 +148,7 @@ module.exports = createApp;
 ### 2. Async функции без обработки ошибок
 
 **Проблема:**
+
 ```javascript
 app.get('/api/products', async (request, reply) => {
   // Отсутствует обработка ошибок
@@ -150,6 +158,7 @@ app.get('/api/products', async (request, reply) => {
 ```
 
 **Исправление:**
+
 ```javascript
 app.get('/api/products', async (request, reply) => {
   try {
@@ -168,10 +177,11 @@ app.get('/api/products', async (request, reply) => {
 ### 3. Использование console.log вместо структурированного логирования
 
 **Проблема:**
+
 ```javascript
 function processOrder(order) {
   console.log('Processing order:', order.id);
-  
+
   if (order.status === 'paid') {
     console.log('Order is paid');
   } else {
@@ -181,12 +191,13 @@ function processOrder(order) {
 ```
 
 **Исправление:**
+
 ```javascript
 const logger = require('@vhm24/shared/logger');
 
 function processOrder(order) {
   logger.info('Processing order', { orderId: order.id });
-  
+
   if (order.status === 'paid') {
     logger.info('Order status', { orderId: order.id, status: 'paid' });
   } else {
@@ -198,6 +209,7 @@ function processOrder(order) {
 ### 4. Магические числа в коде
 
 **Проблема:**
+
 ```javascript
 function calculateDiscount(price) {
   // Магические числа
@@ -213,6 +225,7 @@ function calculateDiscount(price) {
 ```
 
 **Исправление:**
+
 ```javascript
 // Constants
 const DISCOUNT_THRESHOLD_HIGH = 10000;
@@ -239,6 +252,7 @@ function calculateDiscount(price) {
 ### 1. Отсутствующие зависимости
 
 **Проблема:**
+
 ```javascript
 // Используется модуль, который не указан в package.json
 const moment = require('moment');
@@ -249,6 +263,7 @@ function formatDate(date) {
 ```
 
 **Исправление:**
+
 ```bash
 # Установка отсутствующей зависимости
 npm install moment --save
@@ -257,12 +272,14 @@ npm install moment --save
 ### 2. Уязвимости в зависимостях
 
 **Проблема:**
+
 ```bash
 $ npm audit
 # Найдены уязвимости в зависимостях
 ```
 
 **Исправление:**
+
 ```bash
 # Исправление уязвимостей
 npm audit fix
@@ -276,6 +293,7 @@ npm audit fix --force
 ### 1. findMany без пагинации
 
 **Проблема:**
+
 ```javascript
 app.get('/api/products', async (request, reply) => {
   // Отсутствует пагинация
@@ -285,19 +303,20 @@ app.get('/api/products', async (request, reply) => {
 ```
 
 **Исправление:**
+
 ```javascript
 app.get('/api/products', async (request, reply) => {
   const page = parseInt(request.query.page) || 1;
   const limit = parseInt(request.query.limit) || 20;
-  
+
   const products = await prisma.product.findMany({
     skip: (page - 1) * limit,
     take: limit,
     orderBy: { createdAt: 'desc' }
   });
-  
+
   const total = await prisma.product.count();
-  
+
   reply.send({
     data: products,
     pagination: {
@@ -313,6 +332,7 @@ app.get('/api/products', async (request, reply) => {
 ### 2. Синхронные операции файловой системы
 
 **Проблема:**
+
 ```javascript
 const fs = require('fs');
 
@@ -323,6 +343,7 @@ function saveConfig(config) {
 ```
 
 **Исправление:**
+
 ```javascript
 const fs = require('fs').promises;
 
@@ -335,22 +356,24 @@ async function saveConfig(config) {
 ### 3. N+1 проблема
 
 **Проблема:**
+
 ```javascript
 app.get('/api/orders', async (request, reply) => {
   const orders = await prisma.order.findMany();
-  
+
   // N+1 проблема: для каждого заказа выполняется отдельный запрос
   for (const order of orders) {
     order.items = await prisma.orderItem.findMany({
       where: { orderId: order.id }
     });
   }
-  
+
   reply.send(orders);
 });
 ```
 
 **Исправление:**
+
 ```javascript
 app.get('/api/orders', async (request, reply) => {
   // Включаем связанные данные в один запрос
@@ -359,7 +382,7 @@ app.get('/api/orders', async (request, reply) => {
       items: true
     }
   });
-  
+
   reply.send(orders);
 });
 ```
@@ -369,6 +392,7 @@ app.get('/api/orders', async (request, reply) => {
 ### 1. Отсутствие директорий
 
 **Проблема:**
+
 ```
 services/
   auth/
@@ -378,6 +402,7 @@ services/
 ```
 
 **Исправление:**
+
 ```
 services/
   auth/
@@ -394,6 +419,7 @@ services/
 ### 2. Отсутствие тестов
 
 **Проблема:**
+
 ```
 services/
   auth/
@@ -405,19 +431,20 @@ services/
 ```
 
 **Исправление:**
+
 ```javascript
 // services/auth/tests/auth.test.js
 const { test } = require('tap');
 const build = require('../src/app');
 
-test('health check', async (t) => {
+test('health check', async t => {
   const app = build({ logger: false });
-  
+
   const response = await app.inject({
     method: 'GET',
     url: '/health'
   });
-  
+
   t.equal(response.statusCode, 200);
   t.match(JSON.parse(response.payload), {
     status: 'ok',
@@ -425,14 +452,14 @@ test('health check', async (t) => {
   });
 });
 
-test('requires authentication', async (t) => {
+test('requires authentication', async t => {
   const app = build({ logger: false });
-  
+
   const response = await app.inject({
     method: 'GET',
     url: '/api/v1/auth/me'
   });
-  
+
   t.equal(response.statusCode, 401);
 });
 ```
@@ -442,6 +469,7 @@ test('requires authentication', async (t) => {
 ### 1. Отсутствие Dockerfile
 
 **Проблема:**
+
 ```
 services/
   auth/
@@ -449,6 +477,7 @@ services/
 ```
 
 **Исправление:**
+
 ```dockerfile
 # services/auth/Dockerfile
 # Build stage
@@ -496,13 +525,14 @@ CMD ["node", "services/auth/src/index.js"]
 ### 2. Отсутствие health check endpoint
 
 **Проблема:**
+
 ```javascript
 // services/auth/src/index.js
 const fastify = require('fastify')();
 
 // ... routes ...
 
-fastify.listen({ port: 3000 }, (err) => {
+fastify.listen({ port: 3000 }, err => {
   if (err) {
     console.error(err);
     process.exit(1);
@@ -511,6 +541,7 @@ fastify.listen({ port: 3000 }, (err) => {
 ```
 
 **Исправление:**
+
 ```javascript
 // services/auth/src/index.js
 const fastify = require('fastify')();
@@ -527,7 +558,7 @@ fastify.get('/health', async (request, reply) => {
     memory: process.memoryUsage(),
     checks: {}
   };
-  
+
   // Database check
   try {
     await prisma.$queryRaw`SELECT 1`;
@@ -536,7 +567,7 @@ fastify.get('/health', async (request, reply) => {
     health.checks.database = 'error';
     health.status = 'degraded';
   }
-  
+
   // Redis check (if applicable)
   if (typeof redis !== 'undefined') {
     try {
@@ -547,13 +578,14 @@ fastify.get('/health', async (request, reply) => {
       health.status = 'degraded';
     }
   }
-  
+
   reply.code(health.status === 'ok' ? 200 : 503).send(health);
 });
 
-fastify.listen({ port: 3000 }, (err) => {
+fastify.listen({ port: 3000 }, err => {
   if (err) {
     console.error(err);
     process.exit(1);
   }
 });
+```

@@ -7,11 +7,13 @@ VHM24 готов к деплою на Railway как monorepo с несколь�
 ## 📋 Pre-deployment Checklist
 
 ### 1. Подготовка Railway проекта
+
 - [ ] Создан аккаунт на Railway
 - [ ] Установлен Railway CLI
 - [ ] Выполнен вход
 
 ### 2. Настройка внешних сервисов
+
 - [ ] Настроен S3-совместимый storage
 - [ ] Создан Telegram Bot
 - [ ] Настроен Sentry (опционально)
@@ -19,19 +21,20 @@ VHM24 готов к деплою на Railway как monorepo с несколь�
 ## 🚀 Deployment Steps
 
 ### Шаг 1: Создание Railway проекта
-railway new vhm24-production
-railway link
+
+railway new vhm24-production railway link
 
 ### Шаг 2: Добавление баз данных
-railway add postgresql
-railway add redis
+
+railway add postgresql railway add redis
 
 ### Шаг 3: Настройка переменных окружения
+
 Скопируйте переменные из .env.railway.example
 
 ### Шаг 4: Деплой
-railway variables set RAILWAY_SERVICE_NAME="gateway"
-railway up
+
+railway variables set RAILWAY_SERVICE_NAME="gateway" railway up
 
 ## ⚠️ Важные замечания
 
@@ -41,15 +44,16 @@ railway up
 ## 🔧 Troubleshooting
 
 ### Проблема: Сервис не запускается
-railway logs
-railway variables
-railway status
+
+railway logs railway variables railway status
 
 ### Проблема: База данных не подключается
+
 - Проверьте DATABASE_URL
 - Убедитесь что PostgreSQL addon активен
 
 ### Проблема: Файлы не загружаются
+
 - Проверьте S3 credentials
 - Убедитесь что bucket существует
 

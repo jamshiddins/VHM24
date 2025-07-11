@@ -1,7 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2, DollarSign, Clock, Users } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  DollarSign,
+  Clock,
+  Users
+} from 'lucide-react';
 
 interface Ingredient {
   id: number;
@@ -50,7 +58,11 @@ export default function RecipesPage() {
     preparationTime: 0,
     servings: 1,
     instructions: '',
-    ingredients: [] as { ingredientId: number; quantity: number; unit: string }[]
+    ingredients: [] as {
+      ingredientId: number;
+      quantity: number;
+      unit: string;
+    }[]
   });
 
   const categories = [
@@ -99,9 +111,9 @@ export default function RecipesPage() {
       const response = await fetch('/api/v1/recipes', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
 
       const data = await response.json();
@@ -122,14 +134,16 @@ export default function RecipesPage() {
       const response = await fetch(`/api/v1/recipes/${editingRecipe.id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
 
       const data = await response.json();
       if (data.success) {
-        setRecipes(recipes.map(r => r.id === editingRecipe.id ? data.data : r));
+        setRecipes(
+          recipes.map(r => (r.id === editingRecipe.id ? data.data : r))
+        );
         setEditingRecipe(null);
         resetForm();
       }
@@ -143,7 +157,7 @@ export default function RecipesPage() {
 
     try {
       const response = await fetch(`/api/v1/recipes/${id}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       const data = await response.json();
@@ -170,13 +184,19 @@ export default function RecipesPage() {
   const addIngredientToForm = () => {
     setFormData({
       ...formData,
-      ingredients: [...formData.ingredients, { ingredientId: 0, quantity: 0, unit: '' }]
+      ingredients: [
+        ...formData.ingredients,
+        { ingredientId: 0, quantity: 0, unit: '' }
+      ]
     });
   };
 
   const updateFormIngredient = (index: number, field: string, value: any) => {
     const updatedIngredients = [...formData.ingredients];
-    updatedIngredients[index] = { ...updatedIngredients[index], [field]: value };
+    updatedIngredients[index] = {
+      ...updatedIngredients[index],
+      [field]: value
+    };
     setFormData({ ...formData, ingredients: updatedIngredients });
   };
 
@@ -188,9 +208,11 @@ export default function RecipesPage() {
   };
 
   const filteredRecipes = recipes.filter(recipe => {
-    const matchesSearch = recipe.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         recipe.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !selectedCategory || recipe.category === selectedCategory;
+    const matchesSearch =
+      recipe.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      recipe.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      !selectedCategory || recipe.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -246,19 +268,21 @@ export default function RecipesPage() {
                 type="text"
                 placeholder="Поиск рецептов..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
           <select
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={e => setSelectedCategory(e.target.value)}
             className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Все категории</option>
             {categories.map(category => (
-              <option key={category} value={category}>{category}</option>
+              <option key={category} value={category}>
+                {category}
+              </option>
             ))}
           </select>
         </div>
@@ -266,12 +290,17 @@ export default function RecipesPage() {
 
       {/* Recipes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredRecipes.map((recipe) => (
-          <div key={recipe.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+        {filteredRecipes.map(recipe => (
+          <div
+            key={recipe.id}
+            className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
+          >
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{recipe.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {recipe.name}
+                  </h3>
                   <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
                     {recipe.category}
                   </span>
@@ -292,7 +321,9 @@ export default function RecipesPage() {
                 </div>
               </div>
 
-              <p className="text-gray-600 text-sm mb-4 line-clamp-2">{recipe.description}</p>
+              <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                {recipe.description}
+              </p>
 
               <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
                 <div className="flex items-center gap-1">
@@ -310,9 +341,11 @@ export default function RecipesPage() {
               </div>
 
               <div className="border-t pt-4">
-                <p className="text-xs text-gray-500 mb-2">Ингредиенты ({recipe.ingredients.length}):</p>
+                <p className="text-xs text-gray-500 mb-2">
+                  Ингредиенты ({recipe.ingredients.length}):
+                </p>
                 <div className="space-y-1">
-                  {recipe.ingredients.slice(0, 3).map((ri) => (
+                  {recipe.ingredients.slice(0, 3).map(ri => (
                     <div key={ri.id} className="text-xs text-gray-600">
                       {ri.ingredient.name} - {ri.quantity} {ri.unit}
                     </div>
@@ -352,7 +385,9 @@ export default function RecipesPage() {
                   <input
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -363,7 +398,9 @@ export default function RecipesPage() {
                   </label>
                   <textarea
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -376,12 +413,16 @@ export default function RecipesPage() {
                     </label>
                     <select
                       value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      onChange={e =>
+                        setFormData({ ...formData, category: e.target.value })
+                      }
                       className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="">Выберите категорию</option>
                       {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -393,7 +434,12 @@ export default function RecipesPage() {
                     <input
                       type="number"
                       value={formData.preparationTime}
-                      onChange={(e) => setFormData({ ...formData, preparationTime: parseInt(e.target.value) })}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          preparationTime: parseInt(e.target.value)
+                        })
+                      }
                       className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
@@ -405,7 +451,12 @@ export default function RecipesPage() {
                     <input
                       type="number"
                       value={formData.servings}
-                      onChange={(e) => setFormData({ ...formData, servings: parseInt(e.target.value) })}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          servings: parseInt(e.target.value)
+                        })
+                      }
                       className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
@@ -417,7 +468,9 @@ export default function RecipesPage() {
                   </label>
                   <textarea
                     value={formData.instructions}
-                    onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, instructions: e.target.value })
+                    }
                     rows={4}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -442,26 +495,42 @@ export default function RecipesPage() {
                       <div key={index} className="flex gap-2 items-center">
                         <select
                           value={ingredient.ingredientId}
-                          onChange={(e) => updateFormIngredient(index, 'ingredientId', parseInt(e.target.value))}
+                          onChange={e =>
+                            updateFormIngredient(
+                              index,
+                              'ingredientId',
+                              parseInt(e.target.value)
+                            )
+                          }
                           className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
                           <option value={0}>Выберите ингредиент</option>
                           {ingredients.map(ing => (
-                            <option key={ing.id} value={ing.id}>{ing.name}</option>
+                            <option key={ing.id} value={ing.id}>
+                              {ing.name}
+                            </option>
                           ))}
                         </select>
                         <input
                           type="number"
                           placeholder="Количество"
                           value={ingredient.quantity}
-                          onChange={(e) => updateFormIngredient(index, 'quantity', parseFloat(e.target.value))}
+                          onChange={e =>
+                            updateFormIngredient(
+                              index,
+                              'quantity',
+                              parseFloat(e.target.value)
+                            )
+                          }
                           className="w-24 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                         <input
                           type="text"
                           placeholder="Единица"
                           value={ingredient.unit}
-                          onChange={(e) => updateFormIngredient(index, 'unit', e.target.value)}
+                          onChange={e =>
+                            updateFormIngredient(index, 'unit', e.target.value)
+                          }
                           className="w-20 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                         <button
@@ -489,7 +558,9 @@ export default function RecipesPage() {
                   Отмена
                 </button>
                 <button
-                  onClick={editingRecipe ? handleUpdateRecipe : handleCreateRecipe}
+                  onClick={
+                    editingRecipe ? handleUpdateRecipe : handleCreateRecipe
+                  }
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   {editingRecipe ? 'Сохранить' : 'Создать'}

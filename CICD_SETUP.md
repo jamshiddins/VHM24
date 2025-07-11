@@ -2,7 +2,8 @@
 
 ## Обзор
 
-Данная инструкция описывает процесс настройки непрерывной интеграции и непрерывного развертывания (CI/CD) для проекта VHM24 с использованием GitHub Actions и Railway.
+Данная инструкция описывает процесс настройки непрерывной интеграции и непрерывного развертывания
+(CI/CD) для проекта VHM24 с использованием GitHub Actions и Railway.
 
 ## Преимущества CI/CD
 
@@ -37,26 +38,26 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run tests
         run: npm test
-      
+
       - name: Install Railway CLI
         run: npm install -g @railway/cli
-      
+
       - name: Deploy to Railway
         run: railway up
         env:
@@ -104,7 +105,8 @@ BACKUP_S3_BUCKET=vhm24-backups
 
 1. В проекте Railway перейдите в раздел "New"
 2. Выберите "Database" > "PostgreSQL"
-3. После создания базы данных, переменная `DATABASE_URL` будет автоматически добавлена в переменные окружения
+3. После создания базы данных, переменная `DATABASE_URL` будет автоматически добавлена в переменные
+   окружения
 
 ### 4. Настройка Redis
 
@@ -218,4 +220,6 @@ BACKUP_S3_BUCKET=vhm24-backups
 
 ## Заключение
 
-Настроенный CI/CD процесс позволяет автоматизировать деплой приложения VHM24 на Railway и DigitalOcean, обеспечивая быстрое и надежное обновление системы. Регулярные автоматические тесты и проверки помогают поддерживать высокое качество кода и стабильность работы приложения.
+Настроенный CI/CD процесс позволяет автоматизировать деплой приложения VHM24 на Railway и
+DigitalOcean, обеспечивая быстрое и надежное обновление системы. Регулярные автоматические тесты и
+проверки помогают поддерживать высокое качество кода и стабильность работы приложения.

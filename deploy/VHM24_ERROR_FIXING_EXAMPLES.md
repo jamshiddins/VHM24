@@ -1,6 +1,8 @@
 # VHM24 - Примеры исправлений ошибок
 
-В этом документе приведены примеры типичных ошибок в проекте VHM24 и способы их исправления. Эти примеры помогут вам понять, как система исправления ошибок работает и какие изменения она вносит в код.
+В этом документе приведены примеры типичных ошибок в проекте VHM24 и способы их исправления. Эти
+примеры помогут вам понять, как система исправления ошибок работает и какие изменения она вносит в
+код.
 
 ## 1. Проблемы безопасности
 
@@ -105,11 +107,9 @@ if (!JWT_SECRET) {
 }
 
 function generateToken(user) {
-  return jwt.sign(
-    { id: user.id, role: user.role },
-    JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
-  );
+  return jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || '1h'
+  });
 }
 ```
 
@@ -189,7 +189,7 @@ async function getUserData(userId) {
 // Использование console.log
 function processOrder(order) {
   console.log('Processing order:', order.id);
-  
+
   if (order.status === 'paid') {
     console.log('Order is paid, shipping...');
   } else {
@@ -206,7 +206,7 @@ const logger = require('@vhm24/shared/logger');
 // Использование структурированного логирования
 function processOrder(order) {
   logger.info('Processing order:', order.id);
-  
+
   if (order.status === 'paid') {
     logger.info('Order is paid, shipping...');
   } else {
@@ -283,15 +283,15 @@ app.get('/api/products', async (request, reply) => {
 app.get('/api/products', async (request, reply) => {
   const page = parseInt(request.query.page) || 1;
   const limit = parseInt(request.query.limit) || 20;
-  
+
   const products = await prisma.product.findMany({
     skip: (page - 1) * limit,
     take: limit,
     orderBy: { createdAt: 'desc' }
   });
-  
+
   const total = await prisma.product.count();
-  
+
   reply.send({
     data: products,
     pagination: {
@@ -341,14 +341,14 @@ async function saveConfig(config) {
 // N+1 проблема
 async function getUsersWithPosts() {
   const users = await prisma.user.findMany();
-  
+
   // Для каждого пользователя делается отдельный запрос - N+1 проблема
   for (const user of users) {
     user.posts = await prisma.post.findMany({
       where: { authorId: user.id }
     });
   }
-  
+
   return users;
 }
 ```
@@ -364,9 +364,9 @@ async function getUsersWithPosts() {
       posts: true
     }
   });
-  
+
   return users;
-  
+
   // Вариант 2: использование Promise.all
   /*
   const users = await prisma.user.findMany();
@@ -408,7 +408,7 @@ const fastify = require('fastify')();
 
 fastify.register(require('./routes'));
 
-fastify.listen({ port: 3000 }, (err) => {
+fastify.listen({ port: 3000 }, err => {
   if (err) throw err;
   console.log('Server listening on port 3000');
 });
@@ -430,7 +430,7 @@ fastify.get('/health', async (request, reply) => {
     memory: process.memoryUsage(),
     checks: {}
   };
-  
+
   // Database check
   try {
     await prisma.$queryRaw`SELECT 1`;
@@ -439,13 +439,13 @@ fastify.get('/health', async (request, reply) => {
     health.checks.database = 'error';
     health.status = 'degraded';
   }
-  
+
   reply.code(health.status === 'ok' ? 200 : 503).send(health);
 });
 
 fastify.register(require('./routes'));
 
-fastify.listen({ port: 3000 }, (err) => {
+fastify.listen({ port: 3000 }, err => {
   if (err) throw err;
   console.log('Server listening on port 3000');
 });
@@ -500,7 +500,9 @@ CMD ["node", "services/api-service/src/index.js"]
 
 ## 5. Заключение
 
-Эти примеры демонстрируют типичные проблемы, которые могут быть обнаружены и исправлены системой исправления ошибок VHM24. Система анализирует код, находит подобные проблемы и автоматически применяет соответствующие исправления.
+Эти примеры демонстрируют типичные проблемы, которые могут быть обнаружены и исправлены системой
+исправления ошибок VHM24. Система анализирует код, находит подобные проблемы и автоматически
+применяет соответствующие исправления.
 
 Для запуска полного процесса исправления ошибок используйте команду:
 

@@ -1,6 +1,7 @@
 # 🔍 Как получить публичный URL для Railway PostgreSQL
 
 ## Ваш текущий URL (работает только внутри Railway):
+
 ```
 postgresql://postgres:tcaqejEXLSdaUdMQXFqEDGBQvavWVbGy@postgres.railway.internal:5432/railway
 ```
@@ -8,6 +9,7 @@ postgresql://postgres:tcaqejEXLSdaUdMQXFqEDGBQvavWVbGy@postgres.railway.internal
 ## Чтобы получить публичный URL:
 
 ### Способ 1: Railway Dashboard
+
 1. Откройте https://railway.app/dashboard
 2. Выберите ваш проект VHM24
 3. Нажмите на PostgreSQL сервис
@@ -19,6 +21,7 @@ postgresql://postgres:tcaqejEXLSdaUdMQXFqEDGBQvavWVbGy@postgres.railway.internal
    ```
 
 ### Способ 2: Railway CLI
+
 ```bash
 # Установите Railway CLI если нет
 npm install -g @railway/cli
@@ -38,17 +41,20 @@ railway variables
 Пока вы получаете публичный URL, можете работать без базы данных:
 
 1. **Запустите только Web Dashboard:**
+
    ```bash
    cd apps/web-dashboard
    npm run dev
    ```
+
    Откройте http://localhost:3000
 
 2. **Создайте временный .env для разработки:**
+
    ```bash
    # Скопируйте текущий .env
    copy .env .env.railway
-   
+
    # Создайте локальный .env
    echo DATABASE_URL="postgresql://postgres:postgres@localhost:5432/vhm24" > .env
    ```
@@ -66,7 +72,9 @@ railway variables
    ```
 
 ## 📝 Примечание:
+
 Railway предоставляет два URL:
+
 - **Internal** (postgres.railway.internal) - для production
 - **Public** (обычно через proxy.rlwy.net) - для локальной разработки
 

@@ -34,7 +34,7 @@ const navigation = [
   { name: 'Отчеты', href: '/reports', icon: ChartBarIcon },
   { name: 'Аудит', href: '/audit', icon: ShieldCheckIcon },
   { name: 'Уведомления', href: '/notifications', icon: BellIcon },
-  { name: 'Настройки', href: '/settings', icon: Cog6ToothIcon },
+  { name: 'Настройки', href: '/settings', icon: Cog6ToothIcon }
 ];
 
 export default function Navigation() {
@@ -44,10 +44,17 @@ export default function Navigation() {
   return (
     <>
       {/* Mobile sidebar */}
-      <div className={`fixed inset-0 flex z-40 md:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}>
-        <div className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity ease-linear duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`} onClick={() => setSidebarOpen(false)} />
-        
-        <div className={`relative flex-1 flex flex-col max-w-xs w-full bg-white transform ease-in-out duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div
+        className={`fixed inset-0 flex z-40 md:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}
+      >
+        <div
+          className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity ease-linear duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`}
+          onClick={() => setSidebarOpen(false)}
+        />
+
+        <div
+          className={`relative flex-1 flex flex-col max-w-xs w-full bg-white transform ease-in-out duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        >
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <button
               type="button"
@@ -57,13 +64,13 @@ export default function Navigation() {
               <XMarkIcon className="h-6 w-6 text-white" />
             </button>
           </div>
-          
+
           <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
             <div className="flex-shrink-0 flex items-center px-4">
               <Logo size={32} showText={true} />
             </div>
             <nav className="mt-5 px-2 space-y-1">
-              {navigation.map((item) => {
+              {navigation.map(item => {
                 const isActive = pathname === item.href;
                 return (
                   <Link
@@ -77,7 +84,9 @@ export default function Navigation() {
                   >
                     <item.icon
                       className={`mr-4 flex-shrink-0 h-6 w-6 ${
-                        isActive ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'
+                        isActive
+                          ? 'text-blue-500'
+                          : 'text-gray-400 group-hover:text-gray-500'
                       }`}
                     />
                     {item.name}
@@ -97,7 +106,7 @@ export default function Navigation() {
               <Logo size={40} showText={true} />
             </div>
             <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
-              {navigation.map((item) => {
+              {navigation.map(item => {
                 const isActive = pathname === item.href;
                 return (
                   <Link
@@ -111,7 +120,9 @@ export default function Navigation() {
                   >
                     <item.icon
                       className={`mr-3 flex-shrink-0 h-6 w-6 ${
-                        isActive ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'
+                        isActive
+                          ? 'text-blue-500'
+                          : 'text-gray-400 group-hover:text-gray-500'
                       }`}
                     />
                     {item.name}
@@ -120,7 +131,7 @@ export default function Navigation() {
               })}
             </nav>
           </div>
-          
+
           {/* User info */}
           <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
             <div className="flex items-center">
@@ -131,7 +142,9 @@ export default function Navigation() {
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-700">Admin</p>
-                <p className="text-xs font-medium text-gray-500">admin@vhm24.com</p>
+                <p className="text-xs font-medium text-gray-500">
+                  admin@vhm24.com
+                </p>
               </div>
             </div>
           </div>

@@ -16,29 +16,30 @@ try {
 }
 
 // Определяем какой сервис запускать на основе Railway переменных
-const SERVICE = process.env.RAILWAY_SERVICE_NAME || 
-               process.env.SERVICE_NAME || 
-               detectServiceFromPath() ||
-               'gateway';
+const SERVICE =
+  process.env.RAILWAY_SERVICE_NAME ||
+  process.env.SERVICE_NAME ||
+  detectServiceFromPath() ||
+  'gateway';
 
 logger.info(`🎯 Detected service: ${SERVICE}`);
 
 const serviceMap = {
-  'gateway': { path: 'services/gateway', port: 8000, public: true },
-  'auth': { path: 'services/auth', port: 3001, public: false },
-  'machines': { path: 'services/machines', port: 3002, public: false },
-  'inventory': { path: 'services/inventory', port: 3003, public: false },
-  'tasks': { path: 'services/tasks', port: 3004, public: false },
+  gateway: { path: 'services/gateway', port: 8000, public: true },
+  auth: { path: 'services/auth', port: 3001, public: false },
+  machines: { path: 'services/machines', port: 3002, public: false },
+  inventory: { path: 'services/inventory', port: 3003, public: false },
+  tasks: { path: 'services/tasks', port: 3004, public: false },
   'telegram-bot': { path: 'services/telegram-bot', port: 3005, public: false },
-  'notifications': { path: 'services/notifications', port: 3006, public: false },
-  'audit': { path: 'services/audit', port: 3007, public: false },
+  notifications: { path: 'services/notifications', port: 3006, public: false },
+  audit: { path: 'services/audit', port: 3007, public: false },
   'data-import': { path: 'services/data-import', port: 3008, public: false },
-  'backup': { path: 'services/backup', port: 3009, public: false },
-  'monitoring': { path: 'services/monitoring', port: 3010, public: false },
-  'routes': { path: 'services/routes', port: 3011, public: false },
-  'warehouse': { path: 'services/warehouse', port: 3012, public: false },
-  'recipes': { path: 'services/recipes', port: 3013, public: false },
-  'bunkers': { path: 'services/bunkers', port: 3014, public: false }
+  backup: { path: 'services/backup', port: 3009, public: false },
+  monitoring: { path: 'services/monitoring', port: 3010, public: false },
+  routes: { path: 'services/routes', port: 3011, public: false },
+  warehouse: { path: 'services/warehouse', port: 3012, public: false },
+  recipes: { path: 'services/recipes', port: 3013, public: false },
+  bunkers: { path: 'services/bunkers', port: 3014, public: false }
 };
 
 const service = serviceMap[SERVICE];
@@ -74,12 +75,12 @@ const child = spawn('npm', ['start'], {
   env: process.env
 });
 
-child.on('error', (error) => {
+child.on('error', error => {
   logger.error('❌ Failed to start service:', error);
   process.exit(1);
 });
 
-child.on('exit', (code) => {
+child.on('exit', code => {
   logger.info(`🛑 Service ${SERVICE} exited with code ${code}`);
   process.exit(code);
 });
@@ -98,9 +99,9 @@ process.on('SIGINT', () => {
 function detectServiceFromPath() {
   // Пытаемся определить сервис из текущего пути или переменных Railway
   const cwd = process.cwd();
-  const servicePath = cwd.split(path.sep).find(part => 
-    Object.keys(serviceMap).includes(part)
-  );
-  
+  const servicePath = cwd
+    .split(path.sep)
+    .find(part => Object.keys(serviceMap).includes(part));
+
   return servicePath || null;
 }

@@ -36,14 +36,14 @@ if (!process.env.DATABASE_URL) {
 function runCommand(command, args = [], options = {}) {
   return new Promise((resolve, reject) => {
     logger.info(`🔧 Running: ${command} ${args.join(' ')}`);
-    
+
     const child = spawn(command, args, {
       stdio: 'inherit',
       shell: true,
       ...options
     });
 
-    child.on('close', (code) => {
+    child.on('close', code => {
       if (code === 0) {
         resolve();
       } else {
@@ -59,15 +59,20 @@ function runCommand(command, args = [], options = {}) {
 async function startRailwayApp() {
   try {
     logger.info('🗄️ === DATABASE MIGRATION PHASE ===');
-    
+
     // Проверяем наличие schema.prisma
-    const schemaPath = path.join(__dirname, 'packages/database/prisma/schema.prisma');
+    const schemaPath = path.join(
+      __dirname,
+      'packages/database/prisma/schema.prisma'
+    );
     if (!fs.existsSync(schemaPath)) {
-      logger.warn('⚠️ Prisma schema not found at packages/database/prisma/schema.prisma');
+      logger.warn(
+        '⚠️ Prisma schema not found at packages/database/prisma/schema.prisma'
+      );
       logger.warn('⚠️ Skipping database migration phase');
     } else {
       logger.info('✅ Prisma schema found');
-      
+
       // Генерируем Prisma клиент
       logger.info('🔧 Generating Prisma client...');
       try {
@@ -79,7 +84,7 @@ async function startRailwayApp() {
         logger.error('⚠️ Failed to generate Prisma client:', error.message);
         logger.info('⚠️ Continuing without Prisma client generation');
       }
-      
+
       // Запускаем миграции
       logger.info('🔧 Running database migrations...');
       try {
@@ -91,27 +96,27 @@ async function startRailwayApp() {
         logger.error('⚠️ Failed to run database migrations:', error.message);
         logger.info('⚠️ Continuing without database migrations');
       }
-      
+
       // Проверяем подключение к базе данных
       logger.info('🔧 Testing database connection...');
       let prisma;
-      
+
       try {
         const { getPrismaClient } = require('./packages/database');
         prisma = getPrismaClient();
         await prisma.$connect();
         logger.info('✅ Database connection successful');
-        
+
         // Проверяем наличие пользователей
         const userCount = await prisma.user.count();
         logger.info(`📊 Users in database: ${userCount}`);
-        
+
         // Создаем администратора если нет пользователей
         if (userCount === 0) {
           logger.info('🔧 Creating default admin user...');
           try {
             const bcrypt = require('bcrypt');
-            
+
             const adminUser = await prisma.user.create({
               data: {
                 email: 'admin@vhm24.ru',
@@ -122,7 +127,7 @@ async function startRailwayApp() {
                 isActive: true
               }
             });
-            
+
             logger.info('✅ Default admin user created');
             logger.info(`📧 Email: admin@vhm24.ru`);
             logger.info(`🔑 Password: admin123`);
@@ -132,7 +137,7 @@ async function startRailwayApp() {
             logger.info('⚠️ Continuing without admin user creation');
           }
         }
-        
+
         await prisma.$disconnect();
         logger.info('🎉 Database migration completed successfully!');
       } catch (error) {
@@ -140,9 +145,9 @@ async function startRailwayApp() {
         logger.info('⚠️ Continuing without database setup...');
       }
     }
-    
+
     logger.info('\n🚂 === MONOLITH APPLICATION START ===');
-    
+
     // Создаем единый Fastify сервер
     const fastify = Fastify({
       logger: true,
@@ -539,85 +544,92 @@ async function startRailwayApp() {
       const { getPrismaClient } = require('./packages/database');
       apiPrisma = getPrismaClient();
     } catch (error) {
-      logger.error('⚠️ Failed to initialize Prisma client for API:', error.message);
+      logger.error(
+        '⚠️ Failed to initialize Prisma client for API:',
+        error.message
+      );
       apiPrisma = null;
     }
 
     // Встраиваем основные API endpoints прямо в монолит
-    
+
     // Auth endpoints
-    
-// Схема валидации для POST /api/v1/auth/login
-const postapiv1authloginSchema = {
-  body: {
-    type: 'object',
-    required: [],
-    properties: {}
-  }
-};
 
-fastify.post('/api/v1/auth/login', { schema: postapiv1authloginSchema }, async (request, reply) => {
-      try {
-        if (!apiPrisma) {
-          return reply.code(503).send({
-            success: false,
-            error: 'Database not available'
+    // Схема валидации для POST /api/v1/auth/login
+    const postapiv1authloginSchema = {
+      body: {
+        type: 'object',
+        required: [],
+        properties: {}
+      }
+    };
+
+    fastify.post(
+      '/api/v1/auth/login',
+      { schema: postapiv1authloginSchema },
+      async (request, reply) => {
+        try {
+          if (!apiPrisma) {
+            return reply.code(503).send({
+              success: false,
+              error: 'Database not available'
+            });
+          }
+
+          const { email, password } = request.body;
+
+          if (!email || !password) {
+            return reply.code(400).send({
+              success: false,
+              error: 'Email and password are required'
+            });
+          }
+
+          const bcrypt = require('bcrypt');
+          const jwt = require('jsonwebtoken');
+
+          const user = await apiPrisma.user.findUnique({
+            where: { email }
           });
-        }
 
-        const { email, password } = request.body;
-        
-        if (!email || !password) {
-          return reply.code(400).send({
-            success: false,
-            error: 'Email and password are required'
-          });
-        }
+          if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+            return reply.code(401).send({
+              success: false,
+              error: 'Invalid credentials'
+            });
+          }
 
-        const bcrypt = require('bcrypt');
-        const jwt = require('jsonwebtoken');
-        
-        const user = await apiPrisma.user.findUnique({
-          where: { email }
-        });
-
-        if (!user || !await bcrypt.compare(password, user.passwordHash)) {
-          return reply.code(401).send({
-            success: false,
-            error: 'Invalid credentials'
-          });
-        }
-
-        const token = jwt.sign(
-          { 
-            id: user.id, 
-            email: user.email, 
-            roles: user.roles 
-          },
-          process.env.JWT_SECRET || 'vhm24-secret-key',
-          { expiresIn: '24h' }
-        );
-
-        return {
-          success: true,
-          data: {
-            token,
-            user: {
+          const token = jwt.sign(
+            {
               id: user.id,
               email: user.email,
-              name: user.name,
               roles: user.roles
+            },
+            process.env.JWT_SECRET || 'vhm24-secret-key',
+            { expiresIn: '24h' }
+          );
+
+          return {
+            success: true,
+            data: {
+              token,
+              user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                roles: user.roles
+              }
             }
-          }
-        };
-      } catch (error) {
-        logger.error('Login error:', error);
-        return reply.code(500).send({
-          success: false,
-          error: 'Internal server error'
-        });
+          };
+        } catch (error) {
+          logger.error('Login error:', error);
+          return reply.code(500).send({
+            success: false,
+            error: 'Internal server error'
+          });
+        }
       }
-    });
+    );
 
     // Dashboard stats
     fastify.get('/api/v1/dashboard/stats', async (request, reply) => {
@@ -640,7 +652,9 @@ fastify.post('/api/v1/auth/login', { schema: postapiv1authloginSchema }, async (
           apiPrisma.machine.count(),
           apiPrisma.machine.count({ where: { status: 'ONLINE' } }),
           apiPrisma.task.count(),
-          apiPrisma.task.count({ where: { status: { in: ['CREATED', 'ASSIGNED'] } } }),
+          apiPrisma.task.count({
+            where: { status: { in: ['CREATED', 'ASSIGNED'] } }
+          }),
           apiPrisma.user.count(),
           apiPrisma.user.count({ where: { isActive: true } })
         ]);
@@ -707,10 +721,10 @@ fastify.post('/api/v1/auth/login', { schema: postapiv1authloginSchema }, async (
         }
 
         const inventory = await apiPrisma.inventoryItem.findMany({
-      skip: (request.query.page - 1) * request.query.limit,
-      take: request.query.limit,
-      orderBy: { createdAt: 'desc' }
-    });
+          skip: (request.query.page - 1) * request.query.limit,
+          take: request.query.limit,
+          orderBy: { createdAt: 'desc' }
+        });
 
         return {
           success: true,
@@ -791,7 +805,10 @@ fastify.post('/api/v1/auth/login', { schema: postapiv1authloginSchema }, async (
     });
 
     // Запускаем Telegram Bot в фоне (если токен есть)
-    if (process.env.TELEGRAM_BOT_TOKEN && fs.existsSync('./services/telegram-bot/src/index.js')) {
+    if (
+      process.env.TELEGRAM_BOT_TOKEN &&
+      fs.existsSync('./services/telegram-bot/src/index.js')
+    ) {
       setTimeout(() => {
         logger.info('🤖 Starting Telegram Bot...');
         try {
@@ -806,22 +823,24 @@ fastify.post('/api/v1/auth/login', { schema: postapiv1authloginSchema }, async (
 
     // Запускаем сервер
     const port = process.env.PORT || 8000;
-    await fastify.listen({ 
+    await fastify.listen({
       port: port,
       host: '0.0.0.0'
     });
-    
+
     logger.info(`🎉 VHM24 Unified is running on port ${port}`);
     logger.info(`🌐 Health check: http://localhost:${port}/health`);
     logger.info(`📚 Documentation: http://localhost:${port}/docs`);
     logger.info(`📊 System status: http://localhost:${port}/api/status`);
-    
+
     // Railway specific logging
     if (process.env.RAILWAY_ENVIRONMENT) {
       logger.info('🚂 Running on Railway:', process.env.RAILWAY_STATIC_URL);
-      logger.info('🔗 Public URL:', `https://${process.env.RAILWAY_STATIC_URL}`);
+      logger.info(
+        '🔗 Public URL:',
+        `https://${process.env.RAILWAY_STATIC_URL}`
+      );
     }
-    
   } catch (error) {
     logger.error('❌ Railway deployment failed:', error.message);
     logger.error('Stack trace:', error.stack);
@@ -840,7 +859,7 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
   logger.error('❌ Uncaught Exception:', error);
   process.exit(1);
 });

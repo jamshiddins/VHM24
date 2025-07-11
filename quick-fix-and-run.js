@@ -84,7 +84,7 @@ const start = async () => {
 
 start();
 `;
-  
+
   await fs.writeFile(gatewayPath, content, 'utf8');
   console.log('✅ Gateway исправлен');
 }
@@ -92,7 +92,9 @@ start();
 async function generatePrismaClient() {
   console.log('🔧 Генерация Prisma клиента...');
   try {
-    await exec('npx prisma generate --schema=packages/database/prisma/schema.prisma');
+    await exec(
+      'npx prisma generate --schema=packages/database/prisma/schema.prisma'
+    );
     console.log('✅ Prisma клиент сгенерирован');
   } catch (error) {
     console.log('⚠️  Не удалось сгенерировать Prisma клиент');
@@ -102,7 +104,9 @@ async function generatePrismaClient() {
 async function installDashboardDeps() {
   console.log('📦 Установка зависимостей Web Dashboard...');
   try {
-    await exec('npm install', { cwd: path.join(__dirname, 'apps/web-dashboard') });
+    await exec('npm install', {
+      cwd: path.join(__dirname, 'apps/web-dashboard')
+    });
     console.log('✅ Зависимости Web Dashboard установлены');
   } catch (error) {
     console.log('⚠️  Не удалось установить зависимости Web Dashboard');
@@ -111,18 +115,18 @@ async function installDashboardDeps() {
 
 async function main() {
   console.log('🔧 Исправление критических проблем...\n');
-  
+
   // 1. Исправить Gateway
   await fixGateway();
-  
+
   // 2. Сгенерировать Prisma клиент
   await generatePrismaClient();
-  
+
   // 3. Установить зависимости Dashboard
   await installDashboardDeps();
-  
+
   console.log('\n🚀 Запуск работающих сервисов...\n');
-  
+
   // Запускаем только те сервисы, которые точно работают
   const workingServices = [
     { name: 'Gateway', path: 'services/gateway', port: 8000 },
@@ -132,60 +136,64 @@ async function main() {
     { name: 'Audit', path: 'services/audit', port: 3009 },
     { name: 'Monitoring', path: 'services/monitoring', port: 3010 }
   ];
-  
+
   const processes = [];
-  
+
   // Запуск сервисов
   for (let i = 0; i < workingServices.length; i++) {
     const service = workingServices[i];
     console.log(`🚀 Запуск ${service.name} на порту ${service.port}...`);
-    
+
     const proc = spawn('npm', ['start'], {
       cwd: path.join(__dirname, service.path),
       shell: true,
       env: { ...process.env, PORT: service.port }
     });
-    
-    proc.stdout.on('data', (data) => {
+
+    proc.stdout.on('data', data => {
       console.log(`[${service.name}] ${data.toString().trim()}`);
     });
-    
-    proc.stderr.on('data', (data) => {
+
+    proc.stderr.on('data', data => {
       const msg = data.toString().trim();
-      if (msg && !msg.includes('ExperimentalWarning') && !msg.includes('npm warn')) {
+      if (
+        msg &&
+        !msg.includes('ExperimentalWarning') &&
+        !msg.includes('npm warn')
+      ) {
         console.error(`[${service.name}] ⚠️  ${msg}`);
       }
     });
-    
+
     processes.push(proc);
-    
+
     // Ждем между запусками
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
-  
+
   // Запуск Web Dashboard
   setTimeout(async () => {
     console.log('\n🌐 Запуск Web Dashboard...');
-    
+
     const dashboard = spawn('npm', ['run', 'dev'], {
       cwd: path.join(__dirname, 'apps/web-dashboard'),
       shell: true
     });
-    
-    dashboard.stdout.on('data', (data) => {
+
+    dashboard.stdout.on('data', data => {
       console.log(`[Dashboard] ${data.toString().trim()}`);
     });
-    
-    dashboard.stderr.on('data', (data) => {
+
+    dashboard.stderr.on('data', data => {
       const msg = data.toString().trim();
       if (msg && !msg.includes('ExperimentalWarning')) {
         console.error(`[Dashboard] ⚠️  ${msg}`);
       }
     });
-    
+
     processes.push(dashboard);
   }, 10000);
-  
+
   // Информация
   setTimeout(() => {
     console.log('\n✅ Основные сервисы запущены!');
@@ -196,7 +204,7 @@ async function main() {
     console.log('   Recipes Service: http://localhost:3007/health');
     console.log('\n📝 Нажмите Ctrl+C для остановки всех сервисов');
   }, 15000);
-  
+
   // Graceful shutdown
   process.on('SIGINT', () => {
     console.log('\n🛑 Остановка всех сервисов...');

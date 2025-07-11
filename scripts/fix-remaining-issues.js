@@ -48,40 +48,48 @@ function addErrorHandling(filePath) {
   }
 
   let content = fs.readFileSync(filePath, 'utf8');
-  
+
   // Ищем async функции без try-catch
-  const asyncFuncRegex = /async\s+(?:function\s+\w+|\(\s*(?:\w+(?:,\s*\w+)*\s*)?\)\s*=>|[^{]*=>)\s*{(?![^{}]*try\s*{[^{}]*}[^{}]*catch[^{}]*{)/g;
-  
+  const asyncFuncRegex =
+    /async\s+(?:function\s+\w+|\(\s*(?:\w+(?:,\s*\w+)*\s*)?\)\s*=>|[^{]*=>)\s*{(?![^{}]*try\s*{[^{}]*}[^{}]*catch[^{}]*{)/g;
+
   if (asyncFuncRegex.test(content)) {
     // Заменяем async функции, добавляя try-catch
-    content = content.replace(asyncFuncRegex, (match) => {
+    content = content.replace(asyncFuncRegex, match => {
       // Находим открывающую скобку функции
       const openBraceIndex = match.indexOf('{');
-      
+
       if (openBraceIndex !== -1) {
-        return match.substring(0, openBraceIndex + 1) + `
+        return (
+          match.substring(0, openBraceIndex + 1) +
+          `
     try {
-      ` + match.substring(openBraceIndex + 1);
+      ` +
+          match.substring(openBraceIndex + 1)
+        );
       }
-      
+
       return match;
     });
-    
+
     // Добавляем catch блок перед закрывающими скобками функций
     let depth = 0;
     let result = '';
     let i = 0;
-    
+
     while (i < content.length) {
       const char = content[i];
-      
+
       if (char === '{') {
         depth++;
       } else if (char === '}') {
         depth--;
-        
+
         // Если это закрывающая скобка функции и нет catch блока
-        if (depth === 0 && !content.substring(Math.max(0, i - 50), i).includes('catch')) {
+        if (
+          depth === 0 &&
+          !content.substring(Math.max(0, i - 50), i).includes('catch')
+        ) {
           result += `
     } catch (error) {
       console.error('Error:', error);
@@ -89,16 +97,16 @@ function addErrorHandling(filePath) {
     }`;
         }
       }
-      
+
       result += char;
       i++;
     }
-    
+
     fs.writeFileSync(filePath, result);
     console.log(`✅ Добавлена обработка ошибок в ${filePath}`);
     return true;
   }
-  
+
   return false;
 }
 
@@ -113,13 +121,17 @@ function standardizeModules(filePath) {
   let modified = false;
 
   // Заменяем import на require
-  const importRegex = /import\s+(\{[^}]+\}|\*\s+as\s+\w+|\w+)\s+from\s+['"]([^'"]+)['"]/g;
-  
+  const importRegex =
+    /import\s+(\{[^}]+\}|\*\s+as\s+\w+|\w+)\s+from\s+['"]([^'"]+)['"]/g;
+
   if (importRegex.test(content)) {
     content = content.replace(importRegex, (match, imports, source) => {
       if (imports.startsWith('{') && imports.endsWith('}')) {
         // Деструктуризация: const { a, b } = require('module')
-        const items = imports.slice(1, -1).split(',').map(item => item.trim());
+        const items = imports
+          .slice(1, -1)
+          .split(',')
+          .map(item => item.trim());
         return `const { ${items.join(', ')} } = require('${source}')`;
       } else if (imports.startsWith('*')) {
         // Импорт всего модуля: const name = require('module')
@@ -130,32 +142,38 @@ function standardizeModules(filePath) {
         return `const ${imports} = require('${source}')`;
       }
     });
-    
+
     // Заменяем export на module.exports
-    content = content.replace(/export\s+default\s+(\w+)/g, 'module.exports = $1');
+    content = content.replace(
+      /export\s+default\s+(\w+)/g,
+      'module.exports = $1'
+    );
     content = content.replace(/export\s+const\s+(\w+)/g, 'const $1');
     content = content.replace(/export\s+function\s+(\w+)/g, 'function $1');
-    
+
     // Добавляем module.exports в конец файла для именованных экспортов
-    if (content.includes('export const') || content.includes('export function')) {
+    if (
+      content.includes('export const') ||
+      content.includes('export function')
+    ) {
       const exportedNames = [];
       const exportConstRegex = /export\s+const\s+(\w+)/g;
       const exportFuncRegex = /export\s+function\s+(\w+)/g;
-      
+
       let match;
       while ((match = exportConstRegex.exec(content)) !== null) {
         exportedNames.push(match[1]);
       }
-      
+
       while ((match = exportFuncRegex.exec(content)) !== null) {
         exportedNames.push(match[1]);
       }
-      
+
       if (exportedNames.length > 0) {
         content += `\nmodule.exports = { ${exportedNames.join(', ')} };\n`;
       }
     }
-    
+
     modified = true;
   }
 
@@ -176,42 +194,45 @@ function replaceConsoleLog(filePath) {
   }
 
   let content = fs.readFileSync(filePath, 'utf8');
-  
+
   // Проверяем, есть ли импорт логгера
-  const hasLogger = content.includes('require(\'@vhm24/shared/logger\')') || 
-                    content.includes('require("@vhm24/shared/logger")');
-  
+  const hasLogger =
+    content.includes("require('@vhm24/shared/logger')") ||
+    content.includes('require("@vhm24/shared/logger")');
+
   // Если нет импорта логгера, но есть console.log, добавляем импорт
   if (!hasLogger && content.includes('console.log')) {
     // Добавляем импорт логгера в начало файла
     content = `const logger = require('@vhm24/shared/logger');\n\n${content}`;
   }
-  
+
   // Заменяем console.log на logger.info
   let modified = false;
   if (content.includes('console.log')) {
     content = content.replace(/console\.log\((.*?)\)/g, 'logger.info($1)');
     modified = true;
   }
-  
+
   // Заменяем console.error на logger.error
   if (content.includes('console.error')) {
     content = content.replace(/console\.error\((.*?)\)/g, 'logger.error($1)');
     modified = true;
   }
-  
+
   // Заменяем console.warn на logger.warn
   if (content.includes('console.warn')) {
     content = content.replace(/console\.warn\((.*?)\)/g, 'logger.warn($1)');
     modified = true;
   }
-  
+
   if (modified) {
     fs.writeFileSync(filePath, content);
-    console.log(`✅ Заменены console.log на структурированное логирование в ${filePath}`);
+    console.log(
+      `✅ Заменены console.log на структурированное логирование в ${filePath}`
+    );
     return true;
   }
-  
+
   return false;
 }
 
@@ -223,38 +244,42 @@ function addJwtExpiry(filePath) {
   }
 
   let content = fs.readFileSync(filePath, 'utf8');
-  
+
   // Ищем и добавляем expiresIn в JWT опции
-  const jwtSignRegex = /(jwt\.sign|sign|fastify\.jwt\.sign)\(\s*({[^}]*}|[^,]+)\s*,\s*(['"][^'"]+['"]|[^,)]+)\s*(?:,\s*({[^}]*})?\s*)?\)/g;
-  
+  const jwtSignRegex =
+    /(jwt\.sign|sign|fastify\.jwt\.sign)\(\s*({[^}]*}|[^,]+)\s*,\s*(['"][^'"]+['"]|[^,)]+)\s*(?:,\s*({[^}]*})?\s*)?\)/g;
+
   let modified = false;
-  content = content.replace(jwtSignRegex, (match, func, payload, secret, options) => {
-    if (options && options.includes('expiresIn')) {
-      return match; // Уже есть expiresIn
-    }
-    
-    if (options) {
-      // Есть опции, добавляем expiresIn
-      const trimmedOptions = options.trim();
-      if (trimmedOptions === '{}') {
-        return `${func}(${payload}, ${secret}, { expiresIn: '1d' })`;
-      } else {
-        // Удаляем закрывающую скобку и добавляем expiresIn
-        return `${func}(${payload}, ${secret}, ${trimmedOptions.slice(0, -1)}, expiresIn: '1d' })`;
+  content = content.replace(
+    jwtSignRegex,
+    (match, func, payload, secret, options) => {
+      if (options && options.includes('expiresIn')) {
+        return match; // Уже есть expiresIn
       }
-    } else {
-      // Нет опций, добавляем объект с expiresIn
-      return `${func}(${payload}, ${secret}, { expiresIn: '1d' })`;
+
+      if (options) {
+        // Есть опции, добавляем expiresIn
+        const trimmedOptions = options.trim();
+        if (trimmedOptions === '{}') {
+          return `${func}(${payload}, ${secret}, { expiresIn: '1d' })`;
+        } else {
+          // Удаляем закрывающую скобку и добавляем expiresIn
+          return `${func}(${payload}, ${secret}, ${trimmedOptions.slice(0, -1)}, expiresIn: '1d' })`;
+        }
+      } else {
+        // Нет опций, добавляем объект с expiresIn
+        return `${func}(${payload}, ${secret}, { expiresIn: '1d' })`;
+      }
     }
-  });
-  
+  );
+
   if (content !== fs.readFileSync(filePath, 'utf8')) {
     modified = true;
     fs.writeFileSync(filePath, content);
     console.log(`✅ Добавлен срок жизни JWT в ${filePath}`);
     return true;
   }
-  
+
   return false;
 }
 
@@ -266,15 +291,15 @@ function addHealthCheck(filePath) {
   }
 
   let content = fs.readFileSync(filePath, 'utf8');
-  
+
   // Проверяем, есть ли уже health check endpoint
   if (content.includes('/health') || content.includes('health check')) {
     return false;
   }
-  
+
   // Ищем место для добавления health check endpoint
   const fastifyRegex = /fastify\.listen\s*\(/;
-  
+
   if (fastifyRegex.test(content)) {
     const healthCheckCode = `
 // Health check endpoint
@@ -325,27 +350,30 @@ fastify.get('/health', async (request, reply) => {
 });
 
 `;
-    
+
     // Добавляем health check endpoint перед fastify.listen
-    content = content.replace(fastifyRegex, healthCheckCode + 'fastify.listen(');
-    
+    content = content.replace(
+      fastifyRegex,
+      healthCheckCode + 'fastify.listen('
+    );
+
     fs.writeFileSync(filePath, content);
     console.log(`✅ Добавлен health check endpoint в ${filePath}`);
     return true;
   }
-  
+
   return false;
 }
 
 // Функция для создания Dockerfile для сервиса
 function createDockerfile(servicePath) {
   const dockerfilePath = path.join(servicePath, 'Dockerfile');
-  
+
   if (fs.existsSync(dockerfilePath)) {
     console.log(`⚠️ Dockerfile уже существует: ${dockerfilePath}`);
     return false;
   }
-  
+
   const dockerfileContent = `# Базовый образ
 FROM node:18-alpine AS base
 WORKDIR /app
@@ -378,7 +406,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD wget -
 # Запуск сервиса
 CMD ["node", "src/index.js"]
 `;
-  
+
   fs.writeFileSync(dockerfilePath, dockerfileContent);
   console.log(`✅ Создан Dockerfile: ${dockerfilePath}`);
   return true;
@@ -388,14 +416,14 @@ CMD ["node", "src/index.js"]
 function createGitHubWorkflow() {
   const workflowDir = path.join('.github', 'workflows');
   const workflowPath = path.join(workflowDir, 'ci.yml');
-  
+
   ensureDirectoryExists(workflowDir);
-  
+
   if (fs.existsSync(workflowPath)) {
     console.log(`⚠️ GitHub Actions workflow уже существует: ${workflowPath}`);
     return false;
   }
-  
+
   const workflowContent = `name: CI/CD Pipeline
 
 on:
@@ -472,7 +500,7 @@ jobs:
             fi
           done
 `;
-  
+
   fs.writeFileSync(workflowPath, workflowContent);
   console.log(`✅ Создан GitHub Actions workflow: ${workflowPath}`);
   return true;
@@ -493,11 +521,11 @@ healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
 `;
-    
+
     fs.writeFileSync('railway.toml', railwayToml);
     console.log('✅ Создан railway.toml');
   }
-  
+
   // Создаем nixpacks.toml, если его нет
   if (!fs.existsSync('nixpacks.toml')) {
     const nixpacksToml = `[phases.setup]
@@ -512,11 +540,11 @@ cmds = ["yarn build"]
 [start]
 cmd = "node railway-start-unified.js"
 `;
-    
+
     fs.writeFileSync('nixpacks.toml', nixpacksToml);
     console.log('✅ Создан nixpacks.toml');
   }
-  
+
   // Проверяем и обновляем railway-start-unified.js
   if (fs.existsSync('railway-start-unified.js')) {
     console.log('✅ railway-start-unified.js уже существует');
@@ -553,11 +581,11 @@ process.on('SIGTERM', () => {
   gatewayProcess.kill('SIGTERM');
 });
 `;
-    
+
     fs.writeFileSync('railway-start-unified.js', railwayStartUnified);
     console.log('✅ Создан railway-start-unified.js');
   }
-  
+
   return true;
 }
 

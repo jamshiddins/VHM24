@@ -33,7 +33,7 @@ const filesToDelete = [
   'RAILWAY_VARIABLES_READY.env',
   'RAILWAY_WITH_SUPABASE.md',
   'RAILWAY_ADMIN_SETUP.md',
-  
+
   // Redundant start scripts
   'start-all-services-fixed.bat',
   'start-all-services.bat',
@@ -45,11 +45,11 @@ const filesToDelete = [
   'deploy-railway-fixed.bat',
   'deploy-to-railway.bat',
   'deploy-to-railway.sh',
-  
+
   // Old entry points (replaced by start.js)
   'index.js',
   'railway-start.js',
-  
+
   // Other redundant files
   'index-gateway-only.js',
   'prepare-for-railway.js',
@@ -60,7 +60,7 @@ const filesToDelete = [
   'vendbot-compatibility-report.json',
   '.env.railway',
   'railway.json',
-  
+
   // Old analysis files
   'VENDBOT_MIGRATION_ANALYSIS.md',
   'VENDHUB_API_SPEC.md',

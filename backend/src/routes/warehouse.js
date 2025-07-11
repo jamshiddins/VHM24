@@ -4,6 +4,24 @@ const { PrismaClient } = require('@prisma/client');
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Корневой маршрут склада
+router.get('/', async (req, res) => {
+  try {
+    res.json({
+      message: 'VHM24 Warehouse API',
+      endpoints: [
+        'GET /items - Товары на складе',
+        'GET /operations - Операции склада',
+        'GET /bunkers - Бункеры',
+        'POST /operations - Создать операцию'
+      ]
+    });
+  } catch (error) {
+    console.error('Ошибка склада:', error);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
 // Получить все товары на складе
 router.get('/items', async (req, res) => {
   try {

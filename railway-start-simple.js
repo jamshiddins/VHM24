@@ -26,8 +26,8 @@ const fastify = Fastify({
 
 // Health check endpoint
 fastify.get('/health', async (request, reply) => {
-  return { 
-    status: 'ok', 
+  return {
+    status: 'ok',
     service: 'vhm24-simple',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'production',
@@ -143,21 +143,23 @@ fastify.get('/docs', async (request, reply) => {
 const start = async () => {
   try {
     const port = process.env.PORT || 8000;
-    await fastify.listen({ 
+    await fastify.listen({
       port: port,
       host: '0.0.0.0'
     });
-    
+
     logger.info(`🎉 VHM24 Simple is running on port ${port}`);
     logger.info(`🌐 Health check: http://localhost:${port}/health`);
     logger.info(`📚 Documentation: http://localhost:${port}/docs`);
-    
+
     // Railway specific logging
     if (process.env.RAILWAY_ENVIRONMENT) {
       logger.info('🚂 Running on Railway:', process.env.RAILWAY_STATIC_URL);
-      logger.info('🔗 Public URL:', `https://${process.env.RAILWAY_STATIC_URL}`);
+      logger.info(
+        '🔗 Public URL:',
+        `https://${process.env.RAILWAY_STATIC_URL}`
+      );
     }
-    
   } catch (err) {
     logger.error('❌ Server failed to start:', err);
     process.exit(1);

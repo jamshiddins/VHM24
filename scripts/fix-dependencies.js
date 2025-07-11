@@ -43,18 +43,18 @@ runCommand('npm install tap --save-dev');
 console.log('\n📋 Шаг 2: Исправление проблемы с fast-jwt');
 if (checkFileExists('package.json')) {
   let packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  
+
   // Добавляем overrides для fast-jwt
   if (!packageJson.overrides) {
     packageJson.overrides = {};
   }
-  
+
   packageJson.overrides['fast-jwt'] = {
     engines: {
-      node: ">=16"
+      node: '>=16'
     }
   };
-  
+
   fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
   console.log('✅ Добавлен override для fast-jwt в package.json');
 }
@@ -63,20 +63,20 @@ if (checkFileExists('package.json')) {
 console.log('\n📋 Шаг 3: Исправление проблемы с canvas');
 if (checkFileExists('package.json')) {
   let packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  
+
   // Проверяем, есть ли canvas в зависимостях
   const hasCanvas = packageJson.dependencies && packageJson.dependencies.canvas;
-  
+
   if (hasCanvas) {
     console.log('Найден пакет canvas в зависимостях, заменяем на skia-canvas');
-    
+
     // Удаляем canvas и устанавливаем skia-canvas
     delete packageJson.dependencies.canvas;
-    
+
     if (!packageJson.dependencies['skia-canvas']) {
-      packageJson.dependencies['skia-canvas'] = "^0.9.30";
+      packageJson.dependencies['skia-canvas'] = '^0.9.30';
     }
-    
+
     fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
     console.log('✅ Заменен canvas на skia-canvas в package.json');
   } else {
@@ -97,57 +97,52 @@ function updateTests(directory) {
     console.log(`⚠️ Директория ${directory} не найдена`);
     return;
   }
-  
-  const testFiles = fs.readdirSync(directory)
+
+  const testFiles = fs
+    .readdirSync(directory)
     .filter(file => file.endsWith('.test.js'))
     .map(file => path.join(directory, file));
-  
+
   testFiles.forEach(file => {
     let content = fs.readFileSync(file, 'utf8');
-    
+
     // Заменяем tap на jest
     if (content.includes("const { test } = require('tap')")) {
       content = content.replace(
         "const { test } = require('tap')",
         "const { describe, it, expect } = require('@jest/globals')"
       );
-      
+
       // Заменяем tap тесты на jest тесты
       content = content.replace(
         /test\(['"](.+)['"]\s*,\s*async\s*\(\s*t\s*\)\s*=>\s*\{/g,
         "describe('$1', () => {\n  it('should work', async () => {"
       );
-      
+
       // Заменяем t.equal на expect().toBe()
       content = content.replace(
         /t\.equal\(([^,]+),\s*([^)]+)\)/g,
-        "expect($1).toBe($2)"
+        'expect($1).toBe($2)'
       );
-      
+
       // Заменяем t.ok на expect().toBeTruthy()
-      content = content.replace(
-        /t\.ok\(([^)]+)\)/g,
-        "expect($1).toBeTruthy()"
-      );
-      
+      content = content.replace(/t\.ok\(([^)]+)\)/g, 'expect($1).toBeTruthy()');
+
       // Заменяем t.notOk на expect().toBeFalsy()
       content = content.replace(
         /t\.notOk\(([^)]+)\)/g,
-        "expect($1).toBeFalsy()"
+        'expect($1).toBeFalsy()'
       );
-      
+
       // Заменяем t.same на expect().toEqual()
       content = content.replace(
         /t\.same\(([^,]+),\s*([^)]+)\)/g,
-        "expect($1).toEqual($2)"
+        'expect($1).toEqual($2)'
       );
-      
+
       // Добавляем закрывающую скобку для describe
-      content = content.replace(
-        /}\s*\)\s*$/,
-        "  });\n});"
-      );
-      
+      content = content.replace(/}\s*\)\s*$/, '  });\n});');
+
       fs.writeFileSync(file, content);
       console.log(`✅ Обновлен тест: ${file}`);
     }
@@ -157,9 +152,10 @@ function updateTests(directory) {
 // Обновляем тесты во всех сервисах
 const servicesDir = path.join(__dirname, '..', 'services');
 if (fs.existsSync(servicesDir)) {
-  const services = fs.readdirSync(servicesDir)
+  const services = fs
+    .readdirSync(servicesDir)
     .filter(dir => fs.statSync(path.join(servicesDir, dir)).isDirectory());
-  
+
   services.forEach(service => {
     const testsDir = path.join(servicesDir, service, 'tests');
     if (fs.existsSync(testsDir)) {
@@ -171,9 +167,10 @@ if (fs.existsSync(servicesDir)) {
 // Обновляем тесты в корневой директории tests
 const testsDir = path.join(__dirname, '..', 'tests');
 if (fs.existsSync(testsDir)) {
-  const testDirs = fs.readdirSync(testsDir)
+  const testDirs = fs
+    .readdirSync(testsDir)
     .filter(dir => fs.statSync(path.join(testsDir, dir)).isDirectory());
-  
+
   testDirs.forEach(dir => {
     updateTests(path.join(testsDir, dir));
   });
@@ -183,7 +180,7 @@ if (fs.existsSync(testsDir)) {
 console.log('\n📋 Шаг 6: Обновление jest.config.js');
 if (checkFileExists('jest.config.js')) {
   let jestConfig = fs.readFileSync('jest.config.js', 'utf8');
-  
+
   // Проверяем, есть ли setupFilesAfterEnv
   if (!jestConfig.includes('setupFilesAfterEnv')) {
     jestConfig = jestConfig.replace(
@@ -191,7 +188,7 @@ if (checkFileExists('jest.config.js')) {
       `module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],`
     );
-    
+
     fs.writeFileSync('jest.config.js', jestConfig);
     console.log('✅ Добавлен setupFilesAfterEnv в jest.config.js');
   }
@@ -214,7 +211,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 `;
-  
+
   fs.writeFileSync('jest.setup.js', setupContent);
   console.log('✅ Создан jest.setup.js');
 }
@@ -223,16 +220,16 @@ afterEach(() => {
 console.log('\n📋 Шаг 8: Обновление package.json для запуска тестов');
 if (checkFileExists('package.json')) {
   let packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  
+
   // Обновляем скрипты для запуска тестов
   if (!packageJson.scripts) {
     packageJson.scripts = {};
   }
-  
+
   packageJson.scripts.test = 'jest';
   packageJson.scripts['test:watch'] = 'jest --watch';
   packageJson.scripts['test:coverage'] = 'jest --coverage';
-  
+
   fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
   console.log('✅ Обновлены скрипты для запуска тестов в package.json');
 }

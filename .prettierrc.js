@@ -6,15 +6,15 @@ module.exports = {
   printWidth: 80,
   tabWidth: 2,
   useTabs: false,
-  
+
   // Скобки и пробелы
   bracketSpacing: true,
   bracketSameLine: false,
   arrowParens: 'avoid',
-  
+
   // Переносы строк
   endOfLine: 'lf',
-  
+
   // Специфичные настройки для разных типов файлов
   overrides: [
     {

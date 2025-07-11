@@ -35,8 +35,8 @@ const incompleteDataRoutes = require('./routes/incomplete-data');
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
+  res.json({
+    status: 'ok',
     service: 'VHM24 Backend',
     timestamp: new Date().toISOString()
   });
@@ -53,9 +53,9 @@ app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/ingredients', ingredientsRoutes);
 app.use('/api/v1/routes', routesRoutes);
 app.use('/api/v1/warehouse', warehouseRoutes);
-app.use('/api/audit', auditRoutes);
+app.use('/api/v1/audit', auditRoutes);
 app.use('/api/v1/data-import', dataImportRoutes);
-app.use('/api/incomplete-data', incompleteDataRoutes);
+app.use('/api/v1/incomplete-data', incompleteDataRoutes);
 
 // Error handling
 app.use((err, req, res, _next) => {
@@ -88,13 +88,16 @@ async function startServer() {
   try {
     await prisma.$connect();
     logger.info('Подключение к базе данных установлено');
-    
+
     app.listen(PORT, () => {
       logger.info(`VHM24 Backend запущен на порту ${PORT}`);
       logger.info(`Health check: http://localhost:${PORT}/health`);
     });
   } catch (error) {
-    logger.error('Ошибка запуска сервера', { error: error.message, stack: error.stack });
+    logger.error('Ошибка запуска сервера', {
+      error: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 }

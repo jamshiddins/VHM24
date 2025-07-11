@@ -36,8 +36,10 @@ router.get('/stats', async (req, res) => {
   try {
     const totalUsers = await prisma.user.count();
     const activeUsers = await prisma.user.count({ where: { isActive: true } });
-    const pendingUsers = await prisma.user.count({ where: { registrationStatus: 'PENDING' } });
-    
+    const pendingUsers = await prisma.user.count({
+      where: { registrationStatus: 'PENDING' }
+    });
+
     // Группировка по ролям (закомментировано так как не используется)
     // const usersByRole = await prisma.user.groupBy({
     //   by: ['roles'],
@@ -45,7 +47,7 @@ router.get('/stats', async (req, res) => {
     //     roles: true
     //   }
     // });
-    
+
     // Подсчет по каждой роли
     const roleStats = {
       ADMIN: 0,
@@ -55,7 +57,7 @@ router.get('/stats', async (req, res) => {
       TECHNICIAN: 0,
       DRIVER: 0
     };
-    
+
     // Подсчет пользователей по ролям (учитывая что у пользователя может быть несколько ролей)
     const allUsers = await prisma.user.findMany({ select: { roles: true } });
     allUsers.forEach(user => {
@@ -65,7 +67,7 @@ router.get('/stats', async (req, res) => {
         }
       });
     });
-    
+
     res.json({
       total: totalUsers,
       active: activeUsers,
@@ -74,8 +76,8 @@ router.get('/stats', async (req, res) => {
       byRole: roleStats,
       registrationTrend: {
         today: 0, // TODO: Добавить подсчет за сегодня
-        week: 0,  // TODO: Добавить подсчет за неделю
-        month: 0  // TODO: Добавить подсчет за месяц
+        week: 0, // TODO: Добавить подсчет за неделю
+        month: 0 // TODO: Добавить подсчет за месяц
       }
     });
   } catch (error) {

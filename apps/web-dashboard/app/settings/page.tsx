@@ -118,7 +118,9 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<SystemSettings>(defaultSettings);
   const [activeTab, setActiveTab] = useState('general');
   const [loading, setLoading] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [saveStatus, setSaveStatus] = useState<
+    'idle' | 'saving' | 'success' | 'error'
+  >('idle');
   const [systemStatus, setSystemStatus] = useState({
     database: 'connected',
     redis: 'connected',
@@ -148,7 +150,7 @@ export default function SettingsPage() {
       // const response = await fetch('/api/v1/settings');
       // const data = await response.json();
       // setSettings(data);
-      
+
       // Пока используем локальные настройки
       const savedSettings = localStorage.getItem('vhm24-settings');
       if (savedSettings) {
@@ -173,7 +175,7 @@ export default function SettingsPage() {
 
       // Пока сохраняем локально
       localStorage.setItem('vhm24-settings', JSON.stringify(settings));
-      
+
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 3000);
     } catch (error) {
@@ -188,7 +190,7 @@ export default function SettingsPage() {
       // Проверка статуса системы
       const response = await fetch('/health');
       const data = await response.json();
-      
+
       setSystemStatus({
         database: data.dbStatus === 'connected' ? 'connected' : 'error',
         redis: 'connected', // Будет из API
@@ -200,7 +202,11 @@ export default function SettingsPage() {
     }
   };
 
-  const updateSettings = (section: keyof SystemSettings, field: string, value: any) => {
+  const updateSettings = (
+    section: keyof SystemSettings,
+    field: string,
+    value: any
+  ) => {
     setSettings(prev => ({
       ...prev,
       [section]: {
@@ -210,7 +216,12 @@ export default function SettingsPage() {
     }));
   };
 
-  const updateNestedSettings = (section: keyof SystemSettings, subsection: string, field: string, value: any) => {
+  const updateNestedSettings = (
+    section: keyof SystemSettings,
+    subsection: string,
+    field: string,
+    value: any
+  ) => {
     setSettings(prev => ({
       ...prev,
       [section]: {
@@ -232,7 +243,9 @@ export default function SettingsPage() {
         <input
           type="text"
           value={settings.general.systemName}
-          onChange={(e) => updateSettings('general', 'systemName', e.target.value)}
+          onChange={e =>
+            updateSettings('general', 'systemName', e.target.value)
+          }
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -244,7 +257,9 @@ export default function SettingsPage() {
           </label>
           <select
             value={settings.general.timezone}
-            onChange={(e) => updateSettings('general', 'timezone', e.target.value)}
+            onChange={e =>
+              updateSettings('general', 'timezone', e.target.value)
+            }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="Asia/Tashkent">Asia/Tashkent (UTC+5)</option>
@@ -259,7 +274,9 @@ export default function SettingsPage() {
           </label>
           <select
             value={settings.general.language}
-            onChange={(e) => updateSettings('general', 'language', e.target.value)}
+            onChange={e =>
+              updateSettings('general', 'language', e.target.value)
+            }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="ru">Русский</option>
@@ -274,7 +291,9 @@ export default function SettingsPage() {
           </label>
           <select
             value={settings.general.dateFormat}
-            onChange={(e) => updateSettings('general', 'dateFormat', e.target.value)}
+            onChange={e =>
+              updateSettings('general', 'dateFormat', e.target.value)
+            }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="DD.MM.YYYY">DD.MM.YYYY</option>
@@ -289,7 +308,9 @@ export default function SettingsPage() {
           </label>
           <select
             value={settings.general.currency}
-            onChange={(e) => updateSettings('general', 'currency', e.target.value)}
+            onChange={e =>
+              updateSettings('general', 'currency', e.target.value)
+            }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="UZS">UZS (Узбекский сум)</option>
@@ -307,7 +328,9 @@ export default function SettingsPage() {
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-center">
           <DocumentTextIcon className="h-5 w-5 text-blue-600 mr-2" />
-          <h3 className="text-sm font-medium text-blue-800">Система аудита активна</h3>
+          <h3 className="text-sm font-medium text-blue-800">
+            Система аудита активна
+          </h3>
         </div>
         <p className="text-sm text-blue-600 mt-1">
           Все действия пользователей логируются и отслеживаются
@@ -324,7 +347,9 @@ export default function SettingsPage() {
             min="1"
             max="365"
             value={settings.audit.retentionDays}
-            onChange={(e) => updateSettings('audit', 'retentionDays', parseInt(e.target.value))}
+            onChange={e =>
+              updateSettings('audit', 'retentionDays', parseInt(e.target.value))
+            }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -335,7 +360,7 @@ export default function SettingsPage() {
           </label>
           <select
             value={settings.audit.logLevel}
-            onChange={(e) => updateSettings('audit', 'logLevel', e.target.value)}
+            onChange={e => updateSettings('audit', 'logLevel', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="error">Только ошибки</option>
@@ -347,53 +372,89 @@ export default function SettingsPage() {
       </div>
 
       <div className="space-y-4">
-        <h4 className="text-lg font-medium text-gray-900">Параметры логирования</h4>
-        
+        <h4 className="text-lg font-medium text-gray-900">
+          Параметры логирования
+        </h4>
+
         <div className="space-y-3">
           <label className="flex items-center">
             <input
               type="checkbox"
               checked={settings.audit.enableRequestLogging}
-              onChange={(e) => updateSettings('audit', 'enableRequestLogging', e.target.checked)}
+              onChange={e =>
+                updateSettings(
+                  'audit',
+                  'enableRequestLogging',
+                  e.target.checked
+                )
+              }
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <span className="ml-2 text-sm text-gray-700">Логировать HTTP запросы</span>
+            <span className="ml-2 text-sm text-gray-700">
+              Логировать HTTP запросы
+            </span>
           </label>
 
           <label className="flex items-center">
             <input
               type="checkbox"
               checked={settings.audit.enableResponseLogging}
-              onChange={(e) => updateSettings('audit', 'enableResponseLogging', e.target.checked)}
+              onChange={e =>
+                updateSettings(
+                  'audit',
+                  'enableResponseLogging',
+                  e.target.checked
+                )
+              }
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <span className="ml-2 text-sm text-gray-700">Логировать HTTP ответы</span>
+            <span className="ml-2 text-sm text-gray-700">
+              Логировать HTTP ответы
+            </span>
           </label>
 
           <label className="flex items-center">
             <input
               type="checkbox"
               checked={settings.audit.enableDataChangeTracking}
-              onChange={(e) => updateSettings('audit', 'enableDataChangeTracking', e.target.checked)}
+              onChange={e =>
+                updateSettings(
+                  'audit',
+                  'enableDataChangeTracking',
+                  e.target.checked
+                )
+              }
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <span className="ml-2 text-sm text-gray-700">Отслеживать изменения данных</span>
+            <span className="ml-2 text-sm text-gray-700">
+              Отслеживать изменения данных
+            </span>
           </label>
 
           <label className="flex items-center">
             <input
               type="checkbox"
               checked={settings.audit.enableIncompleteDataTracking}
-              onChange={(e) => updateSettings('audit', 'enableIncompleteDataTracking', e.target.checked)}
+              onChange={e =>
+                updateSettings(
+                  'audit',
+                  'enableIncompleteDataTracking',
+                  e.target.checked
+                )
+              }
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <span className="ml-2 text-sm text-gray-700">Отслеживать незаполненные данные</span>
+            <span className="ml-2 text-sm text-gray-700">
+              Отслеживать незаполненные данные
+            </span>
           </label>
         </div>
       </div>
 
       <div className="bg-gray-50 rounded-lg p-4">
-        <h4 className="text-sm font-medium text-gray-900 mb-3">Статистика аудита</h4>
+        <h4 className="text-sm font-medium text-gray-900 mb-3">
+          Статистика аудита
+        </h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
             <div className="text-gray-500">Записей сегодня</div>
@@ -423,9 +484,7 @@ export default function SettingsPage() {
           <div className="flex items-center">
             <Logo size={32} showText={true} />
           </div>
-          <div className="text-sm text-gray-500">
-            Версия 1.0.0
-          </div>
+          <div className="text-sm text-gray-500">Версия 1.0.0</div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -433,7 +492,9 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-gray-500">База данных</div>
-                <div className="text-lg font-semibold text-gray-900">PostgreSQL</div>
+                <div className="text-lg font-semibold text-gray-900">
+                  PostgreSQL
+                </div>
               </div>
               {systemStatus.database === 'connected' ? (
                 <CheckCircleIcon className="h-6 w-6 text-green-500" />
@@ -461,7 +522,9 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-gray-500">Аудит</div>
-                <div className="text-lg font-semibold text-gray-900">Активен</div>
+                <div className="text-lg font-semibold text-gray-900">
+                  Активен
+                </div>
               </div>
               {systemStatus.audit === 'active' ? (
                 <CheckCircleIcon className="h-6 w-6 text-green-500" />
@@ -474,8 +537,12 @@ export default function SettingsPage() {
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm text-gray-500">Резервное копирование</div>
-                <div className="text-lg font-semibold text-gray-900">Запланировано</div>
+                <div className="text-sm text-gray-500">
+                  Резервное копирование
+                </div>
+                <div className="text-lg font-semibold text-gray-900">
+                  Запланировано
+                </div>
               </div>
               {systemStatus.backup === 'scheduled' ? (
                 <CheckCircleIcon className="h-6 w-6 text-green-500" />
@@ -490,7 +557,9 @@ export default function SettingsPage() {
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
         <div className="flex items-center">
           <ExclamationTriangleIcon className="h-5 w-5 text-yellow-600 mr-2" />
-          <h3 className="text-sm font-medium text-yellow-800">Системные уведомления</h3>
+          <h3 className="text-sm font-medium text-yellow-800">
+            Системные уведомления
+          </h3>
         </div>
         <ul className="text-sm text-yellow-700 mt-2 space-y-1">
           <li>• Рекомендуется обновить зависимости системы</li>
@@ -517,7 +586,8 @@ export default function SettingsPage() {
               Раздел в разработке
             </h3>
             <p className="mt-1 text-sm text-gray-500">
-              Настройки для раздела "{tabs.find(t => t.id === activeTab)?.name}" будут добавлены в следующих обновлениях.
+              Настройки для раздела "{tabs.find(t => t.id === activeTab)?.name}"
+              будут добавлены в следующих обновлениях.
             </p>
           </div>
         );
@@ -528,7 +598,9 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Настройки системы</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Настройки системы
+          </h1>
           <p className="mt-2 text-gray-600">
             Управление конфигурацией и параметрами VHM24
           </p>
@@ -537,7 +609,7 @@ export default function SettingsPage() {
         <div className="bg-white shadow rounded-lg">
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-8 px-6">
-              {tabs.map((tab) => {
+              {tabs.map(tab => {
                 const Icon = tab.icon;
                 return (
                   <button
@@ -579,10 +651,10 @@ export default function SettingsPage() {
                   saveStatus === 'saving'
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : saveStatus === 'success'
-                    ? 'bg-green-600 text-white'
-                    : saveStatus === 'error'
-                    ? 'bg-red-600 text-white'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                      ? 'bg-green-600 text-white'
+                      : saveStatus === 'error'
+                        ? 'bg-red-600 text-white'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
                 }`}
               >
                 {saveStatus === 'saving' && 'Сохранение...'}

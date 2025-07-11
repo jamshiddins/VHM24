@@ -1,7 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, User, Shield, Clock, CheckCircle, XCircle, Edit, Trash2, Eye, UserPlus } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  User,
+  Shield,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Edit,
+  Trash2,
+  Eye,
+  UserPlus
+} from 'lucide-react';
 
 interface User {
   id: number;
@@ -10,7 +22,13 @@ interface User {
   lastName: string;
   email?: string;
   phone?: string;
-  role: 'ADMIN' | 'MANAGER' | 'OPERATOR' | 'TECHNICIAN' | 'DRIVER' | 'WAREHOUSE_WORKER';
+  role:
+    | 'ADMIN'
+    | 'MANAGER'
+    | 'OPERATOR'
+    | 'TECHNICIAN'
+    | 'DRIVER'
+    | 'WAREHOUSE_WORKER';
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'PENDING';
   telegramId?: string;
   telegramUsername?: string;
@@ -50,7 +68,9 @@ export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
-  const [activeTab, setActiveTab] = useState<'users' | 'roles' | 'permissions'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'roles' | 'permissions'>(
+    'users'
+  );
   const [showCreateUserModal, setShowCreateUserModal] = useState(false);
   const [showEditUserModal, setShowEditUserModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -150,7 +170,7 @@ export default function UsersPage() {
       const response = await fetch('/api/v1/users', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           ...userFormData,
@@ -159,7 +179,7 @@ export default function UsersPage() {
             skills: userFormData.skills,
             emergencyContact: userFormData.emergencyContact
           }
-        }),
+        })
       });
 
       const data = await response.json();
@@ -181,7 +201,7 @@ export default function UsersPage() {
       const response = await fetch(`/api/v1/users/${selectedUser.id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           ...userFormData,
@@ -191,14 +211,14 @@ export default function UsersPage() {
             skills: userFormData.skills,
             emergencyContact: userFormData.emergencyContact
           }
-        }),
+        })
       });
 
       const data = await response.json();
       if (data.success) {
-        setUsers(users.map(user => 
-          user.id === selectedUser.id ? data.data : user
-        ));
+        setUsers(
+          users.map(user => (user.id === selectedUser.id ? data.data : user))
+        );
         setShowEditUserModal(false);
         setSelectedUser(null);
         resetUserForm();
@@ -208,21 +228,28 @@ export default function UsersPage() {
     }
   };
 
-  const handleUpdateUserStatus = async (userId: number, status: User['status']) => {
+  const handleUpdateUserStatus = async (
+    userId: number,
+    status: User['status']
+  ) => {
     try {
       const response = await fetch(`/api/v1/users/${userId}/status`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status })
       });
 
       const data = await response.json();
       if (data.success) {
-        setUsers(users.map(user => 
-          user.id === userId ? { ...user, status, updatedAt: new Date().toISOString() } : user
-        ));
+        setUsers(
+          users.map(user =>
+            user.id === userId
+              ? { ...user, status, updatedAt: new Date().toISOString() }
+              : user
+          )
+        );
         fetchStats();
       }
     } catch (error) {
@@ -237,7 +264,7 @@ export default function UsersPage() {
 
     try {
       const response = await fetch(`/api/v1/users/${userId}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       const data = await response.json();
@@ -326,34 +353,48 @@ export default function UsersPage() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'Активный';
-      case 'INACTIVE': return 'Неактивный';
-      case 'SUSPENDED': return 'Заблокирован';
-      case 'PENDING': return 'Ожидает';
-      default: return status;
+      case 'ACTIVE':
+        return 'Активный';
+      case 'INACTIVE':
+        return 'Неактивный';
+      case 'SUSPENDED':
+        return 'Заблокирован';
+      case 'PENDING':
+        return 'Ожидает';
+      default:
+        return status;
     }
   };
 
   const getRoleText = (role: string) => {
     switch (role) {
-      case 'ADMIN': return 'Администратор';
-      case 'MANAGER': return 'Менеджер';
-      case 'OPERATOR': return 'Оператор';
-      case 'TECHNICIAN': return 'Техник';
-      case 'DRIVER': return 'Водитель';
-      case 'WAREHOUSE_WORKER': return 'Складской работник';
-      default: return role;
+      case 'ADMIN':
+        return 'Администратор';
+      case 'MANAGER':
+        return 'Менеджер';
+      case 'OPERATOR':
+        return 'Оператор';
+      case 'TECHNICIAN':
+        return 'Техник';
+      case 'DRIVER':
+        return 'Водитель';
+      case 'WAREHOUSE_WORKER':
+        return 'Складской работник';
+      default:
+        return role;
     }
   };
 
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesSearch =
+      user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.email &&
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesRole = !selectedRole || user.role === selectedRole;
     const matchesStatus = !selectedStatus || user.status === selectedStatus;
-    
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -371,7 +412,9 @@ export default function UsersPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Пользователи</h1>
-          <p className="text-gray-600">Управление пользователями и правами доступа</p>
+          <p className="text-gray-600">
+            Управление пользователями и правами доступа
+          </p>
         </div>
         <div className="flex gap-2">
           <button
@@ -392,8 +435,12 @@ export default function UsersPage() {
               <User className="h-8 w-8 text-gray-400" />
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Всего пользователей</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.total}</p>
+              <p className="text-sm font-medium text-gray-500">
+                Всего пользователей
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {stats.total}
+              </p>
             </div>
           </div>
         </div>
@@ -405,7 +452,9 @@ export default function UsersPage() {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">Активных</p>
-              <p className="text-2xl font-semibold text-green-600">{stats.active}</p>
+              <p className="text-2xl font-semibold text-green-600">
+                {stats.active}
+              </p>
             </div>
           </div>
         </div>
@@ -417,7 +466,9 @@ export default function UsersPage() {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">Неактивных</p>
-              <p className="text-2xl font-semibold text-gray-600">{stats.inactive}</p>
+              <p className="text-2xl font-semibold text-gray-600">
+                {stats.inactive}
+              </p>
             </div>
           </div>
         </div>
@@ -429,7 +480,9 @@ export default function UsersPage() {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">Ожидают</p>
-              <p className="text-2xl font-semibold text-yellow-600">{stats.pending}</p>
+              <p className="text-2xl font-semibold text-yellow-600">
+                {stats.pending}
+              </p>
             </div>
           </div>
         </div>
@@ -491,27 +544,31 @@ export default function UsersPage() {
                   type="text"
                   placeholder="Поиск пользователей..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             </div>
             <select
               value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value)}
+              onChange={e => setSelectedRole(e.target.value)}
               className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               {roles.map(role => (
-                <option key={role.value} value={role.value}>{role.label}</option>
+                <option key={role.value} value={role.value}>
+                  {role.label}
+                </option>
               ))}
             </select>
             <select
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
+              onChange={e => setSelectedStatus(e.target.value)}
               className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               {statusOptions.map(status => (
-                <option key={status.value} value={status.value}>{status.label}</option>
+                <option key={status.value} value={status.value}>
+                  {status.label}
+                </option>
               ))}
             </select>
           </div>
@@ -546,7 +603,7 @@ export default function UsersPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredUsers.map((user) => (
+                {filteredUsers.map(user => (
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -559,29 +616,43 @@ export default function UsersPage() {
                           <div className="text-sm font-medium text-gray-900">
                             {user.firstName} {user.lastName}
                           </div>
-                          <div className="text-sm text-gray-500">@{user.username}</div>
+                          <div className="text-sm text-gray-500">
+                            @{user.username}
+                          </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleColor(user.role)}`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleColor(user.role)}`}
+                      >
                         {getRoleText(user.role)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{user.email || 'Не указан'}</div>
-                      <div className="text-sm text-gray-500">{user.phone || 'Не указан'}</div>
+                      <div className="text-sm text-gray-900">
+                        {user.email || 'Не указан'}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {user.phone || 'Не указан'}
+                      </div>
                       {user.telegramUsername && (
-                        <div className="text-xs text-blue-500">@{user.telegramUsername}</div>
+                        <div className="text-xs text-blue-500">
+                          @{user.telegramUsername}
+                        </div>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(user.status)}`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(user.status)}`}
+                      >
                         {getStatusText(user.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('ru-RU') : 'Никогда'}
+                      {user.lastLogin
+                        ? new Date(user.lastLogin).toLocaleDateString('ru-RU')
+                        : 'Никогда'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex gap-2">
@@ -593,14 +664,18 @@ export default function UsersPage() {
                         </button>
                         {user.status === 'ACTIVE' ? (
                           <button
-                            onClick={() => handleUpdateUserStatus(user.id, 'INACTIVE')}
+                            onClick={() =>
+                              handleUpdateUserStatus(user.id, 'INACTIVE')
+                            }
                             className="text-yellow-600 hover:text-yellow-900"
                           >
                             <XCircle className="w-4 h-4" />
                           </button>
                         ) : (
                           <button
-                            onClick={() => handleUpdateUserStatus(user.id, 'ACTIVE')}
+                            onClick={() =>
+                              handleUpdateUserStatus(user.id, 'ACTIVE')
+                            }
                             className="text-green-600 hover:text-green-900"
                           >
                             <CheckCircle className="w-4 h-4" />
@@ -624,15 +699,22 @@ export default function UsersPage() {
 
       {activeTab === 'roles' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {roles.slice(1).map((role) => (
-            <div key={role.value} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+          {roles.slice(1).map(role => (
+            <div
+              key={role.value}
+              className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
+            >
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{role.label}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {role.label}
+                    </h3>
                     <p className="text-sm text-gray-500">Роль: {role.value}</p>
                   </div>
-                  <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(role.value)}`}>
+                  <span
+                    className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(role.value)}`}
+                  >
                     {stats.byRole[role.value] || 0} польз.
                   </span>
                 </div>
@@ -657,10 +739,15 @@ export default function UsersPage() {
       {activeTab === 'permissions' && (
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {permissions.map((permission) => (
-              <div key={permission} className="flex items-center justify-between p-3 border rounded-lg">
+            {permissions.map(permission => (
+              <div
+                key={permission}
+                className="flex items-center justify-between p-3 border rounded-lg"
+              >
                 <div>
-                  <div className="text-sm font-medium text-gray-900">{permission}</div>
+                  <div className="text-sm font-medium text-gray-900">
+                    {permission}
+                  </div>
                   <div className="text-xs text-gray-500">
                     {permission.includes('read') && 'Чтение'}
                     {permission.includes('write') && 'Запись'}
@@ -682,7 +769,9 @@ export default function UsersPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Создать нового пользователя</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Создать нового пользователя
+              </h2>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -692,7 +781,12 @@ export default function UsersPage() {
                   <input
                     type="text"
                     value={userFormData.username}
-                    onChange={(e) => setUserFormData({ ...userFormData, username: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        username: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -703,11 +797,18 @@ export default function UsersPage() {
                   </label>
                   <select
                     value={userFormData.role}
-                    onChange={(e) => setUserFormData({ ...userFormData, role: e.target.value as User['role'] })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        role: e.target.value as User['role']
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     {roles.slice(1).map(role => (
-                      <option key={role.value} value={role.value}>{role.label}</option>
+                      <option key={role.value} value={role.value}>
+                        {role.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -719,7 +820,12 @@ export default function UsersPage() {
                   <input
                     type="text"
                     value={userFormData.firstName}
-                    onChange={(e) => setUserFormData({ ...userFormData, firstName: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        firstName: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -731,7 +837,12 @@ export default function UsersPage() {
                   <input
                     type="text"
                     value={userFormData.lastName}
-                    onChange={(e) => setUserFormData({ ...userFormData, lastName: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        lastName: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -743,7 +854,12 @@ export default function UsersPage() {
                   <input
                     type="email"
                     value={userFormData.email}
-                    onChange={(e) => setUserFormData({ ...userFormData, email: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        email: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -755,7 +871,12 @@ export default function UsersPage() {
                   <input
                     type="tel"
                     value={userFormData.phone}
-                    onChange={(e) => setUserFormData({ ...userFormData, phone: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        phone: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -767,7 +888,12 @@ export default function UsersPage() {
                   <input
                     type="text"
                     value={userFormData.telegramUsername}
-                    onChange={(e) => setUserFormData({ ...userFormData, telegramUsername: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        telegramUsername: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="@username"
                   />
@@ -780,7 +906,12 @@ export default function UsersPage() {
                   <input
                     type="password"
                     value={userFormData.password}
-                    onChange={(e) => setUserFormData({ ...userFormData, password: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        password: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -792,7 +923,12 @@ export default function UsersPage() {
                   <input
                     type="password"
                     value={userFormData.confirmPassword}
-                    onChange={(e) => setUserFormData({ ...userFormData, confirmPassword: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        confirmPassword: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -803,7 +939,9 @@ export default function UsersPage() {
                   </label>
                   <textarea
                     value={userFormData.bio}
-                    onChange={(e) => setUserFormData({ ...userFormData, bio: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({ ...userFormData, bio: e.target.value })
+                    }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Краткая информация о пользователе..."
@@ -817,7 +955,12 @@ export default function UsersPage() {
                   <input
                     type="text"
                     value={userFormData.emergencyContact}
-                    onChange={(e) => setUserFormData({ ...userFormData, emergencyContact: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        emergencyContact: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Контакт для экстренных случаев"
                   />
@@ -851,7 +994,9 @@ export default function UsersPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Редактировать пользователя</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Редактировать пользователя
+              </h2>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -861,7 +1006,12 @@ export default function UsersPage() {
                   <input
                     type="text"
                     value={userFormData.username}
-                    onChange={(e) => setUserFormData({ ...userFormData, username: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        username: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -872,11 +1022,18 @@ export default function UsersPage() {
                   </label>
                   <select
                     value={userFormData.role}
-                    onChange={(e) => setUserFormData({ ...userFormData, role: e.target.value as User['role'] })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        role: e.target.value as User['role']
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     {roles.slice(1).map(role => (
-                      <option key={role.value} value={role.value}>{role.label}</option>
+                      <option key={role.value} value={role.value}>
+                        {role.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -888,7 +1045,12 @@ export default function UsersPage() {
                   <input
                     type="text"
                     value={userFormData.firstName}
-                    onChange={(e) => setUserFormData({ ...userFormData, firstName: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        firstName: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -900,7 +1062,12 @@ export default function UsersPage() {
                   <input
                     type="text"
                     value={userFormData.lastName}
-                    onChange={(e) => setUserFormData({ ...userFormData, lastName: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        lastName: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -912,7 +1079,12 @@ export default function UsersPage() {
                   <input
                     type="email"
                     value={userFormData.email}
-                    onChange={(e) => setUserFormData({ ...userFormData, email: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        email: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -924,7 +1096,12 @@ export default function UsersPage() {
                   <input
                     type="tel"
                     value={userFormData.phone}
-                    onChange={(e) => setUserFormData({ ...userFormData, phone: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        phone: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -935,7 +1112,9 @@ export default function UsersPage() {
                   </label>
                   <textarea
                     value={userFormData.bio}
-                    onChange={(e) => setUserFormData({ ...userFormData, bio: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({ ...userFormData, bio: e.target.value })
+                    }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -948,7 +1127,12 @@ export default function UsersPage() {
                   <input
                     type="text"
                     value={userFormData.emergencyContact}
-                    onChange={(e) => setUserFormData({ ...userFormData, emergencyContact: e.target.value })}
+                    onChange={e =>
+                      setUserFormData({
+                        ...userFormData,
+                        emergencyContact: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>

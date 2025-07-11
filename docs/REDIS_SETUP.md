@@ -3,6 +3,7 @@
 ## Конфигурация
 
 Redis настроен для использования в Railway:
+
 - URL: `redis://default@maglev.proxy.rlwy.net:56313`
 - TTL по умолчанию: 3600 секунд (1 час)
 
@@ -31,11 +32,13 @@ const cache = cacheManagers.machines; // Для сервиса machines
 ### 3. Основные операции
 
 #### Сохранение в кеш
+
 ```javascript
 await cache.set('key', data, ttl); // ttl в секундах
 ```
 
 #### Получение из кеша
+
 ```javascript
 const data = await cache.get('key');
 if (data) {
@@ -44,11 +47,13 @@ if (data) {
 ```
 
 #### Удаление из кеша
+
 ```javascript
 await cache.delete('key');
 ```
 
 #### Удаление по паттерну
+
 ```javascript
 await cache.deletePattern('machines:list:*');
 ```
@@ -56,23 +61,31 @@ await cache.deletePattern('machines:list:*');
 ### 4. Middleware для HTTP запросов
 
 ```javascript
-fastify.get('/api/v1/machines', {
-  preHandler: cacheMiddleware({
-    keyGenerator: (req) => `machines:list:${JSON.stringify(req.query)}`,
-    ttl: 300, // 5 минут
-    serviceName: 'machines',
-    condition: (req) => !req.query.search // Кешируем только если нет поиска
-  })
-}, handler);
+fastify.get(
+  '/api/v1/machines',
+  {
+    preHandler: cacheMiddleware({
+      keyGenerator: req => `machines:list:${JSON.stringify(req.query)}`,
+      ttl: 300, // 5 минут
+      serviceName: 'machines',
+      condition: req => !req.query.search // Кешируем только если нет поиска
+    })
+  },
+  handler
+);
 ```
 
 ### 5. Кеширование функций
 
 ```javascript
-const result = await cache.cache('expensive-operation', async () => {
-  // Дорогая операция
-  return await expensiveOperation();
-}, 600); // Кешируем на 10 минут
+const result = await cache.cache(
+  'expensive-operation',
+  async () => {
+    // Дорогая операция
+    return await expensiveOperation();
+  },
+  600
+); // Кешируем на 10 минут
 ```
 
 ## Стратегии инвалидации кеша
@@ -96,6 +109,7 @@ await cache.deletePattern('machines:stats');
 ## Префиксы ключей
 
 Каждый сервис использует свой префикс:
+
 - `vhm24:auth:` - для сервиса авторизации
 - `vhm24:machines:` - для сервиса машин
 - `vhm24:inventory:` - для сервиса инвентаря
@@ -113,6 +127,7 @@ await cache.deletePattern('machines:stats');
 ### Логирование
 
 Redis автоматически логирует:
+
 - Ошибки подключения
 - Успешные подключения
 - Ошибки операций
@@ -120,6 +135,7 @@ Redis автоматически логирует:
 ## Обработка ошибок
 
 Все операции с кешем обернуты в try-catch и не прерывают основную логику:
+
 - При ошибке чтения - возвращается null
 - При ошибке записи - логируется ошибка, но запрос продолжается
 - При недоступности Redis - сервис продолжает работать без кеша
@@ -165,6 +181,7 @@ await cache.deletePattern('machines:stats');
 ## Производительность
 
 Redis значительно улучшает производительность:
+
 - Списки машин: с ~200ms до ~5ms
 - Детальная информация: с ~150ms до ~3ms
 - Статистика: с ~500ms до ~10ms

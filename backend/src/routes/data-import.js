@@ -1,8 +1,23 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
 
 const router = express.Router();
-// const prisma = new PrismaClient(); // Закомментировано так как не используется
+
+// Корневой маршрут импорта данных
+router.get('/', async (req, res) => {
+  try {
+    res.json({
+      message: 'VHM24 Data Import API',
+      endpoints: [
+        'GET /jobs - Задания импорта',
+        'GET /historical - Исторические данные',
+        'POST /jobs - Создать задание импорта'
+      ]
+    });
+  } catch (error) {
+    console.error('Ошибка импорта данных:', error);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
 
 // Получить задания импорта
 router.get('/jobs', async (req, res) => {

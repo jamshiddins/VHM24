@@ -55,14 +55,17 @@ router.get('/stats', async (req, res) => {
     });
 
     const totalCount = await prisma.incompleteDataLog.count();
-    const pendingCount = stats.find(s => s.status === 'PENDING')?._count?.status || 0;
-    const completedCount = stats.find(s => s.status === 'COMPLETED')?._count?.status || 0;
+    const pendingCount =
+      stats.find(s => s.status === 'PENDING')?._count?.status || 0;
+    const completedCount =
+      stats.find(s => s.status === 'COMPLETED')?._count?.status || 0;
 
     res.json({
       total: totalCount,
       pending: pendingCount,
       completed: completedCount,
-      completionRate: totalCount > 0 ? (completedCount / totalCount * 100).toFixed(2) : 0
+      completionRate:
+        totalCount > 0 ? ((completedCount / totalCount) * 100).toFixed(2) : 0
     });
   } catch (error) {
     console.error('Ошибка получения статистики:', error);

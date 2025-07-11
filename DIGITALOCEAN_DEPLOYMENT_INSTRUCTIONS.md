@@ -4,7 +4,8 @@
 
 ### 1. Создание аккаунта DigitalOcean
 
-Если у вас еще нет аккаунта DigitalOcean, зарегистрируйтесь на [DigitalOcean](https://www.digitalocean.com/).
+Если у вас еще нет аккаунта DigitalOcean, зарегистрируйтесь на
+[DigitalOcean](https://www.digitalocean.com/).
 
 ### 2. Установка doctl
 
@@ -12,7 +13,7 @@
 
 - **Windows**: Скачайте и установите с [GitHub](https://github.com/digitalocean/doctl/releases)
 - **macOS**: `brew install doctl`
-- **Linux**: 
+- **Linux**:
   ```bash
   cd ~
   wget https://github.com/digitalocean/doctl/releases/download/v1.92.1/doctl-1.92.1-linux-amd64.tar.gz
@@ -22,7 +23,8 @@
 
 ### 3. Настройка аутентификации
 
-1. Создайте API токен в [панели управления DigitalOcean](https://cloud.digitalocean.com/account/api/tokens)
+1. Создайте API токен в
+   [панели управления DigitalOcean](https://cloud.digitalocean.com/account/api/tokens)
 2. Авторизуйтесь с помощью токена:
    ```bash
    doctl auth init
@@ -132,7 +134,8 @@
 
 ## Настройка автоматического деплоя
 
-Автоматический деплой уже настроен при создании приложения. При пуше в выбранную ветку будет автоматически запущен деплой.
+Автоматический деплой уже настроен при создании приложения. При пуше в выбранную ветку будет
+автоматически запущен деплой.
 
 ## Мониторинг и логи
 
@@ -189,8 +192,11 @@ node scripts/backup-database.js --s3-only
 
 ## Заключение
 
-После успешного деплоя VHM24 на DigitalOcean, система будет доступна по URL, предоставленному DigitalOcean или по вашему собственному домену. Вы можете использовать этот URL для доступа к API и веб-интерфейсу.
+После успешного деплоя VHM24 на DigitalOcean, система будет доступна по URL, предоставленному
+DigitalOcean или по вашему собственному домену. Вы можете использовать этот URL для доступа к API и
+веб-интерфейсу.
 
-Для настройки Telegram-бота, убедитесь, что переменная окружения `TELEGRAM_BOT_TOKEN` установлена корректно, и бот запущен.
+Для настройки Telegram-бота, убедитесь, что переменная окружения `TELEGRAM_BOT_TOKEN` установлена
+корректно, и бот запущен.
 
 Для мониторинга системы используйте инструкции из файла `MONITORING_SETUP.md`.

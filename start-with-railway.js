@@ -11,11 +11,16 @@ console.log('🚀 Запуск VHM24 с Railway PostgreSQL...\\n');
 // Проверка переменных окружения
 if (!process.env.DATABASE_URL) {
   console.error('❌ DATABASE_URL не установлен!');
-  console.log('Скопируйте DATABASE_URL из Railway PostgreSQL и добавьте в .env');
+  console.log(
+    'Скопируйте DATABASE_URL из Railway PostgreSQL и добавьте в .env'
+  );
   process.exit(1);
 }
 
-console.log('✅ База данных подключена:', process.env.DATABASE_URL.split('@')[1]);
+console.log(
+  '✅ База данных подключена:',
+  process.env.DATABASE_URL.split('@')[1]
+);
 
 // Сервисы для запуска
 const services = [
@@ -33,24 +38,24 @@ const processes = [];
 services.forEach((service, index) => {
   setTimeout(() => {
     console.log(`🚀 Запуск ${service.name} на порту ${service.port}...`);
-    
+
     const proc = spawn('npm', ['start'], {
       cwd: path.join(__dirname, service.path),
       shell: true,
       env: { ...process.env, PORT: service.port }
     });
-    
-    proc.stdout.on('data', (data) => {
+
+    proc.stdout.on('data', data => {
       console.log(`[${service.name}] ${data.toString().trim()}`);
     });
-    
-    proc.stderr.on('data', (data) => {
+
+    proc.stderr.on('data', data => {
       const msg = data.toString().trim();
       if (msg && !msg.includes('ExperimentalWarning')) {
         console.error(`[${service.name}] ⚠️  ${msg}`);
       }
     });
-    
+
     processes.push(proc);
   }, index * 2000);
 });
@@ -58,16 +63,16 @@ services.forEach((service, index) => {
 // Запуск Web Dashboard
 setTimeout(() => {
   console.log('\n🌐 Запуск Web Dashboard...');
-  
+
   const dashboard = spawn('npm', ['run', 'dev'], {
     cwd: path.join(__dirname, 'apps/web-dashboard'),
     shell: true
   });
-  
-  dashboard.stdout.on('data', (data) => {
+
+  dashboard.stdout.on('data', data => {
     console.log(`[Dashboard] ${data.toString().trim()}`);
   });
-  
+
   processes.push(dashboard);
 }, 15000);
 

@@ -1,7 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, MapPin, Clock, Fuel, Navigation, CheckCircle, AlertCircle, Truck } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  MapPin,
+  Clock,
+  Fuel,
+  Navigation,
+  CheckCircle,
+  AlertCircle,
+  Truck
+} from 'lucide-react';
 
 interface Driver {
   id: number;
@@ -74,7 +84,9 @@ export default function DriversPage() {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
   const [showCreateRouteModal, setShowCreateRouteModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<'drivers' | 'routes' | 'logs'>('drivers');
+  const [activeTab, setActiveTab] = useState<'drivers' | 'routes' | 'logs'>(
+    'drivers'
+  );
 
   // Form state for creating routes
   const [routeFormData, setRouteFormData] = useState({
@@ -147,9 +159,9 @@ export default function DriversPage() {
       const response = await fetch('/api/v1/routes', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(routeFormData),
+        body: JSON.stringify(routeFormData)
       });
 
       const data = await response.json();
@@ -191,19 +203,27 @@ export default function DriversPage() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'Активен';
-      case 'ON_ROUTE': return 'В пути';
-      case 'INACTIVE': return 'Неактивен';
-      case 'PLANNED': return 'Запланирован';
-      case 'IN_PROGRESS': return 'В процессе';
-      case 'COMPLETED': return 'Завершён';
-      case 'CANCELLED': return 'Отменён';
-      default: return status;
+      case 'ACTIVE':
+        return 'Активен';
+      case 'ON_ROUTE':
+        return 'В пути';
+      case 'INACTIVE':
+        return 'Неактивен';
+      case 'PLANNED':
+        return 'Запланирован';
+      case 'IN_PROGRESS':
+        return 'В процессе';
+      case 'COMPLETED':
+        return 'Завершён';
+      case 'CANCELLED':
+        return 'Отменён';
+      default:
+        return status;
     }
   };
 
   const filteredDrivers = drivers.filter(driver => {
-    const matchesSearch = 
+    const matchesSearch =
       driver.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       driver.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       driver.username?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -212,7 +232,9 @@ export default function DriversPage() {
   });
 
   const filteredRoutes = routes.filter(route => {
-    const matchesSearch = route.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = route.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
     const matchesStatus = !selectedStatus || route.status === selectedStatus;
     return matchesSearch && matchesStatus;
   });
@@ -230,8 +252,12 @@ export default function DriversPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Водители и маршруты</h1>
-          <p className="text-gray-600">Управление водителями, маршрутами и логистикой</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Водители и маршруты
+          </h1>
+          <p className="text-gray-600">
+            Управление водителями, маршрутами и логистикой
+          </p>
         </div>
         <button
           onClick={() => setShowCreateRouteModal(true)}
@@ -297,19 +323,23 @@ export default function DriversPage() {
                 type="text"
                 placeholder={`Поиск ${activeTab === 'drivers' ? 'водителей' : activeTab === 'routes' ? 'маршрутов' : 'логов'}...`}
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
           <select
             value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
+            onChange={e => setSelectedStatus(e.target.value)}
             className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            {(activeTab === 'routes' ? routeStatusOptions : statusOptions).map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
+            {(activeTab === 'routes' ? routeStatusOptions : statusOptions).map(
+              option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              )
+            )}
           </select>
         </div>
       </div>
@@ -317,8 +347,11 @@ export default function DriversPage() {
       {/* Content based on active tab */}
       {activeTab === 'drivers' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredDrivers.map((driver) => (
-            <div key={driver.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+          {filteredDrivers.map(driver => (
+            <div
+              key={driver.id}
+              className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
+            >
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -327,7 +360,9 @@ export default function DriversPage() {
                     </h3>
                     <p className="text-sm text-gray-500">@{driver.username}</p>
                   </div>
-                  <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(driver.status)}`}>
+                  <span
+                    className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(driver.status)}`}
+                  >
                     {getStatusText(driver.status)}
                   </span>
                 </div>
@@ -350,11 +385,16 @@ export default function DriversPage() {
 
                 {driver.currentRoute && (
                   <div className="border-t pt-4">
-                    <p className="text-xs text-gray-500 mb-2">Текущий маршрут:</p>
+                    <p className="text-xs text-gray-500 mb-2">
+                      Текущий маршрут:
+                    </p>
                     <div className="bg-blue-50 p-3 rounded-lg">
-                      <p className="font-medium text-blue-900">{driver.currentRoute.name}</p>
+                      <p className="font-medium text-blue-900">
+                        {driver.currentRoute.name}
+                      </p>
                       <p className="text-sm text-blue-700">
-                        {driver.currentRoute.completedStops}/{driver.currentRoute.totalStops} остановок
+                        {driver.currentRoute.completedStops}/
+                        {driver.currentRoute.totalStops} остановок
                       </p>
                     </div>
                   </div>
@@ -401,14 +441,18 @@ export default function DriversPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredRoutes.map((route) => {
+                {filteredRoutes.map(route => {
                   const driver = drivers.find(d => d.id === route.driverId);
                   return (
                     <tr key={route.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{route.name}</div>
-                          <div className="text-sm text-gray-500">ID: {route.id}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {route.name}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            ID: {route.id}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -417,14 +461,20 @@ export default function DriversPage() {
                             <div className="text-sm font-medium text-gray-900">
                               {driver.firstName} {driver.lastName}
                             </div>
-                            <div className="text-sm text-gray-500">@{driver.username}</div>
+                            <div className="text-sm text-gray-500">
+                              @{driver.username}
+                            </div>
                           </div>
                         ) : (
-                          <span className="text-sm text-gray-500">Не назначен</span>
+                          <span className="text-sm text-gray-500">
+                            Не назначен
+                          </span>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(route.status)}`}>
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(route.status)}`}
+                        >
                           {getStatusText(route.status)}
                         </span>
                       </td>
@@ -432,7 +482,9 @@ export default function DriversPage() {
                         {route.completedStops}/{route.totalStops}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {route.startTime ? new Date(route.startTime).toLocaleString('ru-RU') : 'Не начат'}
+                        {route.startTime
+                          ? new Date(route.startTime).toLocaleString('ru-RU')
+                          : 'Не начат'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button className="text-blue-600 hover:text-blue-900 mr-3">
@@ -455,28 +507,47 @@ export default function DriversPage() {
         <div className="bg-white rounded-lg shadow-sm border">
           <div className="p-6">
             <div className="space-y-4">
-              {driverLogs.map((log) => {
+              {driverLogs.map(log => {
                 const driver = drivers.find(d => d.id === log.driverId);
                 return (
-                  <div key={log.id} className="border-l-4 border-blue-500 pl-4 py-2">
+                  <div
+                    key={log.id}
+                    className="border-l-4 border-blue-500 pl-4 py-2"
+                  >
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          {log.type === 'FUEL_CHECK' && <Fuel className="w-4 h-4 text-orange-500" />}
-                          {log.type === 'ARRIVAL' && <MapPin className="w-4 h-4 text-green-500" />}
-                          {log.type === 'DEPARTURE' && <Navigation className="w-4 h-4 text-blue-500" />}
-                          {log.type === 'MILEAGE' && <Clock className="w-4 h-4 text-purple-500" />}
-                          <span className="font-medium text-gray-900">{log.description}</span>
+                          {log.type === 'FUEL_CHECK' && (
+                            <Fuel className="w-4 h-4 text-orange-500" />
+                          )}
+                          {log.type === 'ARRIVAL' && (
+                            <MapPin className="w-4 h-4 text-green-500" />
+                          )}
+                          {log.type === 'DEPARTURE' && (
+                            <Navigation className="w-4 h-4 text-blue-500" />
+                          )}
+                          {log.type === 'MILEAGE' && (
+                            <Clock className="w-4 h-4 text-purple-500" />
+                          )}
+                          <span className="font-medium text-gray-900">
+                            {log.description}
+                          </span>
                         </div>
                         <p className="text-sm text-gray-600">
-                          Водитель: {driver ? `${driver.firstName} ${driver.lastName}` : 'Неизвестен'}
+                          Водитель:{' '}
+                          {driver
+                            ? `${driver.firstName} ${driver.lastName}`
+                            : 'Неизвестен'}
                         </p>
                         {log.mileage && (
-                          <p className="text-sm text-gray-600">Пробег: {log.mileage} км</p>
+                          <p className="text-sm text-gray-600">
+                            Пробег: {log.mileage} км
+                          </p>
                         )}
                         {log.latitude && log.longitude && (
                           <p className="text-sm text-gray-600">
-                            GPS: {log.latitude.toFixed(6)}, {log.longitude.toFixed(6)}
+                            GPS: {log.latitude.toFixed(6)},{' '}
+                            {log.longitude.toFixed(6)}
                           </p>
                         )}
                       </div>
@@ -497,7 +568,9 @@ export default function DriversPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Создать новый маршрут</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Создать новый маршрут
+              </h2>
 
               <div className="space-y-4">
                 <div>
@@ -507,7 +580,12 @@ export default function DriversPage() {
                   <input
                     type="text"
                     value={routeFormData.name}
-                    onChange={(e) => setRouteFormData({ ...routeFormData, name: e.target.value })}
+                    onChange={e =>
+                      setRouteFormData({
+                        ...routeFormData,
+                        name: e.target.value
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Например: Маршрут №1 - Центр"
                   />
@@ -519,15 +597,22 @@ export default function DriversPage() {
                   </label>
                   <select
                     value={routeFormData.driverId}
-                    onChange={(e) => setRouteFormData({ ...routeFormData, driverId: parseInt(e.target.value) })}
+                    onChange={e =>
+                      setRouteFormData({
+                        ...routeFormData,
+                        driverId: parseInt(e.target.value)
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value={0}>Выберите водителя</option>
-                    {drivers.filter(d => d.status === 'ACTIVE').map(driver => (
-                      <option key={driver.id} value={driver.id}>
-                        {driver.firstName} {driver.lastName}
-                      </option>
-                    ))}
+                    {drivers
+                      .filter(d => d.status === 'ACTIVE')
+                      .map(driver => (
+                        <option key={driver.id} value={driver.id}>
+                          {driver.firstName} {driver.lastName}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>

@@ -12,8 +12,5 @@
     "Docker configuration": true,
     "Service dependencies": false
   },
-  "recommendations": [
-    "Replace MinIO with external S3 service",
-    "Add start scripts to all services"
-  ]
+  "recommendations": ["Replace MinIO with external S3 service", "Add start scripts to all services"]
 }

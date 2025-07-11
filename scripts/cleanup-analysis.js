@@ -34,7 +34,7 @@ const analysisConfig = {
     'fix-telegram-bot-syntax.js',
     'simple-fix-prisma.js'
   ],
-  
+
   // Файлы для ревизии (возможно устаревшие)
   reviewFiles: [
     'monitor-24-7.js',
@@ -61,7 +61,7 @@ const analysisConfig = {
     'start-with-railway.js',
     'start.js'
   ],
-  
+
   // Файлы тестирования (возможно устаревшие)
   testFiles: [
     'test-all-components.js',
@@ -75,7 +75,7 @@ const analysisConfig = {
     'test-redis-connection.js',
     'test-system-comprehensive.js'
   ],
-  
+
   // Документация (возможно устаревшая)
   documentationFiles: [
     'ANALYSIS_REPORT.md',
@@ -146,7 +146,7 @@ const analysisConfig = {
 // Функция для проверки использования файла в проекте
 function checkFileUsage(fileName) {
   const usageCount = { imports: 0, references: 0, scripts: 0 };
-  
+
   // Проверяем package.json на наличие скриптов
   try {
     const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
@@ -157,29 +157,40 @@ function checkFileUsage(fileName) {
   } catch (error) {
     // Игнорируем ошибки чтения package.json
   }
-  
+
   // Проверяем файлы в проекте на импорты и ссылки
   function searchInDirectory(dir) {
     try {
       const files = fs.readdirSync(dir);
-      
+
       for (const file of files) {
         const filePath = path.join(dir, file);
         const stat = fs.statSync(filePath);
-        
-        if (stat.isDirectory() && !file.startsWith('.') && file !== 'node_modules') {
+
+        if (
+          stat.isDirectory() &&
+          !file.startsWith('.') &&
+          file !== 'node_modules'
+        ) {
           searchInDirectory(filePath);
-        } else if (stat.isFile() && (file.endsWith('.js') || file.endsWith('.md') || file.endsWith('.json'))) {
+        } else if (
+          stat.isFile() &&
+          (file.endsWith('.js') ||
+            file.endsWith('.md') ||
+            file.endsWith('.json'))
+        ) {
           try {
             const content = fs.readFileSync(filePath, 'utf8');
-            
+
             // Проверяем импорты
-            if (content.includes(`require('./${fileName}')`) || 
-                content.includes(`require("${fileName}")`) ||
-                content.includes(`import`) && content.includes(fileName)) {
+            if (
+              content.includes(`require('./${fileName}')`) ||
+              content.includes(`require("${fileName}")`) ||
+              (content.includes('import') && content.includes(fileName))
+            ) {
               usageCount.imports++;
             }
-            
+
             // Проверяем упоминания
             if (content.includes(fileName)) {
               usageCount.references++;
@@ -193,7 +204,7 @@ function checkFileUsage(fileName) {
       // Игнорируем ошибки чтения директорий
     }
   }
-  
+
   searchInDirectory('.');
   return usageCount;
 }
@@ -201,14 +212,14 @@ function checkFileUsage(fileName) {
 // Функция для анализа файла
 function analyzeFile(fileName, category) {
   const filePath = path.join(process.cwd(), fileName);
-  
+
   if (!fs.existsSync(filePath)) {
     return null;
   }
-  
+
   const stats = fs.statSync(filePath);
   const usage = checkFileUsage(fileName);
-  
+
   return {
     name: fileName,
     category,
@@ -221,73 +232,97 @@ function analyzeFile(fileName, category) {
 
 // Функция для создания отчета
 function generateReport(analysisResults) {
-  console.log(`${colors.magenta}📊 Отчет об анализе устаревших файлов${colors.reset}\n`);
-  
+  console.log(
+    `${colors.magenta}📊 Отчет об анализе устаревших файлов${colors.reset}\n`
+  );
+
   const categories = {
     obsolete: 'Устаревшие файлы (рекомендуется удалить)',
     review: 'Файлы для ревизии',
     test: 'Тестовые файлы',
     documentation: 'Документация'
   };
-  
+
   let totalSize = 0;
   let totalFiles = 0;
-  
+
   Object.entries(categories).forEach(([category, title]) => {
-    const categoryFiles = analysisResults.filter(file => file && file.category === category);
-    
+    const categoryFiles = analysisResults.filter(
+      file => file && file.category === category
+    );
+
     if (categoryFiles.length === 0) {
       return;
     }
-    
+
     console.log(`${colors.cyan}${title}:${colors.reset}`);
-    
+
     categoryFiles.forEach(file => {
       const sizeKB = (file.size / 1024).toFixed(1);
-      const daysSinceModified = Math.floor((Date.now() - file.lastModified.getTime()) / (1000 * 60 * 60 * 24));
-      
+      const daysSinceModified = Math.floor(
+        (Date.now() - file.lastModified.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
       let status = colors.green + '✓';
-      if (file.usage.imports === 0 && file.usage.references <= 1 && file.usage.scripts === 0) {
+      if (
+        file.usage.imports === 0 &&
+        file.usage.references <= 1 &&
+        file.usage.scripts === 0
+      ) {
         status = colors.red + '✗';
       } else if (file.usage.imports === 0 && file.usage.scripts === 0) {
         status = colors.yellow + '!';
       }
-      
+
       console.log(`  ${status}${colors.reset} ${file.name}`);
-      console.log(`    Размер: ${sizeKB} KB | Изменен: ${daysSinceModified} дней назад`);
-      console.log(`    Использование: импорты=${file.usage.imports}, ссылки=${file.usage.references}, скрипты=${file.usage.scripts}`);
-      
+      console.log(
+        `    Размер: ${sizeKB} KB | Изменен: ${daysSinceModified} дней назад`
+      );
+      console.log(
+        `    Использование: импорты=${file.usage.imports}, ссылки=${file.usage.references}, скрипты=${file.usage.scripts}`
+      );
+
       totalSize += file.size;
       totalFiles++;
     });
-    
+
     console.log('');
   });
-  
+
   console.log(`${colors.blue}📈 Итоговая статистика:${colors.reset}`);
   console.log(`  Всего файлов для анализа: ${totalFiles}`);
   console.log(`  Общий размер: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
-  
-  const unusedFiles = analysisResults.filter(file => 
-    file && file.usage.imports === 0 && file.usage.references <= 1 && file.usage.scripts === 0
+
+  const unusedFiles = analysisResults.filter(
+    file =>
+      file &&
+      file.usage.imports === 0 &&
+      file.usage.references <= 1 &&
+      file.usage.scripts === 0
   );
-  
+
   if (unusedFiles.length > 0) {
     const unusedSize = unusedFiles.reduce((sum, file) => sum + file.size, 0);
-    console.log(`  ${colors.red}Неиспользуемых файлов: ${unusedFiles.length}${colors.reset}`);
-    console.log(`  ${colors.red}Размер неиспользуемых файлов: ${(unusedSize / 1024 / 1024).toFixed(2)} MB${colors.reset}`);
+    console.log(
+      `  ${colors.red}Неиспользуемых файлов: ${unusedFiles.length}${colors.reset}`
+    );
+    console.log(
+      `  ${colors.red}Размер неиспользуемых файлов: ${(unusedSize / 1024 / 1024).toFixed(2)} MB${colors.reset}`
+    );
   }
-  
+
   return { totalFiles, totalSize, unusedFiles };
 }
 
 // Функция для создания скрипта очистки
 function generateCleanupScript(unusedFiles) {
   if (unusedFiles.length === 0) {
-    console.log(`${colors.green}✅ Неиспользуемых файлов не найдено!${colors.reset}`);
+    console.log(
+      `${colors.green}✅ Неиспользуемых файлов не найдено!${colors.reset}`
+    );
     return;
   }
-  
+
   const scriptContent = `#!/bin/bash
 # Скрипт автоматической очистки неиспользуемых файлов
 # Сгенерирован: ${new Date().toISOString()}
@@ -298,13 +333,17 @@ echo "🧹 Начинаем очистку неиспользуемых файл
 mkdir -p .cleanup-backup
 echo "📦 Создаем резервную копию..."
 
-${unusedFiles.map(file => `
+${unusedFiles
+  .map(
+    file => `
 # ${file.name} (${(file.size / 1024).toFixed(1)} KB)
 if [ -f "${file.name}" ]; then
   cp "${file.name}" .cleanup-backup/
   rm "${file.name}"
   echo "✅ Удален: ${file.name}"
-fi`).join('')}
+fi`
+  )
+  .join('')}
 
 echo ""
 echo "✨ Очистка завершена!"
@@ -314,23 +353,31 @@ echo "🔄 Для восстановления файлов используйт
 
   fs.writeFileSync('scripts/cleanup-unused-files.sh', scriptContent);
   fs.chmodSync('scripts/cleanup-unused-files.sh', '755');
-  
-  console.log(`${colors.green}📝 Создан скрипт очистки: scripts/cleanup-unused-files.sh${colors.reset}`);
-  console.log(`${colors.yellow}⚠️  Перед запуском скрипта убедитесь, что файлы действительно не нужны!${colors.reset}`);
-  console.log(`${colors.blue}💡 Для запуска: chmod +x scripts/cleanup-unused-files.sh && ./scripts/cleanup-unused-files.sh${colors.reset}`);
+
+  console.log(
+    `${colors.green}📝 Создан скрипт очистки: scripts/cleanup-unused-files.sh${colors.reset}`
+  );
+  console.log(
+    `${colors.yellow}⚠️  Перед запуском скрипта убедитесь, что файлы действительно не нужны!${colors.reset}`
+  );
+  console.log(
+    `${colors.blue}💡 Для запуска: chmod +x scripts/cleanup-unused-files.sh && ./scripts/cleanup-unused-files.sh${colors.reset}`
+  );
 }
 
 // Основная функция
 function main() {
-  console.log(`${colors.magenta}🔍 VHM24 - Анализ устаревших файлов${colors.reset}\n`);
-  
+  console.log(
+    `${colors.magenta}🔍 VHM24 - Анализ устаревших файлов${colors.reset}\n`
+  );
+
   // Создаем папку scripts если её нет
   if (!fs.existsSync('scripts')) {
     fs.mkdirSync('scripts');
   }
-  
+
   const analysisResults = [];
-  
+
   // Анализируем каждую категорию файлов
   Object.entries(analysisConfig).forEach(([category, files]) => {
     files.forEach(fileName => {
@@ -340,13 +387,13 @@ function main() {
       }
     });
   });
-  
+
   // Генерируем отчет
   const { unusedFiles } = generateReport(analysisResults);
-  
+
   // Создаем скрипт очистки
   generateCleanupScript(unusedFiles);
-  
+
   // Сохраняем детальный отчет в JSON
   const reportData = {
     timestamp: new Date().toISOString(),
@@ -358,9 +405,14 @@ function main() {
     files: analysisResults,
     unusedFiles: unusedFiles.map(file => file.name)
   };
-  
-  fs.writeFileSync('scripts/cleanup-analysis-report.json', JSON.stringify(reportData, null, 2));
-  console.log(`\n${colors.blue}📄 Детальный отчет сохранен: scripts/cleanup-analysis-report.json${colors.reset}`);
+
+  fs.writeFileSync(
+    'scripts/cleanup-analysis-report.json',
+    JSON.stringify(reportData, null, 2)
+  );
+  console.log(
+    `\n${colors.blue}📄 Детальный отчет сохранен: scripts/cleanup-analysis-report.json${colors.reset}`
+  );
 }
 
 // Запуск только если файл вызван напрямую

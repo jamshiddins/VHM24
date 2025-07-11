@@ -8,7 +8,8 @@
 run-all-fixes.bat: The term 'run-all-fixes.bat' is not recognized as a name of a cmdlet, function, script file, or executable program.
 ```
 
-Это происходит потому что PowerShell по умолчанию не запускает файлы из текущей директории без указания пути.
+Это происходит потому что PowerShell по умолчанию не запускает файлы из текущей директории без
+указания пути.
 
 ## Решение
 
@@ -61,7 +62,9 @@ node start-optimized.js
 
 ## Примечание
 
-PowerShell скрипты (`.ps1`) могут требовать изменения политики выполнения. Если вы получаете ошибку о том, что выполнение скриптов отключено, выполните следующую команду в PowerShell с правами администратора:
+PowerShell скрипты (`.ps1`) могут требовать изменения политики выполнения. Если вы получаете ошибку
+о том, что выполнение скриптов отключено, выполните следующую команду в PowerShell с правами
+администратора:
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser

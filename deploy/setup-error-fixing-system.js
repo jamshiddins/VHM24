@@ -4,10 +4,10 @@ const { execSync } = require('child_process');
 
 // Простой логгер
 const logger = {
-  info: (message) => console.log(message),
-  error: (message) => console.error('\x1b[31m%s\x1b[0m', message),
-  warn: (message) => console.warn('\x1b[33m%s\x1b[0m', message),
-  success: (message) => console.log('\x1b[32m%s\x1b[0m', message)
+  info: message => console.log(message),
+  error: message => console.error('\x1b[31m%s\x1b[0m', message),
+  warn: message => console.warn('\x1b[33m%s\x1b[0m', message),
+  success: message => console.log('\x1b[32m%s\x1b[0m', message)
 };
 
 /**
@@ -43,7 +43,6 @@ async function setupErrorFixingSystem() {
 
     // 6. Финальные инструкции
     showFinalInstructions();
-
   } catch (error) {
     logger.error(`\n❌ Критическая ошибка: ${error.message}`);
     if (error.stack) {
@@ -57,10 +56,7 @@ async function setupErrorFixingSystem() {
  * Проверка наличия необходимых директорий
  */
 function checkDirectories() {
-  const requiredDirs = [
-    'deploy',
-    'deploy/scripts',
-  ];
+  const requiredDirs = ['deploy', 'deploy/scripts'];
 
   requiredDirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
@@ -86,7 +82,7 @@ function checkFiles() {
   ];
 
   const missingFiles = requiredFiles.filter(file => !fs.existsSync(file));
-  
+
   if (missingFiles.length > 0) {
     logger.warn(`Отсутствуют следующие файлы: ${missingFiles.join(', ')}`);
     logger.info('Эти файлы должны быть созданы перед использованием системы');
@@ -134,11 +130,7 @@ legacy-peer-deps=true
  */
 async function installDependencies() {
   // Список базовых зависимостей (без нативных модулей)
-  const basicDependencies = [
-    'glob@10.3.10',
-    'fastify@4.24.0',
-    'pino@8.16.0'
-  ];
+  const basicDependencies = ['glob@10.3.10', 'fastify@4.24.0', 'pino@8.16.0'];
 
   // Список дополнительных зависимостей (могут требовать компиляции)
   const optionalDependencies = [
@@ -150,23 +142,32 @@ async function installDependencies() {
   logger.info('Установка базовых зависимостей...');
   try {
     // Устанавливаем базовые зависимости
-    execSync(`npm install --save ${basicDependencies.join(' ')}`, { 
+    execSync(`npm install --save ${basicDependencies.join(' ')}`, {
       stdio: 'inherit',
       env: { ...process.env, NODE_ENV: 'development' }
     });
     logger.success('✅ Базовые зависимости установлены');
   } catch (error) {
-    logger.warn(`⚠️ Не удалось установить базовые зависимости: ${error.message}`);
+    logger.warn(
+      `⚠️ Не удалось установить базовые зависимости: ${error.message}`
+    );
     logger.info('Попытка установки с флагом --no-optional...');
-    
+
     try {
-      execSync(`npm install --save --no-optional ${basicDependencies.join(' ')}`, { 
-        stdio: 'inherit',
-        env: { ...process.env, NODE_ENV: 'development' }
-      });
-      logger.success('✅ Базовые зависимости установлены с флагом --no-optional');
+      execSync(
+        `npm install --save --no-optional ${basicDependencies.join(' ')}`,
+        {
+          stdio: 'inherit',
+          env: { ...process.env, NODE_ENV: 'development' }
+        }
+      );
+      logger.success(
+        '✅ Базовые зависимости установлены с флагом --no-optional'
+      );
     } catch (secondError) {
-      logger.error(`❌ Не удалось установить базовые зависимости: ${secondError.message}`);
+      logger.error(
+        `❌ Не удалось установить базовые зависимости: ${secondError.message}`
+      );
       throw new Error('Не удалось установить необходимые зависимости');
     }
   }
@@ -175,35 +176,40 @@ async function installDependencies() {
   logger.info('Установка дополнительных зависимостей...');
   for (const dependency of optionalDependencies) {
     try {
-      execSync(`npm install --save --no-fund ${dependency}`, { 
+      execSync(`npm install --save --no-fund ${dependency}`, {
         stdio: 'inherit',
         env: { ...process.env, NODE_ENV: 'development' }
       });
       logger.success(`✅ Установлена зависимость: ${dependency}`);
     } catch (error) {
-      logger.warn(`⚠️ Не удалось установить зависимость ${dependency}: ${error.message}`);
+      logger.warn(
+        `⚠️ Не удалось установить зависимость ${dependency}: ${error.message}`
+      );
       logger.info('Продолжаем установку других зависимостей...');
     }
   }
 
   // Создаем package.json для deploy директории
   const deployPackageJson = {
-    "name": "vhm24-error-fixing-system",
-    "version": "1.0.0",
-    "description": "Система исправления ошибок для проекта VHM24",
-    "main": "fix-all-errors.js",
-    "scripts": {
-      "analyze": "node scripts/project-analyzer.js",
-      "fix": "node scripts/auto-fixer.js",
-      "test": "node scripts/test-after-fixes.js",
-      "all": "node fix-all-errors.js"
+    name: 'vhm24-error-fixing-system',
+    version: '1.0.0',
+    description: 'Система исправления ошибок для проекта VHM24',
+    main: 'fix-all-errors.js',
+    scripts: {
+      analyze: 'node scripts/project-analyzer.js',
+      fix: 'node scripts/auto-fixer.js',
+      test: 'node scripts/test-after-fixes.js',
+      all: 'node fix-all-errors.js'
     },
-    "dependencies": {
-      "glob": "^10.3.10"
+    dependencies: {
+      glob: '^10.3.10'
     }
   };
 
-  fs.writeFileSync('deploy/package.json', JSON.stringify(deployPackageJson, null, 2));
+  fs.writeFileSync(
+    'deploy/package.json',
+    JSON.stringify(deployPackageJson, null, 2)
+  );
   logger.info('Создан файл deploy/package.json');
 }
 
@@ -229,7 +235,7 @@ module.exports = logger;
   if (!fs.existsSync(loggerDir)) {
     fs.mkdirSync(loggerDir, { recursive: true });
   }
-  
+
   fs.writeFileSync(path.join(loggerDir, 'logger.js'), loggerCode);
   logger.info('Создан файл logger.js');
 }

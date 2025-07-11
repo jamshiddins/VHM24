@@ -5,11 +5,13 @@
 ### 1.1. Стандартизация модульной системы (CommonJS)
 
 **Задачи:**
+
 - Создать скрипт для автоматической конвертации ES6 модулей в CommonJS
 - Обновить ESLint конфигурацию для проверки соответствия CommonJS
 - Обновить документацию по стилю кода
 
 **Реализация:**
+
 ```javascript
 // scripts/standardize-modules.js
 const fs = require('fs');
@@ -24,14 +26,17 @@ const jsFiles = glob.sync('**/*.js', {
 // Конвертируем ES6 импорты/экспорты в CommonJS
 jsFiles.forEach(file => {
   let content = fs.readFileSync(file, 'utf8');
-  
+
   // Заменяем import на require
   content = content.replace(
     /import\s+(\{[^}]+\}|\*\s+as\s+\w+|\w+)\s+from\s+['"]([^'"]+)['"]/g,
     (match, imports, source) => {
       if (imports.startsWith('{') && imports.endsWith('}')) {
         // Деструктуризация: import { a, b } from 'module'
-        const items = imports.slice(1, -1).split(',').map(item => item.trim());
+        const items = imports
+          .slice(1, -1)
+          .split(',')
+          .map(item => item.trim());
         return `const { ${items.join(', ')} } = require('${source}')`;
       } else if (imports.startsWith('*')) {
         // Импорт всего модуля: import * as name from 'module'
@@ -43,13 +48,10 @@ jsFiles.forEach(file => {
       }
     }
   );
-  
+
   // Заменяем export default на module.exports
-  content = content.replace(
-    /export\s+default\s+(\w+)/g,
-    'module.exports = $1'
-  );
-  
+  content = content.replace(/export\s+default\s+(\w+)/g, 'module.exports = $1');
+
   // Заменяем именованные экспорты
   const namedExports = [];
   content = content.replace(
@@ -59,12 +61,12 @@ jsFiles.forEach(file => {
       return `${type} ${name}`;
     }
   );
-  
+
   // Добавляем module.exports для именованных экспортов
   if (namedExports.length > 0) {
     content += `\nmodule.exports = { ${namedExports.join(', ')} };\n`;
   }
-  
+
   fs.writeFileSync(file, content);
   console.log(`✅ Стандартизирован файл: ${file}`);
 });
@@ -73,11 +75,13 @@ jsFiles.forEach(file => {
 ### 1.2. Улучшение обработки асинхронных операций
 
 **Задачи:**
+
 - Заменить Promise.all на Promise.allSettled
 - Добавить таймауты для внешних API вызовов
 - Создать утилиты для упрощения работы с асинхронными операциями
 
 **Реализация:**
+
 ```javascript
 // packages/shared/utils/async.js
 /**
@@ -124,7 +128,7 @@ async function retry(fn, { retries = 3, delay = 1000, onRetry = () => {} } = {})
       return await fn();
     } catch (error) {
       lastError = error;
-      
+
       if (attempt < retries) {
         onRetry(error, attempt);
         await new Promise(resolve => setTimeout(resolve, delay));
@@ -145,11 +149,13 @@ module.exports = {
 ### 1.3. Вынесение общего кода в shared пакеты
 
 **Задачи:**
+
 - Идентифицировать повторяющийся код в разных сервисах
 - Создать shared пакеты для общего кода
 - Обновить импорты в сервисах
 
 **Реализация:**
+
 ```javascript
 // packages/shared/middleware/index.js
 const auth = require('./auth');
@@ -187,11 +193,13 @@ module.exports = {
 ### 2.1. Оптимизация запросов к БД
 
 **Задачи:**
+
 - Добавить пагинацию для всех запросов, возвращающих множество записей
 - Создать индексы для часто используемых полей
 - Оптимизировать N+1 запросы
 
 **Реализация:**
+
 ```javascript
 // packages/shared/utils/pagination.js
 /**
@@ -220,7 +228,7 @@ function createPagination({ page = 1, pageSize = 20 } = {}) {
  */
 function formatPaginatedResult(items, total, { page = 1, pageSize = 20 } = {}) {
   const totalPages = Math.ceil(total / pageSize);
-  
+
   return {
     items,
     meta: {
@@ -242,9 +250,9 @@ module.exports = {
 // Пример использования в сервисе
 async function getUsers(req, reply) {
   const { page = 1, pageSize = 20 } = req.query;
-  
+
   const pagination = createPagination({ page, pageSize });
-  
+
   const [users, total] = await Promise.all([
     prisma.user.findMany({
       ...pagination,
@@ -254,7 +262,7 @@ async function getUsers(req, reply) {
     }),
     prisma.user.count()
   ]);
-  
+
   return formatPaginatedResult(users, total, { page, pageSize });
 }
 ```
@@ -262,11 +270,13 @@ async function getUsers(req, reply) {
 ### 2.2. Добавление кэширования
 
 **Задачи:**
+
 - Настроить Redis для кэширования
 - Создать middleware для кэширования ответов API
 - Реализовать инвалидацию кэша при изменении данных
 
 **Реализация:**
+
 ```javascript
 // packages/shared/cache/index.js
 const Redis = require('ioredis');
@@ -286,7 +296,7 @@ const DEFAULT_TTL = 3600;
 async function get(key) {
   const data = await redis.get(key);
   if (!data) return null;
-  
+
   try {
     return JSON.parse(data);
   } catch (error) {
@@ -323,7 +333,7 @@ async function del(key) {
 async function delByPattern(pattern) {
   const keys = await redis.keys(pattern);
   if (keys.length === 0) return 0;
-  
+
   return redis.del(keys);
 }
 
@@ -338,19 +348,19 @@ function cacheMiddleware({ ttl = DEFAULT_TTL, keyGenerator = req => req.url } = 
   return async (req, reply) => {
     // Пропускаем кэширование для не-GET запросов
     if (req.method !== 'GET') return;
-    
+
     const cacheKey = `api:${keyGenerator(req)}`;
     const cachedData = await get(cacheKey);
-    
+
     if (cachedData) {
       return reply.send(cachedData);
     }
-    
+
     // Сохраняем оригинальный метод send
     const originalSend = reply.send;
-    
+
     // Переопределяем метод send для сохранения ответа в кэш
-    reply.send = function(payload) {
+    reply.send = function (payload) {
       set(cacheKey, payload, ttl);
       return originalSend.call(this, payload);
     };
@@ -372,11 +382,13 @@ module.exports = {
 ### 3.1. Настройка Prometheus и Grafana
 
 **Задачи:**
+
 - Настроить сбор метрик с помощью Prometheus
 - Создать Grafana дашборды для визуализации метрик
 - Настроить алерты для критических ситуаций
 
 **Реализация:**
+
 ```javascript
 // packages/shared/monitoring/prometheus.js
 const client = require('prom-client');
@@ -420,7 +432,7 @@ function prometheusPlugin(fastify, options, done) {
     reply.header('Content-Type', register.contentType);
     return register.metrics();
   });
-  
+
   // Добавляем хук для измерения длительности запросов
   fastify.addHook('onRequest', (request, reply, done) => {
     request.metrics = {
@@ -428,32 +440,28 @@ function prometheusPlugin(fastify, options, done) {
     };
     done();
   });
-  
+
   fastify.addHook('onResponse', (request, reply, done) => {
     const { startTime } = request.metrics;
     const duration = process.hrtime(startTime);
     const durationInSeconds = duration[0] + duration[1] / 1e9;
-    
+
     const route = request.routerPath || request.url;
-    
+
     httpRequestDurationMicroseconds
       .labels(request.method, route, reply.statusCode)
       .observe(durationInSeconds);
-    
-    httpRequestCounter
-      .labels(request.method, route, reply.statusCode)
-      .inc();
-    
+
+    httpRequestCounter.labels(request.method, route, reply.statusCode).inc();
+
     done();
   });
-  
+
   // Добавляем метод для инкремента счетчика ошибок
-  fastify.decorate('incrementErrorCounter', (type) => {
-    errorCounter
-      .labels(options.serviceName || 'unknown', type)
-      .inc();
+  fastify.decorate('incrementErrorCounter', type => {
+    errorCounter.labels(options.serviceName || 'unknown', type).inc();
   });
-  
+
   done();
 }
 
@@ -469,11 +477,13 @@ module.exports = {
 ### 3.2. Улучшение логирования
 
 **Задачи:**
+
 - Заменить оставшиеся console.log на структурированное логирование
 - Добавить контекстную информацию в логи
 - Настроить ротацию логов
 
 **Реализация:**
+
 ```javascript
 // packages/shared/logger/index.js
 const pino = require('pino');
@@ -505,73 +515,85 @@ const transport = pino.transport({
 });
 
 // Создаем логгер
-const logger = pino({
-  level: process.env.LOG_LEVEL || 'info',
-  base: {
-    service: process.env.SERVICE_NAME || 'unknown',
-    env: process.env.NODE_ENV || 'development'
+const logger = pino(
+  {
+    level: process.env.LOG_LEVEL || 'info',
+    base: {
+      service: process.env.SERVICE_NAME || 'unknown',
+      env: process.env.NODE_ENV || 'development'
+    },
+    timestamp: pino.stdTimeFunctions.isoTime,
+    redact: {
+      paths: ['password', 'token', 'secret', 'authorization', 'cookie'],
+      censor: '[REDACTED]'
+    }
   },
-  timestamp: pino.stdTimeFunctions.isoTime,
-  redact: {
-    paths: ['password', 'token', 'secret', 'authorization', 'cookie'],
-    censor: '[REDACTED]'
-  }
-}, transport);
+  transport
+);
 
 // Создаем Fastify плагин
 function loggerPlugin(fastify, options, done) {
   // Добавляем логгер в Fastify
   fastify.decorate('logger', logger);
-  
+
   // Добавляем хук для логирования запросов
   fastify.addHook('onRequest', (request, reply, done) => {
-    request.log.info({
-      req: {
-        method: request.method,
-        url: request.url,
-        headers: request.headers,
-        remoteAddress: request.ip,
-        remotePort: request.socket.remotePort
-      }
-    }, 'Incoming request');
-    
+    request.log.info(
+      {
+        req: {
+          method: request.method,
+          url: request.url,
+          headers: request.headers,
+          remoteAddress: request.ip,
+          remotePort: request.socket.remotePort
+        }
+      },
+      'Incoming request'
+    );
+
     done();
   });
-  
+
   // Добавляем хук для логирования ответов
   fastify.addHook('onResponse', (request, reply, done) => {
-    request.log.info({
-      res: {
-        statusCode: reply.statusCode,
-        responseTime: reply.getResponseTime()
-      }
-    }, 'Request completed');
-    
+    request.log.info(
+      {
+        res: {
+          statusCode: reply.statusCode,
+          responseTime: reply.getResponseTime()
+        }
+      },
+      'Request completed'
+    );
+
     done();
   });
-  
+
   // Добавляем хук для логирования ошибок
   fastify.addHook('onError', (request, reply, error, done) => {
-    request.log.error({
-      err: {
-        message: error.message,
-        stack: error.stack,
-        code: error.code,
-        statusCode: error.statusCode || 500
+    request.log.error(
+      {
+        err: {
+          message: error.message,
+          stack: error.stack,
+          code: error.code,
+          statusCode: error.statusCode || 500
+        },
+        req: {
+          method: request.method,
+          url: request.url,
+          headers: request.headers,
+          params: request.params,
+          query: request.query,
+          body: request.body
+        }
       },
-      req: {
-        method: request.method,
-        url: request.url,
-        headers: request.headers,
-        params: request.params,
-        query: request.query,
-        body: request.body
-      }
-    }, 'Request error');
-    
+      'Request error'
+    );
+
     done();
   });
-  
+
   done();
 }
 
@@ -586,11 +608,13 @@ module.exports = {
 ### 4.1. Настройка автоматического деплоя
 
 **Задачи:**
+
 - Настроить автоматический деплой на staging и production
 - Добавить проверки перед деплоем
 - Настроить откат при ошибках
 
 **Реализация:**
+
 ```yaml
 # .github/workflows/deploy.yml
 name: Deploy
@@ -671,11 +695,13 @@ jobs:
 ### 4.2. Улучшение тестирования
 
 **Задачи:**
+
 - Добавить unit тесты для критических компонентов
 - Создать интеграционные тесты для проверки взаимодействия сервисов
 - Добавить end-to-end тесты для проверки пользовательских сценариев
 
 **Реализация:**
+
 ```javascript
 // tests/unit/shared/utils/async.test.js
 const { safePromiseAll, withTimeout, retry } = require('../../../../packages/shared/utils/async');
@@ -683,76 +709,73 @@ const { safePromiseAll, withTimeout, retry } = require('../../../../packages/sha
 describe('Async Utils', () => {
   describe('safePromiseAll', () => {
     it('should resolve all promises', async () => {
-      const promises = [
-        Promise.resolve(1),
-        Promise.resolve(2),
-        Promise.resolve(3)
-      ];
-      
+      const promises = [Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)];
+
       const results = await safePromiseAll(promises);
-      
+
       expect(results).toHaveLength(3);
       expect(results[0]).toEqual({ status: 'fulfilled', value: 1 });
       expect(results[1]).toEqual({ status: 'fulfilled', value: 2 });
       expect(results[2]).toEqual({ status: 'fulfilled', value: 3 });
     });
-    
+
     it('should handle rejected promises', async () => {
       const promises = [
         Promise.resolve(1),
         Promise.reject(new Error('Test error')),
         Promise.resolve(3)
       ];
-      
+
       const results = await safePromiseAll(promises);
-      
+
       expect(results).toHaveLength(3);
       expect(results[0]).toEqual({ status: 'fulfilled', value: 1 });
       expect(results[1]).toEqual({ status: 'rejected', reason: expect.any(Error) });
       expect(results[2]).toEqual({ status: 'fulfilled', value: 3 });
     });
   });
-  
+
   describe('withTimeout', () => {
     it('should resolve if promise resolves before timeout', async () => {
       const promise = Promise.resolve('success');
       const result = await withTimeout(promise, 1000);
-      
+
       expect(result).toBe('success');
     });
-    
+
     it('should reject if promise takes too long', async () => {
       const promise = new Promise(resolve => setTimeout(() => resolve('success'), 200));
-      
+
       await expect(withTimeout(promise, 100)).rejects.toThrow('Operation timed out');
     });
   });
-  
+
   describe('retry', () => {
     it('should resolve if function succeeds on first try', async () => {
       const fn = jest.fn().mockResolvedValue('success');
-      
+
       const result = await retry(fn, { retries: 3 });
-      
+
       expect(result).toBe('success');
       expect(fn).toHaveBeenCalledTimes(1);
     });
-    
+
     it('should retry if function fails', async () => {
-      const fn = jest.fn()
+      const fn = jest
+        .fn()
         .mockRejectedValueOnce(new Error('Fail 1'))
         .mockRejectedValueOnce(new Error('Fail 2'))
         .mockResolvedValue('success');
-      
+
       const result = await retry(fn, { retries: 3, delay: 10 });
-      
+
       expect(result).toBe('success');
       expect(fn).toHaveBeenCalledTimes(3);
     });
-    
+
     it('should reject if all retries fail', async () => {
       const fn = jest.fn().mockRejectedValue(new Error('Test error'));
-      
+
       await expect(retry(fn, { retries: 2, delay: 10 })).rejects.toThrow('Test error');
       expect(fn).toHaveBeenCalledTimes(3); // Initial + 2 retries
     });
@@ -763,24 +786,28 @@ describe('Async Utils', () => {
 ## 5. Дорожная карта внедрения
 
 ### Фаза 1: Критические улучшения (1-2 недели)
+
 - Завершить исправление проблем безопасности
 - Стандартизировать модульную систему
 - Добавить базовое кэширование
 - Улучшить обработку ошибок
 
 ### Фаза 2: Производительность и мониторинг (2-3 недели)
+
 - Оптимизировать запросы к БД
 - Настроить Prometheus и Grafana
 - Улучшить логирование
 - Добавить алерты
 
 ### Фаза 3: Тестирование и CI/CD (2-3 недели)
+
 - Добавить unit и интеграционные тесты
 - Настроить автоматический деплой
 - Добавить статический анализ кода
 - Настроить мониторинг производительности
 
 ### Фаза 4: Масштабирование и документация (2-3 недели)
+
 - Улучшить масштабируемость сервисов
 - Создать полную документацию API
 - Добавить автоматическое резервное копирование

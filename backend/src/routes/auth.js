@@ -10,19 +10,19 @@ const prisma = new PrismaClient();
 router.post('/register', async (req, res) => {
   try {
     const { telegramId, username, password, role } = req.body;
-    
+
     // Проверка существующего пользователя
     const existingUser = await prisma.user.findUnique({
       where: { telegramId }
     });
-    
+
     if (existingUser) {
       return res.status(400).json({ error: 'Пользователь уже существует' });
     }
-    
+
     // Хеширование пароля
     const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
-    
+
     // Создание пользователя
     const user = await prisma.user.create({
       data: {
@@ -33,7 +33,7 @@ router.post('/register', async (req, res) => {
         isActive: false // Требует подтверждения админом
       }
     });
-    
+
     res.status(201).json({
       message: 'Регистрация успешна. Ожидайте подтверждения администратора.',
       userId: user.id
@@ -48,16 +48,16 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { telegramId, password } = req.body;
-    
+
     // Поиск пользователя
     const user = await prisma.user.findUnique({
       where: { telegramId }
     });
-    
+
     if (!user || !user.isActive) {
       return res.status(401).json({ error: 'Неверные учетные данные' });
     }
-    
+
     // Проверка пароля
     if (user.passwordHash) {
       const validPassword = await bcrypt.compare(password, user.passwordHash);
@@ -65,14 +65,14 @@ router.post('/login', async (req, res) => {
         return res.status(401).json({ error: 'Неверные учетные данные' });
       }
     }
-    
+
     // Создание токена
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
-    
+
     res.json({
       token,
       user: {
@@ -91,13 +91,15 @@ router.post('/login', async (req, res) => {
 router.get('/users', async (req, res) => {
   try {
     const { role } = req.query;
-    
+
     const users = await prisma.user.findMany({
-      where: role ? {
-        roles: {
-          has: role
-        }
-      } : undefined,
+      where: role
+        ? {
+            roles: {
+              has: role
+            }
+          }
+        : undefined,
       select: {
         id: true,
         name: true,
@@ -109,7 +111,7 @@ router.get('/users', async (req, res) => {
         createdAt: true
       }
     });
-    
+
     res.json(users);
   } catch (error) {
     console.error('Ошибка получения пользователей:', error);

@@ -32,10 +32,7 @@
             "lodash",
             "node-cron"
           ],
-          "devDependencies": [
-            "nodemon",
-            "jest"
-          ]
+          "devDependencies": ["nodemon", "jest"]
         },
         "auth": {
           "hasPackageJson": true,
@@ -55,14 +52,7 @@
             "fastify",
             "next"
           ],
-          "devDependencies": [
-            "@types/bcrypt",
-            "@types/jest",
-            "@types/node",
-            "jest",
-            "supertest",
-            "typescript"
-          ]
+          "devDependencies": ["@types/bcrypt", "@types/jest", "@types/node", "jest", "supertest", "typescript"]
         },
         "backup": {
           "hasPackageJson": true,
@@ -77,9 +67,7 @@
             "fastify",
             "node-cron"
           ],
-          "devDependencies": [
-            "nodemon"
-          ]
+          "devDependencies": ["nodemon"]
         },
         "bunkers": {
           "hasPackageJson": true,
@@ -95,9 +83,7 @@
             "fastify",
             "next"
           ],
-          "devDependencies": [
-            "nodemon"
-          ]
+          "devDependencies": ["nodemon"]
         },
         "data-import": {
           "hasPackageJson": true,
@@ -116,10 +102,7 @@
             "prisma",
             "@prisma/client"
           ],
-          "devDependencies": [
-            "nodemon",
-            "jest"
-          ]
+          "devDependencies": ["nodemon", "jest"]
         },
         "gateway": {
           "hasPackageJson": true,
@@ -143,10 +126,7 @@
             "next",
             "uuid"
           ],
-          "devDependencies": [
-            "@types/node",
-            "typescript"
-          ]
+          "devDependencies": ["@types/node", "typescript"]
         },
         "inventory": {
           "hasPackageJson": true,
@@ -183,17 +163,8 @@
         "monitoring": {
           "hasPackageJson": true,
           "hasStartScript": true,
-          "dependencies": [
-            "@fastify/cors",
-            "@fastify/jwt",
-            "@vhm24/database",
-            "dotenv",
-            "fastify",
-            "prom-client"
-          ],
-          "devDependencies": [
-            "nodemon"
-          ]
+          "dependencies": ["@fastify/cors", "@fastify/jwt", "@vhm24/database", "dotenv", "fastify", "prom-client"],
+          "devDependencies": ["nodemon"]
         },
         "notifications": {
           "hasPackageJson": true,
@@ -211,9 +182,7 @@
             "node-telegram-bot-api",
             "winston"
           ],
-          "devDependencies": [
-            "nodemon"
-          ]
+          "devDependencies": ["nodemon"]
         },
         "recipes": {
           "hasPackageJson": true,
@@ -232,11 +201,7 @@
             "winston",
             "dotenv"
           ],
-          "devDependencies": [
-            "nodemon",
-            "jest",
-            "@types/jest"
-          ]
+          "devDependencies": ["nodemon", "jest", "@types/jest"]
         },
         "reconciliation": {
           "hasPackageJson": false
@@ -255,11 +220,7 @@
             "@vhm24/database",
             "@vhm24/shared"
           ],
-          "devDependencies": [
-            "jest",
-            "nodemon",
-            "supertest"
-          ]
+          "devDependencies": ["jest", "nodemon", "supertest"]
         },
         "tasks": {
           "hasPackageJson": true,
@@ -295,9 +256,7 @@
             "qrcode",
             "winston"
           ],
-          "devDependencies": [
-            "nodemon"
-          ]
+          "devDependencies": ["nodemon"]
         },
         "warehouse": {
           "hasPackageJson": true,
@@ -313,11 +272,7 @@
             "@vhm24/database",
             "@vhm24/shared"
           ],
-          "devDependencies": [
-            "jest",
-            "nodemon",
-            "supertest"
-          ]
+          "devDependencies": ["jest", "nodemon", "supertest"]
         }
       }
     },
@@ -468,9 +423,7 @@
     },
     "security": {
       "hasJwtSecret": true,
-      "hasStrongJwtSecret": [
-        "JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-12345678"
-      ],
+      "hasStrongJwtSecret": ["JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-12345678"],
       "issues": [
         "services\\backup\\src\\index.js: Potential hardcoded password",
         "services\\backup\\src\\index.js: Potential hardcoded secret",

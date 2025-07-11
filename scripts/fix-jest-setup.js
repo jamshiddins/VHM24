@@ -52,18 +52,18 @@ console.log('\n📋 Шаг 2: Исправление тестов');
 function findFiles(dir, pattern) {
   let results = [];
   const files = fs.readdirSync(dir);
-  
+
   for (const file of files) {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
-    
+
     if (stat.isDirectory()) {
       results = results.concat(findFiles(filePath, pattern));
     } else if (pattern.test(file)) {
       results.push(filePath);
     }
   }
-  
+
   return results;
 }
 
@@ -76,19 +76,19 @@ let fixedFiles = 0;
 testFiles.forEach(file => {
   try {
     let content = fs.readFileSync(file, 'utf8');
-    
+
     // Заменяем импорт jest на деструктурированный импорт без jest
     content = content.replace(
       /const\s*\{\s*describe\s*,\s*test\s*,\s*expect\s*,\s*jest\s*(?:,\s*[^}]+)?\s*\}\s*=\s*require\(['"]@jest\/globals['"]\)/g,
       "const { describe, test, expect, beforeEach } = require('@jest/globals')"
     );
-    
+
     // Заменяем импорт jest на деструктурированный импорт без jest (другой вариант)
     content = content.replace(
       /const\s*\{\s*describe\s*,\s*test\s*,\s*expect\s*,\s*beforeEach\s*,\s*jest\s*(?:,\s*[^}]+)?\s*\}\s*=\s*require\(['"]@jest\/globals['"]\)/g,
       "const { describe, test, expect, beforeEach } = require('@jest/globals')"
     );
-    
+
     fs.writeFileSync(file, content);
     console.log(`✅ Исправлен файл: ${file}`);
     fixedFiles++;
@@ -162,19 +162,19 @@ if (checkFileExists('package.json')) {
 
   // Проверка и добавление babel
   if (!packageJson.devDependencies['@babel/core']) {
-    packageJson.devDependencies['@babel/core'] = "^7.22.0";
+    packageJson.devDependencies['@babel/core'] = '^7.22.0';
     console.log('✅ Добавлена зависимость: @babel/core');
     modified = true;
   }
 
   if (!packageJson.devDependencies['@babel/preset-env']) {
-    packageJson.devDependencies['@babel/preset-env'] = "^7.22.0";
+    packageJson.devDependencies['@babel/preset-env'] = '^7.22.0';
     console.log('✅ Добавлена зависимость: @babel/preset-env');
     modified = true;
   }
 
   if (!packageJson.devDependencies['babel-jest']) {
-    packageJson.devDependencies['babel-jest'] = "^29.5.0";
+    packageJson.devDependencies['babel-jest'] = '^29.5.0';
     console.log('✅ Добавлена зависимость: babel-jest');
     modified = true;
   }

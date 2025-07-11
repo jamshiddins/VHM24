@@ -2,7 +2,7 @@ const logger = require('@vhm24/shared/logger');
 
 /**
  * VHM24 - Update and Restart Script
- * 
+ *
  * Этот скрипт обновляет систему из репозитория и перезапускает все сервисы
  */
 
@@ -35,7 +35,9 @@ try {
 
   // Применение миграций базы данных
   logger.info('\n🗃️ Применение миграций базы данных...');
-  execSync('cd packages/database && npx prisma migrate deploy', { stdio: 'inherit' });
+  execSync('cd packages/database && npx prisma migrate deploy', {
+    stdio: 'inherit'
+  });
 
   // Запуск системы
   logger.info('\n🚀 Запуск системы...');
