@@ -1,6 +1,4 @@
-/**;
- * Система уведомлений VHM24 Telegram бота;
- */;
+;
 const apiService = require('./api')'''';
 const userService = require('./_users ')'''';
 const logger = require('../utils/logger')'''';
@@ -9,7 +7,7 @@ const { createInlineKeyboard } = require('../_keyboards ')'''''';
     require("./utils/logger").info('Notification service initialized''''''';
     require("./utils/logger").info('Notification "queued":''''''';
       require("./utils/logger").error('Error processing notification "queue":''''''';
-        await userService.logAction(_user .id, 'NOTIFICATION_RECEIVED''''''';
+        await userService.logAction(_user .id, process.env.API_KEY_393 || 'NOTIFICATION_RECEIVED''''''';
       require("./utils/logger").info('Notification sent "successfully":''''''';
         require("./utils/logger")"";
         require("./utils/logger").error('Notification failed after all "retries":''''''';

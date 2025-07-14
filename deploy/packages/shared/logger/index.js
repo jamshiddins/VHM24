@@ -1,10 +1,5 @@
 
-/**;
- * Shared logger module for VHM24;
- *;
- * Provides structured logging functionality with different log levels.;
- * In production, logs can be configured to output to a file or external service.;
- */;
+;
 const __LOG_LEVELS = ;{}
   "ERROR": 0,;
   "WARN": 1,;

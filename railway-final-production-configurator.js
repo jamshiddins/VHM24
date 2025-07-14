@@ -1,10 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * RAILWAY FINAL PRODUCTION CONFIGURATOR
- * Финальная настройка VHM24 для стабильной онлайн-работы 24/7
- * Project: VHM24-1.0 (ID: 740ca318-2ca1-49bb-8827-75feb0a5639c)
- */
+
 
 const { execSync } = require('child_process');
 const fs = require('fs');
@@ -12,7 +8,7 @@ const path = require('path');
 
 class RailwayProductionConfigurator {
     constructor() {
-        this.projectId = '740ca318-2ca1-49bb-8827-75feb0a5639c';
+        this.projectId = process.env.API_KEY_240 || '740ca318-2ca1-49bb-8827-75feb0a5639c';
         this.projectName = 'VHM24-1.0';
         this.publicUrl = '';
         this.config = {
@@ -25,14 +21,14 @@ class RailwayProductionConfigurator {
             NODE_ENV: 'production'
         };
         
-        console.log('🚀 RAILWAY FINAL PRODUCTION CONFIGURATOR');
+        
         console.log(`📋 Project: ${this.projectName} (${this.projectId})`);
-        console.log('🎯 Цель: Стабильная онлайн-работа 24/7');
+        
     }
 
     async run() {
         try {
-            console.log('\n🔄 НАЧИНАЕМ ФИНАЛЬНУЮ НАСТРОЙКУ...');
+            
             
             // 1. Анализ и очистка Railway сервисов
             await this.analyzeAndCleanupServices();
@@ -55,7 +51,7 @@ class RailwayProductionConfigurator {
             // 7. Тестирование онлайн работы
             await this.testOnlineOperation();
             
-            console.log('\n🎉 ФИНАЛЬНАЯ НАСТРОЙКА ЗАВЕРШЕНА!');
+            
             
         } catch (error) {
             console.error('💥 Configuration failed:', error.message);
@@ -64,22 +60,22 @@ class RailwayProductionConfigurator {
     }
 
     async analyzeAndCleanupServices() {
-        console.log('\n🔁 1. АНАЛИЗ И ОЧИСТКА RAILWAY СЕРВИСОВ');
+        
         
         try {
             // Получаем список всех сервисов
             const status = execSync('railway status', { encoding: 'utf8' });
-            console.log('📊 Текущий статус Railway:');
-            console.log(status);
+            
+            
             
             // Получаем переменные для анализа сервисов
             const variables = execSync('railway variables', { encoding: 'utf8' });
             
             // Анализируем какие сервисы активны
             const activeServices = this.parseActiveServices(variables);
-            console.log('✅ Активные сервисы:');
+            
             activeServices.forEach(service => {
-                console.log(`  - ${service}`);
+                
             });
             
             // Создаем лог для удаления лишних сервисов
@@ -102,10 +98,10 @@ ${activeServices.map(s => `- ${s}`).join('\n')}
 `;
             
             fs.writeFileSync('railway_remove.log', removeLog);
-            console.log('✅ Создан railway_remove.log');
+            
             
         } catch (error) {
-            console.log('⚠️ Ошибка анализа сервисов:', error.message);
+            
         }
     }
 
@@ -113,12 +109,12 @@ ${activeServices.map(s => `- ${s}`).join('\n')}
         const services = [];
         if (variables.includes('DATABASE_URL')) services.push('PostgreSQL Database');
         if (variables.includes('REDIS_URL')) services.push('Redis Cache');
-        if (variables.includes('RAILWAY_SERVICE_NAME')) services.push('Web Service');
+        if (variables.includes(process.env.API_KEY_241 || 'RAILWAY_SERVICE_NAME')) services.push('Web Service');
         return services;
     }
 
     async getProductionVariables() {
-        console.log('\n🔐 2. ПОЛУЧЕНИЕ АКТУАЛЬНЫХ ПЕРЕМЕННЫХ');
+        
         
         try {
             const variables = execSync('railway variables', { encoding: 'utf8' });
@@ -127,7 +123,7 @@ ${activeServices.map(s => `- ${s}`).join('\n')}
             this.parseRailwayVariables(variables);
             
             // Получаем публичный URL
-            if (variables.includes('RAILWAY_PUBLIC_DOMAIN')) {
+            if (variables.includes(process.env.API_KEY_242 || 'RAILWAY_PUBLIC_DOMAIN')) {
                 const match = variables.match(/RAILWAY_PUBLIC_DOMAIN\s*│\s*([^│X]+)/);
                 if (match) {
                     this.publicUrl = `https://${match[1].trim()}`;
@@ -145,18 +141,18 @@ ${activeServices.map(s => `- ${s}`).join('\n')}
                 }
             }
             
-            console.log('✅ Получены переменные:');
+            
             Object.entries(this.config).forEach(([key, value]) => {
                 if (value) {
                     const displayValue = key.includes('TOKEN') || key.includes('URL') 
                         ? value.substring(0, 20) + '...' 
                         : value;
-                    console.log(`  ${key}: ${displayValue}`);
+                    
                 }
             });
             
         } catch (error) {
-            console.log('⚠️ Ошибка получения переменных:', error.message);
+            
         }
     }
 
@@ -179,7 +175,7 @@ ${activeServices.map(s => `- ${s}`).join('\n')}
     }
 
     async configurePublicUrl() {
-        console.log('\n🌍 3. НАСТРОЙКА ПУБЛИЧНОГО URL');
+        
         
         if (!this.publicUrl) {
             // Пытаемся получить URL через domain команду
@@ -192,24 +188,24 @@ ${activeServices.map(s => `- ${s}`).join('\n')}
                     this.config.WEBHOOK_URL = `${this.publicUrl}/api/bot`;
                 }
             } catch (error) {
-                console.log('⚠️ Не удалось получить domain:', error.message);
+                
             }
         }
         
         if (this.publicUrl) {
-            console.log(`✅ Публичный URL: ${this.publicUrl}`);
-            console.log(`✅ Webhook URL: ${this.config.WEBHOOK_URL}`);
+            
+            
         } else {
             // Используем стандартный паттерн Railway
             this.publicUrl = 'https://web-production-73916.up.railway.app';
             this.config.RAILWAY_PUBLIC_URL = this.publicUrl;
             this.config.WEBHOOK_URL = `${this.publicUrl}/api/bot`;
-            console.log(`⚠️ Используем стандартный URL: ${this.publicUrl}`);
+            
         }
     }
 
     async updateAllConfigurations() {
-        console.log('\n🔧 4. ОБНОВЛЕНИЕ ВСЕХ КОНФИГУРАЦИЙ');
+        
         
         // Обновляем .env
         await this.updateEnvFile();
@@ -226,7 +222,7 @@ ${activeServices.map(s => `- ${s}`).join('\n')}
         // Обновляем конфигурационные файлы
         await this.updateConfigFiles();
         
-        console.log('✅ Все конфигурации обновлены');
+        
     }
 
     async updateEnvFile() {
@@ -258,7 +254,7 @@ JWT_SECRET=933f4234d58f69c74957860bf5a7a838e7c6f51f36876e5d415842bd796d6b5e
 `;
 
         fs.writeFileSync('.env', envContent);
-        console.log('✅ Обновлен .env');
+        
     }
 
     async updateEnvExample() {
@@ -290,7 +286,7 @@ JWT_SECRET=your_jwt_secret_here
 `;
 
         fs.writeFileSync('.env.example', envExampleContent);
-        console.log('✅ Обновлен .env.example');
+        
     }
 
     async updatePackageJson() {
@@ -309,7 +305,7 @@ JWT_SECRET=your_jwt_secret_here
             };
             
             fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
-            console.log('✅ Обновлен package.json');
+            
         }
     }
 
@@ -325,7 +321,7 @@ JWT_SECRET=your_jwt_secret_here
             );
             
             fs.writeFileSync(schemaPath, schema);
-            console.log('✅ Обновлен prisma/schema.prisma');
+            
         }
     }
 
@@ -358,11 +354,11 @@ cmd = "npm start"
 
         fs.writeFileSync('nixpacks.toml', nixpacksConfig);
         
-        console.log('✅ Обновлены railway.toml и nixpacks.toml');
+        
     }
 
     async createProductionFiles() {
-        console.log('\n📁 5. СОЗДАНИЕ ПРОДАКШН ФАЙЛОВ');
+        
         
         // Создаем production server
         await this.createProductionServer();
@@ -373,7 +369,7 @@ cmd = "npm start"
         // Создаем чеклист деплоя
         await this.createDeploymentChecklist();
         
-        console.log('✅ Продакшн файлы созданы');
+        
     }
 
     async createProductionServer() {
@@ -427,7 +423,7 @@ app.get('/api/info', (req, res) => {
 
 // Telegram webhook
 app.post('/api/bot', (req, res) => {
-    console.log('Telegram webhook received:', req.body);
+    
     res.json({ ok: true });
 });
 
@@ -477,17 +473,17 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(\`🚀 VHM24 Production Server running on port \${PORT}\`);
-    console.log(\`🌐 Public URL: \${process.env.RAILWAY_PUBLIC_URL}\`);
-    console.log(\`📡 Health check: \${process.env.RAILWAY_PUBLIC_URL}/api/health\`);
-    console.log(\`🤖 Webhook: \${process.env.RAILWAY_PUBLIC_URL}/api/bot\`);
+    
+    
+    
+    
 });
 
 module.exports = app;
 `;
 
         fs.writeFileSync('server.js', serverContent);
-        console.log('✅ Создан production server.js');
+        
     }
 
     async createDocumentation() {
@@ -547,7 +543,7 @@ railway status     # Check status
 
 Set webhook URL:
 \`\`\`bash
-curl -X POST "https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook" \\
+curl -X POST process.env.API_TELEGRAM_ORG_URL || "https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook" \\
      -H "Content-Type: application/json" \\
      -d '{"url": "${this.config.WEBHOOK_URL}"}'
 \`\`\`
@@ -593,7 +589,7 @@ Generated: ${new Date().toISOString()}
 
         fs.writeFileSync('railway.config.md', railwayConfigContent);
         
-        console.log('✅ Создана документация');
+        
     }
 
     async createDeploymentChecklist() {
@@ -639,29 +635,29 @@ Generated: ${new Date().toISOString()}
 Status: READY FOR PRODUCTION
 `;
 
-        fs.writeFileSync('deployment_checklist.md', checklistContent);
-        console.log('✅ Создан deployment checklist');
+        fs.writeFileSync(process.env.API_KEY_243 || 'deployment_checklist.md', checklistContent);
+        
     }
 
     async finalDeploy() {
-        console.log('\n🚀 6. ФИНАЛЬНЫЙ ДЕПЛОЙ');
+        
         
         try {
-            console.log('📦 Запуск финального деплоя...');
+            
             execSync('railway up --detach', { stdio: 'inherit' });
-            console.log('✅ Деплой запущен');
+            
             
             // Ждем деплой
             console.log('⏳ Ожидание завершения деплоя (90 секунд)...');
             await new Promise(resolve => setTimeout(resolve, 90000));
             
         } catch (error) {
-            console.log('⚠️ Ошибка деплоя:', error.message);
+            
         }
     }
 
     async testOnlineOperation() {
-        console.log('\n🧪 7. ТЕСТИРОВАНИЕ ОНЛАЙН РАБОТЫ');
+        
         
         const testUrls = [
             this.config.RAILWAY_PUBLIC_URL,
@@ -673,34 +669,34 @@ Status: READY FOR PRODUCTION
 
         for (const url of testUrls) {
             try {
-                console.log(`🔍 Тестирование: ${url}`);
+                
                 const response = execSync(`curl -s -w "%{http_code}" "${url}"`, { encoding: 'utf8' });
                 const statusCode = response.slice(-3);
                 const body = response.slice(0, -3);
                 
                 if (statusCode === '200') {
-                    console.log(`✅ ${url}: OK`);
+                    
                     if (body) {
                         const preview = body.substring(0, 100);
-                        console.log(`   Response: ${preview}...`);
+                        
                     }
                 } else {
-                    console.log(`❌ ${url}: ${statusCode}`);
+                    
                     allWorking = false;
                 }
                 
             } catch (error) {
-                console.log(`❌ ${url}: Error - ${error.message}`);
+                
                 allWorking = false;
             }
         }
 
         if (allWorking) {
-            console.log('\n🎉 ВСЕ ТЕСТЫ ПРОШЛИ УСПЕШНО!');
-            console.log('🌐 Проект готов к онлайн работе 24/7');
+            
+            
         } else {
-            console.log('\n⚠️ Некоторые тесты не прошли');
-            console.log('🔧 Требуется дополнительная настройка');
+            
+            
         }
 
         return allWorking;
@@ -791,7 +787,7 @@ Configurator: Railway Final Production Configurator v1.0
 `;
 
         fs.writeFileSync('fix_report.md', report);
-        console.log('✅ Создан финальный отчет: fix_report.md');
+        
     }
 
     async createErrorReport(error) {
@@ -821,7 +817,7 @@ railway up
 \`\`\`
 `;
 
-        fs.writeFileSync('configuration_error.md', errorReport);
+        fs.writeFileSync(process.env.API_KEY_244 || 'configuration_error.md', errorReport);
     }
 }
 

@@ -1,6 +1,4 @@
-/**;
- * Middleware для управления сессиями через Redis;
- */;
+;
 const Redis = require('redis')'''';
 const config = require('../config/bot')'''';
 const logger = require('../utils/logger')'''''';

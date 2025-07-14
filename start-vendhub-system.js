@@ -1,12 +1,12 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
-console.log('🚀 Запуск системы VendHub...\n');
+
 
 // Функция для запуска процесса
 function startProcess(command, args, cwd, name) {
     return new Promise((resolve, reject) => {
-        console.log(`📦 Запуск ${name}...`);
+        
         
         const process = spawn(command, args, {
             cwd: cwd,
@@ -21,7 +21,7 @@ function startProcess(command, args, cwd, name) {
 
         process.on('exit', (code) => {
             if (code === 0) {
-                console.log(`✅ ${name} запущен успешно`);
+                
                 resolve();
             } else {
                 console.error(`❌ ${name} завершился с кодом ${code}`);
@@ -31,7 +31,7 @@ function startProcess(command, args, cwd, name) {
 
         // Даем процессу время на запуск
         setTimeout(() => {
-            console.log(`✅ ${name} запущен`);
+            
             resolve();
         }, 3000);
     });
@@ -39,17 +39,17 @@ function startProcess(command, args, cwd, name) {
 
 async function startSystem() {
     try {
-        console.log('🔧 Проверка зависимостей...');
+        
         
         // Установка зависимостей backend
-        console.log('📦 Установка зависимостей backend...');
+        
         await startProcess('npm', ['install'], './backend', 'Backend Dependencies');
         
         // Установка зависимостей telegram-bot
-        console.log('📦 Установка зависимостей telegram-bot...');
+        
         await startProcess('npm', ['install'], './apps/telegram-bot', 'Telegram Bot Dependencies');
         
-        console.log('\n🗄️ Настройка базы данных...');
+        
         
         // Генерация Prisma клиента
         await startProcess('npx', ['prisma', 'generate'], './backend', 'Prisma Generate');
@@ -57,7 +57,7 @@ async function startSystem() {
         // Применение миграций
         await startProcess('npx', ['prisma', 'db', 'push'], './backend', 'Database Migration');
         
-        console.log('\n🚀 Запуск сервисов...');
+        
         
         // Запуск backend в фоне
         const backendProcess = spawn('npm', ['start'], {
@@ -92,23 +92,23 @@ async function startSystem() {
             console.error(`[Bot Error] ${data.toString().trim()}`);
         });
         
-        console.log('\n🎉 Система VendHub запущена!');
-        console.log('📋 Сервисы:');
-        console.log('   🔧 Backend API: process.env.API_URL');
-        console.log('   🤖 Telegram Bot: Активен');
-        console.log('   🗄️ База данных: Подключена');
-        console.log('\n💡 Для остановки нажмите Ctrl+C');
+        
+        
+        
+        
+        
+        
         
         // Обработка сигналов завершения
         process.on('SIGINT', () => {
-            console.log('\n🛑 Остановка системы...');
+            
             backendProcess.kill();
             botProcess.kill();
             process.exit(0);
         });
         
         process.on('SIGTERM', () => {
-            console.log('\n🛑 Остановка системы...');
+            
             backendProcess.kill();
             botProcess.kill();
             process.exit(0);

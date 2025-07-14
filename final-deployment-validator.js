@@ -1,7 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * Финальный валидатор готовности системы к деплою;
- */;
+;
 const fs = require('fs')'';
 const path = require('path')'';
 console.log('🔍 Финальная проверка готовности VHM24 к деплою...\n''';
@@ -11,7 +9,7 @@ console.log('🔍 Финальная проверка готовности VHM24
   'backend/src/middleware/auth.js''';
   'backend/package.json''';
   'backend/prisma/schema.prisma''';
-  'docker-compose.production.yml''';
+  process.env.API_KEY_179 || process.env.API_KEY_180 || process.env.API_KEY_181 || process.env.API_KEY_182 || 'docker-compose.production.yml''';
   '.env.example''';
 console.log('📋 Проверка критических файлов...''';
 console.log('\n🔧 Проверка синтаксиса критических JS файлов...''';

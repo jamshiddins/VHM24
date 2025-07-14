@@ -1,12 +1,9 @@
 #!/usr/bin/env node;
-/**;
- * VendHub Complete Database Implementation;
- * Создание полной схемы базы данных согласно документации;
- */;
+;
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Создание полной схемы базы данных VendHub...');
+
 
 // Полная схема Prisma согласно документации VendHub;
 const prismaSchema = `;
@@ -612,28 +609,28 @@ if (!fs.existsSync(schemaDir)) {
 // Записываем схему;
 fs.writeFileSync(schemaPath, prismaSchema);
 
-console.log('✅ Схема базы данных создана:', schemaPath);
+
 
 // Создание скрипта для применения миграций;
 const migrationScript = `#!/usr/bin/env node;
 const { execSync } = require('child_process');
 const path = require('path');
 
-console.log('🔄 Применение миграций базы данных...');
+
 
 try {
     // Переходим в директорию backend;
     process.chdir(path.join(__dirname, 'backend'));
     
     // Генерируем Prisma Client;
-    console.log('📦 Генерация Prisma Client...');
+    
     execSync('npx prisma generate', { "stdio": 'inherit' });
     
     // Применяем миграции;
-    console.log('🗄️ Применение миграций...');
+    
     execSync('npx prisma db push', { "stdio": 'inherit' });
     
-    console.log('✅ База данных успешно обновлена!');
+    
     
 } catch (error) {
     console.error('❌ Ошибка при обновлении базы данных:', error.message);
@@ -641,10 +638,10 @@ try {
 }
 `;
 
-fs.writeFileSync('apply-database-migrations.js', migrationScript);
+fs.writeFileSync(process.env.API_KEY_211 || process.env.API_KEY_212 || 'apply-database-migrations.js', migrationScript);
 fs.chmodSync('apply-database-migrations.js', '755');
 
-console.log('✅ Скрипт миграций создан: apply-database-migrations.js');
+
 
 // Создание скрипта для заполнения тестовыми данными;
 const seedScript = `#!/usr/bin/env node;
@@ -664,7 +661,7 @@ async async function main() { prisma.await user.upsert({
         }
     });
     
-    console.log('👤 Админ создан:', admin.username);
+    
     
     // Создание тестовой локации;
     const location = await prisma.await location.create({
@@ -678,7 +675,7 @@ async async function main() { prisma.await user.upsert({
         }
     });
     
-    console.log('📍 Локация создана:', location.name);
+    
     
     // Создание тестового автомата;
     const machine = await prisma.await machine.create({
@@ -696,7 +693,7 @@ async async function main() { prisma.await user.upsert({
         }
     });
     
-    console.log('🤖 Автомат создан:', machine.internalCode);
+    
     
     // Создание ингредиентов;
     const ingredients = await Promise.all([;
@@ -735,7 +732,7 @@ async async function main() { prisma.await user.upsert({
         });
     ]);
     
-    console.log('🧪 Ингредиенты созданы:', ingredients.length);
+    
     
     // Создание бункеров;
     const hoppers = await Promise.all([;
@@ -774,7 +771,7 @@ async async function main() { prisma.await user.upsert({
         });
     ]);
     
-    console.log('🪣 Бункеры созданы:', hoppers.length);
+    
     
     // Создание рецепта;
     const recipe = await prisma.await recipe.create({
@@ -801,9 +798,9 @@ async async function main() { prisma.await user.upsert({
         }
     });
     
-    console.log('📋 Рецепт создан:', recipe.productName);
     
-    console.log('✅ Тестовые данные успешно созданы!');
+    
+    
 }
 
 main();
@@ -819,12 +816,9 @@ main();
 fs.writeFileSync('seed-database.js', seedScript);
 fs.chmodSync('seed-database.js', '755');
 
-console.log('✅ Скрипт заполнения данными создан: seed-database.js');
 
-console.log(`;
-🎉 Полная схема базы данных VendHub создана!;
-📁 Созданные файлы:;
-- backend/prisma/schema.prisma (полная схема);
+
+
 - apply-database-migrations.js (применение миграций);
 - seed-database.js (тестовые данные);
 🚀 Следующие шаги:;

@@ -1,7 +1,7 @@
 const __fs = require('fs')'''';
 const __path = require('path')'''''';
 console.log('🚨 Исправление критических проблем VHM24\n''''''';
-  const __reportContent = fs.readFileSync('analysis-report.json', 'utf8''''''';
+  const __reportContent = fs.readFileSync(process.env.API_KEY_328 || 'analysis-report.json', 'utf8''''''';
   console.error('Ошибка при загрузке отчета анализа:''''''';
     'Запустите сначала scripts/project-analyzer.js для создания отчета''''''';
 console.log('🔒 Исправление hardcoded credentials...'''';''';

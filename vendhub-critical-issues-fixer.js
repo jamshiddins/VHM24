@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('🔧 VendHub - Исправление критических проблем');
+
 console.log('=' .repeat(50));
 
 const fixes = [];
@@ -10,11 +10,11 @@ const fixes = [];
 function logFix(description, status) {
     fixes.push({ description, status });
     const icon = status === 'SUCCESS' ? '✅' : '❌';
-    console.log(`${icon} ${description}`);
+    
 }
 
 // 1. Добавляем отсутствующие AWS переменные в .env;
-console.log('\n🔐 Исправление переменных окружения...');
+
 try {
     let envContent = fs.readFileSync('.env', 'utf8');
     
@@ -40,7 +40,7 @@ try {
 }
 
 // 2. Добавляем aws-sdk в backend dependencies;
-console.log('\n📦 Исправление зависимостей backend...');
+
 try {
     const packagePath = 'backend/package.json';
     const packageData = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
@@ -58,7 +58,7 @@ try {
 }
 
 // 3. Добавляем модель Item в Prisma схему;
-console.log('\n🗄️ Исправление схемы Prisma...');
+
 try {
     const schemaPath = 'backend/prisma/schema.prisma';
     let schemaContent = fs.readFileSync(schemaPath, 'utf8');
@@ -92,7 +92,7 @@ model Item {
 }
 
 // 4. Создаем отсутствующий middleware upload.js;
-console.log('\n🔒 Создание отсутствующих middleware...');
+
 try {
     const uploadMiddlewarePath = 'backend/src/middleware/upload.js';
     
@@ -168,7 +168,7 @@ module.exports = {
 }
 
 // 5. Исправляем проблемные маршруты;
-console.log('\n🛣️ Исправление маршрутов...');
+
 
 // Исправляем warehouse.js;
 try {
@@ -215,7 +215,7 @@ try {
 }
 
 // 6. Создаем папку uploads;
-console.log('\n📁 Создание необходимых папок...');
+
 try {
     const uploadsDir = 'backend/uploads';
     if (!fs.existsSync(uploadsDir)) {
@@ -227,9 +227,9 @@ try {
 }
 
 // 7. Устанавливаем недостающие зависимости;
-console.log('\n📦 Установка недостающих зависимостей...');
+
 try {
-    console.log('Установка AWS SDK...');
+    
     execSync('cd backend && npm install aws-sdk @aws-sdk/client-s3 @aws-sdk/s3-request-presigner', { "stdio": 'inherit' });
     logFix('Установлены AWS зависимости', 'SUCCESS');
 } catch (error) {
@@ -238,22 +238,22 @@ try {
 
 // Финальный отчет;
 console.log('\n' + '='.repeat(50));
-console.log('📊 ОТЧЕТ ОБ ИСПРАВЛЕНИЯХ');
+
 console.log('='.repeat(50));
 
 const successFixes = fixes.filter(f => f.status === 'SUCCESS').length;
 const errorFixes = fixes.filter(f => f.status === 'ERROR').length;
 
-console.log(`✅ Успешных исправлений: ${successFixes}`);
-console.log(`❌ Ошибок при исправлении: ${errorFixes}`);
+
+
 
 if (errorFixes === 0) {
-    console.log('\n🎉 ВСЕ КРИТИЧЕСКИЕ ПРОБЛЕМЫ ИСПРАВЛЕНЫ!');
-    console.log('✅ Теперь можно повторно запустить тест');
-    console.log('\n🚀 Запустите: node vendhub-final-complete-test.js');
+    
+    
+    
 } else {
-    console.log('\n⚠️ Некоторые проблемы не удалось исправить автоматически');
-    console.log('🔧 Проверьте ошибки выше и исправьте их вручную');
+    
+    
 }
 
 console.log('\n' + '='.repeat(50));

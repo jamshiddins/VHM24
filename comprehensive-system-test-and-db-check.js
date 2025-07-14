@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * COMPREHENSIVE SYSTEM TEST AND DATABASE CHECK
- * Комплексное тестирование системы и проверка баз данных
- */
+
 
 const { execSync } = require('child_process');
 const fs = require('fs');
@@ -20,26 +17,26 @@ const colors = {
 
 // Функции для вывода
 function status(message) {
-  console.log(`${colors.blue}[INFO]${colors.reset} ${message}`);
+  
 }
 
 function success(message) {
-  console.log(`${colors.green}[SUCCESS]${colors.reset} ${message}`);
+  
 }
 
 function warning(message) {
-  console.log(`${colors.yellow}[WARNING]${colors.reset} ${message}`);
+  
 }
 
 function error(message) {
-  console.log(`${colors.red}[ERROR]${colors.reset} ${message}`);
+  
 }
 
 // Главная функция
 async function main() {
-  console.log('🚀 COMPREHENSIVE SYSTEM TEST AND DATABASE CHECK');
-  console.log('🔧 Комплексное тестирование системы и проверка баз данных');
-  console.log('=======================================================');
+  
+  
+  
 
   try {
     // 0. Установка необходимых зависимостей
@@ -334,7 +331,7 @@ async function checkDatabases() {
     status('Тестирование подключения к PostgreSQL...');
     
     // Создаем временный файл для тестирования
-    const testFile = 'test-pg-connection.js';
+    const testFile = process.env.API_KEY_149 || 'test-pg-connection.js';
     const testCode = `
 const { Client } = require('pg');
 
@@ -344,15 +341,15 @@ async function testConnection() {
   });
   
   try {
-    console.log('Connecting to PostgreSQL...');
+    
     await client.connect();
-    console.log('Connected to PostgreSQL successfully!');
+    
     
     const result = await client.query('SELECT current_database() as db, current_user as user, version() as version');
-    console.log('Database info:');
-    console.log(\`Database: \${result.rows[0].db}\`);
-    console.log(\`User: \${result.rows[0].user}\`);
-    console.log(\`Version: \${result.rows[0].version}\`);
+    
+    
+    
+    
     
     // Проверяем наличие таблиц
     const tablesResult = await client.query(\`
@@ -362,26 +359,26 @@ async function testConnection() {
       ORDER BY table_name
     \`);
     
-    console.log('\\nDatabase tables:');
+    
     if (tablesResult.rows.length === 0) {
-      console.log('No tables found');
+      
     } else {
       tablesResult.rows.forEach(row => {
-        console.log(\`- \${row.table_name}\`);
+        
       });
     }
     
     // Выводим список таблиц в формате JSON для парсинга
-    console.log('\\nTABLES_JSON_START');
+    
     console.log(JSON.stringify(tablesResult.rows.map(row => row.table_name)));
-    console.log('TABLES_JSON_END');
+    
     
   } catch (err) {
     console.error('Error connecting to PostgreSQL:', err.message);
     process.exit(1);
   } finally {
     await client.end();
-    console.log('Connection closed');
+    
   }
 }
 
@@ -394,7 +391,7 @@ testConnection();
       // Запускаем тест
       status('Запуск теста PostgreSQL...');
       const result = execSync(`node ${testFile}`, { encoding: 'utf8' });
-      console.log(result);
+      
       
       // Парсим список таблиц
       const tablesMatch = result.match(/TABLES_JSON_START\n(.*)\nTABLES_JSON_END/s);
@@ -432,7 +429,7 @@ testConnection();
     status('Тестирование подключения к Redis...');
     
     // Создаем временный файл для тестирования
-    const testFile = 'test-redis-connection.js';
+    const testFile = process.env.API_KEY_150 || 'test-redis-connection.js';
     const testCode = `
 const redis = require('redis');
 const { promisify } = require('util');
@@ -453,45 +450,45 @@ async function testConnection() {
   });
   
   client.on('connect', async () => {
-    console.log('Connected to Redis successfully!');
+    
     
     try {
       // Записываем тестовое значение
       const testKey = 'system_test_key';
       const testValue = 'System test at ' + new Date().toISOString();
       
-      console.log(\`Setting test key: \${testKey} = \${testValue}\`);
+      
       await setAsync(testKey, testValue);
       
       // Читаем тестовое значение
       const readValue = await getAsync(testKey);
-      console.log(\`Read test key: \${testKey} = \${readValue}\`);
+      
       
       // Получаем список ключей
       const keys = await keysAsync('*');
-      console.log('\\nRedis keys:');
+      
       if (keys.length === 0) {
-        console.log('No keys found');
+        
       } else {
         keys.slice(0, 10).forEach(key => {
-          console.log(\`- \${key}\`);
+          
         });
         
         if (keys.length > 10) {
-          console.log(\`... and \${keys.length - 10} more keys\`);
+          
         }
       }
       
       // Выводим список ключей в формате JSON для парсинга
-      console.log('\\nKEYS_JSON_START');
+      
       console.log(JSON.stringify(keys));
-      console.log('KEYS_JSON_END');
+      
       
     } catch (err) {
       console.error('Error working with Redis:', err.message);
     } finally {
       client.quit();
-      console.log('Connection closed');
+      
     }
   });
 }
@@ -505,7 +502,7 @@ testConnection();
       // Запускаем тест
       status('Запуск теста Redis...');
       const result = execSync(`node ${testFile}`, { encoding: 'utf8' });
-      console.log(result);
+      
       
       // Парсим список ключей
       const keysMatch = result.match(/KEYS_JSON_START\n(.*)\nKEYS_JSON_END/s);
@@ -628,8 +625,8 @@ async function updateGit() {
   try {
     // Проверяем статус Git
     const gitStatus = execSync('git status', { encoding: 'utf8' });
-    console.log('Git статус:');
-    console.log(gitStatus);
+    
+    
     
     // Добавляем все изменения
     status('Добавление всех изменений в Git...');
@@ -721,33 +718,33 @@ ${dbStatus.redis.keys.length > 0 ? '##### Список ключей:\n\n' + dbSt
 Время создания отчета: ${new Date().toISOString()}
 `;
 
-  fs.writeFileSync('COMPREHENSIVE_SYSTEM_TEST_REPORT.md', reportContent);
+  fs.writeFileSync(process.env.API_KEY_151 || 'COMPREHENSIVE_SYSTEM_TEST_REPORT.md', reportContent);
   success('Создан отчет о тестировании: COMPREHENSIVE_SYSTEM_TEST_REPORT.md');
 }
 
 // Финальное сообщение
 function printFinalMessage() {
-  console.log('');
-  console.log('=======================================================');
-  console.log(`${colors.green}✅ ТЕСТИРОВАНИЕ СИСТЕМЫ ЗАВЕРШЕНО${colors.reset}`);
-  console.log('=======================================================');
-  console.log('');
-  console.log(`${colors.blue}Что было сделано:${colors.reset}`);
-  console.log('1. Проверена конфигурация системы');
-  console.log('2. Протестировано подключение к PostgreSQL');
-  console.log('3. Протестировано подключение к Redis');
-  console.log('4. Протестировано API');
-  console.log('5. Протестирован Telegram бот');
-  console.log('6. Обновлен Git репозиторий');
-  console.log('7. Создан отчет о тестировании');
-  console.log('');
-  console.log(`${colors.yellow}Следующие шаги:${colors.reset}`);
-  console.log('1. Откройте Railway Dashboard: https://railway.app/project/740ca318-2ca1-49bb-8827-75feb0a5639c');
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   console.log('2. Активируйте Web Role: Settings → Service Type → Web (exposes HTTP port)');
-  console.log('3. Проверьте настройки подключения к базам данных');
-  console.log('4. Создайте новый деплой через Dashboard');
-  console.log('');
-  console.log(`${colors.green}Готово!${colors.reset}`);
+  
+  
+  
+  
 }
 
 // Запуск скрипта

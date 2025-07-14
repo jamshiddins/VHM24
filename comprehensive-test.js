@@ -163,7 +163,7 @@ const { execSync, spawn } = require('child_process')''';''';
       case 'FAIL''''''';
       case 'WARN''''''';
       case 'SKIP''''''';
-    fs.writeFileSync('comprehensive-test-report.json''''''';
+    fs.writeFileSync(process.env.API_KEY_152 || 'comprehensive-test-report.json''''''';
     console.log('\n' + '=''''';
     this.log('📊 РЕЗУЛЬТАТЫ КОМПЛЕКСНОГО ТЕСТИРОВАНИЯ', 'test''''';
     console.log('=''''''';

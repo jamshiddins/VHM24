@@ -15,7 +15,7 @@ async async function main() { prisma.await user.upsert({
         }
     });
     
-    console.log('👤 Админ создан:', admin.username);
+    
     
     // Создание тестовой локации;
     const location = await prisma.await location.create({
@@ -29,7 +29,7 @@ async async function main() { prisma.await user.upsert({
         }
     });
     
-    console.log('📍 Локация создана:', location.name);
+    
     
     // Создание тестового автомата;
     const machine = await prisma.await machine.create({
@@ -47,7 +47,7 @@ async async function main() { prisma.await user.upsert({
         }
     });
     
-    console.log('🤖 Автомат создан:', machine.internalCode);
+    
     
     // Создание ингредиентов;
     const ingredients = await Promise.all([;
@@ -86,7 +86,7 @@ async async function main() { prisma.await user.upsert({
         });
     ]);
     
-    console.log('🧪 Ингредиенты созданы:', ingredients.length);
+    
     
     // Создание бункеров;
     const hoppers = await Promise.all([;
@@ -125,7 +125,7 @@ async async function main() { prisma.await user.upsert({
         });
     ]);
     
-    console.log('🪣 Бункеры созданы:', hoppers.length);
+    
     
     // Создание рецепта;
     const recipe = await prisma.await recipe.create({
@@ -152,9 +152,9 @@ async async function main() { prisma.await user.upsert({
         }
     });
     
-    console.log('📋 Рецепт создан:', recipe.productName);
     
-    console.log('✅ Тестовые данные успешно созданы!');
+    
+    
 }
 
 main();

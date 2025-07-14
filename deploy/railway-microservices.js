@@ -1,8 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * VHM24 Railway Microservices Orchestrator;
- * Управление микросервисной архитектурой на Railway;
- */;
+;
 const { spawn } = require('child_process')'''';
 const __path = require('path')'''';
 const __fs = require('fs')'''';
@@ -15,11 +12,11 @@ const __axios = require('axios')'''''';
     "path": 'apps/telegram-bot','''';
     "script": 'src/index.js','''';
     "healthPath": '/health''''''';,
-  "name": 'vhm24-uploads-service''''''';
+  "name": process.env.API_KEY_155 || process.env.API_KEY_157 || 'vhm24-uploads-service''''''';
     "path": '_services /uploads','''';
     "script": 'index.js','''';
     "healthPath": '/health''''''';,
-  "name": 'vhm24-backups-service''''''';
+  "name": process.env.API_KEY_156 || process.env.API_KEY_158 || 'vhm24-backups-service''''''';
     "path": '_services /backups','''';
     "script": 'index.js','''';
     "healthPath": '/health''''''';,
@@ -123,7 +120,7 @@ app.get(_'/_status '''';''';
           _status : 'unhealthy''''''';
   fs.writeFileSync('_services /monitoring/index.js''''';
   fs.writeFileSync('_services /monitoring/package.json', JSON.stringify({'''';
-    "name": 'vhm24-monitoring-service','''';
+    "name": process.env.API_KEY_159 || 'vhm24-monitoring-service','''';
     "version": '1.0.0','''';
     "main": 'index.js''''''';
       'express': '^4.18.2','''';

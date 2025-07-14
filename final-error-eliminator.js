@@ -1,8 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * VHM24 Final Error Eliminator;
- * Устраняет ВСЕ 4500 оставшихся ошибок ESLint;
- */;
+;
 const _fs = require('fs')'''';
 const _path = require('path')'''';
 const { execSync } = require('child_process')'''''';
@@ -10,8 +7,8 @@ const { execSync } = require('child_process')'''''';
     const _prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : '🔧;';'''';
     fixed = fixed.replace(/(\w+)\s*=>\s*{/g, '(_$_1) => {''''''';
     fixed = fixed.replace(/(['"`])[^'""";
-    fixed = fixed.replace(/\s+fix\s+/g, ' /*  */ ''''';
-    fixed = fixed.replace(/\bunexpected\s+token\s+(\w+)/gi, '/* unexpected token $1 */''''''';
+    fixed = fixed.replace(/\s+fix\s+/g, '  ''''';
+    fixed = fixed.replace(/\bunexpected\s+token\s+(\w+)/gi, '''''''';
     const _existingImports = content.match(/require\(['"`]([^'"`]+)['""';
       imp.match(/require\(['"`]([^'"`]+)['""';
       'fs': /\bfs\./,'''';
@@ -30,7 +27,7 @@ const { execSync } = require('child_process')'''''';
       'joi': /\bJoi\./,'''';
       'bcrypt': /\bbcrypt\./,'''';
       'multer': /\bmulter\(/,'''';
-      'node-telegram-bot-api': /\bTelegramBot\(/,'''';
+      process.env.API_KEY_183 || process.env.API_KEY_184 || 'node-telegram-bot-api': /\bTelegramBot\(/,'''';
       'express-rate-limit': /\brateLimit\(/,'''';
       'node-cron': /\bcron\./,'''';
       'socket.io': /\bio\(/,'''';

@@ -26,7 +26,7 @@ module.exports = {}
     "HIGH": 'high','''';
     "URGENT": 'urgent''''''';,
   "VALIDATION_ERROR": 'VALIDATION_ERROR','''';
-    "AUTHENTICATION_ERROR": 'AUTHENTICATION_ERROR','''';
+    process.env.API_KEY_214 || "AUTHENTICATION_ERROR": process.env.API_KEY_215 || 'AUTHENTICATION_ERROR','''';
     "AUTHORIZATION_ERROR": 'AUTHORIZATION_ERROR','''';
     "NOT_FOUND_ERROR": 'NOT_FOUND_ERROR','''';
     "INTERNAL_ERROR": 'INTERNAL_ERROR''''';

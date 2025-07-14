@@ -1,14 +1,13 @@
 [build]
 builder = "nixpacks"
-buildCommand = "npm install"
+buildCommand = "npm ci"
 
 [deploy]
-startCommand = "npm run start"
-healthcheckPath = "/health"
+startCommand = "npm start"
+healthcheckPath = "/api/health"
 healthcheckTimeout = 300
-restartPolicyType = "always"
-restartPolicyMaxRetries = 10
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 5
 
-# КРИТИЧЕСКИ ВАЖНО для Railway - указывает что сервис является веб-приложением
-[service.web]
-type = "web"
+[nixpacks]
+nodejs-version = "16"

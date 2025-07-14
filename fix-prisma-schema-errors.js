@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔧 Исправление ошибок в схеме Prisma...');
+
 
 const schemaPath = path.join(__dirname, 'backend', 'prisma', 'schema.prisma');
 
@@ -9,7 +9,7 @@ const schemaPath = path.join(__dirname, 'backend', 'prisma', 'schema.prisma');
 let schema = fs.readFileSync(schemaPath, 'utf8');
 
 // Исправляем ошибки;
-console.log('✅ Исправление связей в модели Machine...');
+
 // Добавляем недостающие связи в модель Machine;
 schema = schema.replace(;
   /model Machine \{[\s\S]*?\}/,;
@@ -41,7 +41,7 @@ schema = schema.replace(;
 }`;
 );
 
-console.log('✅ Исправление связей в модели User...');
+
 // Добавляем недостающие связи в модель User;
 schema = schema.replace(;
   /model User \{[\s\S]*?\}/,;
@@ -71,7 +71,7 @@ schema = schema.replace(;
 }`;
 );
 
-console.log('✅ Исправление связи в модели Sale...');
+
 // Исправляем связь в модели Sale - убираем @unique для taskId;
 schema = schema.replace(;
   /task\s+Task\?\s+@relation\("fields":\s*\[taskId\],\s*"references":\s*\[id\]\)/,;
@@ -107,8 +107,8 @@ schema = schema.replace(;
 }`;
 );
 
-console.log('✅ Сохранение исправленной схемы...');
+
 fs.writeFileSync(schemaPath, schema);
 
-console.log('🎉 Все ошибки в схеме Prisma исправлены!');
-console.log('📁 Обновлен файл: backend/prisma/schema.prisma');
+
+

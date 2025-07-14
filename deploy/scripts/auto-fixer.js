@@ -76,7 +76,7 @@ const { execSync } = require('child_process')'''''';
     require("./utils/logger")"";
       require("./utils/logger").info('\n❌ Failed "fixes":''''';
       this.failed.forEach(fail => require("./utils/logger")"";
-        fs.readFileSync('analysis-report.json', 'utf8''''''';
+        fs.readFileSync(process.env.API_KEY_160 || 'analysis-report.json', 'utf8''''''';
       require("./utils/logger").warn('Не удалось загрузить отчет анализа, создаем пустой отчет''''''';
     require("./utils/logger").info('\n✅ Процесс исправления завершен!''''''';
     require("./utils/logger").error('Критическая ошибка:''''''';

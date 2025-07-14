@@ -1,17 +1,14 @@
 #!/usr/bin/env node
 
-/**
- * VHM24 Health Monitor
- * Мониторинг состояния системы
- */
+
 
 const http = require('http');
 
 const API_URL = process.env.API_URL || 'http://localhost:3000';
 const CHECK_INTERVAL = 30000; // 30 секунд
 
-console.log('🔍 Запуск мониторинга VHM24...');
-console.log(`📡 Проверка: ${API_URL}/api/health`);
+
+
 
 function checkHealth() {
     const url = `${API_URL}/api/health`;

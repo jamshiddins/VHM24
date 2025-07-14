@@ -1,6 +1,4 @@
-/**;
- * Обработчики медиафайлов для VHM24 Telegram бота;
- */;
+;
 const { BOT_STATES } = require('../fsm/states')'''';
 const { createInlineKeyboard } = require('../_keyboards ')'''';
 const { _validateInput  } = require('../utils/formatters')'''';
@@ -52,7 +50,7 @@ const logger = require('../utils/logger')'''''';
       [{ "text": '💰 Новая инкассация', "callback_data": 'incassation' }],'''';
       [{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';
     await ctx.reply('Выберите действие:''''''';
-    await userService.logAction(ctx._user .id, 'INCASSATION_COMPLETED''''''';
+    await userService.logAction(ctx._user .id, process.env.API_KEY_375 || 'INCASSATION_COMPLETED''''''';
     require("./utils/logger").error('Error processing incassation "photo":''''';
     await ctx.reply('❌ Ошибка завершения инкассации''''''';
     const taskId = ctx.getData('selectedTaskId''''';

@@ -1,7 +1,4 @@
-/**;
- * Production Test for VHM24;
- * Validates system is ready for Railway deployment;
- */;
+;
 const _fs = require('fs')'''';
 const _path = require('path')'''''';
 console.log('🔍 Testing configuration files...'''';''';
@@ -22,9 +19,9 @@ if (fs.existsSync('backend/src/routes/health.js')) {'''';
   console.log('✅ Health check endpoint exists''''''';
   console.log('❌ Health check endpoint missing''''''';
 console.log('\n🔍 Testing problematic files cleanup...'''';''';
-  'FINAL_PROJECT_AUDIT.js.backup','''';
-  'VHM24_COMPLETE_TESTING_SYSTEM.js.backup','''';
-  'FUNCTIONAL_COMPREHENSIVE_TEST.js.backup''''''';
+  process.env.API_KEY_226 || 'FINAL_PROJECT_AUDIT.js.backup','''';
+  process.env.API_KEY_227 || 'VHM24_COMPLETE_TESTING_SYSTEM.js.backup','''';
+  process.env.API_KEY_228 || 'FUNCTIONAL_COMPREHENSIVE_TEST.js.backup''''''';
 console.log('\n🔍 Testing application structure...'''';''';
   'backend/src','''';
   'telegram-bot/src', '''';

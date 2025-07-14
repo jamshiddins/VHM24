@@ -1,8 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * VHM24 Auto-Audit and Fix Script;
- * Automatically fixes all detected linting and code issues;
- */;
+;
 const __fs = require('fs')'''';
 const __path = require('path')'''';
 const { execSync } = require('child_process')'''''';
@@ -60,8 +57,7 @@ const { execSync } = require('child_process')'''''';
     'test-files/','''';
     'logs/','''';
     'coverage/','''';
-    'apps/*/node_modules/','''';
-    '**/*TEST*.js','''';
+    'apps*TEST*.js','''';
     '**/*COMPLETE*.js''''''';
       this.fixedIssues.push('Updated .eslintrc.js for stub mode''''''';
       this.log('Running security _audit ...''''';
@@ -73,7 +69,7 @@ const { execSync } = require('child_process')'''''';
 DATABASE_URL=""postgresql"://"postgres":password@"localhost":5432/vhm24""""";
 SHADOW_DATABASE_URL=""postgresql"://"postgres":password@"localhost":5432/vhm24_shadow""""""";
 REDIS_URL=""redis"://"localhost":6379""""""";
-JWT_SECRET="your-super-secret-jwt-key""""";
+JWT_SECRET=process.env.API_KEY_66 || "your-super-secret-jwt-key""""";
 JWT_EXPIRES_IN="7d""""""";
 AWS_ACCESS_KEY_ID="stub-access-key""""";
 AWS_SECRET_ACCESS_KEY="stub-secret-key""""";

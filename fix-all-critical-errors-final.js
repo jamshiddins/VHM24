@@ -1,11 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔧 Исправление всех критических ошибок VHM24...\n');
+
 
 // Исправление auth.js
 const authPath = 'backend/src/routes/auth.js';
-console.log('✅ Исправляем auth.js...');
+
 
 const authContent = `const express = require('express');
 const jwt = require('jsonwebtoken');
@@ -112,11 +112,11 @@ module.exports = router;
 `;
 
 fs.writeFileSync(authPath, authContent);
-console.log('✅ auth.js исправлен');
+
 
 // Исправление api.js
 const apiPath = 'backend/src/routes/api.js';
-console.log('✅ Исправляем api.js...');
+
 
 const apiContent = `const express = require('express');
 const authRoutes = require('./auth');
@@ -165,16 +165,16 @@ module.exports = router;
 `;
 
 fs.writeFileSync(apiPath, apiContent);
-console.log('✅ api.js исправлен');
+
 
 // Обновление .env для локальной разработки
-console.log('✅ Обновляем .env для локальной разработки...');
+
 
 const envContent = `# Database
 DATABASE_URL="postgresql://postgres:password@localhost:5432/vhm24?schema=public"
 
 # JWT Secret
-JWT_SECRET="vhm24-super-secret-key-2024"
+JWT_SECRET=process.env.API_KEY_191 || "vhm24-super-secret-key-2024"
 
 # Telegram Bot
 TELEGRAM_BOT_TOKEN="7372348138:AAGOKJhJKJHJKJHJKJHJKJHJKJHJKJHJKJH"
@@ -189,7 +189,7 @@ UPLOAD_DIR="uploads"
 MAX_FILE_SIZE="10485760"
 
 # Session
-SESSION_SECRET="vhm24-session-secret"
+SESSION_SECRET=process.env.API_KEY_192 || "vhm24-session-secret"
 
 # CORS
 CORS_ORIGIN="process.env.API_URL,http://localhost:3001"
@@ -200,10 +200,10 @@ LOG_FILE="logs/app.log"
 `;
 
 fs.writeFileSync('.env', envContent);
-console.log('✅ .env обновлен');
+
 
 // Создание простого скрипта запуска без базы данных
-console.log('✅ Создаем скрипт запуска без БД...');
+
 
 const startWithoutDbContent = `const { spawn } = require('child_process');
 const path = require('path');
@@ -232,10 +232,10 @@ backendProcess.on('error', (error) => {
   console.error('❌ Ошибка запуска backend:', error);
 });
 
-console.log('\\n🎉 Система запущена!');
-console.log('🌐 Backend API: process.env.API_URL');
-console.log('🤖 Telegram Bot: Активен');
-console.log('\\n💡 Для остановки нажмите Ctrl+C');
+
+
+
+
 `;
 
 fs.writeFileSync('start-without-db.js', startWithoutDbContent);
@@ -343,18 +343,18 @@ app.use((err, req, res, next) => {
 
 // Запуск сервера
 app.listen(PORT, () => {
-  console.log(\`🚀 VHM24 API запущен на порту \${PORT}\`);
-  console.log(\`🌐 http://localhost:\${PORT}\`);
+  
+  
 });
 `;
 
 fs.writeFileSync('backend/src/index-no-db.js', indexNoDbContent);
 
-console.log('\n🎉 Все критические ошибки исправлены!');
-console.log('\n📋 Что было исправлено:');
-console.log('• Синтаксические ошибки в auth.js');
-console.log('• Исправлен api.js');
-console.log('• Обновлен .env файл');
-console.log('• Создан скрипт запуска без БД');
-console.log('• Создан backend без Prisma');
-console.log('\n💡 Теперь можно запустить: node start-without-db.js');
+
+
+
+
+
+
+
+

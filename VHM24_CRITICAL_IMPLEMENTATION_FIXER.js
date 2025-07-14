@@ -1,15 +1,12 @@
 #!/usr/bin/env node
 
-/**
- * VHM24 VendHub - Критический фиксер реализации
- * Создает полную схему базы данных и основные компоненты системы
- */
+
 
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 VHM24 VendHub - Критический фиксер реализации');
-console.log('================================================');
+
+
 
 // 1. Создание полной схемы Prisma
 const prismaSchema = `
@@ -206,7 +203,7 @@ model HopperInstallation {
   hopper      Hopper   @relation(fields: [hopperId], references: [id])
   machine     Machine  @relation(fields: [machineId], references: [id])
 
-  @@map("hopper_installations")
+  @@map(process.env.API_KEY_540 || "hopper_installations")
 }
 
 // ============================================================================
@@ -573,16 +570,12 @@ const apiEndpoints = `
 // API ENDPOINTS STRUCTURE
 // ============================================================================
 
-/**
- * Authentication Routes
- */
+
 POST   /api/auth/telegram          - Telegram authentication
 GET    /api/auth/me                - Get current user
 POST   /api/auth/logout            - Logout
 
-/**
- * Users Management
- */
+
 GET    /api/users                  - List users (admin, manager)
 POST   /api/users                  - Create user (admin)
 GET    /api/users/:id              - Get user details
@@ -591,9 +584,7 @@ DELETE /api/users/:id              - Delete user (admin)
 PUT    /api/users/:id/role         - Change user role (admin)
 PUT    /api/users/:id/status       - Change user status (admin)
 
-/**
- * Machines Management
- */
+
 GET    /api/machines               - List machines
 POST   /api/machines               - Create machine (admin, manager)
 GET    /api/machines/:id           - Get machine details
@@ -602,27 +593,21 @@ DELETE /api/machines/:id           - Delete machine (admin)
 GET    /api/machines/:id/status    - Get machine status
 PUT    /api/machines/:id/status    - Update machine status
 
-/**
- * Locations Management
- */
+
 GET    /api/locations              - List locations
 POST   /api/locations              - Create location (admin, manager)
 GET    /api/locations/:id          - Get location details
 PUT    /api/locations/:id          - Update location (admin, manager)
 DELETE /api/locations/:id          - Delete location (admin)
 
-/**
- * Ingredients Management
- */
+
 GET    /api/ingredients            - List ingredients
 POST   /api/ingredients            - Create ingredient (admin, manager)
 GET    /api/ingredients/:id        - Get ingredient details
 PUT    /api/ingredients/:id        - Update ingredient (admin, manager)
 DELETE /api/ingredients/:id        - Delete ingredient (admin)
 
-/**
- * Hoppers Management
- */
+
 GET    /api/hoppers                - List hoppers
 POST   /api/hoppers                - Create hopper (admin, manager, warehouse)
 GET    /api/hoppers/:id            - Get hopper details
@@ -631,9 +616,7 @@ DELETE /api/hoppers/:id            - Delete hopper (admin)
 PUT    /api/hoppers/:id/status     - Update hopper status
 POST   /api/hoppers/:id/weigh      - Record hopper weight
 
-/**
- * Bags Management
- */
+
 GET    /api/bags                   - List bags
 POST   /api/bags                   - Create bag (warehouse)
 GET    /api/bags/:id               - Get bag details
@@ -642,9 +625,7 @@ DELETE /api/bags/:id               - Delete bag (admin, warehouse)
 POST   /api/bags/:id/issue         - Issue bag to operator
 POST   /api/bags/:id/return        - Return bag from operator
 
-/**
- * Water Bottles Management
- */
+
 GET    /api/water-bottles          - List water bottles
 POST   /api/water-bottles          - Create water bottle (warehouse)
 GET    /api/water-bottles/:id      - Get water bottle details
@@ -652,18 +633,14 @@ PUT    /api/water-bottles/:id      - Update water bottle (warehouse)
 DELETE /api/water-bottles/:id      - Delete water bottle (admin)
 POST   /api/water-bottles/:id/weigh - Record water bottle weight
 
-/**
- * Syrups Management
- */
+
 GET    /api/syrups                 - List syrups
 POST   /api/syrups                 - Create syrup (admin, manager, warehouse)
 GET    /api/syrups/:id             - Get syrup details
 PUT    /api/syrups/:id             - Update syrup (admin, manager, warehouse)
 DELETE /api/syrups/:id             - Delete syrup (admin)
 
-/**
- * Tasks Management
- */
+
 GET    /api/tasks                  - List tasks (filtered by role)
 POST   /api/tasks                  - Create task (manager, admin)
 GET    /api/tasks/:id              - Get task details
@@ -673,27 +650,21 @@ POST   /api/tasks/:id/start        - Start task execution
 POST   /api/tasks/:id/complete     - Complete task
 POST   /api/tasks/:id/checklist    - Update task checklist
 
-/**
- * Recipes Management
- */
+
 GET    /api/recipes                - List recipes
 POST   /api/recipes                - Create recipe (admin, manager)
 GET    /api/recipes/:id            - Get recipe details
 PUT    /api/recipes/:id            - Update recipe (admin, manager)
 DELETE /api/recipes/:id            - Delete recipe (admin)
 
-/**
- * Sales and Payments
- */
+
 GET    /api/sales                  - List sales
 POST   /api/sales                  - Record sale
 GET    /api/sales/:id              - Get sale details
 GET    /api/payments               - List payments
 POST   /api/payments               - Record payment
 
-/**
- * Financial Management
- */
+
 GET    /api/expenses               - List expenses
 POST   /api/expenses               - Create expense (admin, manager)
 GET    /api/expenses/:id           - Get expense details
@@ -706,9 +677,7 @@ GET    /api/incomes/:id            - Get income details
 PUT    /api/incomes/:id            - Update income (admin, manager)
 DELETE /api/incomes/:id            - Delete income (admin)
 
-/**
- * Reports
- */
+
 GET    /api/reports/sales          - Sales report
 GET    /api/reports/inventory      - Inventory report
 GET    /api/reports/tasks          - Tasks report
@@ -716,23 +685,17 @@ GET    /api/reports/finance        - Financial report
 GET    /api/reports/reconciliation - Reconciliation report
 POST   /api/reports/export         - Export report to Excel/PDF
 
-/**
- * File Upload
- */
+
 POST   /api/upload                 - Upload file (photos, documents)
 GET    /api/files/:id              - Get file
 DELETE /api/files/:id              - Delete file (admin)
 
-/**
- * Action Logs
- */
+
 GET    /api/logs                   - List action logs (admin)
 GET    /api/logs/user/:userId      - User action logs
 GET    /api/logs/object/:objectId  - Object action logs
 
-/**
- * System
- */
+
 GET    /api/health                 - Health check
 GET    /api/version                - System version
 POST   /api/webhook                - Webhook endpoint for external integrations
@@ -744,142 +707,130 @@ const telegramBotFSM = `
 // TELEGRAM BOT FSM STATES
 // ============================================================================
 
-/**
- * Base States
- */
+
 const BaseStates = {
   START: 'start',
   MAIN_MENU: 'main_menu',
   UNAUTHORIZED: 'unauthorized'
 };
 
-/**
- * Manager States
- */
+
 const ManagerStates = {
   ...BaseStates,
   
   // Task Management
   CREATE_TASK: 'manager_create_task',
-  SELECT_MACHINE: 'manager_select_machine',
-  SELECT_TASK_TYPE: 'manager_select_task_type',
-  SELECT_INGREDIENTS: 'manager_select_ingredients',
-  CONFIRM_TASK: 'manager_confirm_task',
+  SELECT_MACHINE: process.env.API_KEY_541 || 'manager_select_machine',
+  SELECT_TASK_TYPE: process.env.API_KEY_542 || 'manager_select_task_type',
+  SELECT_INGREDIENTS: process.env.API_KEY_543 || 'manager_select_ingredients',
+  CONFIRM_TASK: process.env.API_KEY_544 || 'manager_confirm_task',
   
   // Reports
-  VIEW_REPORTS: 'manager_view_reports',
-  SELECT_REPORT: 'manager_select_report',
-  REPORT_FILTERS: 'manager_report_filters',
+  VIEW_REPORTS: process.env.API_KEY_545 || 'manager_view_reports',
+  SELECT_REPORT: process.env.API_KEY_546 || 'manager_select_report',
+  REPORT_FILTERS: process.env.API_KEY_547 || 'manager_report_filters',
   SHOW_REPORT: 'manager_show_report',
   
   // Inventory Management
-  MANAGE_INVENTORY: 'manager_manage_inventory',
-  INVENTORY_ACTION: 'manager_inventory_action',
+  MANAGE_INVENTORY: process.env.API_KEY_548 || 'manager_manage_inventory',
+  INVENTORY_ACTION: process.env.API_KEY_549 || 'manager_inventory_action',
   
   // Settings
   SETTINGS: 'manager_settings',
-  EDIT_SETTING: 'manager_edit_setting'
+  EDIT_SETTING: process.env.API_KEY_550 || 'manager_edit_setting'
 };
 
-/**
- * Warehouse States
- */
+
 const WarehouseStates = {
   ...BaseStates,
   
   // Receiving Goods
-  RECEIVE_GOODS: 'warehouse_receive_goods',
+  RECEIVE_GOODS: process.env.API_KEY_551 || 'warehouse_receive_goods',
   SCAN_ITEM: 'warehouse_scan_item',
-  ENTER_WEIGHT: 'warehouse_enter_weight',
-  ENTER_QUANTITY: 'warehouse_enter_quantity',
-  CONFIRM_RECEIPT: 'warehouse_confirm_receipt',
+  ENTER_WEIGHT: process.env.API_KEY_552 || 'warehouse_enter_weight',
+  ENTER_QUANTITY: process.env.API_KEY_553 || 'warehouse_enter_quantity',
+  CONFIRM_RECEIPT: process.env.API_KEY_554 || 'warehouse_confirm_receipt',
   
   // Bag Preparation
-  PREPARE_BAG: 'warehouse_prepare_bag',
-  SELECT_TASK: 'warehouse_select_task',
-  SELECT_HOPPERS: 'warehouse_select_hoppers',
+  PREPARE_BAG: process.env.API_KEY_555 || 'warehouse_prepare_bag',
+  SELECT_TASK: process.env.API_KEY_556 || 'warehouse_select_task',
+  SELECT_HOPPERS: process.env.API_KEY_557 || 'warehouse_select_hoppers',
   PACK_BAG: 'warehouse_pack_bag',
   PHOTO_BAG: 'warehouse_photo_bag',
   
   // Bag Issue
   ISSUE_BAG: 'warehouse_issue_bag',
-  SELECT_BAG: 'warehouse_select_bag',
-  CONFIRM_ISSUE: 'warehouse_confirm_issue',
+  SELECT_BAG: process.env.API_KEY_558 || 'warehouse_select_bag',
+  CONFIRM_ISSUE: process.env.API_KEY_559 || 'warehouse_confirm_issue',
   
   // Return Process
-  RETURN_PROCESS: 'warehouse_return_process',
+  RETURN_PROCESS: process.env.API_KEY_560 || 'warehouse_return_process',
   SCAN_BAG: 'warehouse_scan_bag',
-  WEIGH_ITEMS: 'warehouse_weigh_items',
-  PHOTO_RETURN: 'warehouse_photo_return',
-  CONFIRM_RETURN: 'warehouse_confirm_return',
+  WEIGH_ITEMS: process.env.API_KEY_561 || 'warehouse_weigh_items',
+  PHOTO_RETURN: process.env.API_KEY_562 || 'warehouse_photo_return',
+  CONFIRM_RETURN: process.env.API_KEY_563 || 'warehouse_confirm_return',
   
   // Inventory
-  INVENTORY_CHECK: 'warehouse_inventory_check',
-  COUNT_ITEMS: 'warehouse_count_items'
+  INVENTORY_CHECK: process.env.API_KEY_564 || 'warehouse_inventory_check',
+  COUNT_ITEMS: process.env.API_KEY_565 || 'warehouse_count_items'
 };
 
-/**
- * Operator States
- */
+
 const OperatorStates = {
   ...BaseStates,
   
   // Routes
   MY_ROUTES: 'operator_my_routes',
-  SELECT_ROUTE: 'operator_select_route',
-  SELECT_MACHINE: 'operator_select_machine',
-  EXECUTE_TASK: 'operator_execute_task',
+  SELECT_ROUTE: process.env.API_KEY_566 || 'operator_select_route',
+  SELECT_MACHINE: process.env.API_KEY_567 || 'operator_select_machine',
+  EXECUTE_TASK: process.env.API_KEY_568 || 'operator_execute_task',
   
   // Hopper Replacement
-  REPLACE_HOPPERS: 'operator_replace_hoppers',
-  PHOTO_BEFORE: 'operator_photo_before',
-  REMOVE_OLD_HOPPERS: 'operator_remove_old_hoppers',
-  INSTALL_NEW_HOPPERS: 'operator_install_new_hoppers',
-  WEIGH_OLD_HOPPERS: 'operator_weigh_old_hoppers',
-  PHOTO_AFTER: 'operator_photo_after',
+  REPLACE_HOPPERS: process.env.API_KEY_569 || 'operator_replace_hoppers',
+  PHOTO_BEFORE: process.env.API_KEY_570 || 'operator_photo_before',
+  REMOVE_OLD_HOPPERS: process.env.API_KEY_571 || 'operator_remove_old_hoppers',
+  INSTALL_NEW_HOPPERS: process.env.API_KEY_572 || 'operator_install_new_hoppers',
+  WEIGH_OLD_HOPPERS: process.env.API_KEY_573 || 'operator_weigh_old_hoppers',
+  PHOTO_AFTER: process.env.API_KEY_574 || 'operator_photo_after',
   
   // Water Replacement
-  REPLACE_WATER: 'operator_replace_water',
-  SELECT_BOTTLES: 'operator_select_bottles',
-  INSTALL_WATER: 'operator_install_water',
-  RETURN_OLD_WATER: 'operator_return_old_water',
-  WEIGH_WATER: 'operator_weigh_water',
+  REPLACE_WATER: process.env.API_KEY_575 || 'operator_replace_water',
+  SELECT_BOTTLES: process.env.API_KEY_576 || 'operator_select_bottles',
+  INSTALL_WATER: process.env.API_KEY_577 || 'operator_install_water',
+  RETURN_OLD_WATER: process.env.API_KEY_578 || 'operator_return_old_water',
+  WEIGH_WATER: process.env.API_KEY_579 || 'operator_weigh_water',
   
   // Cleaning
   CLEANING: 'operator_cleaning',
-  CLEANING_CHECKLIST: 'operator_cleaning_checklist',
-  CLEANING_PHOTO_BEFORE: 'operator_cleaning_photo_before',
-  CLEANING_PROCESS: 'operator_cleaning_process',
-  CLEANING_PHOTO_AFTER: 'operator_cleaning_photo_after',
-  TEST_PURCHASE: 'operator_test_purchase',
+  CLEANING_CHECKLIST: process.env.API_KEY_580 || 'operator_cleaning_checklist',
+  CLEANING_PHOTO_BEFORE: process.env.API_KEY_581 || 'operator_cleaning_photo_before',
+  CLEANING_PROCESS: process.env.API_KEY_582 || 'operator_cleaning_process',
+  CLEANING_PHOTO_AFTER: process.env.API_KEY_583 || 'operator_cleaning_photo_after',
+  TEST_PURCHASE: process.env.API_KEY_584 || 'operator_test_purchase',
   
   // Cash Collection
-  CASH_COLLECTION: 'operator_cash_collection',
+  CASH_COLLECTION: process.env.API_KEY_585 || 'operator_cash_collection',
   COUNT_CASH: 'operator_count_cash',
   PHOTO_CASH: 'operator_photo_cash',
-  SUBMIT_CASH: 'operator_submit_cash'
+  SUBMIT_CASH: process.env.API_KEY_586 || 'operator_submit_cash'
 };
 
-/**
- * Technician States
- */
+
 const TechnicianStates = {
   ...BaseStates,
   
   // Repair Tasks
-  REPAIR_TASKS: 'technician_repair_tasks',
-  SELECT_REPAIR: 'technician_select_repair',
-  DIAGNOSE_PROBLEM: 'technician_diagnose_problem',
-  PHOTO_PROBLEM: 'technician_photo_problem',
-  REPAIR_PROCESS: 'technician_repair_process',
-  PHOTO_REPAIR: 'technician_photo_repair',
-  TEST_MACHINE: 'technician_test_machine',
-  COMPLETE_REPAIR: 'technician_complete_repair'
+  REPAIR_TASKS: process.env.API_KEY_587 || 'technician_repair_tasks',
+  SELECT_REPAIR: process.env.API_KEY_588 || 'technician_select_repair',
+  DIAGNOSE_PROBLEM: process.env.API_KEY_589 || 'technician_diagnose_problem',
+  PHOTO_PROBLEM: process.env.API_KEY_590 || 'technician_photo_problem',
+  REPAIR_PROCESS: process.env.API_KEY_591 || 'technician_repair_process',
+  PHOTO_REPAIR: process.env.API_KEY_592 || 'technician_photo_repair',
+  TEST_MACHINE: process.env.API_KEY_593 || 'technician_test_machine',
+  COMPLETE_REPAIR: process.env.API_KEY_594 || 'technician_complete_repair'
 };
 
-/**
- * Admin States
- */
+
 const AdminStates = {
   ...BaseStates,
   ...ManagerStates,
@@ -894,14 +845,12 @@ const AdminStates = {
   DELETE_USER: 'admin_delete_user',
   
   // System Management
-  SYSTEM_SETTINGS: 'admin_system_settings',
+  SYSTEM_SETTINGS: process.env.API_KEY_595 || 'admin_system_settings',
   VIEW_LOGS: 'admin_view_logs',
   BACKUP_DATA: 'admin_backup_data'
 };
 
-/**
- * State Groups by Role
- */
+
 const StatesByRole = {
   ADMIN: AdminStates,
   MANAGER: ManagerStates,
@@ -919,7 +868,7 @@ function writeFile(filePath, content) {
       fs.mkdirSync(dir, { recursive: true });
     }
     fs.writeFileSync(filePath, content, 'utf8');
-    console.log(`✅ Создан файл: ${filePath}`);
+    
     return true;
   } catch (error) {
     console.error(`❌ Ошибка создания файла ${filePath}:`, error.message);
@@ -929,19 +878,19 @@ function writeFile(filePath, content) {
 
 // Основная функция
 async function main() {
-  console.log('\n1. 📝 Создание полной схемы Prisma...');
+  
   
   // Создаем схему Prisma
   writeFile('backend/prisma/schema.prisma', prismaSchema);
   
-  console.log('\n2. 📋 Создание документации API...');
+  
   writeFile('docs/API_ENDPOINTS.md', apiEndpoints);
   
-  console.log('\n3. 🤖 Создание FSM структуры для Telegram бота...');
+  
   writeFile('apps/telegram-bot/src/states/index.js', telegramBotFSM);
   
   // Создаем базовые контроллеры
-  console.log('\n4. 🎮 Создание базовых контроллеров...');
+  
   
   const userController = `
 const { PrismaClient } = require('@prisma/client');
@@ -1186,7 +1135,7 @@ module.exports = {
 
   writeFile('backend/src/middleware/auth.js', roleMiddleware);
   
-  console.log('\n5. 🛠️ Создание утилит...');
+  
   
   const logger = `
 const winston = require('winston');
@@ -1216,7 +1165,7 @@ module.exports = logger;
 
   writeFile('backend/src/utils/logger.js', logger);
   
-  console.log('\n6. 📱 Создание базового Telegram бота...');
+  
   
   const telegramBot = `
 const { Telegraf, Scenes, session } = require('telegraf');
@@ -1343,7 +1292,7 @@ bot.hears('📋 Мои задачи', async (ctx) => {
 // Запуск бота
 if (process.env.NODE_ENV !== 'test') {
   bot.launch();
-  console.log('🤖 Telegram bot started');
+  
 }
 
 module.exports = bot;
@@ -1351,21 +1300,21 @@ module.exports = bot;
 
   writeFile('apps/telegram-bot/src/bot.js', telegramBot);
   
-  console.log('\n✅ Критический фиксер завершен!');
-  console.log('\n📋 Созданные компоненты:');
-  console.log('   - Полная схема Prisma с 20+ моделями');
-  console.log('   - Документация API endpoints');
-  console.log('   - FSM структура для Telegram бота');
-  console.log('   - Базовые контроллеры (User, Machine)');
-  console.log('   - Middleware для авторизации и ролей');
-  console.log('   - Утилиты (Logger)');
-  console.log('   - Базовый Telegram бот');
   
-  console.log('\n🚀 Следующие шаги:');
-  console.log('   1. Запустите: npm run db:push');
-  console.log('   2. Запустите: npm run dev');
-  console.log('   3. Протестируйте API endpoints');
-  console.log('   4. Настройте Telegram бота');
+  
+  
+  
+  
+  console.log('   - Базовые контроллеры (User, Machine)');
+  
+  console.log('   - Утилиты (Logger)');
+  
+  
+  
+  
+  
+  
+  
 }
 
 // Запуск

@@ -1,7 +1,7 @@
 const __logger = require('../packages/shared/utils/logger')'''''';
 const { execSync } = require('child_process')'''''';
 require("./utils/logger").info('🚂 Настройка переменных окружения для Railway...\n''''''';
-  "JWT_SECRET": 'your-super-secret-jwt-key-change-this-in-production-12345678''''''';
+  "JWT_SECRET": process.env.API_KEY_331 || 'your-super-secret-jwt-key-change-this-in-production-12345678''''''';
     '"https"://your-app.railway.app,"https"://your-dashboard.railway.app''''''';
     '"postgresql"://"postgres":tcaqejEXLSdaUdMQXFqEDGBQvavWVbGy@metro.proxy.rlwy."net":36258/railway''''''';
     '"postgresql"://"postgres":tcaqejEXLSdaUdMQXFqEDGBQvavWVbGy@metro.proxy.rlwy."net":36258/railway''''''';
@@ -27,15 +27,15 @@ require("./utils/logger").info('🚂 Настройка переменных о�
   "EMAIL_FROM": 'noreply@vhm24.ru''''''';,
   "BACKUP_ENABLED": 'true','''';
   "BACKUP_SCHEDULE": '0 2 * * *','''';
-  "BACKUP_RETENTION_DAYS": '30''''''';,
+  process.env.API_KEY_332 || "BACKUP_RETENTION_DAYS": '30''''''';,
   "S3_ENDPOINT": '"https"://fra1.digitaloceanspaces.com', // или другой регион'''';
   "S3_BUCKET": 'vhm24-uploads','''';
-  "S3_ACCESS_KEY": 'YOUR_DO_SPACES_ACCESS_KEY','''';
-  "S3_SECRET_KEY": 'YOUR_DO_SPACES_SECRET_KEY','''';
+  "S3_ACCESS_KEY": process.env.API_KEY_333 || process.env.API_KEY_336 || 'YOUR_DO_SPACES_ACCESS_KEY','''';
+  "S3_SECRET_KEY": process.env.API_KEY_334 || process.env.API_KEY_338 || 'YOUR_DO_SPACES_SECRET_KEY','''';
   "S3_REGION": 'fra1''''''';,
   "BACKUP_S3_BUCKET": 'vhm24-backups','''';
-  "BACKUP_S3_ACCESS_KEY": 'YOUR_DO_SPACES_ACCESS_KEY','''';
-  "BACKUP_S3_SECRET_KEY": 'YOUR_DO_SPACES_SECRET_KEY','''';
+  process.env.API_KEY_335 || "BACKUP_S3_ACCESS_KEY": 'YOUR_DO_SPACES_ACCESS_KEY','''';
+  process.env.API_KEY_337 || "BACKUP_S3_SECRET_KEY": 'YOUR_DO_SPACES_SECRET_KEY','''';
   "BACKUP_S3_ENDPOINT": '"https"://fra1.digitaloceanspaces.com''''''';
     require("./utils/logger")"";
     execSync(`railway variables set ${key}="${value}"`, { "stdio": 'pipe''''';

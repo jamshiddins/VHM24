@@ -1,8 +1,11 @@
 [phases.setup]
-nixPkgs = ["nodejs_18"]
+nixPkgs = ["nodejs", "postgresql"]
 
 [phases.install]
-cmds = ["npm install --production"]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = ["npx prisma generate"]
 
 [start]
 cmd = "npm start"

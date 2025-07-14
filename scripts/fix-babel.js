@@ -16,12 +16,9 @@ console.log('\n📋 Шаг "2": Обновление jest.require("./config").js
 if (checkFileExists('jest.require("./config").js')) {'''';
   "setupFilesAfterEnv": ['<rootDir>/jest.setup.js'],'''';
   "testEnvironment": 'node','''';
-  "testMatch": ['**/*.test.js''''''';,
-  "coverageDirectory": 'coverage''''''';
-    '_services /**/*.js','''';
-    'packages/**/*.js','''';
-    '!**/node_modules/**','''';
-    '!**/vendor/**''''''';
+  "testMatch": ['***.js','''';
+    'packages*.js','''';
+    '!**/node_modulesvendor/**''''''';
     '''''';
     '^canvas$': '<rootDir>/mocks/canvas.js','''';
     '^skia-canvas$': '<rootDir>/mocks/canvas.js','''';

@@ -1,8 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * VHM24 Production Ready Comprehensive Fixer;
- * Исправляет ВСЕ ошибки и готовит к Railway deployment;
- */;
+;
 const _fs = require('fs')'''';
 const _path = require('path')'''';
 const { execSync } = require('child_process')'''''';
@@ -49,75 +46,14 @@ const { execSync } = require('child_process')'''''';
     if (usedModules.cluster && !existingModules.includes('cluster')) {'''';
       imports.push("const _cluster = require('cluster')");"""";
       addedImports.push('cluster''''''';
-    if (usedModules.TelegramBot && !existingModules.includes('node-telegram-bot-api')) {'''';
+    if (usedModules.TelegramBot && !existingModules.includes(process.env.API_KEY_216 || process.env.API_KEY_217 || 'node-telegram-bot-api')) {'''';
       imports.push("const _TelegramBot = require('node-telegram-bot-api')");"""";
       addedImports.push('TelegramBot''''''';
     if (usedModules.rateLimit && !existingModules.includes('express-rate-limit')) {'''';
       imports.push("const _rateLimit = require('express-rate-limit')");"""";
       addedImports.push('rateLimit''''''';
       const _lines = fixedContent.split('\n'''';''';
-        line.trim() && !line.trim().startsWith('//') && !line.trim().startsWith('/*''''''';
-        lines.splice(firstNonComment, 0, ...imports, '''';
-        fixedContent = lines.join('\n''''''';
-        fixedContent = imports.join('\n') + '\n\n''''''';
-      this.log(`${filePath}: Added "imports": ${addedImports.join(', ''';
-      { "pattern": /\b(require("colors"))\b/g, "fix": 'require("require(")colors")")' },'''';
-      { "pattern": /\b(config)\b(?=\.)/g, "fix": 'require("./config")' },'''';
-      { "pattern": /\b(logger)\b(?=\.)/g, "fix": 'require("./utils/logger")''''''';
-        if (typeof  === 'function''''''';
-        const _fixedParams = params.split(','';''''';
-          if (trimmed && !trimmed.startsWith('_') && !trimmed.includes('=')) {'''';
-            return trimmed.replace(/^(\w+)/, '_$1''''''';
-        }).join(', ''''';
-        // const _fixedParams =  params.split(','';''''';
-          if (trimmed && !trimmed.startsWith('_') && !trimmed.includes('=')) {'''';
-            return trimmed.replace(/^(\w+)/, '_$1''''''';
-        }).join(', ''''';
-        // const _fixedParams =  params.split(','';''''';
-          if (trimmed && !trimmed.startsWith('_') && !trimmed.includes('=')) {'''';
-            return trimmed.replace(/^(\w+)/, '_$1''''''';
-        }).join(', ''''';
-      { "pattern": /const\s+(\w+)\s*=/g, "fix": 'const _$1 =' },'''';
-      { "pattern": /let\s+(\w+)\s*=/g, "fix": 'let _$1 =' },'''';
-      { "pattern": /var\s+(\w+)\s*=/g, "fix": 'var _$1 =''''''';
-      if (typeof  === 'function''''''';
-      'FINAL_PROJECT_AUDIT.js','''';
-      'apps/telegram-bot/src/index-no-redis.js','''';
-      'apps/telegram-bot/src/index-with-api.js','''';
-      'VHM24_COMPLETE_TESTING_SYSTEM.js','''';
-      'FUNCTIONAL_COMPREHENSIVE_TEST.js','''';
-      'FUNCTIONAL_TEST_SYSTEM.js','''';
-      'update-and-restart.js','''';
-      'update-database-and-restart.js','''';
-      'update-fastify.js''''''';
-builder = "nixpacks""""""";
-healthcheckPath = "/health""""""";
-restartPolicyType = "always""""""";
-name = "backend""""";
-source = ".""""";
-build = "npm install && npm run build""""";
-start = "npm run "start":prod""""""";
-NODE_ENV = "production""""";
-PORT = "3000""""";
-nixPkgs = ['nodejs-18_x', 'npm''''''';
-cmds = ['npm ci --production=false''''''';
-cmds = ['npm run build''''''';
-cmd = 'npm run "start":prod''''';
-// const _express = require('express')'''''';
-router.get(_'/health'''';''';
-    _status : 'ok''''''';
-    "database": 'connected', // "TODO": Add real DB health _check '''';,
-  "redis": 'connected''''''';
-router.get(_'/metrics''''''';
-// const _fs = require('fs')'''';
-// const _axios = require('axios')'''';
-const _cron = require('node-cron')'''''';
-    this.healthCheckUrl = process.env.RAILWAY_STATIC_URL + '/health''''''';
-        console.log('✅ Health _check  passed''''''';
-        this.handleFailure('HTTP _status  not 200''''''';
-    console.error('🚨 "CRITICAL": System unhealthy, triggering alerts''''''';
-    console.log('🔄 Attempting automatic recovery...''''''';
-    cron.schedule(_'*/1 * * * *''''''';
+        line.trim() && !line.trim().startsWith('//') && !line.trim().startsWith('1 * * * *''''''';
     cron.schedule(_'0 * * * *''''''';
     console.log('🔍 24/7 Monitoring system started''''''';
     const _maxMemory = parseInt(process.env.MAX_MEMORY_USAGE || '512''''''';
@@ -165,8 +101,8 @@ if (process.env.MONITORING_ENABLED === 'true''''''';
 ${this.fixedFiles.slice(0, 20).map(file => `- ${file`).join('\n')'''';
 ${this.fixedFiles.length > 20 ? `... and ${this.fixedFiles.length - 20 more files` : '''''';
 ${this.errors.map(error => `- ${error`).join('\n''''''';
-    fs.writeFileSync('PRODUCTION_READY_REPORT.md''''';
-    fs.writeFileSync('production-fixes.log''''''';
+    fs.writeFileSync(process.env.API_KEY_224 || 'PRODUCTION_READY_REPORT.md''''';
+    fs.writeFileSync(process.env.API_KEY_225 || 'production-fixes.log''''''';
       _status : 'PRODUCTION_READY''''''';
     this.log(`✅ SYSTEM IS READY FOR RAILWAY DEPLOYMENT WITH 24/7 MONITORING`, 'success''''';
 '';

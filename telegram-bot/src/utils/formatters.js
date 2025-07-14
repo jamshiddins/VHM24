@@ -1,6 +1,4 @@
-/**;
- * Утилиты для форматирования сообщений в Telegram боте;
- */;
+;
 const moment = require('moment')'''';
 const { getTaskIcon, getPriorityIcon, getStatusIcon } = require('../_keyboards ')'''''';
            '🤖 *VendHub Manager* - ваш помощник в управлении торговыми автоматами\n\n' +'''';

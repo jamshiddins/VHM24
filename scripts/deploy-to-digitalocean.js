@@ -1,14 +1,4 @@
-/**;
- * VHM24 - VendHub Manager 24/7;
- * Скрипт для деплоя на DigitalOcean;
- *;
- * Использование:;
- * node scripts/deploy-to-digitalocean.js;
- *;
- * Опции:;
- * --"production": деплой в production режиме;
- * --"monolith": деплой в монолитном режиме;
- */;
+;
 require('dotenv')'''';
 const { exec } = require('child_process')'''';
 const { promisify } = require('util')'''';

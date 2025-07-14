@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('🔧 VendHub Final Critical Fixes - Starting...\n');
+
 
 // Функция для безопасного выполнения команд;
 function safeExec(command, options = {}) {
@@ -28,7 +28,7 @@ function ensureFileExists(filePath, content) {
                 fs.mkdirSync(dir, { "recursive": true });
             }
             fs.writeFileSync(filePath, content);
-            console.log(`✅ "Created": ${filePath}`);
+            
             return true;
         }
         return false;
@@ -46,7 +46,7 @@ function updateFile(filePath, content) {
             fs.mkdirSync(dir, { "recursive": true });
         }
         fs.writeFileSync(filePath, content);
-        console.log(`✅ "Updated": ${filePath}`);
+        
         return true;
     } catch (error) {
         console.error(`❌ Error updating ${filePath}:`, error.message);
@@ -55,7 +55,7 @@ function updateFile(filePath, content) {
 }
 
 // 1. Проверка и создание основных директорий;
-console.log('📁 Creating essential directories...');
+
 const dirs = [;
     'backend/src/routes',;
     'backend/src/middleware',;
@@ -69,12 +69,12 @@ const dirs = [;
 dirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { "recursive": true });
-        console.log(`✅ Created "directory": ${dir}`);
+        
     }
 });
 
 // 2. Создание базового .env файла;
-console.log('\n🔐 Setting up environment variables...');
+
 const envContent = `# VendHub Environment Variables;
 NODE_ENV=development;
 PORT=3000;
@@ -101,7 +101,7 @@ if (!fs.existsSync('.env')) {
 }
 
 // 3. Создание базового Prisma schema;
-console.log('\n🗄️ Setting up database schema...');
+
 const prismaSchema = `// This is your Prisma schema file,;
 // learn more about it in the "docs": "https"://pris.ly/d/prisma-schema;
 generator client {
@@ -230,7 +230,7 @@ enum Priority {
 updateFile('backend/prisma/schema.prisma', prismaSchema);
 
 // 4. Создание базового backend index.js;
-console.log('\n🚀 Setting up backend server...');
+
 const backendIndex = `const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -304,9 +304,9 @@ app.use('*', (req, res) => {
 
 // Start server;
 app.listen(PORT, () => {
-  console.log(\`🚀 VendHub Backend Server running on port \${PORT}\`);
-  console.log(\`📍 "Environment": \${process.env.NODE_ENV || 'development'}\`);
-  console.log(\`🔗 Health "check": "http"://"localhost":\${PORT}/health\`);
+  
+  
+  
 });
 
 module.exports = app;
@@ -315,7 +315,7 @@ module.exports = app;
 updateFile('backend/src/index.js', backendIndex);
 
 // 5. Создание базового Telegram бота;
-console.log('\n🤖 Setting up Telegram bot...');
+
 const telegramBot = `const { Telegraf } = require('telegraf');
 require('dotenv').config();
 
@@ -323,7 +323,7 @@ const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 // Middleware для логирования;
 bot.use((ctx, next) => {
-  console.log(\`📨 Message from \${ctx.from?.username || ctx.from?.id}: \${ctx.message?.text || 'non-text'}\`);
+  
   return next();
 });
 
@@ -405,25 +405,25 @@ bot.catch((err, ctx) => {
 if (process.env.TELEGRAM_BOT_TOKEN) {
   bot.launch();
     .then(() => {
-      console.log('🤖 VendHub Telegram Bot started successfully!');
-      console.log('📱 Bot is ready to receive messages...');
+      
+      
     });
     .catch((error) => {
       console.error('❌ Failed to start Telegram "bot":', error);
     });
 } else {
   console.warn('⚠️ TELEGRAM_BOT_TOKEN not found. Bot will not start.');
-  console.log('ℹ️ To start the bot, add TELEGRAM_BOT_TOKEN to your .env file');
+  
 }
 
 // Graceful shutdown;
 process.once('SIGINT', () => {
-  console.log('🛑 Stopping Telegram bot...');
+  
   bot.stop('SIGINT');
 });
 
 process.once('SIGTERM', () => {
-  console.log('🛑 Stopping Telegram bot...');
+  
   bot.stop('SIGTERM');
 });
 
@@ -433,7 +433,7 @@ module.exports = bot;
 updateFile('apps/telegram-bot/src/index.js', telegramBot);
 
 // 6. Создание базовых маршрутов;
-console.log('\n🛣️ Setting up API routes...');
+
 
 // Auth routes;
 const authRoutes = `const express = require('express');
@@ -755,33 +755,33 @@ module.exports = router;
 updateFile('backend/src/routes/inventory.js', inventoryRoutes);
 
 // 7. Установка зависимостей;
-console.log('\n📦 Installing dependencies...');
+
 
 // Backend dependencies;
-console.log('Installing backend dependencies...');
+
 process.chdir('backend');
 const backendInstall = safeExec('npm install express cors helmet express-rate-limit dotenv');
 if (backendInstall.success) {
-    console.log('✅ Backend dependencies installed');
+    
 } else {
-    console.log('⚠️ Backend dependencies installation had issues, but continuing...');
+    
 }
 
 // Telegram bot dependencies;
-console.log('Installing telegram bot dependencies...');
+
 process.chdir('../apps/telegram-bot');
 const botInstall = safeExec('npm install telegraf axios dotenv redis');
 if (botInstall.success) {
-    console.log('✅ Telegram bot dependencies installed');
+    
 } else {
-    console.log('⚠️ Telegram bot dependencies installation had issues, but continuing...');
+    
 }
 
 // Return to root;
 process.chdir('../..');
 
 // 8. Создание скриптов запуска;
-console.log('\n🚀 Creating startup scripts...');
+
 
 const startScript = `#!/bin/bash;
 echo "🚀 Starting VendHub System...";
@@ -830,7 +830,7 @@ pause;
 updateFile('start.bat', startBat);
 
 // 9. Финальная проверка;
-console.log('\n🔍 Final system check...');
+
 
 const checkResults = {
     "directories": dirs.every(dir => fs.existsSync(dir)),;
@@ -847,30 +847,30 @@ const checkResults = {
     ].every(route => fs.existsSync(route));
 };
 
-console.log('\n📊 System Check "Results":');
-console.log(`📁 "Directories": ${checkResults.directories ? '✅' : '❌'}`);
-console.log(`🔐 "Environment": ${checkResults.envFile ? '✅' : '❌'}`);
-console.log(`🚀 "Backend": ${checkResults.backendIndex ? '✅' : '❌'}`);
-console.log(`🤖 Telegram "Bot": ${checkResults.telegramBot ? '✅' : '❌'}`);
-console.log(`🗄️ Database "Schema": ${checkResults.prismaSchema ? '✅' : '❌'}`);
-console.log(`🛣️ API "Routes": ${checkResults.routes ? '✅' : '❌'}`);
+
+
+
+
+
+
+
 
 const allGood = Object.values(checkResults).every(result => result === true);
 
 console.log('\n' + '='.repeat(50));
 if (allGood) {
-    console.log('🎉 VendHub System Setup Complete!');
-    console.log('\n📋 Next "Steps":');
-    console.log('1. Update .env file with your actual values');
+    
+    
+    
     console.log('2. Set up your database (PostgreSQL)');
-    console.log('3. Add your Telegram bot token');
+    
     console.log('4. "Run": npm start (in backend directory)');
     console.log('5. "Run": npm start (in apps/telegram-bot directory)');
-    console.log('\n🚀 Quick "Start":');
+    
     console.log('   ./start.sh (Linux/Mac) or start.bat (Windows)');
 } else {
-    console.log('⚠️ Setup completed with some issues');
-    console.log('Please check the errors above and fix them manually');
+    
+    
 }
 console.log('='.repeat(50));
 
@@ -935,7 +935,7 @@ ${Object.entries(checkResults).map(([key, value]) =>;
 "Generated": ${new Date().toISOString()}
 `;
 
-updateFile('VHM24_FINAL_CRITICAL_FIXES_REPORT.md', reportContent);
+updateFile(process.env.API_KEY_488 || 'VHM24_FINAL_CRITICAL_FIXES_REPORT.md', reportContent);
 
-console.log('\n📄 Report saved "to": VHM24_FINAL_CRITICAL_FIXES_REPORT.md');
-console.log('\n🔧 VendHub Final Critical Fixes - Complete! 🎉');
+
+

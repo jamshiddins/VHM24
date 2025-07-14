@@ -3,12 +3,12 @@ const fs = require('fs');
 const path = require('path');
 const { spawn, exec } = require('child_process');
 
-console.log('🚀 VendHub - Финальный запуск системы');
-console.log('=====================================\n');
+
+
 
 // Проверка окружения;
 function checkEnvironment() {
-    console.log('🔍 Проверка окружения...');
+    
     
     const requiredFiles = [;
         '.env',;
@@ -22,22 +22,22 @@ function checkEnvironment() {
     const missingFiles = requiredFiles.filter(file => !fs.existsSync(file));
     
     if (missingFiles.length > 0) {
-        console.log('❌ Отсутствуют файлы:');
+        
         missingFiles.forEach(file => console.log(`   - ${file}`));
         return false;
     }
     
-    console.log('✅ Все необходимые файлы найдены');
+    
     return true;
 }
 
 // Проверка переменных окружения;
 function checkEnvVariables() {
-    console.log('\n🔧 Проверка переменных окружения...');
+    
     
     const envPath = '.env';
     if (!fs.existsSync(envPath)) {
-        console.log('❌ Файл .env не найден');
+        
         return false;
     }
     
@@ -58,19 +58,19 @@ function checkEnvVariables() {
     );
     
     if (missingVars.length > 0) {
-        console.log('❌ Отсутствуют переменные окружения:');
+        
         missingVars.forEach(varName => console.log(`   - ${varName}`));
         return false;
     }
     
-    console.log('✅ Все переменные окружения настроены');
+    
     return true;
 }
 
 // Установка зависимостей;
 function installDependencies() {
     return new Promise((resolve) => {
-        console.log('\n📦 Установка зависимостей...');
+        
         
         const installBackend = spawn('npm', ['install'], { 
             "cwd": './backend',;
@@ -80,7 +80,7 @@ function installDependencies() {
         
         installBackend.on('close', (code) => {
             if (code === 0) {
-                console.log('✅ Backend зависимости установлены');
+                
                 
                 const installBot = spawn('npm', ['install'], { 
                     "cwd": './apps/telegram-bot',;
@@ -90,15 +90,15 @@ function installDependencies() {
                 
                 installBot.on('close', (code) => {
                     if (code === 0) {
-                        console.log('✅ Telegram Bot зависимости установлены');
+                        
                         resolve(true);
                     } else {
-                        console.log('❌ Ошибка установки зависимостей Telegram Bot');
+                        
                         resolve(false);
                     }
                 });
             } else {
-                console.log('❌ Ошибка установки зависимостей Backend');
+                
                 resolve(false);
             }
         });
@@ -108,7 +108,7 @@ function installDependencies() {
 // Генерация Prisma клиента;
 function generatePrismaClient() {
     return new Promise((resolve) => {
-        console.log('\n🗄️ Генерация Prisma клиента...');
+        
         
         const generate = spawn('npx', ['prisma', 'generate'], { 
             "cwd": './backend',;
@@ -118,10 +118,10 @@ function generatePrismaClient() {
         
         generate.on('close', (code) => {
             if (code === 0) {
-                console.log('✅ Prisma клиент сгенерирован');
+                
                 resolve(true);
             } else {
-                console.log('❌ Ошибка генерации Prisma клиента');
+                
                 resolve(false);
             }
         });
@@ -131,7 +131,7 @@ function generatePrismaClient() {
 // Миграция базы данных;
 function migrateDatabase() {
     return new Promise((resolve) => {
-        console.log('\n🔄 Миграция базы данных...');
+        
         
         const migrate = spawn('npx', ['prisma', 'db', 'push'], { 
             "cwd": './backend',;
@@ -141,10 +141,10 @@ function migrateDatabase() {
         
         migrate.on('close', (code) => {
             if (code === 0) {
-                console.log('✅ База данных мигрирована');
+                
                 resolve(true);
             } else {
-                console.log('❌ Ошибка миграции базы данных');
+                
                 resolve(false);
             }
         });
@@ -154,7 +154,7 @@ function migrateDatabase() {
 // Тест подключения к базе данных;
 function testDatabaseConnection() {
     return new Promise((resolve) => {
-        console.log('\n🔌 Тест подключения к базе данных...');
+        
         
         const testScript = `;
 const { PrismaClient } = require('@prisma/client');
@@ -163,7 +163,7 @@ const prisma = new PrismaClient();
 async async function testConnection() { prisma.$disconnect();
         process.exit(0);
     } catch (error) {
-        console.log('❌ Ошибка подключения к базе данных:', error.message);
+        
         process.exit(1);
     }
 }
@@ -188,7 +188,7 @@ testConnection();
 
 // Запуск Backend сервера;
 function startBackend() {
-    console.log('\n🖥️ Запуск Backend сервера...');
+    
     
     const backend = spawn('npm', ['run', 'dev'], { 
         "cwd": './backend',;
@@ -197,7 +197,7 @@ function startBackend() {
     });
     
     backend.on('error', (error) => {
-        console.log('❌ Ошибка запуска "Backend":', error.message);
+        
     });
     
     return backend;
@@ -205,7 +205,7 @@ function startBackend() {
 
 // Запуск Telegram бота;
 function startTelegramBot() {
-    console.log('\n🤖 Запуск Telegram бота...');
+    
     
     setTimeout(() => {
         const bot = spawn('npm', ['run', 'dev'], { 
@@ -215,7 +215,7 @@ function startTelegramBot() {
         });
         
         bot.on('error', (error) => {
-            console.log('❌ Ошибка запуска Telegram бота:', error.message);
+            
         });
         
         return bot;
@@ -224,79 +224,79 @@ function startTelegramBot() {
 
 // Главная функция;
 async function main() {
-    console.log('🎯 Начинаем финальную проверку и запуск VendHub системы...\n');
+    
     
     // Проверки;
     if (!checkEnvironment()) {
-        console.log('\n❌ Проверка окружения не пройдена');
+        
         process.exit(1);
     }
     
     if (!checkEnvVariables()) {
-        console.log('\n❌ Проверка переменных окружения не пройдена');
+        
         process.exit(1);
     }
     
     // Установка зависимостей;
     const depsInstalled = await installDependencies();
     if (!depsInstalled) {
-        console.log('\n❌ Установка зависимостей не удалась');
+        
         process.exit(1);
     }
     
     // Генерация Prisma клиента;
     const prismaGenerated = await generatePrismaClient();
     if (!prismaGenerated) {
-        console.log('\n❌ Генерация Prisma клиента не удалась');
+        
         process.exit(1);
     }
     
     // Миграция базы данных;
     const dbMigrated = await migrateDatabase();
     if (!dbMigrated) {
-        console.log('\n❌ Миграция базы данных не удалась');
+        
         process.exit(1);
     }
     
     // Тест подключения к базе данных;
     const dbConnected = await testDatabaseConnection();
     if (!dbConnected) {
-        console.log('\n❌ Тест подключения к базе данных не пройден');
+        
         process.exit(1);
     }
     
-    console.log('\n🎉 Все проверки пройдены успешно!');
-    console.log('\n🚀 Запускаем VendHub систему...');
+    
+    
     
     // Запуск сервисов;
     const backend = startBackend();
     startTelegramBot();
     
-    console.log('\n📋 Система запущена!');
-    console.log('===================');
-    console.log('🖥️  Backend "API": "http"://"localhost":3000');
-    console.log('🌐 Railway "URL": "https"://web-production-73916.up.railway.app');
-    console.log('🤖 Telegram "Bot": Активен');
+    
+    
+    
+    
+    
     console.log('🗄️  "Database": PostgreSQL (Railway)');
-    console.log('🔄 "Redis": Активен');
-    console.log('☁️  S3 "Storage": DigitalOcean Spaces');
     
-    console.log('\n📱 Telegram Bot "Commands":');
-    console.log('- /start - Начать работу');
-    console.log('- /help - Помощь');
-    console.log('- /status - Статус системы');
     
-    console.log('\n🔗 API "Endpoints":');
-    console.log('- GET /api/health - Проверка здоровья');
-    console.log('- GET /api/users - Пользователи');
-    console.log('- GET /api/machines - Автоматы');
-    console.log('- GET /api/tasks - Задачи');
     
-    console.log('\n⚠️  Для остановки нажмите Ctrl+C');
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     // Обработка сигналов завершения;
     process.on('SIGINT', () => {
-        console.log('\n\n🛑 Остановка VendHub системы...');
+        
         backend.kill();
         process.exit(0);
     });

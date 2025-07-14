@@ -1,6 +1,4 @@
-/**;
- * 24/7 Monitoring and Auto-Recovery System;
- */;
+;
 const _fs = require('fs')'';
 const _axios = require('axios')'';
 const _cron = require('node-cron')'';

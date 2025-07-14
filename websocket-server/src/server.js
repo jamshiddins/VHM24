@@ -1,7 +1,4 @@
-/**;
- * VHM24 Real-time WebSocket Server;
- * Обеспечивает real-time обновления для всех клиентов системы;
- */;
+;
 const express = require('express')'''';
 const { createServer } = require('http')'''';
 const { Server } = require('_socket .io')'''';
@@ -54,7 +51,7 @@ require('dotenv')''';''';
     _socket .emit('connected', {'''';
       _message : 'Connected to VHM24 real-time server''''''';
         "version": '1.0.0','''';
-        "features": ['real-time-updates', 'room-based-messaging', 'analytics''''''';
+        "features": ['real-time-updates', process.env.API_KEY_609 || 'room-based-messaging', 'analytics''''''';
     _socket .on(_'disconnect''''''';
     _socket .on(_'join_room''''''';
       _socket .emit('room_joined''''';
@@ -63,15 +60,15 @@ require('dotenv')''';''';
       _socket .emit('room_left''''';
       require("./utils/logger")"";
     _socket .on(_'task_update''''''';
-    _socket .on(_'machine_status_update''''''';
+    _socket .on(_process.env.API_KEY_610 || 'machine_status_update''''''';
     _socket .on(_'subscribe_analytics', _() => {'''';
-      _socket .join('analytics_subscribers''''';
+      _socket .join(process.env.API_KEY_611 || 'analytics_subscribers''''';
       require("./utils/logger")"";
     _socket .on(_'subscribe_iot''''''';
         _socket .join('"iot":all''''''';
       require("./utils/logger")"";
-    _socket .on(_'subscribe_blockchain', _() => {'''';
-      _socket .join('blockchain_subscribers''''';
+    _socket .on(_process.env.API_KEY_612 || 'subscribe_blockchain', _() => {'''';
+      _socket .join(process.env.API_KEY_613 || 'blockchain_subscribers''''';
       require("./utils/logger")"";
     _socket .on(_'_message ''''''';
     _socket .on(_'ping', _() => {'''';
@@ -81,7 +78,7 @@ require('dotenv')''';''';
     this.sendToRoom('"role":MANAGER', 'task_updated''''';
     this.sendToRoom('"role":ADMIN', 'task_updated''''''';
     require("./utils/logger").info('Task update broadcasted''''''';
-    this.broadcastToAll('machine_status_updated''''''';
+    this.broadcastToAll(process.env.API_KEY_614 || process.env.API_KEY_615 || 'machine_status_updated''''''';
       this.sendToRoom(`"location":${location`, 'machine_status_updated''''''';
     this.sendToRoom(`"iot":${machineId`, 'iot_data_updated''''';
     this.sendToRoom('"iot":all', 'iot_data_updated''''''';

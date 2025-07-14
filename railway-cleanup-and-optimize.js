@@ -1,22 +1,18 @@
 #!/usr/bin/env node
 
-/**
- * RAILWAY CLEANUP AND OPTIMIZATION
- * Очистка и оптимизация Railway проекта VHM24
- * Удаление лишних сервисов, настройка оптимальной конфигурации
- */
+
 
 const { execSync } = require('child_process');
 const fs = require('fs');
 
 class RailwayOptimizer {
     constructor() {
-        this.projectId = '740ca318-2ca1-49bb-8827-75feb0a5639c';
+        this.projectId = process.env.API_KEY_231 || '740ca318-2ca1-49bb-8827-75feb0a5639c';
         this.requiredServices = ['web', 'postgres', 'redis'];
         this.optimizedVars = {};
         
-        console.log('🧹 RAILWAY CLEANUP AND OPTIMIZATION');
-        console.log(`📋 Project ID: ${this.projectId}`);
+        
+        
     }
 
     async run() {
@@ -39,7 +35,7 @@ class RailwayOptimizer {
             // 6. Финальный деплой
             await this.finalDeploy();
             
-            console.log('\n🎉 RAILWAY OPTIMIZATION COMPLETE!');
+            
             
         } catch (error) {
             console.error('💥 Optimization failed:', error.message);
@@ -48,23 +44,23 @@ class RailwayOptimizer {
     }
 
     async analyzeCurrentState() {
-        console.log('\n🔍 1. АНАЛИЗ ТЕКУЩЕГО СОСТОЯНИЯ');
+        
         
         try {
             // Получаем переменные окружения
             const variables = execSync('railway variables', { encoding: 'utf8' });
-            console.log('✅ Переменные окружения получены');
+            
             
             // Анализируем сервисы
             this.parseVariables(variables);
             
-            console.log('📊 Найденные сервисы:');
-            if (this.optimizedVars.DATABASE_URL) console.log('  ✅ PostgreSQL');
-            if (this.optimizedVars.REDIS_URL) console.log('  ✅ Redis');
-            console.log('  ✅ Web Service');
+            
+            if (this.optimizedVars.DATABASE_URL) 
+            if (this.optimizedVars.REDIS_URL) 
+            
             
         } catch (error) {
-            console.log('⚠️ Ошибка анализа:', error.message);
+            
         }
     }
 
@@ -95,7 +91,7 @@ class RailwayOptimizer {
                     this.optimizedVars.TELEGRAM_BOT_TOKEN = match[1];
                 }
             }
-            if (line.includes('RAILWAY_PUBLIC_DOMAIN')) {
+            if (line.includes(process.env.API_KEY_232 || 'RAILWAY_PUBLIC_DOMAIN')) {
                 const match = line.match(/│\s*([^│X]+)/);
                 if (match) {
                     this.optimizedVars.PUBLIC_DOMAIN = match[1].trim();
@@ -105,7 +101,7 @@ class RailwayOptimizer {
     }
 
     async cleanupEnvironmentVariables() {
-        console.log('\n🧹 2. ОЧИСТКА ПЕРЕМЕННЫХ ОКРУЖЕНИЯ');
+        
         
         // Удаляем ненужные переменные
         const unnecessaryVars = [
@@ -119,9 +115,9 @@ class RailwayOptimizer {
         for (const varName of unnecessaryVars) {
             try {
                 execSync(`railway variables delete ${varName}`, { stdio: 'pipe' });
-                console.log(`✅ Удалена переменная: ${varName}`);
+                
             } catch (error) {
-                console.log(`⚠️ Переменная ${varName} не найдена или уже удалена`);
+                
             }
         }
 
@@ -137,15 +133,15 @@ class RailwayOptimizer {
         for (const [key, value] of Object.entries(optimalVars)) {
             try {
                 execSync(`railway variables set "${key}=${value}"`, { stdio: 'pipe' });
-                console.log(`✅ Установлена переменная: ${key}`);
+                
             } catch (error) {
-                console.log(`⚠️ Не удалось установить ${key}: ${error.message}`);
+                
             }
         }
     }
 
     async optimizeConfiguration() {
-        console.log('\n⚙️ 3. ОПТИМИЗАЦИЯ КОНФИГУРАЦИИ');
+        
         
         // Создаем оптимизированный railway.toml
         const railwayConfig = `[build]
@@ -165,7 +161,7 @@ healthcheckPath = "/api/health"
 `;
 
         fs.writeFileSync('railway.toml', railwayConfig);
-        console.log('✅ Создан оптимизированный railway.toml');
+        
 
         // Создаем оптимизированный nixpacks.toml
         const nixpacksConfig = `[phases.setup]
@@ -182,19 +178,16 @@ cmd = "npm start"
 `;
 
         fs.writeFileSync('nixpacks.toml', nixpacksConfig);
-        console.log('✅ Создан оптимизированный nixpacks.toml');
+        
     }
 
     async fix308Redirects() {
-        console.log('\n🔧 4. ИСПРАВЛЕНИЕ 308 РЕДИРЕКТОВ');
+        
         
         // Обновляем index.js для правильной обработки редиректов
         const optimizedIndex = `#!/usr/bin/env node
 
-/**
- * VHM24 Optimized Railway Entry Point
- * Исправлены 308 редиректы и оптимизирована производительность
- */
+
 
 const express = require('express');
 const cors = require('cors');
@@ -365,18 +358,18 @@ async function startServer() {
             try {
                 const prisma = new PrismaClient();
                 await prisma.$connect();
-                console.log('✅ Database connected');
+                
                 await prisma.$disconnect();
             } catch (dbError) {
-                console.log('⚠️ Database connection failed, continuing without DB:', dbError.message);
+                
             }
         }
         
         app.listen(PORT, '0.0.0.0', () => {
             console.log(\`🚀 VHM24 API Server (Optimized) running on port \${PORT}\`);
-            console.log(\`📡 Health check: http://localhost:\${PORT}/api/health\`);
-            console.log(\`📋 API info: http://localhost:\${PORT}/api/info\`);
-            console.log(\`🔧 Optimizations: 308 redirects fixed, CORS optimized\`);
+            
+            
+            
         });
     } catch (error) {
         console.error('❌ Failed to start server:', error);
@@ -386,12 +379,12 @@ async function startServer() {
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-    console.log('\\n🛑 Received SIGINT, shutting down gracefully...');
+    
     process.exit(0);
 });
 
 process.on('SIGTERM', () => {
-    console.log('\\n🛑 Received SIGTERM, shutting down gracefully...');
+    
     process.exit(0);
 });
 
@@ -404,11 +397,11 @@ module.exports = { app, startServer };
 `;
 
         fs.writeFileSync('index.js', optimizedIndex);
-        console.log('✅ Создан оптимизированный index.js с исправлением 308 редиректов');
+        
     }
 
     async updateDependencies() {
-        console.log('\n📦 5. ОБНОВЛЕНИЕ ЗАВИСИМОСТЕЙ');
+        
         
         // Обновляем package.json с оптимизированными зависимостями
         const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
@@ -438,34 +431,34 @@ module.exports = { app, startServer };
         };
 
         fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
-        console.log('✅ Оптимизирован package.json');
+        
     }
 
     async finalDeploy() {
-        console.log('\n🚀 6. ФИНАЛЬНЫЙ ДЕПЛОЙ');
+        
         
         try {
-            console.log('📦 Деплой оптимизированной версии...');
+            
             execSync('railway up --detach', { stdio: 'inherit' });
-            console.log('✅ Деплой завершен');
+            
             
             // Ждем немного и тестируем
-            console.log('⏳ Ожидание запуска сервиса...');
+            
             await new Promise(resolve => setTimeout(resolve, 30000));
             
             await this.testOptimizedEndpoints();
             
         } catch (error) {
-            console.log('⚠️ Ошибка деплоя:', error.message);
+            
         }
     }
 
     async testOptimizedEndpoints() {
-        console.log('\n🧪 ТЕСТИРОВАНИЕ ОПТИМИЗИРОВАННЫХ ЭНДПОИНТОВ');
+        
         
         const baseUrl = this.optimizedVars.PUBLIC_DOMAIN 
             ? `https://${this.optimizedVars.PUBLIC_DOMAIN}`
-            : 'https://web-production-73916.up.railway.app';
+            : process.env.WEB-PRODUCTION-73916_UP_RAILWAY_APP_URL || 'https://web-production-73916.up.railway.app';
         
         const endpoints = [
             '/api/health',
@@ -485,10 +478,10 @@ module.exports = { app, startServer };
                 } else if (statusCode === '308') {
                     console.log(`⚠️ ${endpoint}: 308 Redirect (needs fixing)`);
                 } else {
-                    console.log(`❌ ${endpoint}: ${statusCode}`);
+                    
                 }
             } catch (error) {
-                console.log(`❌ ${endpoint}: Error - ${error.message}`);
+                
             }
         }
     }
@@ -535,8 +528,8 @@ Report generated: ${new Date().toISOString()}
 Optimizer: Railway Cleanup & Optimization v1.0
 `;
 
-        fs.writeFileSync('RAILWAY_OPTIMIZATION_REPORT.md', report);
-        console.log('✅ Создан отчет об оптимизации');
+        fs.writeFileSync(process.env.API_KEY_233 || 'RAILWAY_OPTIMIZATION_REPORT.md', report);
+        
     }
 }
 

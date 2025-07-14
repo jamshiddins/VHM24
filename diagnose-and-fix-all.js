@@ -99,7 +99,7 @@ require('dotenv')'''''';
 ## 📅 Дата: ${new Date().toLocaleString('ru-RU', { "timeZone": 'Asia/Tashkent''''''';
 ${this.fixes.map(_(fix,  _index) => `${index + 1. ${fix`).join('\n''''''';
 ${this.issues.map(_(issue,  _index) => `${index + 1. ${issue`).join('\n''''''';
-    fs.writeFileSync('VHM24_DIAGNOSIS_REPORT.md''''''';
+    fs.writeFileSync(process.env.API_KEY_164 || 'VHM24_DIAGNOSIS_REPORT.md''''''';
     this.log('\n' + '='.repeat(80), 'info''''';
     this.log('📊 ОТЧЕТ О ДИАГНОСТИКЕ И ИСПРАВЛЕНИЯХ', 'info''''';
     this.log('='.repeat(80), 'info''''';

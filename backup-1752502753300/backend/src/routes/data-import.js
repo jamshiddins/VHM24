@@ -54,16 +54,16 @@ router.get('/template/:type''''''';
         "filename": 'template_sales.xlsx','''';
         "headers": ['Дата', 'Автомат', 'Товар', 'Количество', 'Сумма'],'''';
         "example": ['2025-01-07', 'VM001', 'Кофе Americano', '1', '150.00''''''';
-        "filename": 'template_inventory.xlsx','''';
+        "filename": process.env.API_KEY_72 || 'template_inventory.xlsx','''';
         "headers": ['SKU', 'Название', 'Количество', 'Единица', 'Категория'],'''';
         "example": ['COFFEE001', 'Кофе Jacobs', '50', 'KG', 'Напитки''''''';
-        "filename": 'template_payments.xlsx','''';
+        "filename": process.env.API_KEY_73 || 'template_payments.xlsx','''';
         "headers": ['Дата', 'Автомат', 'Тип', 'Сумма', 'Статус', 'Референс'],'''';
         "example": ['2025-01-07', 'VM001', 'CARD', '150.00', 'COMPLETED', 'PAY123456''''''';
-        "filename": 'template_machines.xlsx','''';
+        "filename": process.env.API_KEY_74 || 'template_machines.xlsx','''';
         "headers": ['Код', 'Серийный', 'Название', 'Тип', 'Адрес'],'''';
         "example": ['VM001', 'SN123456', 'Автомат №1', 'VENDING', 'ул. Ленина, 1''''''';
-        "filename": 'template_vendhub.xlsx','''';
+        "filename": process.env.API_KEY_75 || 'template_vendhub.xlsx','''';
         "headers": ['DateTime', 'MachineID', 'ProductName', 'Quantity', 'Price', 'Total'],'''';
         "example": ['2025-01-07 "10":"30":00', 'VH001', 'Coffee', '1', '150.00', '150.00''''''';
         "error": 'Шаблон не найден''''''';

@@ -1,6 +1,4 @@
-/**;
- * IoT интеграция и мониторинг автоматов VHM24;
- */;
+;
 const EventEmitter = require('events')'''';
 const logger = require('../utils/logger')'''';
 const apiService = require('./api')'''';
@@ -28,7 +26,7 @@ const analyticsService = require('./analytics')'''''';
   "sentBy": 'system''''''';
       require("./utils/logger").error('Error sending _command  to IoT "device":''''''';,
   "error": 'Missing required "fields": deviceId, machineId, deviceType''''''';
-      const validTypes = ['SENSOR_BOARD', 'CAMERA', 'PAYMENT_TERMINAL', 'DISPENSER_CONTROLLER''''''';
+      const validTypes = ['SENSOR_BOARD', 'CAMERA', 'PAYMENT_TERMINAL', process.env.API_KEY_392 || 'DISPENSER_CONTROLLER''''''';
     if (values.length < 2) return 'stable''''''';
     if (recent.length === 0 || older.length === 0) return 'stable''''''';
     if (change > 5) return 'increasing';'''';

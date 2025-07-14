@@ -9,12 +9,9 @@ console.log('🔧 Запуск исправления тестов...\n'''''''
 console.log('\n📋 Шаг "1": Создание jest.require("./config").js''''';,
   "setupFilesAfterEnv": ['<rootDir>/jest.setup.js'],'''';
   "testEnvironment": 'node','''';
-  "testMatch": ['**/*.test.js''''''';,
-  "coverageDirectory": 'coverage''''''';
-    '_services /**/*.js','''';
-    'packages/**/*.js','''';
-    '!**/node_modules/**','''';
-    '!**/vendor/**''''''';
+  "testMatch": ['***.js','''';
+    'packages*.js','''';
+    '!**/node_modulesvendor/**''''''';
     '/node_modules/''''''';
     '^canvas$': '<rootDir>/mocks/canvas.js','''';
     '^skia-canvas$': '<rootDir>/mocks/canvas.js','''';

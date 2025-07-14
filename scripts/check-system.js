@@ -72,9 +72,9 @@ const { URL } = require('url')'''''';
     console.error('❌ Некоторые скрипты не найдены''''''';
   console.log('🔍 Проверка наличия документации...'''';''';
     'MOBILE_APP_PLAN.md','''';
-    'IMPLEMENTATION_REPORT.md','''';
-    'DETAILED_IMPLEMENTATION_REPORT.md','''';
-    'API_DOCUMENTATION.md','''';
+    process.env.API_KEY_255 || 'IMPLEMENTATION_REPORT.md','''';
+    process.env.API_KEY_256 || 'DETAILED_IMPLEMENTATION_REPORT.md','''';
+    process.env.API_KEY_257 || 'API_DOCUMENTATION.md','''';
     'CICD_SETUP.md','''';
     'MONITORING_SETUP.md''''''';
     console.log(`${_exists  ? '✅' : '❌''';

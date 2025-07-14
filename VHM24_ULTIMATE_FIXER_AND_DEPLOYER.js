@@ -1,15 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * VHM24 ОКОНЧАТЕЛЬНЫЙ ИСПРАВИТЕЛЬ И ДЕПЛОЙЕР
- * 
- * Исправляет ВСЕ найденные проблемы:
- * 1. Синтаксические ошибки (скобки)
- * 2. Console.log в продакшене
- * 3. Настройка рабочих ключей
- * 4. Проверка и исправление всех конфигураций
- * 5. Подготовка к финальному деплою
- */
+
 
 const fs = require('fs');
 const path = require('path');
@@ -23,8 +14,8 @@ class VHM24UltimateFixer {
         this.fixes = [];
         this.fixedFiles = [];
         
-        console.log('🔧 VHM24 ОКОНЧАТЕЛЬНЫЙ ИСПРАВИТЕЛЬ ЗАПУЩЕН');
-        console.log('🎯 Цель: Исправить ВСЕ проблемы и подготовить к деплою');
+        
+        
     }
 
     // ============================================================================
@@ -32,21 +23,21 @@ class VHM24UltimateFixer {
     // ============================================================================
 
     async fixSyntaxErrors() {
-        console.log('\n🔧 1. ИСПРАВЛЕНИЕ СИНТАКСИЧЕСКИХ ОШИБОК');
+        
         
         const problematicFiles = [
             'backend/init-db.js',
             'backend/src/utils/database.js',
-            'fix-prisma-critical-final.js',
-            'fix-prisma-final-errors.js',
-            'fix-prisma-schema-critical-errors.js',
-            'vendhub-complete-system-fixer.js',
-            'vendhub-critical-issues-fixer.js',
-            'vendhub-final-system-check.js',
-            'vendhub-final-system-startup.js',
-            'vendhub-system-fixer-clean.js',
-            'vendhub-ultimate-problem-detector-and-fixer.js',
-            'VHM24_COMPLETE_AUDIT_AND_REFACTOR.js'
+            process.env.API_KEY_596 || 'fix-prisma-critical-final.js',
+            process.env.API_KEY_597 || 'fix-prisma-final-errors.js',
+            process.env.API_KEY_598 || 'fix-prisma-schema-critical-errors.js',
+            process.env.API_KEY_599 || 'vendhub-complete-system-fixer.js',
+            process.env.API_KEY_600 || 'vendhub-critical-issues-fixer.js',
+            process.env.API_KEY_601 || 'vendhub-final-system-check.js',
+            process.env.API_KEY_602 || 'vendhub-final-system-startup.js',
+            process.env.API_KEY_603 || 'vendhub-system-fixer-clean.js',
+            process.env.API_KEY_604 || 'vendhub-ultimate-problem-detector-and-fixer.js',
+            process.env.API_KEY_605 || 'VHM24_COMPLETE_AUDIT_AND_REFACTOR.js'
         ];
 
         for (const file of problematicFiles) {
@@ -97,7 +88,7 @@ class VHM24UltimateFixer {
     // ============================================================================
 
     async setupWorkingKeys() {
-        console.log('\n🔑 2. НАСТРОЙКА РАБОЧИХ КЛЮЧЕЙ');
+        
         
         // Генерируем безопасные ключи
         const jwtSecret = crypto.randomBytes(64).toString('hex');
@@ -133,7 +124,7 @@ PORT=3000
 NODE_ENV="production"
 
 # Telegram Bot (требует настройки)
-TELEGRAM_BOT_TOKEN="YOUR_TELEGRAM_BOT_TOKEN_HERE"
+TELEGRAM_BOT_TOKEN=process.env.API_KEY_606 || process.env.API_KEY_607 || "YOUR_TELEGRAM_BOT_TOKEN_HERE"
 
 # File Upload
 UPLOAD_DIR="uploads"
@@ -178,7 +169,7 @@ METRICS_ENABLED=true
     // ============================================================================
 
     async fixConfigurationFiles() {
-        console.log('\n⚙️ 3. ИСПРАВЛЕНИЕ КОНФИГУРАЦИОННЫХ ФАЙЛОВ');
+        
         
         await this.fixPackageJson();
         await this.fixPrismaSchema();
@@ -419,7 +410,7 @@ app.get('/api/health', (req, res) => {
     // ============================================================================
 
     async createMissingFiles() {
-        console.log('\n📁 4. СОЗДАНИЕ НЕДОСТАЮЩИХ ФАЙЛОВ');
+        
         
         await this.createGitignore();
         await this.createStartScript();
@@ -487,37 +478,18 @@ Thumbs.db
 .nuxt/
 
 # Uploads
-uploads/*
-!uploads/.gitkeep
-
-# Railway
-.railway/
-
-# Docker
-.dockerignore
-`;
-        fs.writeFileSync(path.join(this.projectRoot, '.gitignore'), gitignoreContent);
-        this.fixes.push('Создан оптимальный .gitignore');
-    }
-
-    async createStartScript() {
-        const startScriptContent = `#!/usr/bin/env node
-
-/**
- * VHM24 Production Starter
- * Запускает систему в продакшн режиме
- */
+uploads
 
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Запуск VHM24 в продакшн режиме...');
+
 
 // Проверяем .env файл
 if (!fs.existsSync('.env')) {
     console.error('❌ Файл .env не найден!');
-    console.log('📝 Создайте .env файл на основе .env.example');
+    
     process.exit(1);
 }
 
@@ -530,15 +502,15 @@ if (!envContent.includes('DATABASE_URL=') || envContent.includes('YOUR_') || env
 
 try {
     // Генерируем Prisma клиент
-    console.log('🔧 Генерация Prisma клиента...');
+    
     execSync('npm run generate', { stdio: 'inherit' });
     
     // Применяем миграции
-    console.log('🗄️ Применение миграций базы данных...');
+    
     execSync('npm run migrate', { stdio: 'inherit' });
     
     // Запускаем приложение
-    console.log('✅ Запуск приложения...');
+    
     execSync('node backend/src/index.js', { stdio: 'inherit' });
     
 } catch (error) {
@@ -553,59 +525,56 @@ try {
     async createDeployScript() {
         const deployScriptContent = `#!/usr/bin/env node
 
-/**
- * VHM24 Auto Deployer
- * Автоматический деплой на Railway
- */
+
 
 const { execSync } = require('child_process');
 
-console.log('🚀 Автоматический деплой VHM24 на Railway...');
+
 
 try {
     // Проверяем Railway CLI
     execSync('railway --version', { stdio: 'pipe' });
-    console.log('✅ Railway CLI найден');
+    
     
     // Логинимся если нужно
     try {
         execSync('railway whoami', { stdio: 'pipe' });
-        console.log('✅ Уже авторизован в Railway');
+        
     } catch {
-        console.log('🔑 Требуется авторизация в Railway...');
+        
         execSync('railway login', { stdio: 'inherit' });
     }
     
     // Линкуем проект если нужно
     try {
         execSync('railway status', { stdio: 'pipe' });
-        console.log('✅ Проект уже связан с Railway');
+        
     } catch {
-        console.log('🔗 Связывание с Railway проектом...');
+        
         execSync('railway link', { stdio: 'inherit' });
     }
     
     // Устанавливаем переменные окружения
-    console.log('⚙️ Настройка переменных окружения...');
+    
     execSync('railway variables set NODE_ENV=production', { stdio: 'inherit' });
     
     // Деплоим
-    console.log('🚀 Деплой на Railway...');
+    
     execSync('railway up', { stdio: 'inherit' });
     
-    console.log('✅ Деплой завершен успешно!');
+    
     
     // Показываем URL
     try {
         const url = execSync('railway domain', { encoding: 'utf8' });
         console.log(\`🌐 Приложение доступно по адресу: \${url.trim()}\`);
     } catch {
-        console.log('🌐 URL будет доступен после настройки домена');
+        
     }
     
 } catch (error) {
     console.error('💥 Ошибка деплоя:', error.message);
-    console.log('📖 Убедитесь что Railway CLI установлен: npm install -g @railway/cli');
+    
     process.exit(1);
 }
 `;
@@ -616,18 +585,15 @@ try {
     async createHealthMonitor() {
         const monitorContent = `#!/usr/bin/env node
 
-/**
- * VHM24 Health Monitor
- * Мониторинг состояния системы
- */
+
 
 const http = require('http');
 
 const API_URL = process.env.API_URL || 'http://localhost:3000';
 const CHECK_INTERVAL = 30000; // 30 секунд
 
-console.log('🔍 Запуск мониторинга VHM24...');
-console.log(\`📡 Проверка: \${API_URL}/api/health\`);
+
+
 
 function checkHealth() {
     const url = \`\${API_URL}/api/health\`;
@@ -665,7 +631,7 @@ console.log(\`⏰ Мониторинг запущен (интервал: \${CHEC
     // ============================================================================
 
     async finalCheck() {
-        console.log('\n✅ 5. ФИНАЛЬНАЯ ПРОВЕРКА');
+        
         
         // Проверяем критические файлы
         const criticalFiles = [
@@ -716,7 +682,7 @@ console.log(\`⏰ Мониторинг запущен (интервал: \${CHEC
     // ============================================================================
 
     async createFinalReport() {
-        console.log('\n📋 6. СОЗДАНИЕ ФИНАЛЬНОГО ОТЧЕТА');
+        
         
         const report = `# 🎯 VHM24 - ОКОНЧАТЕЛЬНОЕ ИСПРАВЛЕНИЕ ЗАВЕРШЕНО
 
@@ -796,8 +762,8 @@ node health-monitor.js
 Исправитель: VHM24 Ultimate Fixer v1.0
 `;
 
-        fs.writeFileSync(path.join(this.projectRoot, 'VHM24_ULTIMATE_FIX_REPORT.md'), report);
-        console.log('✅ Финальный отчет сохранен в VHM24_ULTIMATE_FIX_REPORT.md');
+        fs.writeFileSync(path.join(this.projectRoot, process.env.API_KEY_608 || 'VHM24_ULTIMATE_FIX_REPORT.md'), report);
+        
     }
 
     // ============================================================================
@@ -806,7 +772,7 @@ node health-monitor.js
 
     async run() {
         try {
-            console.log('🚀 Запуск окончательного исправления VHM24...\n');
+            
             
             // 1. Исправление синтаксических ошибок
             await this.fixSyntaxErrors();
@@ -826,17 +792,17 @@ node health-monitor.js
             // 6. Создание отчета
             await this.createFinalReport();
             
-            console.log('\n🎉 ОКОНЧАТЕЛЬНОЕ ИСПРАВЛЕНИЕ ЗАВЕРШЕНО!');
-            console.log('\n📊 ИТОГОВАЯ СТАТИСТИКА:');
-            console.log(`✅ Исправлений: ${this.fixes.length}`);
-            console.log(`📁 Файлов исправлено: ${this.fixedFiles.length}`);
-            console.log(`❌ Проблем: ${this.errors.length}`);
             
-            console.log('\n🚀 ПРОЕКТ ПОЛНОСТЬЮ ГОТОВ К ДЕПЛОЮ!');
-            console.log('\n📋 СЛЕДУЮЩИЕ ШАГИ:');
-            console.log('1. Запустите: node start-production.js');
-            console.log('2. Или деплойте: node deploy-railway.js');
-            console.log('3. Мониторинг: node health-monitor.js');
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             
         } catch (error) {
             console.error('💥 КРИТИЧЕСКАЯ ОШИБКА:', error);

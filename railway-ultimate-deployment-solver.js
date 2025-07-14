@@ -1,10 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * RAILWAY ULTIMATE DEPLOYMENT SOLVER
- * Окончательное решение всех проблем с деплоем
- * Сохраняет функциональность и решает проблему раз и навсегда
- */
+
 
 const { execSync } = require('child_process');
 const fs = require('fs');
@@ -12,17 +8,17 @@ const path = require('path');
 
 class RailwayUltimateDeploymentSolver {
     constructor() {
-        this.projectId = '740ca318-2ca1-49bb-8827-75feb0a5639c';
+        this.projectId = process.env.API_KEY_251 || '740ca318-2ca1-49bb-8827-75feb0a5639c';
         this.publicUrl = 'https://web-production-73916.up.railway.app';
         
-        console.log('🚀 RAILWAY ULTIMATE DEPLOYMENT SOLVER');
-        console.log('💪 Решаем проблему РАЗ И НАВСЕГДА!');
-        console.log(`📋 Project: ${this.projectId}`);
+        
+        
+        
     }
 
     async run() {
         try {
-            console.log('\n🎯 НАЧИНАЕМ ОКОНЧАТЕЛЬНОЕ РЕШЕНИЕ...\n');
+            
             
             // 1. Глубокая диагностика
             await this.deepDiagnosis();
@@ -42,7 +38,7 @@ class RailwayUltimateDeploymentSolver {
             // 6. Активное тестирование
             await this.activeTesting();
             
-            console.log('\n🎉 ПРОБЛЕМА РЕШЕНА РАЗ И НАВСЕГДА!');
+            
             
         } catch (error) {
             console.error('💥 Критическая ошибка:', error.message);
@@ -51,55 +47,55 @@ class RailwayUltimateDeploymentSolver {
     }
 
     async deepDiagnosis() {
-        console.log('🔍 1. ГЛУБОКАЯ ДИАГНОСТИКА\n');
+        
         
         // Проверяем Railway CLI
         try {
             const version = execSync('railway version', { encoding: 'utf8' });
             console.log(`✅ Railway CLI: ${version.trim()}`);
         } catch (error) {
-            console.log('❌ Railway CLI не работает!');
+            
             throw new Error('Railway CLI не установлен или не работает');
         }
         
         // Проверяем связь с проектом
         try {
             const status = execSync('railway status', { encoding: 'utf8' });
-            console.log('✅ Связь с проектом установлена');
-            console.log(status);
+            
+            
         } catch (error) {
-            console.log('❌ Нет связи с проектом!');
-            console.log('🔧 Пытаемся переподключиться...');
+            
+            
             
             try {
                 execSync(`railway link ${this.projectId}`, { stdio: 'inherit' });
-                console.log('✅ Проект переподключен');
+                
             } catch (linkError) {
-                console.log('❌ Не удалось подключиться к проекту');
+                
             }
         }
         
         // Проверяем переменные
         try {
             const vars = execSync('railway variables', { encoding: 'utf8' });
-            console.log('✅ Переменные окружения доступны');
+            
             
             // Проверяем критические переменные
             const criticalVars = ['DATABASE_URL', 'REDIS_URL', 'PORT'];
             for (const varName of criticalVars) {
                 if (vars.includes(varName)) {
-                    console.log(`  ✅ ${varName} - найдена`);
+                    
                 } else {
-                    console.log(`  ❌ ${varName} - отсутствует`);
+                    
                 }
             }
         } catch (error) {
-            console.log('⚠️ Проблема с переменными окружения');
+            
         }
     }
 
     async createPerfectServer() {
-        console.log('\n🚀 2. СОЗДАНИЕ ИДЕАЛЬНОГО СЕРВЕРА\n');
+        
         
         // Создаем сервер который 100% будет работать
         const perfectServer = `const express = require('express');
@@ -205,27 +201,27 @@ app.use((err, req, res, next) => {
 
 // Запуск сервера с обработкой ошибок
 const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log('=================================');
-    console.log('🚀 VHM24 Server Started Successfully!');
-    console.log(\`📡 Port: \${PORT}\`);
-    console.log(\`🌐 URL: \${process.env.RAILWAY_PUBLIC_URL || 'http://localhost:' + PORT}\`);
+    
+    
+    
+    
     console.log(\`⏰ Started at: \${new Date().toISOString()}\`);
-    console.log('=================================');
+    
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-    console.log('SIGTERM received, shutting down gracefully...');
+    
     server.close(() => {
-        console.log('Server closed');
+        
         process.exit(0);
     });
 });
 
 process.on('SIGINT', () => {
-    console.log('SIGINT received, shutting down gracefully...');
+    
     server.close(() => {
-        console.log('Server closed');
+        
         process.exit(0);
     });
 });
@@ -245,19 +241,19 @@ module.exports = app;
 `;
 
         fs.writeFileSync('server.js', perfectServer);
-        console.log('✅ Создан идеальный server.js');
+        
         
         // Создаем альтернативный index.js
         fs.writeFileSync('index.js', perfectServer);
-        console.log('✅ Создан дублирующий index.js');
+        
         
         // Создаем app.js как еще один вариант
         fs.writeFileSync('app.js', perfectServer);
-        console.log('✅ Создан дублирующий app.js');
+        
     }
 
     async createPerfectConfiguration() {
-        console.log('\n⚙️ 3. СОЗДАНИЕ ИДЕАЛЬНОЙ КОНФИГУРАЦИИ\n');
+        
         
         // package.json с множественными вариантами запуска
         const packageJson = {
@@ -288,7 +284,7 @@ module.exports = app;
         };
         
         fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
-        console.log('✅ Создан идеальный package.json');
+        
         
         // railway.toml с максимальной совместимостью
         const railwayToml = `[build]
@@ -307,7 +303,7 @@ name = "web"
 `;
         
         fs.writeFileSync('railway.toml', railwayToml);
-        console.log('✅ Создан идеальный railway.toml');
+        
         
         // nixpacks.toml для гарантированной сборки
         const nixpacksToml = `[phases.setup]
@@ -327,19 +323,19 @@ NODE_ENV = "production"
 `;
         
         fs.writeFileSync('nixpacks.toml', nixpacksToml);
-        console.log('✅ Создан идеальный nixpacks.toml');
+        
         
         // Procfile для дополнительной совместимости
         fs.writeFileSync('Procfile', 'web: npm start');
-        console.log('✅ Создан Procfile');
+        
         
         // .node-version для указания версии Node
         fs.writeFileSync('.node-version', '18.17.0');
-        console.log('✅ Создан .node-version');
+        
     }
 
     async fixAllPossibleIssues() {
-        console.log('\n🔧 4. ИСПРАВЛЕНИЕ ВСЕХ ВОЗМОЖНЫХ ПРОБЛЕМ\n');
+        
         
         // Убеждаемся что .env правильный
         const envContent = `NODE_ENV=production
@@ -351,7 +347,7 @@ TELEGRAM_BOT_TOKEN="${process.env.TELEGRAM_BOT_TOKEN || ''}"
 `;
         
         fs.writeFileSync('.env', envContent);
-        console.log('✅ Создан правильный .env');
+        
         
         // Создаем .gitignore чтобы не было конфликтов
         const gitignore = `node_modules/
@@ -365,12 +361,12 @@ yarn-error.log*
 `;
         
         fs.writeFileSync('.gitignore', gitignore);
-        console.log('✅ Создан .gitignore');
+        
         
         // Убеждаемся что нет package-lock.json конфликтов
         if (fs.existsSync('package-lock.json')) {
             fs.unlinkSync('package-lock.json');
-            console.log('✅ Удален package-lock.json для чистой установки');
+            
         }
         
         // Создаем простейший README
@@ -392,26 +388,26 @@ railway up
 `;
         
         fs.writeFileSync('README.md', readme);
-        console.log('✅ Создан простой README.md');
+        
     }
 
     async ultimateDeploy() {
-        console.log('\n🚀 5. ФИНАЛЬНЫЙ ДЕПЛОЙ С МОНИТОРИНГОМ\n');
+        
         
         try {
             // Сначала убеждаемся что мы подключены к проекту
-            console.log('🔗 Проверка подключения к проекту...');
+            
             try {
                 execSync('railway status', { stdio: 'pipe' });
             } catch (error) {
-                console.log('🔧 Переподключение к проекту...');
+                
                 execSync(`railway link ${this.projectId}`, { stdio: 'inherit' });
             }
             
             // Деплоим
-            console.log('📦 Запуск деплоя...');
+            
             execSync('railway up --detach', { stdio: 'inherit' });
-            console.log('✅ Деплой запущен');
+            
             
             // Ждем и мониторим
             console.log('\n⏳ Ожидание запуска (90 секунд)...');
@@ -419,23 +415,23 @@ railway up
                 await new Promise(resolve => setTimeout(resolve, 10000));
                 process.stdout.write(`\r⏳ Прошло ${(i + 1) * 10} секунд...`);
             }
-            console.log('\n');
+            
             
         } catch (error) {
             console.error('❌ Ошибка деплоя:', error.message);
             
             // Пробуем альтернативный метод
-            console.log('\n🔄 Пробуем альтернативный деплой...');
+            
             try {
                 execSync('railway deploy', { stdio: 'inherit' });
             } catch (altError) {
-                console.log('❌ Альтернативный деплой тоже не удался');
+                
             }
         }
     }
 
     async activeTesting() {
-        console.log('\n🧪 6. АКТИВНОЕ ТЕСТИРОВАНИЕ\n');
+        
         
         const endpoints = [
             '/',
@@ -449,7 +445,7 @@ railway up
         
         for (const endpoint of endpoints) {
             const url = `${this.publicUrl}${endpoint}`;
-            console.log(`\n🔍 Тестирование: ${url}`);
+            
             
             for (let attempt = 1; attempt <= 3; attempt++) {
                 try {
@@ -462,14 +458,14 @@ railway up
                     const statusCode = lines[lines.length - 1];
                     const body = lines.slice(0, -1).join('\n');
                     
-                    console.log(`  Попытка ${attempt}: Статус ${statusCode}`);
+                    
                     
                     if (statusCode === '200') {
-                        console.log(`  ✅ Успех!`);
+                        
                         if (body) {
                             try {
                                 const json = JSON.parse(body);
-                                console.log(`  📄 Ответ: ${json.message || json.status || 'OK'}`);
+                                
                             } catch {
                                 console.log(`  📄 Ответ: ${body.substring(0, 50)}...`);
                             }
@@ -477,13 +473,13 @@ railway up
                         successCount++;
                         break;
                     } else if (statusCode === '404' && body.includes('Application not found')) {
-                        console.log(`  ❌ Railway все еще возвращает 404`);
+                        
                     } else {
-                        console.log(`  ⚠️ Неожиданный статус: ${statusCode}`);
+                        
                     }
                     
                 } catch (error) {
-                    console.log(`  ❌ Ошибка: ${error.message}`);
+                    
                 }
                 
                 if (attempt < 3) {
@@ -492,36 +488,36 @@ railway up
             }
         }
         
-        console.log(`\n📊 РЕЗУЛЬТАТ: ${successCount}/${endpoints.length} эндпоинтов работают`);
+        
         
         if (successCount === 0) {
-            console.log('\n🔍 ДОПОЛНИТЕЛЬНАЯ ДИАГНОСТИКА:');
+            
             
             // Проверяем логи
-            console.log('\n📋 Последние логи Railway:');
+            
             try {
                 const logs = execSync('railway logs --tail 20', { encoding: 'utf8' });
-                console.log(logs);
+                
             } catch (error) {
-                console.log('❌ Не удалось получить логи');
+                
             }
             
             // Финальная рекомендация
-            console.log('\n⚠️ ВАЖНО: Приложение все еще не доступно.');
-            console.log('🔧 РЕШЕНИЕ:');
-            console.log('1. Откройте https://railway.app/project/740ca318-2ca1-49bb-8827-75feb0a5639c');
-            console.log('2. Проверьте вкладку "Deployments"');
-            console.log('3. Нажмите на последний деплой и проверьте логи');
-            console.log('4. Если есть ошибки - скопируйте их сюда');
-            console.log('5. Проверьте что сервис "web" активен и running');
+            
+            
+            
+            
+            
+            
+            
         } else {
-            console.log('\n🎉 УСПЕХ! Приложение работает!');
-            console.log(`🌐 Доступно по адресу: ${this.publicUrl}`);
+            
+            
         }
     }
 
     async emergencyRecovery() {
-        console.log('\n🆘 АВАРИЙНОЕ ВОССТАНОВЛЕНИЕ\n');
+        
         
         // Создаем минимальный HTTP сервер без зависимостей
         const minimalServer = `const http = require('http');
@@ -545,7 +541,7 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(\`Emergency server running on port \${PORT}\`);
+    
 });
 `;
 
@@ -563,13 +559,13 @@ server.listen(PORT, '0.0.0.0', () => {
         
         fs.writeFileSync('package.json', JSON.stringify(emergencyPackage, null, 2));
         
-        console.log('✅ Создан аварийный сервер');
-        console.log('🚀 Деплой аварийного сервера...');
+        
+        
         
         try {
             execSync('railway up --detach', { stdio: 'inherit' });
         } catch (error) {
-            console.log('❌ Даже аварийный деплой не удался');
+            
         }
     }
 
@@ -636,8 +632,8 @@ railway shell
 Статус: Все возможные решения применены
 `;
 
-        fs.writeFileSync('ULTIMATE_DEPLOYMENT_REPORT.md', report);
-        console.log('\n✅ Создан финальный отчет: ULTIMATE_DEPLOYMENT_REPORT.md');
+        fs.writeFileSync(process.env.API_KEY_252 || 'ULTIMATE_DEPLOYMENT_REPORT.md', report);
+        
     }
 }
 

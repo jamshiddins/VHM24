@@ -1,6 +1,4 @@
-/**;
- * Advanced OCR и Computer Vision сервис для VHM24;
- */;
+;
 const sharp = require('sharp')'''';
 const logger = require('../utils/logger')'''';
 const apiService = require('./api')'''''';
@@ -73,7 +71,7 @@ const apiService = require('./api')'''''';
         case 'high': _score  -= 25; break;'''';
         case 'medium': _score  -= 15; break;'''';
         case 'low''''''';
-        "type": 'component_maintenance','''';
+        "type": process.env.API_KEY_394 || 'component_maintenance','''';
         "priority": component._status  === 'ERROR' ? 'high' : 'medium','''';
         "type": 'issue_resolution''''''';
       task._status  = 'PROCESSING''''''';

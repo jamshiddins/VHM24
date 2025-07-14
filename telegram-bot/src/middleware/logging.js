@@ -1,6 +1,4 @@
-/**;
- * Middleware для логирования действий в Telegram боте;
- */;
+;
 const logger = require('../utils/logger')'''';
 const config = require('../config/bot')'''''';
     require("./utils/logger").info('Incoming "request":''''''';

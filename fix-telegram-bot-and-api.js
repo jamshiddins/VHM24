@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔧 Исправление Telegram бота и API маршрутов...');
+
 
 // 1. Исправляем machines.js
 const machinesRoute = `const express = require('express');
@@ -220,7 +220,7 @@ const bot = new Telegraf(BOT_TOKEN);
 
 // Middleware для логирования
 bot.use((ctx, next) => {
-    console.log(\`📱 Сообщение от \${ctx.from?.username || ctx.from?.id}: \${ctx.message?.text || 'не текст'}\`);
+    
     return next();
 });
 
@@ -464,20 +464,20 @@ bot.catch((err, ctx) => {
 // Запуск бота
 async function startBot() {
     try {
-        console.log('🤖 Запуск Telegram бота...');
+        
         
         // Проверка подключения к API
         try {
             const response = await axios.get(\`\${API_BASE_URL}/health\`, { timeout: 5000 });
-            console.log('✅ Подключение к API успешно:', response.data);
+            
         } catch (error) {
-            console.log('⚠️ API недоступен, бот работает в автономном режиме');
-            console.log('🔧 API URL:', API_BASE_URL);
+            
+            
         }
         
         await bot.launch();
-        console.log('✅ Telegram бот запущен успешно');
-        console.log('🔗 API URL:', API_BASE_URL);
+        
+        
         
         // Graceful stop
         process.once('SIGINT', () => bot.stop('SIGINT'));
@@ -500,28 +500,28 @@ module.exports = { bot, startBot };`;
 try {
     // Исправляем machines.js
     fs.writeFileSync('backend/src/routes/machines.js', machinesRoute);
-    console.log('✅ Исправлен backend/src/routes/machines.js');
+    
 
     // Создаем tasks.js если его нет или исправляем
     fs.writeFileSync('backend/src/routes/tasks.js', tasksRoute);
-    console.log('✅ Создан/исправлен backend/src/routes/tasks.js');
+    
 
     // Создаем health.js
     fs.writeFileSync('backend/src/routes/health.js', healthRoute);
-    console.log('✅ Создан backend/src/routes/health.js');
+    
 
     // Обновляем Telegram бот
     fs.writeFileSync('apps/telegram-bot/src/index.js', telegramBot);
-    console.log('✅ Обновлен apps/telegram-bot/src/index.js');
+    
 
-    console.log('\n🎉 Все файлы успешно исправлены!');
-    console.log('\n📋 Что было исправлено:');
-    console.log('• Синтаксические ошибки в machines.js');
-    console.log('• Добавлен полнофункциональный маршрут tasks.js');
-    console.log('• Создан маршрут health.js для проверки статуса');
-    console.log('• Улучшен Telegram бот с кнопочным меню');
-    console.log('• Добавлена обработка ошибок и таймауты');
-    console.log('• Улучшено отображение информации');
+    
+    
+    
+    
+    
+    
+    
+    
 
 } catch (error) {
     console.error('❌ Ошибка при записи файлов:', error);

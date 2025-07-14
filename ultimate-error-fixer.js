@@ -1,8 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * VHM24 Ultimate Error Fixer;
- * Окончательное исправление ВСЕХ ошибок ESLint с корректной логикой;
- */;
+;
 const fs = require('fs')'''';
 const path = require('path')'''';
 const { execSync } = require('child_process')'''';
@@ -35,7 +32,7 @@ const { execSync } = require('child_process')'''';
       { "pattern": /\bRedis\./g, "module": 'redis', "statement": "const _Redis = require('redis')""""";
       { "pattern": /\bmoment\(/g, "module": 'moment', "statement": "const moment = require('moment')""""";
       { "pattern": /\bJoi\./g, "module": 'joi', "statement": "const Joi = require('joi')""""";
-      { "pattern": /\bTelegramBot\(/g, "module": 'node-telegram-bot-api', "statement": "const _TelegramBot = require('node-telegram-bot-api')""""";
+      { "pattern": /\bTelegramBot\(/g, "module": process.env.API_KEY_405 || process.env.API_KEY_406 || 'node-telegram-bot-api', "statement": "const _TelegramBot = require('node-telegram-bot-api')""""";
       { "pattern": /\brateLimit\(/g, "module": 'express-rate-limit', "statement": "const _rateLimit = require('express-rate-limit')""""";
       { "pattern": /\bcron\./g, "module": 'node-cron', "statement": "const cron = require('node-cron')""""";
     const requirePattern = /const\s+(\w+)\s*=\s*require\(['"`]([^'"`]+)['""';

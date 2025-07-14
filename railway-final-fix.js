@@ -1,10 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * RAILWAY FINAL FIX
- * Окончательное решение проблем с деплоем на Railway
- * Включает все необходимые шаги для активации Web Role и настройки проекта
- */
+
 
 const fs = require('fs');
 const path = require('path');
@@ -21,26 +17,26 @@ const colors = {
 
 // Функции для вывода
 function status(message) {
-  console.log(`${colors.blue}[INFO]${colors.reset} ${message}`);
+  
 }
 
 function success(message) {
-  console.log(`${colors.green}[SUCCESS]${colors.reset} ${message}`);
+  
 }
 
 function warning(message) {
-  console.log(`${colors.yellow}[WARNING]${colors.reset} ${message}`);
+  
 }
 
 function error(message) {
-  console.log(`${colors.red}[ERROR]${colors.reset} ${message}`);
+  
 }
 
 // Главная функция
 async function main() {
-  console.log('🚀 RAILWAY FINAL FIX');
-  console.log('🔧 Окончательное решение проблем с деплоем на Railway');
-  console.log('=======================================================');
+  
+  
+  
 
   try {
     // 1. Создание минимального сервера с правильным прослушиванием порта
@@ -118,7 +114,7 @@ app.get('/api/health', (req, res) => {
 
 // Telegram webhook
 app.post('/api/bot', (req, res) => {
-  console.log('Webhook received:', req.body);
+  
   res.json({ ok: true });
 });
 
@@ -132,9 +128,9 @@ app.use('*', (req, res) => {
 
 // Start server - КРИТИЧЕСКИ ВАЖНО прослушивание process.env.PORT
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(\`✅ Server started on port \${PORT}\`);
-  console.log(\`✅ Environment: \${process.env.NODE_ENV || 'development'}\`);
-  console.log(\`✅ Public URL: \${process.env.RAILWAY_PUBLIC_URL || 'http://localhost:' + PORT}\`);
+  
+  
+  
 });
 `;
 
@@ -357,7 +353,7 @@ function createWebRoleInstructions() {
 Осталось только активировать Web Role в Dashboard!
 `;
   
-  fs.writeFileSync('ACTIVATE_WEB_ROLE.md', instructionsContent);
+  fs.writeFileSync(process.env.API_KEY_238 || 'ACTIVATE_WEB_ROLE.md', instructionsContent);
   success('Создана инструкция по активации Web Role');
 }
 
@@ -382,28 +378,28 @@ function finalDeploy() {
 
 // Финальное сообщение
 function printFinalMessage() {
-  console.log('');
-  console.log('=======================================================');
-  console.log(`${colors.green}✅ RAILWAY FINAL FIX ЗАВЕРШЕН${colors.reset}`);
-  console.log('=======================================================');
-  console.log('');
-  console.log(`${colors.blue}Что было сделано:${colors.reset}`);
-  console.log('1. Создан минимальный сервер с правильным прослушиванием порта');
-  console.log('2. Обновлен package.json с правильными скриптами');
-  console.log('3. Создан Procfile с правильной командой запуска');
-  console.log('4. Обновлен railway.toml с правильными настройками');
-  console.log('5. Создан .env с необходимыми переменными');
-  console.log('6. Создан README.md с инструкциями по деплою');
-  console.log('7. Создана инструкция по активации Web Role');
-  console.log('');
-  console.log(`${colors.yellow}КРИТИЧЕСКИ ВАЖНО:${colors.reset}`);
-  console.log('1. Откройте Railway Dashboard: https://railway.app/project/740ca318-2ca1-49bb-8827-75feb0a5639c');
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   console.log('2. Активируйте Web Role: Settings → Service Type → Web (exposes HTTP port)');
-  console.log('3. Проверьте Start Command: npm run start');
-  console.log('4. Проверьте Health Check Path: /health');
-  console.log('5. Создайте новый деплой через Dashboard');
-  console.log('');
-  console.log(`${colors.green}Готово!${colors.reset}`);
+  
+  
+  
+  
+  
 }
 
 // Запуск скрипта

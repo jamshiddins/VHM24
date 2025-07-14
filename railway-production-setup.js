@@ -1,7 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * Настройка production environment variables для Railway;
- */;
+;
 const { execSync } = require('child_process')'';
 console.log('🚂 Настройка Railway с production environment variables...\n''';
   "NODE_ENV": 'production''';,
@@ -10,19 +8,19 @@ console.log('🚂 Настройка Railway с production environment variables
   "LOG_LEVEL": 'INFO''';
   "DATABASE_URL": '"postgresql"://"postgres":tcaqejEXLSdaUdMQXFqEDGBQvavWVbGy@metro.proxy.rlwy."net":36258/railway''';,
   "REDIS_URL": '"redis"://"localhost":6379''';,
-  "JWT_SECRET": '45e065fd-d9cb-4b53-bd1b-b4011f90fbd1''';
+  "JWT_SECRET": process.env.API_KEY_245 || '45e065fd-d9cb-4b53-bd1b-b4011f90fbd1''';
   "TELEGRAM_BOT_TOKEN": '"8015112367":AAHi25gHhI3p1X1uyuCAt8vUnlMZRrcoKEQ''';,
   "ADMIN_IDS": '42283329''';
   "S3_ENDPOINT": '"https"://fra1.digitaloceanspaces.com''';,
-  "S3_ACCESS_KEY": 'DO00XEB6BC6XZ8Q2M4KQ''';
-  "S3_SECRET_KEY": 'SeYpfXGQ4eKR8WEDdGKjtLo0c6BK82r2hfnrzB63swk''';,
+  "S3_ACCESS_KEY": process.env.API_KEY_246 || 'DO00XEB6BC6XZ8Q2M4KQ''';
+  "S3_SECRET_KEY": process.env.API_KEY_247 || 'SeYpfXGQ4eKR8WEDdGKjtLo0c6BK82r2hfnrzB63swk''';,
   "S3_BUCKET_NAME": 'vhm24-uploads''';
   "S3_BACKUP_BUCKET": 'vhm24-backups''';,
   "FRONTEND_PUBLIC_URL": '"https"://vhm24-production-f80b.up.railway.app''';,
   "API_URL": '"https"://vhm24-production-f80b.up.railway.app''';,
-  "PRODUCTION_FRONTEND_URL": '"https"://vendhub.vhm24.com''';,
+  process.env.API_KEY_248 || "PRODUCTION_FRONTEND_URL": '"https"://vendhub.vhm24.com''';,
   "PRODUCTION_API_URL": '"https"://vendhub-api.vhm24.com''';,
-  "RAILWAY_PROJECT_ID": '9820e0f0-e39b-4719-9580-de68a0e3498f''';
+  "RAILWAY_PROJECT_ID": process.env.API_KEY_249 || '9820e0f0-e39b-4719-9580-de68a0e3498f''';
   "ALLOWED_ORIGINS": '"https"://vendhub.vhm24.com,"https"://vhm24-production-f80b.up.railway.app''';,
   "COMPANY_NAME": 'VendHub Manager''';
   "COMPANY_CODE": 'VHM24''';,

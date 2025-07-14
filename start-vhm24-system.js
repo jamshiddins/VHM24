@@ -9,7 +9,7 @@ console.log('🚀 Запуск системы VHM24 (VendHub Manager)...\n');
 // Функция для выполнения команд
 function runCommand(command, cwd = process.cwd()) {
     return new Promise((resolve, reject) => {
-        console.log(`📦 Выполнение: ${command}`);
+        
         const child = exec(command, { cwd }, (error, stdout, stderr) => {
             if (error) {
                 console.error(`❌ Ошибка: ${error.message}`);
@@ -19,7 +19,7 @@ function runCommand(command, cwd = process.cwd()) {
             if (stderr) {
                 console.warn(`⚠️ Предупреждение: ${stderr}`);
             }
-            console.log(`✅ Успешно: ${command}`);
+            
             resolve(stdout);
         });
     });
@@ -27,7 +27,7 @@ function runCommand(command, cwd = process.cwd()) {
 
 // Функция для проверки и исправления файлов
 async function fixCriticalErrors() {
-    console.log('🔧 Исправление критических ошибок...\n');
+    
 
     // 1. Исправляем backend/src/routes/api.js
     const apiRoutePath = path.join(__dirname, 'backend/src/routes/api.js');
@@ -65,14 +65,14 @@ router.get('/health', (req, res) => {
 module.exports = router;
 `;
         fs.writeFileSync(apiRoutePath, apiContent);
-        console.log('✅ Исправлен backend/src/routes/api.js');
+        
     }
 
     // 2. Проверяем .env файл
     const envPath = path.join(__dirname, '.env');
     if (!fs.existsSync(envPath)) {
-        console.log('❌ Файл .env не найден!');
-        console.log('📋 Создаю базовый .env файл...');
+        
+        
         
         const envContent = `# VHM24 Environment Variables
 NODE_ENV=development
@@ -97,7 +97,7 @@ AWS_S3_BUCKET=your-bucket-name
 REDIS_URL=redis://localhost:6379
 `;
         fs.writeFileSync(envPath, envContent);
-        console.log('✅ Создан базовый .env файл');
+        
     }
 
     // 3. Исправляем telegram bot index.js
@@ -109,7 +109,7 @@ const dotenv = require('dotenv');
 // Load environment variables
 dotenv.config({ path: '../../.env' });
 
-console.log('🤖 Запуск Telegram Bot для VHM24...');
+
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN || 'demo-token');
 
@@ -136,13 +136,13 @@ bot.catch((err, ctx) => {
 if (process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_BOT_TOKEN !== 'demo-token') {
     bot.launch()
         .then(() => {
-            console.log('✅ VHM24 Telegram Bot запущен успешно!');
+            
         })
         .catch((error) => {
             console.error('❌ Ошибка запуска бота:', error);
         });
 } else {
-    console.log('⚠️ TELEGRAM_BOT_TOKEN не настроен. Бот работает в демо-режиме.');
+    
 }
 
 // Graceful stop
@@ -152,7 +152,7 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'));
 module.exports = bot;
 `;
         fs.writeFileSync(botIndexPath, botContent);
-        console.log('✅ Исправлен apps/telegram-bot/src/index.js');
+        
     }
 }
 
@@ -162,39 +162,39 @@ async function startVHM24System() {
         // Исправляем критические ошибки
         await fixCriticalErrors();
 
-        console.log('🔧 Проверка зависимостей...');
+        
         
         // Устанавливаем зависимости backend
-        console.log('📦 Установка зависимостей backend...');
+        
         await runCommand('npm install', './backend');
 
         // Устанавливаем зависимости telegram-bot
-        console.log('📦 Установка зависимостей telegram-bot...');
+        
         await runCommand('npm install', './apps/telegram-bot');
 
-        console.log('🗄️ Настройка базы данных...');
+        
         
         // Генерируем Prisma Client
-        console.log('📦 Генерация Prisma Client...');
+        
         await runCommand('npx prisma generate', './backend');
 
         // Генерируем Prisma Client для telegram-bot
-        console.log('📦 Генерация Prisma Client для telegram-bot...');
+        
         await runCommand('npx prisma generate', './apps/telegram-bot');
 
         // Пытаемся подключиться к базе данных
-        console.log('📦 Проверка подключения к базе данных...');
+        
         try {
             await runCommand('npx prisma db push', './backend');
-            console.log('✅ База данных подключена успешно');
+            
         } catch (dbError) {
-            console.log('⚠️ Не удалось подключиться к базе данных. Система запустится без БД.');
+            
         }
 
-        console.log('🚀 Запуск сервисов...');
+        
 
         // Запускаем backend
-        console.log('🔧 Запуск Backend API...');
+        
         const backendProcess = spawn('npm', ['start'], {
             cwd: './backend',
             stdio: ['pipe', 'pipe', 'pipe']
@@ -209,7 +209,7 @@ async function startVHM24System() {
         });
 
         // Запускаем telegram bot
-        console.log('🤖 Запуск Telegram Bot...');
+        
         const botProcess = spawn('npm', ['start'], {
             cwd: './apps/telegram-bot',
             stdio: ['pipe', 'pipe', 'pipe']
@@ -227,15 +227,15 @@ async function startVHM24System() {
         await new Promise(resolve => setTimeout(resolve, 3000));
 
         console.log('\n🎉 Система VHM24 (VendHub Manager) запущена!');
-        console.log('📋 Сервисы:');
-        console.log('   🔧 Backend API: process.env.API_URL');
-        console.log('   🤖 Telegram Bot: Активен');
+        
+        
+        
         console.log('   🗄️ База данных: Подключена (если настроена)');
-        console.log('\n💡 Для остановки нажмите Ctrl+C');
+        
 
         // Обработка завершения
         process.on('SIGINT', () => {
-            console.log('\n🛑 Остановка системы VHM24...');
+            
             backendProcess.kill();
             botProcess.kill();
             process.exit(0);
@@ -248,10 +248,10 @@ async function startVHM24System() {
 
     } catch (error) {
         console.error('❌ Критическая ошибка при запуске:', error.message);
-        console.log('\n📋 Рекомендации:');
-        console.log('1. Проверьте файл .env');
-        console.log('2. Убедитесь, что PostgreSQL запущен');
-        console.log('3. Проверьте TELEGRAM_BOT_TOKEN');
+        
+        
+        
+        
         process.exit(1);
     }
 }

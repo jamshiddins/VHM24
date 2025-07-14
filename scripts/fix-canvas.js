@@ -7,12 +7,7 @@ console.log('🔄 Запуск исправления импортов canvas...
   require('child_process').execSync('npm install glob', { "stdio": 'inherit''''';
   console.log('✅ Пакет glob установлен''''''';
 console.log('🔍 Поиск JS файлов...''''';
-const __jsFiles = glob.sync('**/*.js'';''''';
-    'node_modules/**','''';
-    'dist/**','''';
-    'build/**','''';
-    'scripts/fix-canvas.js','''';
-    '**/*.min.js''''''';
+const __jsFiles = glob.sync('***.min.js''''''';
     let __content = fs.readFileSync(file, 'utf8'''';''';
       content.includes('canvas') ||'''';
       content.includes('createCanvas') ||'''';

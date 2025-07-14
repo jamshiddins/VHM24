@@ -1,10 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * FIX-RAILWAY-PACKAGE.JS
- * Автоматическое исправление всех проблем с деплоем на Railway
- * Windows-совместимая версия
- */
+
 
 const fs = require('fs');
 const path = require('path');
@@ -22,19 +18,19 @@ const colors = {
 
 // Функции для вывода
 function status(message) {
-  console.log(`${colors.blue}[INFO]${colors.reset} ${message}`);
+  
 }
 
 function success(message) {
-  console.log(`${colors.green}[SUCCESS]${colors.reset} ${message}`);
+  
 }
 
 function warning(message) {
-  console.log(`${colors.yellow}[WARNING]${colors.reset} ${message}`);
+  
 }
 
 function error(message) {
-  console.log(`${colors.red}[ERROR]${colors.reset} ${message}`);
+  
 }
 
 // Функция для создания файла с проверкой существования директории
@@ -48,9 +44,9 @@ function writeFileWithDirCheck(filePath, content) {
 
 // Главная функция
 async function main() {
-  console.log('🚀 RAILWAY DEPLOYMENT FIXER');
-  console.log('🔧 Исправление всех проблем с деплоем на Railway');
-  console.log('=======================================================');
+  
+  
+  
 
   try {
     // 1. Проверка package.json
@@ -225,9 +221,9 @@ app.get('/api/health', (req, res) => {
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(\`Server running on port \${PORT}\`);
-  console.log(\`Environment: \${process.env.NODE_ENV || 'development'}\`);
-  console.log(\`Public URL: \${process.env.RAILWAY_PUBLIC_URL || 'http://localhost:' + PORT}\`);
+  
+  
+  
 });`;
     
     fs.writeFileSync('server.js', serverContent);
@@ -257,7 +253,7 @@ app.listen(PORT, '0.0.0.0', () => {
         newContent = serverContent.replace(listenRegex, `app.listen(process.env.PORT || 3000, '0.0.0.0')`);
       } else {
         // Если не нашли app.listen, добавляем в конец файла
-        newContent += `\n\n// Start server\napp.listen(process.env.PORT || 3000, '0.0.0.0', () => {\n  console.log(\`Server running on port \${process.env.PORT || 3000}\`);\n});`;
+        newContent += `\n\n// Start server\napp.listen(process.env.PORT || 3000, '0.0.0.0', () => {\n  \n});`;
       }
       
       fs.writeFileSync(serverFile, newContent);
@@ -590,35 +586,35 @@ railway restart
 \`\`\`
 `;
   
-  fs.writeFileSync('RAILWAY_DEPLOYMENT_GUIDE.md', guideContent);
+  fs.writeFileSync(process.env.API_KEY_201 || 'RAILWAY_DEPLOYMENT_GUIDE.md', guideContent);
   success('Создано руководство RAILWAY_DEPLOYMENT_GUIDE.md');
 }
 
 // Финальное сообщение
 function printFinalMessage() {
-  console.log('');
-  console.log('=======================================================');
-  console.log(`${colors.green}✅ RAILWAY DEPLOYMENT FIXER ЗАВЕРШЕН${colors.reset}`);
-  console.log('=======================================================');
-  console.log('');
-  console.log(`${colors.blue}Что было сделано:${colors.reset}`);
-  console.log('1. Проверен и исправлен package.json');
-  console.log('2. Проверен и исправлен основной файл сервера');
-  console.log('3. Создан Procfile');
-  console.log('4. Создан/обновлен railway.toml');
-  console.log('5. Создан nixpacks.toml');
-  console.log('6. Проверен .env файл');
-  console.log('7. Создан .node-version');
-  console.log('8. Создан README.md с инструкциями');
-  console.log('9. Создано руководство RAILWAY_DEPLOYMENT_GUIDE.md');
-  console.log('');
-  console.log(`${colors.yellow}Следующие шаги:${colors.reset}`);
-  console.log('1. Запустите: railway up');
-  console.log('2. Откройте Railway Dashboard: https://railway.app/project/740ca318-2ca1-49bb-8827-75feb0a5639c');
-  console.log('3. Проверьте настройки Web Service');
-  console.log('4. Если деплой не появился, создайте его вручную через Dashboard');
-  console.log('');
-  console.log(`${colors.green}Готово!${colors.reset}`);
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 }
 
 // Запуск скрипта

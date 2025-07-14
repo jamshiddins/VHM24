@@ -1,7 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * Финальная очистка мелких ошибок ESLint;
- */;
+;
 const fs = require('fs')'';
   'backend/src/routes/expenses.js''';
   'backend/src/routes/incassations.js''';

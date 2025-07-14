@@ -123,7 +123,7 @@ bot.hears('📋 Мои задачи', async (ctx) => {
 // Запуск бота
 if (process.env.NODE_ENV !== 'test') {
   bot.launch();
-  console.log('🤖 Telegram bot started');
+  
 }
 
 module.exports = bot;

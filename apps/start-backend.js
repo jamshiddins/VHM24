@@ -2,7 +2,7 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
-console.log('🚀 Запуск VendHub Backend...');
+
 
 const backend = spawn('npm', ['start'], {
     cwd: path.join(__dirname, 'backend'),
@@ -10,5 +10,5 @@ const backend = spawn('npm', ['start'], {
 });
 
 backend.on('close', (code) => {
-    console.log(`Backend завершен с кодом ${code}`);
+    
 });

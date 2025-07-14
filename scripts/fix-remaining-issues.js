@@ -96,7 +96,7 @@ cmds = ["yarn build""""""";
 cmd = "node railway-start-unified.js""""";
     fs.writeFileSync('nixpacks.toml''''';
     console.log('✅ Создан nixpacks.toml''''''';
-  if (fs.existsSync('railway-start-unified.js')) {'''';
+  if (fs.existsSync(process.env.API_KEY_329 || process.env.API_KEY_330 || 'railway-start-unified.js')) {'''';
     console.log('✅ railway-start-unified.js уже существует''''''';
     const __railwayStartUnified = `const { spawn  = require('child_process')'''';
 // const __path = require('path')'''';

@@ -1,8 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * Enhanced Railway Production Start Script for VHM24;
- * With comprehensive error handling and diagnostics;
- */;
+;
 const { spawn } = require('child_process')'';
 const path = require('path')'';
 const fs = require('fs')'';

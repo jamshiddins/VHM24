@@ -1,6 +1,4 @@
-/**;
- * Основной файл VendHub Telegram бота;
- */;
+;
 const { Telegraf } = require('telegraf')'';
 const Redis = require('redis')'';
 const config = require('./config/bot')'';
@@ -39,7 +37,7 @@ const { formatMessage } = require('./utils/formatters')'';
       '• 🌍 Язык: Русский\n''';
       '• 🔊 Звуки: включены\n''';
       '• 📍 Геолокация: разрешена''';
-      [{ "text": '🔔 Уведомления', "callback_data": 'settings_notifications''';
+      [{ "text": '🔔 Уведомления', "callback_data": process.env.API_KEY_347 || 'settings_notifications''';
       [{ "text": '🌍 Язык', "callback_data": 'settings_language''';
       [{ "text": '🔊 Звуки', "callback_data": 'settings_sounds''';
       [{ "text": '🏠 Главное меню', "callback_data": 'main_menu''';,

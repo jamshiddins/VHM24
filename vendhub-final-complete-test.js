@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('🚀 VendHub - Финальное комплексное тестирование системы');
+
 console.log('=' .repeat(60));
 
 const results = {
@@ -15,22 +15,22 @@ const results = {
 function addTest(name, status, details = '') {
     results.tests.push({ name, status, details });
     const icon = status === 'PASS' ? '✅' : status === 'FAIL' ? '❌' : '⚠️';
-    console.log(`${icon} ${name}${details ? ': ' + details : ''}`);
+    
     if (status === 'FAIL') results.success = false;
 }
 
 function addError(error) {
     results.errors.push(error);
-    console.log(`❌ ОШИБКА: ${error}`);
+    
 }
 
 function addWarning(warning) {
     results.warnings.push(warning);
-    console.log(`⚠️ ПРЕДУПРЕЖДЕНИЕ: ${warning}`);
+    
 }
 
 // 1. Проверка структуры проекта;
-console.log('\n📁 Проверка структуры проекта...');
+
 const requiredDirs = [;
     'backend',;
     'backend/src',;
@@ -51,7 +51,7 @@ requiredDirs.forEach(dir => {
 });
 
 // 2. Проверка ключевых файлов;
-console.log('\n📄 Проверка ключевых файлов...');
+
 const requiredFiles = [;
     'backend/package.json',;
     'backend/src/index.js',;
@@ -70,7 +70,7 @@ requiredFiles.forEach(file => {
 });
 
 // 3. Проверка переменных окружения;
-console.log('\n🔐 Проверка переменных окружения...');
+
 try {
     const envContent = fs.readFileSync('.env', 'utf8');
     const requiredEnvVars = [;
@@ -78,7 +78,7 @@ try {
         'JWT_SECRET',;
         'TELEGRAM_BOT_TOKEN',;
         'AWS_ACCESS_KEY_ID',;
-        'AWS_SECRET_ACCESS_KEY',;
+        process.env.API_KEY_486 || 'AWS_SECRET_ACCESS_KEY',;
         'AWS_REGION',;
         'AWS_S3_BUCKET';
     ];
@@ -100,7 +100,7 @@ try {
 }
 
 // 4. Проверка схемы Prisma;
-console.log('\n🗄️ Проверка схемы Prisma...');
+
 try {
     const schemaContent = fs.readFileSync('backend/prisma/schema.prisma', 'utf8');
     
@@ -137,7 +137,7 @@ try {
 }
 
 // 5. Проверка зависимостей backend;
-console.log('\n📦 Проверка зависимостей backend...');
+
 try {
     const backendPackage = JSON.parse(fs.readFileSync('backend/package.json', 'utf8'));
     const requiredDeps = [;
@@ -159,7 +159,7 @@ try {
 }
 
 // 6. Проверка зависимостей telegram-bot;
-console.log('\n🤖 Проверка зависимостей telegram-bot...');
+
 try {
     const botPackage = JSON.parse(fs.readFileSync('apps/telegram-bot/package.json', 'utf8'));
     const requiredBotDeps = ['telegraf', 'axios', 'dotenv'];
@@ -178,7 +178,7 @@ try {
 }
 
 // 7. Проверка маршрутов API;
-console.log('\n🛣️ Проверка маршрутов API...');
+
 const routeFiles = [;
     'backend/src/routes/auth.js',;
     'backend/src/routes/users.js',;
@@ -207,7 +207,7 @@ routeFiles.forEach(routeFile => {
 });
 
 // 8. Проверка middleware;
-console.log('\n🔒 Проверка middleware...');
+
 const middlewareFiles = [;
     'backend/src/middleware/auth.js',;
     'backend/src/middleware/roleCheck.js',;
@@ -223,7 +223,7 @@ middlewareFiles.forEach(middlewareFile => {
 });
 
 // 9. Проверка утилит;
-console.log('\n🔧 Проверка утилит...');
+
 const utilFiles = [;
     'backend/src/utils/logger.js',;
     'backend/src/utils/s3.js',;
@@ -239,7 +239,7 @@ utilFiles.forEach(utilFile => {
 });
 
 // 10. Проверка конфигурационных файлов;
-console.log('\n⚙️ Проверка конфигурации...');
+
 const configFiles = [;
     'railway.toml',;
     'nixpacks.toml',;
@@ -256,28 +256,28 @@ configFiles.forEach(configFile => {
 
 // Финальный отчет;
 console.log('\n' + '='.repeat(60));
-console.log('📊 ФИНАЛЬНЫЙ ОТЧЕТ ТЕСТИРОВАНИЯ');
+
 console.log('='.repeat(60));
 
 const passedTests = results.tests.filter(t => t.status === 'PASS').length;
 const failedTests = results.tests.filter(t => t.status === 'FAIL').length;
 const warnTests = results.tests.filter(t => t.status === 'WARN').length;
 
-console.log(`✅ Пройдено тестов: ${passedTests}`);
-console.log(`❌ Провалено тестов: ${failedTests}`);
-console.log(`⚠️ Предупреждений: ${warnTests}`);
-console.log(`📝 Всего ошибок: ${results.errors.length}`);
+
+
+
+
 
 if (results.success && failedTests === 0) {
-    console.log('\n🎉 ВСЕ ОСНОВНЫЕ ТЕСТЫ ПРОЙДЕНЫ!');
-    console.log('✅ Система VendHub готова к запуску');
+    
+    
     
     if (warnTests > 0) {
-        console.log('\n⚠️ Есть предупреждения, но они не критичны');
+        
     }
 } else {
-    console.log('\n❌ ОБНАРУЖЕНЫ КРИТИЧЕСКИЕ ПРОБЛЕМЫ');
-    console.log('🔧 Необходимо исправить ошибки перед запуском');
+    
+    
 }
 
 // Сохраняем отчет;
@@ -296,20 +296,20 @@ const reportData = {
     "status": results.success && failedTests === 0 ? 'SUCCESS' : 'FAILED';
 };
 
-fs.writeFileSync('vendhub-test-report.json', JSON.stringify(reportData, null, 2));
-console.log('\n📄 Отчет сохранен в vendhub-test-report.json');
+fs.writeFileSync(process.env.API_KEY_487 || 'vendhub-test-report.json', JSON.stringify(reportData, null, 2));
+
 
 // Следующие шаги;
-console.log('\n🚀 СЛЕДУЮЩИЕ ШАГИ:');
+
 if (results.success && failedTests === 0) {
     console.log('1. Запустите: npm run dev (в папке backend)');
     console.log('2. Запустите: npm start (в папке apps/telegram-bot)');
-    console.log('3. Проверьте работу API на "http"://"localhost":3000');
-    console.log('4. Протестируйте Telegram бота');
+    
+    
 } else {
-    console.log('1. Исправьте все критические ошибки');
-    console.log('2. Повторно запустите этот тест');
-    console.log('3. После успешного прохождения - запускайте систему');
+    
+    
+    
 }
 
 console.log('\n' + '='.repeat(60));

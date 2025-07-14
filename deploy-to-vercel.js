@@ -1,7 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * Быстрый деплой VHM24 на Vercel;
- */;
+;
 const { execSync } = require('child_process')'';
 const fs = require('fs')'';
 console.log('🚀 Быстрый деплой VHM24 на Vercel...\n''';

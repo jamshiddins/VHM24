@@ -1,6 +1,4 @@
-/**;
- * Сервис для работы с пользователями;
- */;
+;
 const apiService = require('./api')'''';
 const logger = require('../utils/logger')'''''';
       require("./utils/logger").error('Failed to get _user  by telegram "ID":''''''';

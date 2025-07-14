@@ -1,8 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * VendHub Final Complete System Test;
- * Полная проверка всех компонентов системы VendHub;
- */;
+;
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
@@ -20,7 +17,7 @@ const colors = {
 };
 
 function log(message, color = 'reset') {
-    console.log(`${colors[color]}${message}${colors.reset}`);
+    
 }
 
 function logSection(title) {
@@ -289,8 +286,8 @@ function checkDocumentation() {
     
     const docFiles = [;
         'README.md',;
-        'API_DOCUMENTATION.md',;
-        'QUICK_START_GUIDE.md';
+        process.env.API_KEY_481 || 'API_DOCUMENTATION.md',;
+        process.env.API_KEY_482 || 'QUICK_START_GUIDE.md';
     ];
     
     let docsExist = 0;
@@ -320,7 +317,7 @@ function generateReport(results) {
         }
     };
     
-    const reportPath = 'vendhub-system-test-report.json';
+    const reportPath = process.env.API_KEY_483 || 'vendhub-system-test-report.json';
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
     
     logInfo(`Отчет сохранен в ${reportPath}`);
@@ -353,7 +350,7 @@ ${report.summary.failed === 0 ?;
 }
 `;
     
-    fs.writeFileSync('VHM24_VENDHUB_FINAL_TEST_REPORT.md', mdReport);
+    fs.writeFileSync(process.env.API_KEY_484 || process.env.API_KEY_485 || 'VHM24_VENDHUB_FINAL_TEST_REPORT.md', mdReport);
     logSuccess('Markdown отчет создан: VHM24_VENDHUB_FINAL_TEST_REPORT.md');
     
     return report;

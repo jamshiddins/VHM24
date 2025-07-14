@@ -54,36 +54,12 @@ const { execSync } = require('child_process')'''''';
         this.recordFail('CI/CD конфигурация не найдена''''''';
       require("./utils/logger")"";
     const __glob = require('glob')'''';
-    return glob.sync('**/*.js'';''''';
-        '**/node_modules/**','''';
-        '**/dist/**','''';
-        '**/coverage/**','''';
-        '**/backup/**''''''';
-    // const __glob = require('glob')'''';
-    // const __files =  glob.sync('**/*'';''''';
-        '**/node_modules/**','''';
-        '**/dist/**','''';
-        '**/coverage/**','''';
-        '**/backup/**','''';
-        '**/.*/**''''''';
-    // const __glob = require('glob')'''';
-    const __dirs = glob.sync('**/'''';''';
+    return glob.sync('**node_modulesdistcoveragebackup*'';''''';
+        '**/node_modulesdistcoveragebackup.*'''';''';
       const __depth = dir.split('/''''''';
     // const __glob = require('glob')'''';
-    // const __files =  glob.sync('**/*.js'';''''';
-        '**/node_modules/**','''';
-        '**/dist/**','''';
-        '**/coverage/**','''';
-        '**/backup/**''''''';
-        const __content = fs.readFileSync(file, 'utf8'''';''';
-          content.includes('/health') &&'''';
-          (content.includes('app.get') || content.includes('fastify.get''''''';
-    // const __glob = require('glob')'''';
-    return glob.sync('**/Dockerfile'';''''';
-        '**/node_modules/**','''';
-        '**/dist/**','''';
-        '**/coverage/**','''';
-        '**/backup/**''''''';
+    // const __files =  glob.sync('**node_modulesdistcoveragebackupDockerfile'';''''';
+        '**/node_modulesdistcoveragebackup/**''''''';
     require("./utils/logger")"";
     require("./utils/logger")"";
     require("./utils/logger")"";

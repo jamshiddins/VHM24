@@ -10,7 +10,7 @@ console.log('🚀 Запуск полной системы VHM24 (VendHub Manage
 function checkEnvFile() {
     const envPath = path.join(__dirname, '.env');
     if (!fs.existsSync(envPath)) {
-        console.log('⚠️ Файл .env не найден. Создаем базовый...');
+        
         
         const defaultEnv = `# VHM24 Environment Variables
 NODE_ENV=development
@@ -39,15 +39,15 @@ REDIS_URL=redis://localhost:6379
 `;
         
         fs.writeFileSync(envPath, defaultEnv);
-        console.log('✅ Создан базовый .env файл');
-        console.log('📝 Пожалуйста, отредактируйте .env файл с вашими настройками\n');
+        
+        
     }
 }
 
 // Функция для запуска процесса
 function startProcess(name, command, args, cwd) {
     return new Promise((resolve, reject) => {
-        console.log(`🔄 Запуск ${name}...`);
+        
         
         const process = spawn(command, args, {
             cwd: cwd || __dirname,
@@ -72,16 +72,16 @@ function startProcess(name, command, args, cwd) {
 
         process.on('close', (code) => {
             if (code === 0) {
-                console.log(`✅ ${name} запущен успешно`);
+                
                 resolve({ code, output, errorOutput });
             } else {
-                console.log(`❌ ${name} завершился с кодом ${code}`);
+                
                 reject(new Error(`${name} failed with code ${code}`));
             }
         });
 
         process.on('error', (error) => {
-            console.log(`❌ Ошибка запуска ${name}:`, error.message);
+            
             reject(error);
         });
 
@@ -92,44 +92,44 @@ function startProcess(name, command, args, cwd) {
 
 // Функция для установки зависимостей
 async function installDependencies() {
-    console.log('📦 Установка зависимостей...\n');
+    
     
     try {
         // Backend dependencies
-        console.log('📦 Установка зависимостей backend...');
+        
         await startProcess('npm install (backend)', 'npm', ['install'], path.join(__dirname, 'backend'));
         
         // Telegram bot dependencies
-        console.log('📦 Установка зависимостей telegram-bot...');
+        
         await startProcess('npm install (telegram-bot)', 'npm', ['install'], path.join(__dirname, 'apps', 'telegram-bot'));
         
-        console.log('✅ Все зависимости установлены\n');
+        
     } catch (error) {
-        console.log('⚠️ Ошибка установки зависимостей:', error.message);
-        console.log('🔄 Продолжаем запуск...\n');
+        
+        
     }
 }
 
 // Функция для проверки базы данных
 async function checkDatabase() {
-    console.log('🗄️ Проверка базы данных...');
+    
     
     try {
         await startProcess('Prisma Generate', 'npx', ['prisma', 'generate'], path.join(__dirname, 'backend'));
-        console.log('✅ Prisma схема сгенерирована');
+        
         
         try {
             await startProcess('Prisma Push', 'npx', ['prisma', 'db', 'push'], path.join(__dirname, 'backend'));
-            console.log('✅ База данных синхронизирована');
+            
         } catch (error) {
-            console.log('⚠️ Не удалось синхронизировать базу данных');
-            console.log('💡 Убедитесь, что DATABASE_URL правильно настроен в .env');
+            
+            
         }
     } catch (error) {
-        console.log('⚠️ Ошибка работы с базой данных:', error.message);
+        
     }
     
-    console.log('');
+    
 }
 
 // Основная функция запуска
@@ -147,7 +147,7 @@ async function startSystem() {
         // Проверка базы данных
         await checkDatabase();
         
-        console.log('🚀 Запуск сервисов...\n');
+        
         
         // Запуск backend сервера
         const backendProcess = spawn('npm', ['start'], {
@@ -182,24 +182,24 @@ async function startSystem() {
             console.log(`[Telegram Bot] ❌ ${data.toString().trim()}`);
         });
         
-        console.log('\n🎉 Система VHM24 запущена!');
+        
         console.log('=' .repeat(50));
-        console.log('🌐 Backend API: process.env.API_URL');
-        console.log('🤖 Telegram Bot: Активен');
-        console.log('📊 Админ панель: process.env.API_URL/admin');
+        
+        
+        
         console.log('=' .repeat(50));
-        console.log('\n💡 Для остановки нажмите Ctrl+C\n');
+        
         
         // Обработка сигналов для graceful shutdown
         process.on('SIGINT', () => {
-            console.log('\n🛑 Остановка системы...');
+            
             backendProcess.kill('SIGTERM');
             telegramProcess.kill('SIGTERM');
             process.exit(0);
         });
         
         process.on('SIGTERM', () => {
-            console.log('\n🛑 Остановка системы...');
+            
             backendProcess.kill('SIGTERM');
             telegramProcess.kill('SIGTERM');
             process.exit(0);

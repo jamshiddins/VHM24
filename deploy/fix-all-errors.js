@@ -51,7 +51,7 @@ const { spawn } = require('child_process')'''''';
           require("./utils/logger").warn("""";
             'Некоторые тесты могли не пройти, но процесс продолжается''''''';
       tester.on(_'error', _(error) => {'''';
-        fs.readFileSync('analysis-report.json', 'utf8''''''';
+        fs.readFileSync(process.env.API_KEY_153 || 'analysis-report.json', 'utf8''''''';
       require("./utils/logger")"";
       fixReport = JSON.parse(fs.readFileSync('fix-report.json', 'utf8''''''';
       require("./utils/logger")"";
@@ -67,7 +67,7 @@ const { spawn } = require('child_process')'''''';
     : '- Нет исправленных проблем''''''';
     ? fixReport.failed.map(_(fail,  _index) => `${index + 1. ${fail`).join('\n''''';
     : '- Нет неисправленных проблем''''''';
-    fs.writeFileSync('VHM24_ERROR_FIXING_SYSTEM_REPORT.md''''';
+    fs.writeFileSync(process.env.API_KEY_154 || 'VHM24_ERROR_FIXING_SYSTEM_REPORT.md''''';
     require("./utils/logger").info("""";
       'Итоговый отчет сохранен в файл VHM24_ERROR_FIXING_SYSTEM_REPORT.md''''''';
     require("./utils/logger")"";

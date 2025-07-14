@@ -98,7 +98,7 @@ function log(_message ,  type = 'info'''';''';
     log(`Работают: ${passCount`, 'success''''';
     log(`Не работают: ${failCount`, failCount > 0 ? 'error' : 'info''''';
     log(`Готовность инфраструктуры: ${successRate%`, successRate >= 80 ? 'success' : 'error''''''';
-    require('fs').writeFileSync('infrastructure-test-report.json''''''';
+    require('fs').writeFileSync(process.env.API_KEY_396 || 'infrastructure-test-report.json''''''';
     console.log('\n' + '=''''';
     log('Отчет сохранен в infrastructure-test-report.json', 'info''''''';
       log('🎉 ИНФРАСТРУКТУРА ГОТОВА К PRODUCTION!', 'success''''''';

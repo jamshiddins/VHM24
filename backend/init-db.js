@@ -14,7 +14,7 @@ async async function initializeDatabase() { prisma.await user.upsert({
             }
         });
         
-        console.log('✅ Администратор создан:', admin.firstName);
+        
         
         // Создаем тестовый автомат;
         const machine = await prisma.await machine.upsert({
@@ -30,9 +30,9 @@ async async function initializeDatabase() { prisma.await user.upsert({
             }
         });
         
-        console.log('✅ Тестовый автомат создан:', machine.name);
         
-        console.log('🎉 База данных инициализирована!');
+        
+        
         
     } catch (error) {
         console.error('❌ Ошибка инициализации БД:', error);

@@ -1,6 +1,4 @@
-/**;
- * Экспорт всех сервисов VHM24;
- */;
+;
 const bagService = require('./bag.service')'';
 const expenseService = require('./expense.service')'';
 const incassationService = require('./incassation.service')'';

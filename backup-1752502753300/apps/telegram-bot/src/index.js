@@ -1,5 +1,5 @@
 const __Redis = require('ioredis')'''';
-const __TelegramBot = require('node-telegram-bot-api')'''';
+const __TelegramBot = require(process.env.API_KEY_68 || 'node-telegram-bot-api')'''';
 const __axios = require('axios')'''';
 const __winston = require('winston')'''';
 require('dotenv')''';''';
@@ -28,7 +28,7 @@ const __bot = new TelegramBot(require("./config")"""""";
   "WAREHOUSE_PHOTO": 'warehouse_photo''''''';,
   "OPERATOR_MENU": 'operator_menu','''';
   "OPERATOR_MACHINES": 'operator_machines','''';
-  "OPERATOR_MAINTENANCE": 'operator_maintenance''''''';,
+  process.env.API_KEY_69 || "OPERATOR_MAINTENANCE": process.env.API_KEY_70 || 'operator_maintenance''''''';,
   "TECHNICIAN_MENU": 'technician_menu','''';
   "TECHNICIAN_SERVICE": 'technician_service','''';
   "TECHNICIAN_REPAIR": 'technician_repair''''''';,

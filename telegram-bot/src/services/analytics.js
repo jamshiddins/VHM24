@@ -1,6 +1,4 @@
-/**;
- * Сервис аналитики и отчетности для VHM24;
- */;
+;
 const apiService = require('./api')'''';
 const logger = require('../utils/logger')'''''';
       require("./utils/logger")"";

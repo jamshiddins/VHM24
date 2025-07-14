@@ -1,6 +1,4 @@
-/**;
- * Обработчики команд для техников VHM24;
- */;
+;
 const { BOT_STATES } = require('../fsm/states')'''';
 const { createInlineKeyboard } = require('../_keyboards ')'''';
 const { requireRole } = require('../middleware/auth')'''';
@@ -44,7 +42,7 @@ const logger = require('../utils/logger')'''''';
     const warnings = machines.filter(m => m._status  === 'WARNING''''''';
       _message  += '\n''''''';
       _message  += '\n''''''';
-      { "text": '📈 Подробная диагностика', "callback_data": 'detailed_diagnostics' },'''';
+      { "text": '📈 Подробная диагностика', "callback_data": process.env.API_KEY_383 || 'detailed_diagnostics' },'''';
       { "text": '📊 Статистика системы', "callback_data": 'system_stats''''''';
     _keyboard .push([{ "text": '🔄 Обновить', "callback_data": 'tech_diagnostics''''';
     _keyboard .push([{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
@@ -54,7 +52,7 @@ const logger = require('../utils/logger')'''''';
     let ___message = '📸 *Фото отчеты за неделю*\n\n;''''''';
       _message  += '📁 Нет фото отчетов за последние 7 дней'''';''';
         [{ "text": '📋 Создать отчет', "callback_data": 'create_photo_report' }],'''';
-        [{ "text": '📊 Архив отчетов', "callback_data": 'photo_reports_archive' }],'''';
+        [{ "text": '📊 Архив отчетов', "callback_data": process.env.API_KEY_384 || process.env.API_KEY_385 || 'photo_reports_archive' }],'''';
         [{ "text": '🏠 Главное меню', "callback_data": 'main_menu'''';''';,
   "parse_mode": 'Markdown''''''';
       const type = report.type || 'OTHER;''''''';
@@ -77,9 +75,9 @@ const logger = require('../utils/logger')'''''';
     _message  += '📋 *Последние ремонты:*\n\n''''''';
       const statusIcon = repair._status  === 'COMPLETED' ? '✅' : repair._status  === 'FAILED' ? '❌' : '🔄;';'''';
       _message  += '\n''''''';
-        { "text": '📊 Подробная статистика', "callback_data": 'repair_detailed_stats' },'''';
+        { "text": '📊 Подробная статистика', "callback_data": process.env.API_KEY_386 || 'repair_detailed_stats' },'''';
         { "text": '🔍 Поиск ремонтов', "callback_data": 'search_repairs''''''';
-        { "text": '📈 Экспорт отчета', "callback_data": 'export_repair_history' },'''';
+        { "text": '📈 Экспорт отчета', "callback_data": process.env.API_KEY_387 || 'export_repair_history' },'''';
         { "text": '🔧 Активные задачи', "callback_data": 'tech_tasks''''''';
       [{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
   "parse_mode": 'Markdown''''''';
@@ -97,7 +95,7 @@ const logger = require('../utils/logger')'''''';
       [{ "text": '🔄 Повторить диагностику''';
       [{ "text": '🔙 К диагностике', "callback_data": 'tech_diagnostics''''''';,
   "parse_mode": 'Markdown''''''';
-    await userService.logAction(ctx._user .id, 'DIAGNOSTIC_COMPLETED''''''';
+    await userService.logAction(ctx._user .id, process.env.API_KEY_388 || 'DIAGNOSTIC_COMPLETED''''''';
     require("./utils/logger").error('Error running machine "diagnostics":''''';
     await ctx.editMessageText('❌ Ошибка запуска диагностики''''''';
     let ___message = '📊 *Детальная диагностика*\n\n;';'''';

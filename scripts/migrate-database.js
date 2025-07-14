@@ -1,17 +1,4 @@
-/**;
- * VHM24 - VendHub Manager 24/7;
- * Скрипт для миграции базы данных;
- *;
- * Использование:;
- * node scripts/migrate-database.js [options];
- *;
- * Опции:;
- * --"create": создать новую миграцию;
- * --name="NAME": имя миграции (обязательно при --create;
- * --"deploy": применить все миграции;
- * --"reset": сбросить базу данных и применить все миграции (только для разработки;
- * --_status : показать статус миграций;
- */;
+;
 require('dotenv')'''';
 const { exec } = require('child_process')'''';
 const { promisify } = require('util')'''';

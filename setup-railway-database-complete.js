@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * ПОЛНАЯ НАСТРОЙКА RAILWAY БАЗЫ ДАННЫХ
- * Создает PostgreSQL базу данных в Railway и настраивает все подключения
- */
+
 
 const { execSync } = require('child_process');
 const fs = require('fs');
@@ -14,7 +11,7 @@ class RailwayDatabaseSetup {
         this.projectRoot = process.cwd();
         this.railwayKeys = {};
         
-        console.log('🚀 НАСТРОЙКА RAILWAY БАЗЫ ДАННЫХ');
+        
     }
 
     async run() {
@@ -40,7 +37,7 @@ class RailwayDatabaseSetup {
             // 7. Деплоим проект
             await this.deployProject();
             
-            console.log('\n🎉 RAILWAY БАЗА ДАННЫХ НАСТРОЕНА!');
+            
             
         } catch (error) {
             console.error('💥 Ошибка:', error.message);
@@ -49,34 +46,34 @@ class RailwayDatabaseSetup {
     }
 
     async checkRailwayCLI() {
-        console.log('\n🔍 1. ПРОВЕРКА RAILWAY CLI');
+        
         
         try {
             const version = execSync('railway --version', { encoding: 'utf8' });
             console.log(`✅ Railway CLI найден: ${version.trim()}`);
         } catch (error) {
-            console.log('❌ Railway CLI не найден');
-            console.log('📥 Установите Railway CLI:');
-            console.log('   npm install -g @railway/cli');
-            console.log('   или');
-            console.log('   curl -fsSL https://railway.app/install.sh | sh');
+            
+            
+            
+            
+            
             throw new Error('Railway CLI не установлен');
         }
     }
 
     async setupRailwayProject() {
-        console.log('\n🏗️ 2. НАСТРОЙКА RAILWAY ПРОЕКТА');
+        
         
         try {
             // Проверяем, есть ли уже проект
             const status = execSync('railway status', { encoding: 'utf8', stdio: 'pipe' });
-            console.log('✅ Railway проект уже настроен');
+            
         } catch (error) {
-            console.log('🔧 Создание нового Railway проекта...');
+            
             try {
                 execSync('railway login', { stdio: 'inherit' });
                 execSync('railway init', { stdio: 'inherit' });
-                console.log('✅ Railway проект создан');
+                
             } catch (initError) {
                 throw new Error('Не удалось создать Railway проект');
             }
@@ -84,13 +81,13 @@ class RailwayDatabaseSetup {
     }
 
     async addPostgreSQL() {
-        console.log('\n🗄️ 3. ДОБАВЛЕНИЕ POSTGRESQL');
+        
         
         try {
             // Проверяем, есть ли уже PostgreSQL
             const services = execSync('railway service list', { encoding: 'utf8', stdio: 'pipe' });
             if (services.includes('postgres')) {
-                console.log('✅ PostgreSQL уже добавлен');
+                
                 return;
             }
         } catch (error) {
@@ -98,7 +95,7 @@ class RailwayDatabaseSetup {
         }
 
         try {
-            console.log('🔧 Добавление PostgreSQL сервиса...');
+            
             
             // Новый способ добавления PostgreSQL в Railway
             execSync('railway service create --name postgres', { stdio: 'inherit' });
@@ -109,14 +106,14 @@ class RailwayDatabaseSetup {
             // Добавляем PostgreSQL плагин
             execSync('railway plugin add postgresql', { stdio: 'inherit' });
             
-            console.log('✅ PostgreSQL добавлен');
+            
             
             // Ждем инициализации базы данных
-            console.log('⏳ Ожидание инициализации базы данных...');
+            
             await new Promise(resolve => setTimeout(resolve, 10000));
             
         } catch (error) {
-            console.log('⚠️ Ошибка добавления PostgreSQL, пробуем альтернативный способ...');
+            
             
             try {
                 // Альтернативный способ
@@ -129,7 +126,7 @@ class RailwayDatabaseSetup {
     }
 
     async getDatabaseURL() {
-        console.log('\n🔗 4. ПОЛУЧЕНИЕ DATABASE_URL');
+        
         
         let attempts = 0;
         const maxAttempts = 5;
@@ -143,7 +140,7 @@ class RailwayDatabaseSetup {
                 
                 if (dbUrl && dbUrl.trim() && !dbUrl.includes('not found')) {
                     this.railwayKeys.DATABASE_URL = dbUrl.trim();
-                    console.log('✅ DATABASE_URL получен');
+                    
                     return;
                 }
             } catch (error) {
@@ -151,16 +148,16 @@ class RailwayDatabaseSetup {
             }
             
             attempts++;
-            console.log(`⏳ Попытка ${attempts}/${maxAttempts} получить DATABASE_URL...`);
+            
             await new Promise(resolve => setTimeout(resolve, 5000));
         }
         
         // Если не удалось получить автоматически, пробуем другие способы
         try {
-            console.log('🔧 Попытка получить переменные другим способом...');
+            
             const allVars = execSync('railway variables', { encoding: 'utf8' });
-            console.log('📋 Все переменные Railway:');
-            console.log(allVars);
+            
+            
             
             // Ищем DATABASE_URL в выводе
             const lines = allVars.split('\n');
@@ -169,20 +166,20 @@ class RailwayDatabaseSetup {
                     const match = line.match(/DATABASE_URL[=\s]+(.+)/);
                     if (match && match[1]) {
                         this.railwayKeys.DATABASE_URL = match[1].trim();
-                        console.log('✅ DATABASE_URL найден в переменных');
+                        
                         return;
                     }
                 }
             }
         } catch (error) {
-            console.log('⚠️ Не удалось получить переменные');
+            
         }
         
         throw new Error('Не удалось получить DATABASE_URL');
     }
 
     async updateEnvFile() {
-        console.log('\n📝 5. ОБНОВЛЕНИЕ .ENV ФАЙЛА');
+        
         
         if (!this.railwayKeys.DATABASE_URL) {
             throw new Error('DATABASE_URL не найден');
@@ -205,11 +202,11 @@ class RailwayDatabaseSetup {
         }
         
         fs.writeFileSync('.env', envContent);
-        console.log('✅ .env файл обновлен с Railway DATABASE_URL');
+        
     }
 
     async testConnection() {
-        console.log('\n🧪 6. ТЕСТИРОВАНИЕ ПОДКЛЮЧЕНИЯ');
+        
         
         // Создаем тестовый скрипт
         const testScript = `
@@ -219,16 +216,16 @@ async function testConnection() {
     const prisma = new PrismaClient();
     
     try {
-        console.log('🔌 Подключение к Railway PostgreSQL...');
+        
         await prisma.$connect();
-        console.log('✅ Подключение успешно!');
+        
         
         // Тестовый запрос
         const result = await prisma.$queryRaw\`SELECT version() as version\`;
-        console.log('✅ Версия PostgreSQL:', result[0].version);
+        
         
         await prisma.$disconnect();
-        console.log('✅ Тест подключения завершен успешно');
+        
         process.exit(0);
         
     } catch (error) {
@@ -240,16 +237,16 @@ async function testConnection() {
 testConnection();
 `;
 
-        fs.writeFileSync('test-railway-connection.js', testScript);
+        fs.writeFileSync(process.env.API_KEY_339 || 'test-railway-connection.js', testScript);
         
         try {
             // Генерируем Prisma клиент с новым DATABASE_URL
-            console.log('🔧 Генерация Prisma клиента...');
+            
             execSync('cd backend && npx prisma generate', { stdio: 'inherit' });
             
             // Тестируем подключение
             execSync('node test-railway-connection.js', { stdio: 'inherit' });
-            console.log('✅ Подключение к Railway PostgreSQL работает!');
+            
             
         } catch (error) {
             throw new Error('Ошибка тестирования подключения');
@@ -257,11 +254,11 @@ testConnection();
     }
 
     async deployProject() {
-        console.log('\n🚀 7. ДЕПЛОЙ ПРОЕКТА');
+        
         
         try {
             // Устанавливаем переменные окружения
-            console.log('⚙️ Установка переменных окружения...');
+            
             
             const envVars = [
                 'NODE_ENV=production',
@@ -273,12 +270,12 @@ testConnection();
                     execSync(`railway variables set "${envVar}"`, { stdio: 'pipe' });
                     console.log(`✅ Установлена переменная: ${envVar.split('=')[0]}`);
                 } catch (error) {
-                    console.log(`⚠️ Не удалось установить: ${envVar}`);
+                    
                 }
             }
             
             // Деплоим
-            console.log('🚀 Деплой на Railway...');
+            
             execSync('railway up --detach', { stdio: 'inherit' });
             
             // Получаем URL
@@ -286,13 +283,13 @@ testConnection();
                 const url = execSync('railway domain', { encoding: 'utf8' });
                 console.log(`🌐 Приложение доступно: ${url.trim()}`);
             } catch (error) {
-                console.log('⚠️ URL будет доступен после настройки домена');
+                
             }
             
-            console.log('✅ Деплой завершен');
+            
             
         } catch (error) {
-            console.log('⚠️ Ошибка деплоя, но база данных настроена');
+            
         }
     }
 }

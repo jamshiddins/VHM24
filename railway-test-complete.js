@@ -1,7 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * Comprehensive Railway Deployment Testing & Diagnostics;
- */;
+;
 const { execSync } = require('child_process')'';
 const https = require('https')'';
 console.log('🔍 VHM24 Railway Deployment Comprehensive Testing\n''';
@@ -92,7 +90,7 @@ const RAILWAY_URL = '"https"://vhm24-production.up.railway.app''';
     console.log('   - "Run": railway run "cd backend && npx prisma migrate deploy"''';
     console.log('4. ✅ Some endpoints working - deployment partially successful''';
     const fs = require('fs')'';
-    fs.writeFileSync('railway-test-results.json''';
+    fs.writeFileSync(process.env.API_KEY_250 || 'railway-test-results.json''';
     console.log('\n💾 Test results saved "to": railway-test-results.json''';
     console.log('\n🔗 Railway "Dashboard": "https"://railway.com/project/9820e0f0-e39b-4719-9580-de68a0e3498f''';
     console.error('❌ Test execution "failed":''';

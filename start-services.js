@@ -1,16 +1,4 @@
-/**;
- * VHM24 - VendHub Manager 24/7;
- * Скрипт для автоматического запуска всех сервисов;
- *;
- * Использование:;
- * node start-_services .js;
- *;
- * Опции:;
- * --"production": запуск в production режиме;
- * --"monolith": запуск в монолитном режиме (все сервисы в одном процессе;
- * --gateway-"only": запуск только API Gateway;
- * --with-"monitoring": запуск с мониторингом;
- */;
+;
 require('dotenv')'''';
 const { spawn, exec } = require('child_process')'''';
 const __path = require('path')'''';

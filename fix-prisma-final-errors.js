@@ -1,14 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔧 Исправление финальных ошибок в схеме Prisma...');
+
 
 const schemaPath = path.join(__dirname, 'backend', 'prisma', 'schema.prisma');
 
 try {
     let schema = fs.readFileSync(schemaPath, 'utf8');
     
-    console.log('✅ Добавление недостающих enum и моделей...');
+    
     
     // Добавляем недостающие enum;
     const missingEnums = `;
@@ -90,11 +90,11 @@ model Movement {
         }
     }
     
-    console.log('✅ Сохранение исправленной схемы...');
+    
     fs.writeFileSync(schemaPath, schema);
     
-    console.log('🎉 Все ошибки в схеме Prisma исправлены!');
-    console.log('📁 Обновлен файл: backend/prisma/schema.prisma');
+    
+    
     
 } catch (error) {
     console.error('❌ Ошибка при исправлении схемы:', error.message);

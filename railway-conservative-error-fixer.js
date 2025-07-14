@@ -1,27 +1,23 @@
 #!/usr/bin/env node
 
-/**
- * RAILWAY CONSERVATIVE ERROR FIXER
- * Безопасное исправление ошибок без вреда системе
- * Фокус на решении проблемы 404 в Railway
- */
+
 
 const { execSync } = require('child_process');
 const fs = require('fs');
 
 class RailwayConservativeErrorFixer {
     constructor() {
-        this.projectId = '740ca318-2ca1-49bb-8827-75feb0a5639c';
+        this.projectId = process.env.API_KEY_234 || '740ca318-2ca1-49bb-8827-75feb0a5639c';
         this.publicUrl = 'https://web-production-73916.up.railway.app';
         
-        console.log('🔧 RAILWAY CONSERVATIVE ERROR FIXER');
-        console.log('🎯 Цель: Безопасное исправление ошибок без вреда системе');
-        console.log(`📋 Project: ${this.projectId}`);
+        
+        
+        
     }
 
     async run() {
         try {
-            console.log('\n🔍 НАЧИНАЕМ КОНСЕРВАТИВНОЕ ИСПРАВЛЕНИЕ...');
+            
             
             // 1. Диагностика текущего состояния
             await this.diagnoseCurrentState();
@@ -41,7 +37,7 @@ class RailwayConservativeErrorFixer {
             // 6. Постепенное тестирование
             await this.gradualTesting();
             
-            console.log('\n✅ КОНСЕРВАТИВНОЕ ИСПРАВЛЕНИЕ ЗАВЕРШЕНО');
+            
             
         } catch (error) {
             console.error('⚠️ Ошибка при исправлении:', error.message);
@@ -50,52 +46,52 @@ class RailwayConservativeErrorFixer {
     }
 
     async diagnoseCurrentState() {
-        console.log('\n🔍 1. ДИАГНОСТИКА ТЕКУЩЕГО СОСТОЯНИЯ');
+        
         
         try {
             // Проверяем Railway статус
             const status = execSync('railway status', { encoding: 'utf8' });
-            console.log('📊 Railway статус:');
-            console.log(status);
+            
+            
             
             // Проверяем существующие файлы
             const importantFiles = ['package.json', 'server.js', '.env', 'railway.toml'];
-            console.log('\n📁 Проверка важных файлов:');
+            
             
             for (const file of importantFiles) {
                 if (fs.existsSync(file)) {
-                    console.log(`✅ ${file} - существует`);
+                    
                 } else {
-                    console.log(`❌ ${file} - отсутствует`);
+                    
                 }
             }
             
             // Проверяем текущий URL
-            console.log(`\n🌐 Тестируем текущий URL: ${this.publicUrl}`);
+            
             try {
                 const response = execSync(`curl -s -w "%{http_code}" "${this.publicUrl}"`, { encoding: 'utf8' });
                 const statusCode = response.slice(-3);
-                console.log(`📊 Статус код: ${statusCode}`);
+                
                 
                 if (statusCode === '404') {
-                    console.log('❌ Подтверждена проблема 404');
+                    
                 } else if (statusCode === '200') {
-                    console.log('✅ Приложение работает!');
+                    
                     return true;
                 }
             } catch (error) {
-                console.log('⚠️ Ошибка при тестировании URL');
+                
             }
             
         } catch (error) {
-            console.log('⚠️ Ошибка диагностики:', error.message);
+            
         }
         
         return false;
     }
 
     async fixUrlInConfigurations() {
-        console.log('\n🔧 2. ИСПРАВЛЕНИЕ URL В КОНФИГУРАЦИЯХ');
+        
         
         // Исправляем .env файл
         if (fs.existsSync('.env')) {
@@ -113,7 +109,7 @@ class RailwayConservativeErrorFixer {
             );
             
             fs.writeFileSync('.env', envContent);
-            console.log('✅ Исправлен .env файл');
+            
         }
         
         // Исправляем README.md
@@ -127,12 +123,12 @@ class RailwayConservativeErrorFixer {
             );
             
             fs.writeFileSync('README.md', readmeContent);
-            console.log('✅ Исправлен README.md');
+            
         }
     }
 
     async createSimplestWorkingServer() {
-        console.log('\n🚀 3. СОЗДАНИЕ ПРОСТЕЙШЕГО РАБОЧЕГО СЕРВЕРА');
+        
         
         // Создаем максимально простой сервер
         const simpleServer = `const express = require('express');
@@ -171,7 +167,7 @@ app.get('/api/info', (req, res) => {
 
 // Telegram webhook endpoint
 app.post('/api/bot', (req, res) => {
-    console.log('Webhook received:', req.body);
+    
     res.json({ ok: true, message: 'Webhook received' });
 });
 
@@ -186,8 +182,8 @@ app.use('*', (req, res) => {
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(\`🚀 VHM24 Simple Server running on port \${PORT}\`);
-    console.log(\`🌐 Available at: https://web-production-73916.up.railway.app\`);
+    
+    
 });
 
 module.exports = app;
@@ -196,20 +192,20 @@ module.exports = app;
         // Сохраняем текущий server.js как backup
         if (fs.existsSync('server.js')) {
             fs.copyFileSync('server.js', 'server.js.backup');
-            console.log('💾 Создан backup server.js.backup');
+            
         }
         
         fs.writeFileSync('server.js', simpleServer);
-        console.log('✅ Создан простейший рабочий сервер');
+        
     }
 
     async softUpdatePackageJson() {
-        console.log('\n📦 4. МЯГКОЕ ОБНОВЛЕНИЕ PACKAGE.JSON');
+        
         
         if (fs.existsSync('package.json')) {
             // Создаем backup
             fs.copyFileSync('package.json', 'package.json.backup');
-            console.log('💾 Создан backup package.json.backup');
+            
             
             const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
             
@@ -232,15 +228,15 @@ module.exports = app;
             }
             
             fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
-            console.log('✅ Мягко обновлен package.json');
+            
         }
     }
 
     async conservativeDeploy() {
-        console.log('\n🚀 5. КОНСЕРВАТИВНЫЙ ДЕПЛОЙ');
+        
         
         try {
-            console.log('📦 Запуск консервативного деплоя...');
+            
             
             // Сначала проверяем что все файлы на месте
             const requiredFiles = ['server.js', 'package.json'];
@@ -252,25 +248,25 @@ module.exports = app;
             
             // Деплоим
             execSync('railway up --detach', { stdio: 'inherit' });
-            console.log('✅ Деплой запущен');
+            
             
             // Ждем немного меньше времени
             console.log('⏳ Ожидание запуска (60 секунд)...');
             await new Promise(resolve => setTimeout(resolve, 60000));
             
         } catch (error) {
-            console.log('⚠️ Ошибка деплоя:', error.message);
+            
             
             // Пытаемся восстановить из backup
             if (fs.existsSync('server.js.backup')) {
                 fs.copyFileSync('server.js.backup', 'server.js');
-                console.log('🔄 Восстановлен server.js из backup');
+                
             }
         }
     }
 
     async gradualTesting() {
-        console.log('\n🧪 6. ПОСТЕПЕННОЕ ТЕСТИРОВАНИЕ');
+        
         
         const testEndpoints = [
             '/',
@@ -284,7 +280,7 @@ module.exports = app;
             const fullUrl = `${this.publicUrl}${endpoint}`;
             
             try {
-                console.log(`🔍 Тестирование: ${fullUrl}`);
+                
                 
                 const response = execSync(`curl -s -w "%{http_code}" "${fullUrl}"`, { 
                     encoding: 'utf8',
@@ -295,36 +291,36 @@ module.exports = app;
                 const body = response.slice(0, -3);
                 
                 if (statusCode === '200') {
-                    console.log(`✅ ${endpoint}: OK`);
+                    
                     workingEndpoints++;
                     
                     if (body) {
                         try {
                             const jsonResponse = JSON.parse(body);
-                            console.log(`   Response: ${jsonResponse.message || jsonResponse.status || 'OK'}`);
+                            
                         } catch {
                             console.log(`   Response: ${body.substring(0, 50)}...`);
                         }
                     }
                 } else {
-                    console.log(`❌ ${endpoint}: ${statusCode}`);
+                    
                 }
                 
             } catch (error) {
-                console.log(`❌ ${endpoint}: Timeout или ошибка`);
+                
             }
             
             // Небольшая пауза между тестами
             await new Promise(resolve => setTimeout(resolve, 2000));
         }
         
-        console.log(`\n📊 Результат: ${workingEndpoints}/${testEndpoints.length} эндпоинтов работают`);
+        
         
         if (workingEndpoints > 0) {
-            console.log('🎉 Прогресс! Некоторые эндпоинты работают');
+            
             return true;
         } else {
-            console.log('⚠️ Эндпоинты пока не работают, но деплой прошел');
+            
             return false;
         }
     }
@@ -386,8 +382,8 @@ railway up
 Безопасность: Максимальная
 `;
 
-        fs.writeFileSync('CONSERVATIVE_FIX_REPORT.md', report);
-        console.log('✅ Создан отчет о безопасном исправлении');
+        fs.writeFileSync(process.env.API_KEY_235 || 'CONSERVATIVE_FIX_REPORT.md', report);
+        
     }
 }
 

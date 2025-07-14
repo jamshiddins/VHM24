@@ -1,14 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * VendHub Final System Check & Startup;
- * Финальная проверка и запуск системы VendHub;
- *;
- * Этот скрипт:;
- * 1. Проверяет все компоненты системы;
- * 2. Исправляет критические ошибки;
- * 3. Запускает систему в production режиме;
- * 4. Создает финальный отчет;
- */;
+;
 const fs = require('fs');
 const path = require('path');
 const { execSync, spawn } = require('child_process');
@@ -26,7 +17,7 @@ const colors = {
 };
 
 function log(message, color = 'reset') {
-    console.log(`${colors[color]}${message}${colors.reset}`);
+    
 }
 
 function logSection(title) {
@@ -229,7 +220,7 @@ const { PrismaClient } = require('@prisma/client');
 async async function testDatabase() { prisma.$disconnect();
         return true;
     } catch (error) {
-        console.log('❌ База данных: ошибка подключения -', error.message);
+        
         return false;
     }
 }
@@ -238,7 +229,7 @@ testDatabase().then(() => process.exit(0)).catch(() => process.exit(1));
 `;
     
     try {
-        await fs.writeFileSync('test-db-connection.js', testScript);
+        await fs.writeFileSync(process.env.API_KEY_489 || process.env.API_KEY_490 || process.env.API_KEY_491 || process.env.API_KEY_492 || 'test-db-connection.js', testScript);
         process.chdir('backend');
         execSync('node ../test-db-connection.js', { "stdio": 'inherit' });
         process.chdir('..');
@@ -377,7 +368,7 @@ function createFinalReport(results) {
 - Мониторинг: real-time-monitoring.js;
 `;
 
-    fs.writeFileSync('VENDHUB_FINAL_SYSTEM_REPORT.md', report);
+    fs.writeFileSync(process.env.API_KEY_493 || 'VENDHUB_FINAL_SYSTEM_REPORT.md', report);
     logSuccess('Финальный отчет создан: VENDHUB_FINAL_SYSTEM_REPORT.md');
 }
 

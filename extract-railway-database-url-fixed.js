@@ -3,7 +3,7 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 
-console.log('🔍 Извлечение DATABASE_URL из Railway...');
+
 
 try {
     // Получаем переменные Railway
@@ -13,7 +13,7 @@ try {
     const databaseUrlMatch = envOutput.match(/DATABASE_URL\s*│\s*postgresql:\/\/[^\s│]+/);
     
     if (!databaseUrlMatch) {
-        console.log('❌ DATABASE_URL не найден');
+        
         return;
     }
     
@@ -68,9 +68,9 @@ try {
             }
             
             fs.writeFileSync(envFile, content);
-            console.log(`✅ Обновлен ${envFile}`);
+            
         } catch (error) {
-            console.log(`⚠️ Не удалось обновить ${envFile}:`, error.message);
+            
         }
     }
     
@@ -79,17 +79,17 @@ try {
     let mainContent = fs.readFileSync(mainEnvPath, 'utf8');
     
     const requiredVars = {
-        'JWT_SECRET': '933f4234d58f69c74957860bf5a7a838e7c6f51f36876e5d415842bd796d6b5e',
+        'JWT_SECRET': process.env.API_KEY_168 || '933f4234d58f69c74957860bf5a7a838e7c6f51f36876e5d415842bd796d6b5e',
         'TELEGRAM_BOT_TOKEN': '8015112367:AAHi25gHhI3p1X1uyuCAt8vUnlMZRrcoKEQ',
         'REDIS_URL': 'redis://default:UBhuXXUjFDisRLBNOsoVNIaGHboCRPll@redis.railway.internal:6379',
-        'S3_ACCESS_KEY': 'DO00XEB6BC6XZ8Q2M4KQ',
+        'S3_ACCESS_KEY': process.env.API_KEY_169 || 'DO00XEB6BC6XZ8Q2M4KQ',
         'S3_BUCKET': 'vhm24-uploads',
         'S3_BACKUP_BUCKET': 'vhm24-backups',
-        'S3_ENDPOINT': 'https://fra1.digitaloceanspaces.com',
+        'S3_ENDPOINT': process.env.FRA1_DIGITALOCEANSPACES_COM_URL || 'https://fra1.digitaloceanspaces.com',
         'S3_REGION': 'fra1',
         'PORT': '3000',
         'NODE_ENV': 'development',
-        'RAILWAY_PUBLIC_DOMAIN': 'web-production-73916.up.railway.app',
+        process.env.API_KEY_170 || 'RAILWAY_PUBLIC_DOMAIN': process.env.API_KEY_171 || 'web-production-73916.up.railway.app',
         'ADMIN_IDS': '42283329'
     };
     
@@ -101,8 +101,8 @@ try {
     
     fs.writeFileSync(mainEnvPath, mainContent);
     
-    console.log('🎉 DATABASE_URL успешно извлечен и настроен!');
-    console.log('📋 Все переменные окружения обновлены');
+    
+    
     
 } catch (error) {
     console.error('❌ Ошибка:', error.message);
@@ -114,7 +114,7 @@ try {
 DATABASE_URL="${fallbackDatabaseUrl}"
 
 # JWT Secret
-JWT_SECRET="933f4234d58f69c74957860bf5a7a838e7c6f51f36876e5d415842bd796d6b5e"
+JWT_SECRET=process.env.API_KEY_172 || "933f4234d58f69c74957860bf5a7a838e7c6f51f36876e5d415842bd796d6b5e"
 
 # Telegram Bot
 TELEGRAM_BOT_TOKEN="8015112367:AAHi25gHhI3p1X1uyuCAt8vUnlMZRrcoKEQ"
@@ -123,7 +123,7 @@ TELEGRAM_BOT_TOKEN="8015112367:AAHi25gHhI3p1X1uyuCAt8vUnlMZRrcoKEQ"
 REDIS_URL="redis://default:UBhuXXUjFDisRLBNOsoVNIaGHboCRPll@redis.railway.internal:6379"
 
 # S3 / DigitalOcean Spaces
-S3_ACCESS_KEY="DO00XEB6BC6XZ8Q2M4KQ"
+S3_ACCESS_KEY=process.env.API_KEY_173 || "DO00XEB6BC6XZ8Q2M4KQ"
 S3_SECRET_KEY="missing_secret_key"
 S3_BUCKET="vhm24-uploads"
 S3_BACKUP_BUCKET="vhm24-backups"
@@ -135,10 +135,10 @@ PORT=3000
 NODE_ENV=development
 
 # Railway
-RAILWAY_PUBLIC_DOMAIN="web-production-73916.up.railway.app"
+RAILWAY_PUBLIC_DOMAIN=process.env.API_KEY_174 || "web-production-73916.up.railway.app"
 ADMIN_IDS="42283329"
 `;
 
     fs.writeFileSync('.env', envContent);
-    console.log('✅ Создана базовая конфигурация с DATABASE_URL из Railway');
+    
 }

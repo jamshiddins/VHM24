@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * TEST RAILWAY CONNECTIONS
- * Обновление Git и тестирование подключения к PostgreSQL и Redis на Railway
- */
+
 
 const { execSync } = require('child_process');
 const fs = require('fs');
@@ -19,26 +16,26 @@ const colors = {
 
 // Функции для вывода
 function status(message) {
-  console.log(`${colors.blue}[INFO]${colors.reset} ${message}`);
+  
 }
 
 function success(message) {
-  console.log(`${colors.green}[SUCCESS]${colors.reset} ${message}`);
+  
 }
 
 function warning(message) {
-  console.log(`${colors.yellow}[WARNING]${colors.reset} ${message}`);
+  
 }
 
 function error(message) {
-  console.log(`${colors.red}[ERROR]${colors.reset} ${message}`);
+  
 }
 
 // Главная функция
 async function main() {
-  console.log('🚀 TEST RAILWAY CONNECTIONS');
-  console.log('🔧 Обновление Git и тестирование подключения к PostgreSQL и Redis');
-  console.log('=======================================================');
+  
+  
+  
 
   try {
     // 0. Установка необходимых зависимостей
@@ -107,8 +104,8 @@ async function updateGit() {
   try {
     // Проверяем статус Git
     const gitStatus = execSync('git status', { encoding: 'utf8' });
-    console.log('Git статус:');
-    console.log(gitStatus);
+    
+    
     
     // Добавляем все изменения
     status('Добавление всех изменений в Git...');
@@ -206,7 +203,7 @@ async function testPostgreSQL(dbUrl) {
   }
   
   // Создаем временный файл для тестирования
-  const testFile = 'test-pg-connection.js';
+  const testFile = process.env.API_KEY_399 || 'test-pg-connection.js';
   const testCode = `
 const { Client } = require('pg');
 
@@ -216,15 +213,15 @@ async function testConnection() {
   });
   
   try {
-    console.log('Connecting to PostgreSQL...');
+    
     await client.connect();
-    console.log('Connected to PostgreSQL successfully!');
+    
     
     const result = await client.query('SELECT current_database() as db, current_user as user, version() as version');
-    console.log('Database info:');
-    console.log(\`Database: \${result.rows[0].db}\`);
-    console.log(\`User: \${result.rows[0].user}\`);
-    console.log(\`Version: \${result.rows[0].version}\`);
+    
+    
+    
+    
     
     // Проверяем наличие таблиц
     const tablesResult = await client.query(\`
@@ -234,12 +231,12 @@ async function testConnection() {
       ORDER BY table_name
     \`);
     
-    console.log('\\nDatabase tables:');
+    
     if (tablesResult.rows.length === 0) {
-      console.log('No tables found');
+      
     } else {
       tablesResult.rows.forEach(row => {
-        console.log(\`- \${row.table_name}\`);
+        
       });
     }
     
@@ -248,7 +245,7 @@ async function testConnection() {
     process.exit(1);
   } finally {
     await client.end();
-    console.log('Connection closed');
+    
   }
 }
 
@@ -261,7 +258,7 @@ testConnection();
     // Запускаем тест
     status('Запуск теста PostgreSQL...');
     const result = execSync(`node ${testFile}`, { encoding: 'utf8' });
-    console.log(result);
+    
     
     // Удаляем временный файл
     fs.unlinkSync(testFile);
@@ -290,7 +287,7 @@ async function testRedis(redisUrl) {
   }
   
   // Создаем временный файл для тестирования
-  const testFile = 'test-redis-connection.js';
+  const testFile = process.env.API_KEY_400 || 'test-redis-connection.js';
   const testCode = `
 const redis = require('redis');
 const { promisify } = require('util');
@@ -311,32 +308,32 @@ async function testConnection() {
   });
   
   client.on('connect', async () => {
-    console.log('Connected to Redis successfully!');
+    
     
     try {
       // Записываем тестовое значение
       const testKey = 'railway_test_key';
       const testValue = 'Railway connection test at ' + new Date().toISOString();
       
-      console.log(\`Setting test key: \${testKey} = \${testValue}\`);
+      
       await setAsync(testKey, testValue);
       
       // Читаем тестовое значение
       const readValue = await getAsync(testKey);
-      console.log(\`Read test key: \${testKey} = \${readValue}\`);
+      
       
       // Получаем список ключей
       const keys = await keysAsync('*');
-      console.log('\\nRedis keys:');
+      
       if (keys.length === 0) {
-        console.log('No keys found');
+        
       } else {
         keys.slice(0, 10).forEach(key => {
-          console.log(\`- \${key}\`);
+          
         });
         
         if (keys.length > 10) {
-          console.log(\`... and \${keys.length - 10} more keys\`);
+          
         }
       }
       
@@ -344,7 +341,7 @@ async function testConnection() {
       console.error('Error working with Redis:', err.message);
     } finally {
       client.quit();
-      console.log('Connection closed');
+      
     }
   });
 }
@@ -358,7 +355,7 @@ testConnection();
     // Запускаем тест
     status('Запуск теста Redis...');
     const result = execSync(`node ${testFile}`, { encoding: 'utf8' });
-    console.log(result);
+    
     
     // Удаляем временный файл
     fs.unlinkSync(testFile);
@@ -426,30 +423,30 @@ ${envVars.REDIS_URL ? '✅ Тестирование выполнено' : '❌ �
 Время создания отчета: ${new Date().toISOString()}
 `;
 
-  fs.writeFileSync('RAILWAY_CONNECTIONS_TEST_REPORT.md', reportContent);
+  fs.writeFileSync(process.env.API_KEY_401 || 'RAILWAY_CONNECTIONS_TEST_REPORT.md', reportContent);
   success('Создан отчет о тестировании: RAILWAY_CONNECTIONS_TEST_REPORT.md');
 }
 
 // Финальное сообщение
 function printFinalMessage() {
-  console.log('');
-  console.log('=======================================================');
-  console.log(`${colors.green}✅ ТЕСТИРОВАНИЕ ПОДКЛЮЧЕНИЙ ЗАВЕРШЕНО${colors.reset}`);
-  console.log('=======================================================');
-  console.log('');
-  console.log(`${colors.blue}Что было сделано:${colors.reset}`);
-  console.log('1. Обновлен Git репозиторий');
-  console.log('2. Получены переменные окружения Railway');
-  console.log('3. Протестировано подключение к PostgreSQL');
-  console.log('4. Протестировано подключение к Redis');
-  console.log('5. Создан отчет о тестировании');
-  console.log('');
-  console.log(`${colors.yellow}Следующие шаги:${colors.reset}`);
-  console.log('1. Откройте Railway Dashboard: https://railway.app/project/740ca318-2ca1-49bb-8827-75feb0a5639c');
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   console.log('2. Активируйте Web Role: Settings → Service Type → Web (exposes HTTP port)');
-  console.log('3. Создайте новый деплой через Dashboard');
-  console.log('');
-  console.log(`${colors.green}Готово!${colors.reset}`);
+  
+  
+  
 }
 
 // Запуск скрипта

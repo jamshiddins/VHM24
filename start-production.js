@@ -1,51 +1,57 @@
 #!/usr/bin/env node
 
 /**
- * VHM24 Production Starter
- * Запускает систему в продакшн режиме
+ * Скрипт запуска VHM24 в продакшене
  */
 
-const { execSync } = require('child_process');
-const fs = require('fs');
+const { spawn } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 
-console.log('🚀 Запуск VHM24 в продакшн режиме...');
+// Проверка наличия переменных окружения
+const requiredEnvVars = [
+    'DATABASE_URL',
+    'PORT',
+    'NODE_ENV',
+    'TELEGRAM_BOT_TOKEN'
+];
 
-// Проверяем .env файл
-if (!fs.existsSync('.env')) {
-    console.error('❌ Файл .env не найден!');
-    console.log('📝 Создайте .env файл на основе .env.example');
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+if (missingVars.length > 0) {
+    console.error('❌ Отсутствуют необходимые переменные окружения:', missingVars.join(', '));
+    console.error('Пожалуйста, создайте файл .env или установите переменные окружения');
     process.exit(1);
 }
 
-// Проверяем DATABASE_URL
-const envContent = fs.readFileSync('.env', 'utf8');
-if (!envContent.includes('DATABASE_URL=')) {
-    console.error('❌ DATABASE_URL не найден в .env файле!');
-    process.exit(1);
-}
+// Запуск бэкенда
+console.log('🚀 Запуск бэкенда...');
+const backendProcess = spawn('node', ['backend/src/index.js'], {
+    stdio: 'inherit',
+    env: process.env
+});
 
-// Проверяем что DATABASE_URL не содержит placeholder значения
-const dbUrlMatch = envContent.match(/DATABASE_URL="([^"]+)"/);
-if (!dbUrlMatch || dbUrlMatch[1].includes('YOUR_') || dbUrlMatch[1].includes('REQUIRED_')) {
-    console.warn('⚠️ DATABASE_URL содержит placeholder значение');
-    console.log('📝 Используется локальная база данных для разработки');
-}
-
-try {
-    // Генерируем Prisma клиент
-    console.log('🔧 Генерация Prisma клиента...');
-    execSync('npm run generate', { stdio: 'inherit' });
-    
-    // Применяем миграции
-    console.log('🗄️ Применение миграций базы данных...');
-    execSync('npm run migrate', { stdio: 'inherit' });
-    
-    // Запускаем приложение
-    console.log('✅ Запуск приложения...');
-    execSync('node backend/src/index.js', { stdio: 'inherit' });
-    
-} catch (error) {
-    console.error('💥 Ошибка запуска:', error.message);
+backendProcess.on('error', (error) => {
+    console.error('❌ Ошибка запуска бэкенда:', error.message);
     process.exit(1);
-}
+});
+
+// Запуск Telegram бота
+console.log('🤖 Запуск Telegram бота...');
+const telegramProcess = spawn('node', ['apps/telegram-bot/src/index.js'], {
+    stdio: 'inherit',
+    env: process.env
+});
+
+telegramProcess.on('error', (error) => {
+    console.error('❌ Ошибка запуска Telegram бота:', error.message);
+});
+
+// Обработка завершения процесса
+process.on('SIGINT', () => {
+    console.log('⏹️ Завершение работы...');
+    backendProcess.kill();
+    telegramProcess.kill();
+    process.exit(0);
+});
+
+console.log('✅ VHM24 успешно запущен в продакшене');

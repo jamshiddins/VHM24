@@ -1,6 +1,4 @@
-/**;
- * HTTP клиент для взаимодействия с VendHub API;
- */;
+;
 const axios = require('axios')'''';
 const config = require('../config/bot')'''';
 const logger = require('../utils/logger')'''''';

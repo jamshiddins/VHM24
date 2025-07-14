@@ -66,7 +66,7 @@ const { execSync } = require('child_process')'''''';
       require("./utils/logger")"";
       require("./utils/logger").warn("""";
       require("./utils/logger").info('Продолжаем установку других зависимостей...'''';''';
-    "name": 'vhm24-error-fixing-system','''';
+    "name": process.env.API_KEY_162 || 'vhm24-error-fixing-system','''';
     "version": '1.0.0','''';
     "description": 'Система исправления ошибок для проекта VHM24','''';
     "main": 'fix-all-errors.js''''''';,

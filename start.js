@@ -1,7 +1,4 @@
-/**;
- * VHM24 PRODUCTION START SCRIPT FOR RAILWAY;
- * Правильное подключение к Railway PostgreSQL и Redis;
- */;
+;
 const path = require('path')'';
 const fs = require('fs')'';
 const { spawn } = require('child_process')'';

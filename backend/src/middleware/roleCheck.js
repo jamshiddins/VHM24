@@ -4,9 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-/**
- * Middleware для аутентификации пользователя
- */
+
 const authenticateToken = async (req, res, next) => {
     try {
         const authHeader = req.headers['authorization'];
@@ -65,11 +63,7 @@ const authenticateToken = async (req, res, next) => {
     }
 };
 
-/**
- * Middleware для проверки ролей пользователя
- * @param {Array} allowedRoles - Массив разрешенных ролей
- * @param {boolean} allowOwner - Разрешить доступ владельцу ресурса
- */
+
 const requireRole = (allowedRoles, allowOwner = false) => {
     return async (req, res, next) => {
         try {
@@ -112,10 +106,7 @@ const requireRole = (allowedRoles, allowOwner = false) => {
     };
 };
 
-/**
- * Middleware для проверки разрешений
- * @param {Array} permissions - Массив требуемых разрешений
- */
+
 const requirePermission = (permissions) => {
     return async (req, res, next) => {
         try {
@@ -139,7 +130,7 @@ const requirePermission = (permissions) => {
 
             return res.status(403).json({
                 error: 'Insufficient permissions',
-                code: 'INSUFFICIENT_PERMISSIONS'
+                code: process.env.API_KEY_67 || 'INSUFFICIENT_PERMISSIONS'
             });
 
         } catch (error) {
@@ -152,12 +143,7 @@ const requirePermission = (permissions) => {
     };
 };
 
-/**
- * Middleware для проверки владельца ресурса
- * @param {string} resourceField - Поле в req.params для ID ресурса
- * @param {string} model - Название модели Prisma
- * @param {string} ownerField - Поле в модели для проверки владельца (по умолчанию 'userId')
- */
+
 const checkOwnership = (resourceField, model, ownerField = 'userId') => {
     return async (req, res, next) => {
         try {

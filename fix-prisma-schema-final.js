@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔧 Final Fix for Prisma Schema...');
+
 
 const schemaPath = 'backend/prisma/schema.prisma';
 
@@ -169,20 +169,20 @@ schema = schema.replace(/item        Item\?         @relation\(fields: \[id\], r
 // Fix any remaining generic @relation(fields: [id], references: [id])
 schema = schema.replace(/@relation\(fields: \[id\], references: \[id\]\)/g, '@relation');
 
-console.log('💾 Saving fixed schema...');
+
 fs.writeFileSync(schemaPath, schema);
 
-console.log('✅ Prisma schema fixed!');
-console.log('🔄 Generating Prisma client...');
+
+
 
 const { execSync } = require('child_process');
 
 try {
     execSync('cd backend && npx prisma generate', { stdio: 'inherit' });
-    console.log('✅ Prisma client generated successfully!');
+    
 } catch (error) {
     console.error('❌ Error generating Prisma client:', error.message);
     process.exit(1);
 }
 
-console.log('🎉 All Prisma issues fixed!');
+

@@ -1,14 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * VHM24 ПОЛНАЯ НАСТРОЙКА БАЗЫ ДАННЫХ И ТЕСТИРОВАНИЕ
- * 
- * 1. Извлечение всех ключей Railway
- * 2. Настройка базы данных
- * 3. Исправление всех синтаксических ошибок
- * 4. Тестирование подключения
- * 5. Онлайн тестирование
- */
+
 
 const fs = require('fs');
 const path = require('path');
@@ -22,8 +14,8 @@ class VHM24DatabaseSetup {
         this.fixes = [];
         this.railwayKeys = {};
         
-        console.log('🚀 VHM24 ПОЛНАЯ НАСТРОЙКА БАЗЫ ДАННЫХ НАЧАТА');
-        console.log('🎯 Цель: Настроить БД, исправить все ошибки, протестировать онлайн');
+        
+        
     }
 
     // ============================================================================
@@ -31,16 +23,16 @@ class VHM24DatabaseSetup {
     // ============================================================================
 
     async extractRailwayKeys() {
-        console.log('\n🔑 1. ИЗВЛЕЧЕНИЕ КЛЮЧЕЙ RAILWAY');
+        
         
         try {
             // Проверяем Railway CLI
             execSync('railway --version', { stdio: 'pipe' });
-            console.log('✅ Railway CLI найден');
+            
             
             // Получаем все переменные
             const variables = execSync('railway variables', { encoding: 'utf8' });
-            console.log('📋 Переменные Railway получены');
+            
             
             // Парсим переменные
             this.parseRailwayVariables(variables);
@@ -53,7 +45,7 @@ class VHM24DatabaseSetup {
                     this.fixes.push('✅ DATABASE_URL получен из Railway');
                 }
             } catch (error) {
-                console.log('⚠️ DATABASE_URL не найден в Railway, создаем новую базу...');
+                
                 await this.createRailwayDatabase();
             }
             
@@ -65,12 +57,12 @@ class VHM24DatabaseSetup {
                     this.fixes.push('✅ PUBLIC_URL получен из Railway');
                 }
             } catch (error) {
-                console.log('⚠️ PUBLIC_URL не настроен');
+                
             }
             
         } catch (error) {
-            console.log('❌ Railway CLI не найден или не настроен');
-            console.log('🔧 Используем локальные настройки...');
+            
+            
             await this.setupLocalDatabase();
         }
     }
@@ -89,7 +81,7 @@ class VHM24DatabaseSetup {
 
     async createRailwayDatabase() {
         try {
-            console.log('🗄️ Создание новой базы данных PostgreSQL в Railway...');
+            
             execSync('railway add postgresql', { stdio: 'inherit' });
             
             // Ждем создания базы
@@ -102,13 +94,13 @@ class VHM24DatabaseSetup {
                 this.fixes.push('✅ Новая база данных создана в Railway');
             }
         } catch (error) {
-            console.log('❌ Ошибка создания базы данных в Railway');
+            
             await this.setupLocalDatabase();
         }
     }
 
     async setupLocalDatabase() {
-        console.log('🏠 Настройка локальной базы данных...');
+        
         this.railwayKeys.DATABASE_URL = 'postgresql://postgres:password@localhost:5432/vhm24?schema=public';
         this.fixes.push('⚠️ Используется локальная база данных');
     }
@@ -118,7 +110,7 @@ class VHM24DatabaseSetup {
     // ============================================================================
 
     async createWorkingEnv() {
-        console.log('\n📝 2. СОЗДАНИЕ РАБОЧЕГО .ENV');
+        
         
         // Генерируем безопасные ключи
         const jwtSecret = crypto.randomBytes(64).toString('hex');
@@ -152,7 +144,7 @@ PORT=3000
 NODE_ENV="production"
 
 # Telegram Bot (настройте токен)
-TELEGRAM_BOT_TOKEN="YOUR_TELEGRAM_BOT_TOKEN_HERE"
+TELEGRAM_BOT_TOKEN=process.env.API_KEY_536 || "YOUR_TELEGRAM_BOT_TOKEN_HERE"
 
 # File Upload
 UPLOAD_DIR="uploads"
@@ -190,7 +182,7 @@ PUBLIC_URL="${this.railwayKeys.PUBLIC_URL || 'localhost:3000'}"
         const exampleContent = envContent
             .replace(/="[^"]*"/g, '="your_value_here"')
             .replace(/DATABASE_URL="your_value_here"/, 'DATABASE_URL="postgresql://user:password@host:5432/database"')
-            .replace(/JWT_SECRET="your_value_here"/, 'JWT_SECRET="your_jwt_secret_64_chars"')
+            .replace(/JWT_SECRET="your_value_here"/, 'JWT_SECRET=process.env.API_KEY_537 || "your_jwt_secret_64_chars"')
             .replace(/API_URL="your_value_here"/, 'API_URL="https://your-app.railway.app"');
         
         fs.writeFileSync(path.join(this.projectRoot, '.env.example'), exampleContent);
@@ -202,7 +194,7 @@ PUBLIC_URL="${this.railwayKeys.PUBLIC_URL || 'localhost:3000'}"
     // ============================================================================
 
     async fixAllSyntaxErrors() {
-        console.log('\n🔧 3. ИСПРАВЛЕНИЕ ВСЕХ СИНТАКСИЧЕСКИХ ОШИБОК');
+        
         
         // Список проблемных файлов
         const problematicFiles = [
@@ -226,7 +218,7 @@ PUBLIC_URL="${this.railwayKeys.PUBLIC_URL || 'localhost:3000'}"
     async fixFileCompletely(filePath) {
         const fullPath = path.join(this.projectRoot, filePath);
         if (!fs.existsSync(fullPath)) {
-            console.log(`⚠️ Файл не найден: ${filePath}`);
+            
             return;
         }
 
@@ -299,7 +291,7 @@ PUBLIC_URL="${this.railwayKeys.PUBLIC_URL || 'localhost:3000'}"
     // ============================================================================
 
     async createWorkingRoutes() {
-        console.log('\n📁 4. СОЗДАНИЕ РАБОЧИХ РОУТОВ');
+        
         
         // Создаем базовый роут users.js
         const usersRoute = `const express = require('express');
@@ -440,21 +432,21 @@ module.exports = router;
     // ============================================================================
 
     async testDatabase() {
-        console.log('\n🗄️ 5. ТЕСТИРОВАНИЕ БАЗЫ ДАННЫХ');
+        
         
         try {
             // Генерируем Prisma клиент
-            console.log('🔧 Генерация Prisma клиента...');
+            
             execSync('cd backend && npx prisma generate', { stdio: 'inherit' });
             this.fixes.push('✅ Prisma клиент сгенерирован');
             
             // Применяем миграции
-            console.log('📊 Применение миграций...');
+            
             try {
                 execSync('cd backend && npx prisma migrate deploy', { stdio: 'inherit' });
                 this.fixes.push('✅ Миграции применены успешно');
             } catch (error) {
-                console.log('⚠️ Миграции не применены, создаем базу...');
+                
                 try {
                     execSync('cd backend && npx prisma db push', { stdio: 'inherit' });
                     this.fixes.push('✅ База данных создана через db push');
@@ -472,7 +464,7 @@ module.exports = router;
     }
 
     async testDatabaseConnection() {
-        console.log('🔌 Тестирование подключения к базе данных...');
+        
         
         const testScript = `
 const { PrismaClient } = require('@prisma/client');
@@ -482,11 +474,11 @@ async function testConnection() {
     
     try {
         await prisma.$connect();
-        console.log('✅ Подключение к базе данных успешно');
+        
         
         // Тестируем простой запрос
         const result = await prisma.$queryRaw\`SELECT 1 as test\`;
-        console.log('✅ Тестовый запрос выполнен:', result);
+        
         
         await prisma.$disconnect();
         process.exit(0);
@@ -499,7 +491,7 @@ async function testConnection() {
 testConnection();
 `;
 
-        fs.writeFileSync(path.join(this.projectRoot, 'test-db-connection.js'), testScript);
+        fs.writeFileSync(path.join(this.projectRoot, process.env.API_KEY_538 || 'test-db-connection.js'), testScript);
         
         try {
             execSync('node test-db-connection.js', { stdio: 'inherit' });
@@ -514,7 +506,7 @@ testConnection();
     // ============================================================================
 
     async startAndTestOnline() {
-        console.log('\n🌐 6. ЗАПУСК И ОНЛАЙН ТЕСТИРОВАНИЕ');
+        
         
         // Создаем скрипт запуска с тестированием
         const startScript = `#!/usr/bin/env node
@@ -522,15 +514,15 @@ testConnection();
 const { execSync } = require('child_process');
 const http = require('http');
 
-console.log('🚀 Запуск VHM24 с полным тестированием...');
+
 
 try {
     // Генерируем Prisma клиент
-    console.log('🔧 Генерация Prisma клиента...');
+    
     execSync('cd backend && npx prisma generate', { stdio: 'inherit' });
     
     // Запускаем сервер в фоне
-    console.log('🌐 Запуск сервера...');
+    
     const server = require('./backend/src/index.js');
     
     // Ждем запуска сервера
@@ -546,27 +538,27 @@ try {
 async function testEndpoints() {
     const baseUrl = process.env.API_URL || 'http://localhost:3000';
     
-    console.log('🧪 Тестирование эндпоинтов...');
+    
     
     // Тест health check
     try {
         const response = await fetch(\`\${baseUrl}/api/health\`);
         const data = await response.json();
-        console.log('✅ Health check:', data.status);
+        
     } catch (error) {
-        console.log('❌ Health check failed:', error.message);
+        
     }
     
     // Тест API info
     try {
         const response = await fetch(\`\${baseUrl}/api/info\`);
         const data = await response.json();
-        console.log('✅ API info:', data.name);
+        
     } catch (error) {
-        console.log('❌ API info failed:', error.message);
+        
     }
     
-    console.log('🎉 Тестирование завершено!');
+    
 }
 `;
 
@@ -579,11 +571,11 @@ async function testEndpoints() {
     // ============================================================================
 
     async deployToRailway() {
-        console.log('\n🚀 7. ДЕПЛОЙ НА RAILWAY');
+        
         
         try {
             // Устанавливаем переменные окружения в Railway
-            console.log('⚙️ Настройка переменных окружения в Railway...');
+            
             
             const envVars = [
                 'NODE_ENV=production',
@@ -596,12 +588,12 @@ async function testEndpoints() {
                 try {
                     execSync(`railway variables set ${envVar}`, { stdio: 'pipe' });
                 } catch (error) {
-                    console.log(`⚠️ Не удалось установить переменную: ${envVar}`);
+                    
                 }
             }
             
             // Деплоим
-            console.log('🚀 Деплой на Railway...');
+            
             execSync('railway up', { stdio: 'inherit' });
             this.fixes.push('✅ Деплой на Railway выполнен');
             
@@ -611,7 +603,7 @@ async function testEndpoints() {
                 console.log(`🌐 Приложение доступно: ${url.trim()}`);
                 this.fixes.push(`✅ Приложение доступно: ${url.trim()}`);
             } catch (error) {
-                console.log('⚠️ URL будет доступен после настройки домена');
+                
             }
             
         } catch (error) {
@@ -624,7 +616,7 @@ async function testEndpoints() {
     // ============================================================================
 
     async createFinalReport() {
-        console.log('\n📋 8. СОЗДАНИЕ ФИНАЛЬНОГО ОТЧЕТА');
+        
         
         const report = `# 🎯 VHM24 - ПОЛНАЯ НАСТРОЙКА БАЗЫ ДАННЫХ ЗАВЕРШЕНА
 
@@ -702,8 +694,8 @@ railway logs
 Настройщик: VHM24 Database Setup v1.0
 `;
 
-        fs.writeFileSync(path.join(this.projectRoot, 'VHM24_DATABASE_SETUP_COMPLETE.md'), report);
-        console.log('✅ Финальный отчет сохранен в VHM24_DATABASE_SETUP_COMPLETE.md');
+        fs.writeFileSync(path.join(this.projectRoot, process.env.API_KEY_539 || 'VHM24_DATABASE_SETUP_COMPLETE.md'), report);
+        
     }
 
     // ============================================================================
@@ -712,7 +704,7 @@ railway logs
 
     async run() {
         try {
-            console.log('🚀 Запуск полной настройки базы данных VHM24...\n');
+            
             
             // 1. Извлечение ключей Railway
             await this.extractRailwayKeys();
@@ -738,17 +730,17 @@ railway logs
             // 8. Создание финального отчета
             await this.createFinalReport();
             
-            console.log('\n🎉 ПОЛНАЯ НАСТРОЙКА БАЗЫ ДАННЫХ ЗАВЕРШЕНА!');
-            console.log('\n📊 ИТОГОВАЯ СТАТИСТИКА:');
-            console.log(`✅ Исправлений: ${this.fixes.length}`);
-            console.log(`❌ Ошибок: ${this.errors.length}`);
+            
+            
+            
+            
             console.log(`🔑 Railway ключей: ${Object.keys(this.railwayKeys).length}`);
             
-            console.log('\n🌐 СИСТЕМА ГОТОВА К РАБОТЕ ОНЛАЙН!');
-            console.log('\n📋 СЛЕДУЮЩИЕ ШАГИ:');
-            console.log('1. Проверьте: railway status');
-            console.log('2. Тестируйте: node start-and-test.js');
-            console.log('3. Мониторинг: railway logs');
+            
+            
+            
+            
+            
             
         } catch (error) {
             console.error('💥 КРИТИЧЕСКАЯ ОШИБКА:', error);

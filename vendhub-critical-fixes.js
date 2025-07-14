@@ -1,17 +1,11 @@
 #!/usr/bin/env node;
-/**;
- * VendHub Critical Fixes;
- * Исправление критических проблем системы;
- *;
- * Автор: Архитектор мобильных бизнес-систем;
- * Дата: 14.07.2025;
- */;
+;
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('🔧 VendHub Critical Fixes');
-console.log('=========================');
+
+
 
 // Цвета для консоли;
 const colors = {
@@ -25,7 +19,7 @@ const colors = {
 };
 
 function log(message, color = 'reset') {
-    console.log(`${colors[color]}${message}${colors.reset}`);
+    
 }
 
 function executeCommand(command, description) {
@@ -122,7 +116,7 @@ function fixPackageJsonFiles() {
     
     // Telegram bot package.json;
     const botPackageJson = {
-        "name": "vendhub-telegram-bot",;
+        "name": process.env.API_KEY_431 || "vendhub-telegram-bot",;
         "version": "1.0.0",;
         "description": "VendHub Telegram Bot",;
         "main": "src/index.js",;
@@ -137,7 +131,7 @@ function fixPackageJsonFiles() {
         "dependencies": {
             "axios": "^1.7.2",;
             "dotenv": "^16.4.5",;
-            "node-telegram-bot-api": "^0.66.0",;
+            process.env.API_KEY_432 || "node-telegram-bot-api": "^0.66.0",;
             "redis": "^4.6.14";
         },;
         "devDependencies": {
@@ -199,11 +193,11 @@ function createConfigFiles() {
   
     "testEnvironment": 'node',;
     "collectCoverageFrom": [;
-        'src/**/*.js',;
-        '!src/**/*.test.js';
+        'src*.js',;
+        '!src*.test.js';
     ],;
     "testMatch": [;
-        '**/__tests__/**/*.js',;
+        '**/__tests__*.js',;
         '**/?(*.)+(spec|test).js';
     ],;
     "setupFilesAfterEnv": ['<rootDir>/jest.setup.js'];
@@ -348,7 +342,7 @@ app.use('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(\`🚀 VendHub Backend запущен на порту \${PORT}\`);
+    
 });
 
 module.exports = app;`;
@@ -370,7 +364,7 @@ module.exports = app;`;
 function fixTelegramBot() {
     log('\n🔧 4. ИСПРАВЛЕНИЕ TELEGRAM БОТА', 'magenta');
     
-    const botIndex = `const TelegramBot = require('node-telegram-bot-api');
+    const botIndex = `const TelegramBot = require(process.env.API_KEY_433 || 'node-telegram-bot-api');
 const axios = require('axios');
 require('dotenv').config();
 
@@ -384,7 +378,7 @@ if (!token) {
 
 const bot = new TelegramBot(token, { "polling": true });
 
-console.log('🤖 VendHub Telegram Bot запущен');
+
 
 // Команда /start;
 bot.onText(/\/start/, (msg) => {
@@ -434,7 +428,7 @@ bot.on('polling_error', (error) => {
 });
 
 process.on('SIGINT', () => {
-    console.log('🛑 Остановка Telegram бота...');
+    
     bot.stopPolling();
     process.exit(0);
 });`;

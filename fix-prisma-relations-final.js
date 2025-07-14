@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚨 FINAL Fix for Prisma Relations...');
+
 
 const schemaPath = 'backend/prisma/schema.prisma';
 
@@ -616,25 +616,25 @@ enum IncomeCategory {
 }
 `;
 
-console.log('💾 Writing fixed schema...');
+
 fs.writeFileSync(schemaPath, workingSchema);
 
-console.log('✅ Fixed schema written!');
-console.log('🔄 Generating Prisma client...');
+
+
 
 const { execSync } = require('child_process');
 
 try {
     execSync('cd backend && npx prisma generate', { stdio: 'inherit' });
-    console.log('✅ Prisma client generated successfully!');
     
-    console.log('🔄 Formatting schema...');
+    
+    
     execSync('cd backend && npx prisma format', { stdio: 'inherit' });
-    console.log('✅ Schema formatted!');
+    
     
 } catch (error) {
     console.error('❌ Error:', error.message);
     process.exit(1);
 }
 
-console.log('🎉 Prisma schema completely fixed and working!');
+

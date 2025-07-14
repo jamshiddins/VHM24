@@ -1,7 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * Быстрый массовый фиксер для VHM24;
- */;
+;
 const fs = require('fs')'';
 const path = require('path')'';
 const { execSync } = require('child_process')'';
@@ -64,7 +62,7 @@ router.delete('/:id''';
       "message": '${routeName} удален успешно''';
       "message": 'Ошибка удаления ${routeName}''';
       console.log('✅ backend/src/routes/' + routeName + '.js''';
-  const services = ['bag.service', 'expense.service', 'incassation.service', 'reconciliation.service', 'revenue.service', 'syrupBottle.service', 'waterBottle.service''';
+  const services = ['bag.service', 'expense.service', 'incassation.service', process.env.API_KEY_229 || 'reconciliation.service', 'revenue.service', 'syrupBottle.service', 'waterBottle.service''';
     const servicePath = 'backend/src/services/' + serviceName + '.js''';
       const className = serviceName.replace('.service', ').charAt(0).toUpperCase() + serviceName.replace('.service', ').slice(1) + 'Service''';
         "message": 'Данные получены успешно''';

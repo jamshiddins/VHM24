@@ -36,7 +36,7 @@ app.get('/api/health', (req, res) => {
 
 // Telegram webhook
 app.post('/api/bot', (req, res) => {
-  console.log('Webhook received:', req.body);
+  
   res.json({ ok: true });
 });
 
@@ -50,7 +50,7 @@ app.use('*', (req, res) => {
 
 // Start server - КРИТИЧЕСКИ ВАЖНО прослушивание process.env.PORT
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Server started on port ${PORT}`);
-  console.log(`✅ Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`✅ Public URL: ${process.env.RAILWAY_PUBLIC_URL || 'http://localhost:' + PORT}`);
+  
+  
+  
 });

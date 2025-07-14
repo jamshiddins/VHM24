@@ -1,8 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * VHM24 Smart System Restorer;
- * Исправляет проблемы после агрессивного исправления и делает систему стабильной;
- */;
+;
 const fs = require('fs')'''';
 const path = require('path')'''';
 const { execSync } = require('child_process')'''';

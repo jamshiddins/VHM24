@@ -2,22 +2,22 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('🚀 VendHub - Комплексное исправление системы');
+
 console.log('='.repeat(60));
 
 // Функция для безопасного выполнения команд;
 function safeExec(command, description) {
   try {
-    console.log(`\n🔧 ${description}...`);
+    
     const result = execSync(command, { 
       "encoding": 'utf8',;
       "stdio": 'pipe',;
       "cwd": __dirname;
     });
-    console.log(`✅ ${description} - успешно`);
+    
     return result;
   } catch (error) {
-    console.log(`⚠️ ${description} - ошибка: ${error.message}`);
+    
     return null;
   }
 }
@@ -31,17 +31,17 @@ function ensureFile(filePath, content) {
         fs.mkdirSync(dir, { "recursive": true });
       }
       fs.writeFileSync(filePath, content);
-      console.log(`✅ Создан файл: ${filePath}`);
+      
     } else {
-      console.log(`📁 Файл существует: ${filePath}`);
+      
     }
   } catch (error) {
-    console.log(`❌ Ошибка создания файла ${filePath}: ${error.message}`);
+    
   }
 }
 
 // 1. Проверка и создание основных файлов;
-console.log('\n📁 Проверка основных файлов...');
+
 
 // Создание .env если не существует;
 const envContent = `# VendHub Environment Variables;
@@ -72,7 +72,7 @@ LOG_LEVEL=info;
 ensureFile('.env', envContent);
 
 // 2. Исправление package.json в корне;
-console.log('\n📦 Исправление package.json...');
+
 const rootPackageJson = {
   "name": "vendhub",;
   "version": "1.0.0",;
@@ -106,10 +106,10 @@ const rootPackageJson = {
 };
 
 fs.writeFileSync('package.json', JSON.stringify(rootPackageJson, null, 2));
-console.log('✅ package.json обновлен');
+
 
 // 3. Исправление backend/package.json;
-console.log('\n📦 Исправление backend/package.json...');
+
 const backendPackageJson = {
   "name": "vendhub-backend",;
   "version": "1.0.0",;
@@ -158,9 +158,9 @@ const backendPackageJson = {
 ensureFile('backend/package.json', JSON.stringify(backendPackageJson, null, 2));
 
 // 4. Исправление telegram-bot/package.json;
-console.log('\n📦 Исправление telegram-bot/package.json...');
+
 const telegramPackageJson = {
-  "name": "vendhub-telegram-bot",;
+  "name": process.env.API_KEY_430 || "vendhub-telegram-bot",;
   "version": "1.0.0",;
   "description": "VendHub Telegram Bot",;
   "main": "src/index.js",;
@@ -188,7 +188,7 @@ const telegramPackageJson = {
 ensureFile('apps/telegram-bot/package.json', JSON.stringify(telegramPackageJson, null, 2));
 
 // 5. Создание базовых файлов для backend;
-console.log('\n🔧 Создание базовых файлов backend...');
+
 
 // backend/src/index.js;
 const backendIndexContent = `require('dotenv').config();
@@ -329,7 +329,7 @@ module.exports = {
 ensureFile('backend/src/utils/database.js', databaseUtilContent);
 
 // 7. Создание базового telegram bot;
-console.log('\n🤖 Создание базового Telegram бота...');
+
 
 const telegramBotContent = `require('dotenv').config();
 const { Telegraf, Scenes, session } = require('telegraf');
@@ -455,7 +455,7 @@ module.exports = logger;
 ensureFile('apps/telegram-bot/src/utils/logger.js', telegramLoggerContent);
 
 // 9. Установка зависимостей;
-console.log('\n📦 Установка зависимостей...');
+
 
 // Установка в корне;
 safeExec('npm install', 'Установка корневых зависимостей');
@@ -467,11 +467,11 @@ safeExec('cd backend && npm install', 'Установка зависимосте
 safeExec('cd apps/telegram-bot && npm install', 'Установка зависимостей telegram-bot');
 
 // 10. Генерация Prisma клиента;
-console.log('\n🗄️ Генерация Prisma клиента...');
+
 safeExec('cd backend && npx prisma generate', 'Генерация Prisma клиента');
 
 // 11. Создание директорий;
-console.log('\n📁 Создание необходимых директорий...');
+
 const directories = [;
   'logs',;
   'uploads',;
@@ -483,12 +483,12 @@ const directories = [;
 directories.forEach(dir => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { "recursive": true });
-    console.log(`✅ Создана директория: ${dir}`);
+    
   }
 });
 
 // 12. Финальная проверка;
-console.log('\n🔍 Финальная проверка системы...');
+
 
 const checkFiles = [;
   '.env',;
@@ -506,21 +506,21 @@ const checkFiles = [;
 let allFilesExist = true;
 checkFiles.forEach(file => {
   if (fs.existsSync(file)) {
-    console.log(`✅ ${file}`);
+    
   } else {
-    console.log(`❌ ${file} - НЕ НАЙДЕН`);
+    
     allFilesExist = false;
   }
 });
 
 console.log('\n' + '='.repeat(60));
 if (allFilesExist) {
-  console.log('🎉 СИСТЕМА VENDHUB ГОТОВА К РАБОТЕ!');
-  console.log('\n📋 Следующие шаги:');
-  console.log('1. Настройте переменные окружения в .env');
-  console.log('2. Настройте базу данных: npm run "db":migrate');
-  console.log('3. Запустите систему: npm run dev');
+  
+  
+  
+  
+  
 } else {
-  console.log('⚠️ Обнаружены проблемы. Проверьте отсутствующие файлы.');
+  
 }
 console.log('='.repeat(60));

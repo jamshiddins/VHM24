@@ -2,7 +2,7 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔍 Извлечение DATABASE_URL из Railway...');
+
 
 try {
     // Получаем переменные окружения Railway
@@ -44,7 +44,7 @@ try {
 DATABASE_URL="${databaseUrl}"
 
 # JWT Secret
-JWT_SECRET="933f4234d58f69c74957860bf5a7a838e7c6f51f36876e5d415842bd796d6b5e"
+JWT_SECRET=process.env.API_KEY_175 || process.env.API_KEY_178 || "933f4234d58f69c74957860bf5a7a838e7c6f51f36876e5d415842bd796d6b5e"
 
 # Telegram Bot
 TELEGRAM_BOT_TOKEN="8015112367:AAHi25gHhI3p1X1uyuCAt8vUnlMZRrcoKEQ"
@@ -53,7 +53,7 @@ TELEGRAM_BOT_TOKEN="8015112367:AAHi25gHhI3p1X1uyuCAt8vUnlMZRrcoKEQ"
 REDIS_URL="redis://default:UBhuXXUjFDisRLBNOsoVNIaGHboCRPll@redis.railway.internal:6379"
 
 # S3 / DigitalOcean Spaces
-S3_ACCESS_KEY="DO00XEB6BC6XZ8Q2M4KQ"
+S3_ACCESS_KEY=process.env.API_KEY_176 || "DO00XEB6BC6XZ8Q2M4KQ"
 S3_BUCKET="vhm24-uploads"
 S3_BACKUP_BUCKET="vhm24-backups"
 S3_ENDPOINT="https://fra1.digitaloceanspaces.com"
@@ -64,13 +64,13 @@ PORT=3000
 NODE_ENV=development
 
 # Railway
-RAILWAY_PUBLIC_DOMAIN="web-production-73916.up.railway.app"
+RAILWAY_PUBLIC_DOMAIN=process.env.API_KEY_177 || "web-production-73916.up.railway.app"
 ADMIN_IDS="42283329"
 `;
         
         // Обновляем основной .env файл
         fs.writeFileSync('.env', envContent);
-        console.log('✅ .env файл обновлен');
+        
         
         // Обновляем backend/.env
         const backendEnvContent = `DATABASE_URL="${databaseUrl}"
@@ -82,7 +82,7 @@ NODE_ENV=development
 `;
         
         fs.writeFileSync('backend/.env', backendEnvContent);
-        console.log('✅ backend/.env файл обновлен');
+        
         
         // Обновляем apps/telegram-bot/.env
         const telegramBotEnvContent = `TELEGRAM_BOT_TOKEN="8015112367:AAHi25gHhI3p1X1uyuCAt8vUnlMZRrcoKEQ"
@@ -91,21 +91,21 @@ ADMIN_IDS="42283329"
 `;
         
         fs.writeFileSync('apps/telegram-bot/.env', telegramBotEnvContent);
-        console.log('✅ apps/telegram-bot/.env файл обновлен');
         
-        console.log('\n🎉 Все переменные окружения успешно настроены!');
-        console.log('📋 Настроенные компоненты:');
-        console.log('   ✅ PostgreSQL Database');
-        console.log('   ✅ Redis Cache');
-        console.log('   ✅ Telegram Bot');
+        
+        
+        
+        
+        
+        
         console.log('   ✅ DigitalOcean Spaces (S3)');
-        console.log('   ✅ JWT Authentication');
+        
         
     } else {
-        console.log('❌ Не удалось извлечь корректный DATABASE_URL');
-        console.log('Найденный URL:', databaseUrl);
+        
+        
     }
     
 } catch (error) {
-    console.log('❌ Ошибка при получении переменных Railway:', error.message);
+    
 }

@@ -100,6 +100,6 @@ app.use((err, req, res, next) => {
 
 // Запуск сервера
 app.listen(PORT, () => {
-  console.log(`🚀 VHM24 API запущен на порту ${PORT}`);
-  console.log(`🌐 http://localhost:${PORT}`);
+  
+  
 });

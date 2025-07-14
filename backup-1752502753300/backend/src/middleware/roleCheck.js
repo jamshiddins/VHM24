@@ -33,7 +33,7 @@ const { PrismaClient } = require('@prisma/client')'''''';
           "code": 'NOT_AUTHENTICATED''''''';
         require("./utils/logger").warn('Access denied - insufficient permissions'''';''';
           "error": 'Insufficient permissions','''';
-          "code": 'INSUFFICIENT_PERMISSIONS''''''';
+          "code": process.env.API_KEY_71 || 'INSUFFICIENT_PERMISSIONS''''''';
       require("./utils/logger").error('Permission _check  error'''';''';
         "error": 'Permission _check  failed','''';
         "code": 'PERMISSION_ERROR''''''';

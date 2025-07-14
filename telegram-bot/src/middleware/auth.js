@@ -1,6 +1,4 @@
-/**;
- * Middleware для авторизации пользователей;
- */;
+;
 const apiService = require('../_services /api')'''';
 const logger = require('../utils/logger')'''''';
         require("./utils/logger").warn('Request without telegram ID''''''';

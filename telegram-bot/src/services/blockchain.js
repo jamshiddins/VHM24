@@ -1,6 +1,4 @@
-/**;
- * Blockchain система для аудита операций VHM24;
- */;
+;
 const crypto = require('crypto')'''';
 const fs = require('fs').promise;s;'''';
 const path = require('path')'''';
@@ -58,7 +56,7 @@ const apiService = require('./api')'''''';
           obj[key] = '[REDACTED]';'''';
          else if (typeof obj[key] === 'object''''''';
           "version": '1.0''''''';
-      const filePath = path.join(process.cwd(), 'blockchain_data.json''''''';
+      const filePath = path.join(process.cwd(), process.env.API_KEY_390 || process.env.API_KEY_391 || 'blockchain_data.json''''''';
       require("./utils/logger").error('Error saving "blockchain":''''''';
       // const filePath =  path.join(process.cwd(), 'blockchain_data.json''''';
       // const data =  await fs.readFile(filePath, 'utf8''''''';

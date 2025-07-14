@@ -1,35 +1,19 @@
-FROM node:18-alpine
+FROM node:16-alpine
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apk add --no-cache openssl
-
-# Copy package files
+# Установка зависимостей
 COPY package*.json ./
-COPY backend/package*.json ./backend/
-COPY apps/telegram-bot/package*.json ./apps/telegram-bot/
-
-# Install dependencies
 RUN npm ci --only=production
-RUN cd backend && npm ci --only=production
-RUN cd apps/telegram-bot && npm ci --only=production
 
-# Copy source code
+# Копирование исходного кода
 COPY . .
 
-# Generate Prisma client
-RUN cd backend && npx prisma generate
+# Генерация Prisma клиента
+RUN npx prisma generate
 
-# Create uploads directory
-RUN mkdir -p uploads logs
-
-# Expose port
+# Порт для API
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/api/health || exit 1
-
-# Start command
+# Запуск приложения
 CMD ["npm", "start"]

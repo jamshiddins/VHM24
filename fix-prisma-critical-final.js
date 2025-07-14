@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔧 CRITICAL Fix for Prisma Schema...');
+
 
 const schemaPath = 'backend/prisma/schema.prisma';
 
@@ -14,7 +14,7 @@ if (!fs.existsSync(schemaPath)) {
 
 let schema = fs.readFileSync(schemaPath, 'utf8');
 
-console.log('📝 Fixing multiple @id issues...');
+
 
 // Remove duplicate @id attributes - only keep the first one
 schema = schema.replace(/(\w+)\s+(\w+)\s+@id\s+@default\(cuid\(\)\)\s*\n([\s\S]*?)@id\s+@default\(cuid\(\)\)/g, 
@@ -118,7 +118,7 @@ modelFixes.forEach(fix => {
 // Remove duplicate MovementType enum
 const movementTypeCount = (schema.match(/enum MovementType/g) || []).length;
 if (movementTypeCount > 1) {
-    console.log('📝 Removing duplicate MovementType enum...');
+    
     // Find and remove the second occurrence
     const parts = schema.split('enum MovementType');
     if (parts.length > 2) {
@@ -155,20 +155,20 @@ schema = schema.replace(
     'user          User         @relation(fields: [userId], references: [id])'
 );
 
-console.log('💾 Saving fixed schema...');
+
 fs.writeFileSync(schemaPath, schema);
 
-console.log('✅ Prisma schema fixed!');
-console.log('🔄 Generating Prisma client...');
+
+
 
 const { execSync } = require('child_process');
 
 try {
     execSync('cd backend && npx prisma generate', { stdio: 'inherit' });
-    console.log('✅ Prisma client generated successfully!');
+    
 } catch (error) {
     console.error('❌ Error generating Prisma client:', error.message);
     process.exit(1);
 }
 
-console.log('🎉 All critical Prisma issues fixed!');
+

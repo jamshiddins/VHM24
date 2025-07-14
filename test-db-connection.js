@@ -6,11 +6,11 @@ async function testConnection() {
     
     try {
         await prisma.$connect();
-        console.log('✅ Подключение к базе данных успешно');
+        
         
         // Тестируем простой запрос
         const result = await prisma.$queryRaw`SELECT 1 as test`;
-        console.log('✅ Тестовый запрос выполнен:', result);
+        
         
         await prisma.$disconnect();
         process.exit(0);

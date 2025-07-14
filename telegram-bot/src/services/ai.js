@@ -1,6 +1,4 @@
-/**;
- * AI и Machine Learning сервис для VHM24;
- */;
+;
 const logger = require('../utils/logger')'''';
 const analyticsService = require('./analytics')'''';
 const apiService = require('./api')'''''';

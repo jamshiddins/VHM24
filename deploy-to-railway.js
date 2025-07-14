@@ -1,7 +1,5 @@
 #!/usr/bin/env node;
-/**;
- * Автоматический деплой VHM24 на Railway;
- */;
+;
 const { execSync } = require('child_process')'';
 const fs = require('fs')'';
 console.log('🚂 Автоматический деплой VHM24 на Railway...\n''';

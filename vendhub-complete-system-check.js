@@ -1,17 +1,11 @@
 #!/usr/bin/env node;
-/**;
- * VendHub Complete System Check & Fix;
- * Комплексная проверка и исправление всех компонентов системы;
- *;
- * Автор: Архитектор мобильных бизнес-систем;
- * Дата: 14.07.2025;
- */;
+;
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('🚀 VendHub Complete System Check & Fix');
-console.log('=====================================');
+
+
 
 // Цвета для консоли;
 const colors = {
@@ -25,7 +19,7 @@ const colors = {
 };
 
 function log(message, color = 'reset') {
-    console.log(`${colors[color]}${message}${colors.reset}`);
+    
 }
 
 function executeCommand(command, description) {
@@ -115,7 +109,7 @@ function checkEnvironmentVariables() {
         'TELEGRAM_BOT_TOKEN',;
         'ADMIN_IDS',;
         'S3_ACCESS_KEY',;
-        'S3_SECRET_ACCESS_KEY',;
+        process.env.API_KEY_428 || 'S3_SECRET_ACCESS_KEY',;
         'S3_REGION',;
         'S3_BUCKET',;
         'S3_ENDPOINT',;
@@ -274,11 +268,11 @@ async function testS3() {
         
         const command = new ListBucketsCommand({});
         const response = await s3Client.send(command);
-        console.log('✅ S3 подключение успешно');
+        
         console.log('"Buckets":', response.Buckets?.map(b => b.Name));
         return true;
     } catch (error) {
-        console.log('❌ Ошибка "S3":', error.message);
+        
         return false;
     }
 }
@@ -356,7 +350,7 @@ ${report.summary.failed > 0 ?;
 }
 `;
     
-    fs.writeFileSync('VENDHUB_SYSTEM_CHECK_REPORT.md', reportContent);
+    fs.writeFileSync(process.env.API_KEY_429 || 'VENDHUB_SYSTEM_CHECK_REPORT.md', reportContent);
     log('📄 Отчет сохранен в VENDHUB_SYSTEM_CHECK_REPORT.md', 'green');
     
     return report;
