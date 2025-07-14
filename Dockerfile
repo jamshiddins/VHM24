@@ -1,26 +1,21 @@
-# VHM24 Railway Dockerfile
 FROM node:20-alpine
 
-# Install OpenSSL and other dependencies
-RUN apk add --no-cache openssl libc6-compat
-
-# Set working directory
 WORKDIR /app
+
+# Install necessary packages for node-gyp and Prisma
+RUN apk add --no-cache openssl libc6-compat
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install root dependencies
+RUN npm ci
 
-# Copy source code
+# Copy all source code
 COPY . .
 
-# Install workspace dependencies
-RUN npm install --workspaces || true
-
-# Generate Prisma client
-RUN cd backend && npx prisma generate || true
+# Install backend dependencies and generate Prisma client
+RUN cd backend && npm ci && npx prisma generate
 
 # Expose port
 EXPOSE 8000
@@ -29,5 +24,5 @@ EXPOSE 8000
 ENV NODE_ENV=production
 ENV PORT=8000
 
-# Start command
+# Start application using our start.js script
 CMD ["npm", "start"]
