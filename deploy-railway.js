@@ -42,7 +42,7 @@ try {
     // Показываем URL
     try {
         const url = execSync('railway domain', { encoding: 'utf8' });
-        console.log(`🌐 Приложение доступно по адресу: ${url.trim()}`);
+        }`);
     } catch {
         
     }

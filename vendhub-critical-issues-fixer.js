@@ -3,7 +3,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 
-console.log('=' .repeat(50));
+);
 
 const fixes = [];
 
@@ -237,9 +237,9 @@ try {
 }
 
 // Финальный отчет;
-console.log('\n' + '='.repeat(50));
+);
 
-console.log('='.repeat(50));
+);
 
 const successFixes = fixes.filter(f => f.status === 'SUCCESS').length;
 const errorFixes = fixes.filter(f => f.status === 'ERROR').length;
@@ -256,4 +256,4 @@ if (errorFixes === 0) {
     
 }
 
-console.log('\n' + '='.repeat(50));
+);

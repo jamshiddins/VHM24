@@ -269,7 +269,7 @@ async function testS3() {
         const command = new ListBucketsCommand({});
         const response = await s3Client.send(command);
         
-        console.log('"Buckets":', response.Buckets?.map(b => b.Name));
+        );
         return true;
     } catch (error) {
         

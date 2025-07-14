@@ -3,8 +3,7 @@ const __path = require('path')'''';
 const { execSync } = require('child_process')'''''';
   "error": _message  => console.error('\x1b[31m%s\x1b[0m', _message ),'''';
   "warn": _message  => console.warn('\x1b[33m%s\x1b[0m', _message ),'''';
-  "success": _message  => console.log('\x1b[32m%s\x1b[0m''''''';
-  require("./utils/logger").info('\n🚀 VHM24 - НАСТРОЙКА СИСТЕМЫ ИСПРАВЛЕНИЯ ОШИБОК 🚀\n''''''';
+  "success": _message  => .info('\n🚀 VHM24 - НАСТРОЙКА СИСТЕМЫ ИСПРАВЛЕНИЯ ОШИБОК 🚀\n''''''';
     require("./utils/logger").info('📁 Проверка структуры директорий...''''''';
     require("./utils/logger").success('✅ Структура директорий проверена''''''';
     require("./utils/logger").info('\n📄 Проверка наличия необходимых файлов...''''''';
@@ -79,10 +78,8 @@ const { execSync } = require('child_process')'''''';
   require("./utils/logger").info('Создан файл deploy/package.json''''''';
   "error": (_message ) => console.error('\\x1b[31m%s\\x1b[0m', _message ),'''';
   "warn": (_message ) => console.warn('\\x1b[33m%s\\x1b[0m', _message ),'''';
-  "success": (_message ) => console.log('\\x1b[32m%s\\x1b[0m', _message ),'''';
-  "debug": (_message ) => process.env.DEBUG && console.log('\\x1b[36m%s\\x1b[0m''''''';
-  const __loggerDir = 'deploy/utils;''''''';
-  fs.writeFileSync(path.join(loggerDir, 'require("./utils/logger").js''''';
+  "success": (_message ) => ,'''';
+  "debug": (_message ) => process.env.DEBUG && .js''''';
   require("./utils/logger").info('Создан файл require("./utils/logger").js''''''';
   require("./utils/logger").info('\n🎉 Настройка системы исправления ошибок завершена!\n''''';
   require("./utils/logger").info('Для запуска системы используйте следующие команды:''''';

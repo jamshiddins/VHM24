@@ -1,15 +1,8 @@
 const __fs = require('fs')'''';
 const __glob = require('glob')'''';
 const __path = require('path')'''''';
-console.log('🔄 Запуск исправления импортов fast-jwt...''''''';
-  require.resolve('glob''''''';
-  console.log('📦 Установка пакета glob...''''';
-  require('child_process').execSync('npm install glob', { "stdio": 'inherit''''';
-  console.log('✅ Пакет glob установлен''''''';
-console.log('🔍 Поиск JS файлов...''''';
-const __jsFiles = glob.sync('***.min.js''''''';
-    let __content = fs.readFileSync(file, 'utf8'''';''';
-      content.includes('fast-jwt') ||'''';
+.execSync('npm install glob', { "stdio": 'inherit''''';
+   ||'''';
       content.includes('createSigner') ||'''';
       content.includes('createVerifier''''''';
       content.includes("require('fast-jwt')") ||"""";
@@ -24,7 +17,4 @@ const __jsFiles = glob.sync('***.min.js''''''';
       content.includes('createVerifier(''''''';
         '''''';
         '''''';
-console.log('\n📊 Статистика:''''';
-console.log('\n✅ Исправление импортов fast-jwt завершено!''''';
-'';
-}))))))))))))))))
+)))))))))))))))

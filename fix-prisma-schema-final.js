@@ -14,7 +14,7 @@ if (!fs.existsSync(schemaPath)) {
 
 let schema = fs.readFileSync(schemaPath, 'utf8');
 
-console.log('📝 Fixing @relation($1) issues...');
+ issues...');
 
 // Fix all @relation($1) back to proper @relation syntax
 schema = schema.replace(/@relation\(\$1\)/g, '@relation(fields: [id], references: [id])');

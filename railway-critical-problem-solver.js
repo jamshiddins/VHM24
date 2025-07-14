@@ -169,7 +169,7 @@ cmd = "node server.js"
             
             
             // Ждем деплой
-            console.log('⏳ Ожидание завершения деплоя (60 секунд)...');
+            ...');
             await new Promise(resolve => setTimeout(resolve, 60000));
             
         } catch (error) {
@@ -203,7 +203,7 @@ cmd = "node server.js"
                 
                 
                 if (body) {
-                    console.log(`📄 Ответ: ${body.substring(0, 100)}...`);
+                    }...`);
                 }
                 
                 if (statusCode === '200') {

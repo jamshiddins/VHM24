@@ -22,7 +22,7 @@ class RailwayProductionConfigurator {
         };
         
         
-        console.log(`📋 Project: ${this.projectName} (${this.projectId})`);
+        `);
         
     }
 
@@ -389,7 +389,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Logging
 app.use((req, res, next) => {
-    console.log(\`\${new Date().toISOString()} - \${req.method} \${req.path}\`);
+    .toISOString()} - \${req.method} \${req.path}\`);
     next();
 });
 
@@ -648,7 +648,7 @@ Status: READY FOR PRODUCTION
             
             
             // Ждем деплой
-            console.log('⏳ Ожидание завершения деплоя (90 секунд)...');
+            ...');
             await new Promise(resolve => setTimeout(resolve, 90000));
             
         } catch (error) {

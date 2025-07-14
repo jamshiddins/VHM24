@@ -2,7 +2,7 @@ const readline = require('readline-sync');
 const fs = require('fs');
 const { execSync } = require('child_process');
 
-console.log('🚀 Railway Database Info Getter (Fixed)');
+');
 
 
 
@@ -24,7 +24,7 @@ function loginToRailway() {
     
     try {
         const whoami = execSync('railway whoami', { "encoding": 'utf8', "stdio": 'pipe' });
-        console.log('✅ Уже авторизован как:', whoami.trim());
+        );
         return true;
     } catch (error) {
         
@@ -111,7 +111,7 @@ function getDatabaseVariables() {
         
         if (databaseUrl) {
             
-            console.log('"DATABASE_URL":', databaseUrl.substring(0, 50) + '...');
+             + '...');
             return databaseUrl;
         } else {
             

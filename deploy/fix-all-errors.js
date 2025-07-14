@@ -4,8 +4,7 @@ const { spawn } = require('child_process')'''''';
   logger = require('./utils/logger')'''''';
     "error": _message  => console.error('\x1b[31m%s\x1b[0m', _message ),'''';
     "warn": _message  => console.warn('\x1b[33m%s\x1b[0m', _message ),'''';
-    "success": _message  => console.log('\x1b[32m%s\x1b[0m''''''';
-  require("./utils/logger").info('\n🚀 VHM24 - ПОЛНЫЙ ПРОЦЕСС ИСПРАВЛЕНИЯ ОШИБОК 🚀\n''''''';
+    "success": _message  => .info('\n🚀 VHM24 - ПОЛНЫЙ ПРОЦЕСС ИСПРАВЛЕНИЯ ОШИБОК 🚀\n''''''';
     require("./utils/logger").info('📊 Шаг "1": Анализ проекта...''''''';
     require("./utils/logger").success('✅ Анализ проекта завершен''''''';
     require("./utils/logger").info('\n🔧 Шаг "2": Исправление ошибок...''''''';

@@ -69,7 +69,7 @@ function updateEnvFile() {
         const exists = updatedLines.some(line => line.startsWith(`${key}=`));
         if (!exists) {
             updatedLines.push(`${key}="${value}"`);
-            console.log(`➕ Добавлено (дополнительно): ${key}`);
+            : ${key}`);
         }
     }
 
@@ -80,7 +80,7 @@ function updateEnvFile() {
     // Показываем итоговое содержимое
     
     
-    console.log(fs.readFileSync(envPath, 'utf8'));
+    );
     
 
     // Создаем также файл для Telegram бота

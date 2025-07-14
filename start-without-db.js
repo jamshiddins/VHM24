@@ -20,7 +20,7 @@ try {
     execSync('npm run generate', { stdio: 'inherit' });
     
     // Пропускаем миграции и запускаем приложение
-    console.log('⚠️ Пропускаем миграции (база данных недоступна)');
+    ');
     
     execSync('node backend/src/index.js', { stdio: 'inherit' });
     

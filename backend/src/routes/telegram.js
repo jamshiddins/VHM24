@@ -42,7 +42,7 @@ router.post('/webhook', (req, res) => {
     const update = req.body;
     
     // Логирование входящего обновления
-    console.log(`Получено обновление от Telegram: ${JSON.stringify(update)}`);
+    }`);
     
     // Отправляем 200 OK сразу, чтобы Telegram не повторял запрос
     res.status(200).send('OK');
@@ -67,7 +67,7 @@ router.post('/setWebhook', verifyTelegramSecret, async (req, res) => {
     // Здесь должен быть код для установки вебхука через Telegram API
     // Обычно это делается через fetch или axios
     
-    console.log(`Установлен вебхук: ${webhookUrl}`);
+    
     
     res.json({
       success: true,

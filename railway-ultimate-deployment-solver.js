@@ -52,7 +52,7 @@ class RailwayUltimateDeploymentSolver {
         // Проверяем Railway CLI
         try {
             const version = execSync('railway version', { encoding: 'utf8' });
-            console.log(`✅ Railway CLI: ${version.trim()}`);
+            }`);
         } catch (error) {
             
             throw new Error('Railway CLI не установлен или не работает');
@@ -110,7 +110,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Логирование всех запросов
 app.use((req, res, next) => {
-    console.log(\`[\${new Date().toISOString()}] \${req.method} \${req.path}\`);
+    .toISOString()}] \${req.method} \${req.path}\`);
     next();
 });
 
@@ -163,7 +163,7 @@ app.get('/api/info', (req, res) => {
 
 // Telegram webhook
 app.post('/api/bot', (req, res) => {
-    console.log('Telegram webhook received:', JSON.stringify(req.body));
+    );
     res.json({ 
         ok: true, 
         message: 'Webhook processed',
@@ -205,7 +205,7 @@ const server = app.listen(PORT, '0.0.0.0', () => {
     
     
     
-    console.log(\`⏰ Started at: \${new Date().toISOString()}\`);
+    .toISOString()}\`);
     
 });
 
@@ -410,7 +410,7 @@ railway up
             
             
             // Ждем и мониторим
-            console.log('\n⏳ Ожидание запуска (90 секунд)...');
+            ...');
             for (let i = 0; i < 9; i++) {
                 await new Promise(resolve => setTimeout(resolve, 10000));
                 process.stdout.write(`\r⏳ Прошло ${(i + 1) * 10} секунд...`);
@@ -467,7 +467,7 @@ railway up
                                 const json = JSON.parse(body);
                                 
                             } catch {
-                                console.log(`  📄 Ответ: ${body.substring(0, 50)}...`);
+                                }...`);
                             }
                         }
                         successCount++;
@@ -525,7 +525,7 @@ railway up
 const PORT = process.env.PORT || 3000;
 
 const server = http.createServer((req, res) => {
-    console.log(\`[\${new Date().toISOString()}] \${req.method} \${req.url}\`);
+    .toISOString()}] \${req.method} \${req.url}\`);
     
     res.writeHead(200, { 'Content-Type': 'application/json' });
     

@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 
-console.log('=' .repeat(60));
+);
 
 // Функция для выполнения команд;
 function runCommand(command, description) {
@@ -70,7 +70,7 @@ function checkEnvVars() {
 
 async function main() {
   
-  console.log('-'.repeat(40));
+  );
 
   // Проверка файлов;
   const filesOk = [;
@@ -92,7 +92,7 @@ async function main() {
   }
 
   
-  console.log('-'.repeat(40));
+  );
 
   // Переход в папку backend;
   process.chdir('backend');
@@ -121,7 +121,7 @@ async function main() {
   process.chdir('..');
 
   
-  console.log('-'.repeat(40));
+  );
 
   // Переход в папку telegram-bot;
   process.chdir('apps/telegram-bot');
@@ -135,7 +135,7 @@ async function main() {
   process.chdir('../..');
 
   
-  console.log('-'.repeat(40));
+  );
 
   // Проверка Railway статуса;
   runCommand('railway status', 'Проверка статуса Railway');
@@ -144,7 +144,7 @@ async function main() {
   runCommand('railway variables', 'Переменные окружения Railway');
 
   
-  console.log('=' .repeat(60));
+  );
   
   
   

@@ -12,7 +12,7 @@ require('dotenv')'''''';
       "reset": '\x1b[0m''''''';
     const __timestamp = new Date().toLocaleString('ru-RU', {'';'';
       "timeZone": 'Asia/Tashkent''''''';
-    console.log(`${require("colors")[_level ]}[${timestamp}] ${_message }${require("colors")"";
+    [_level ]}[${timestamp}] ${_message }${require("colors")"";
     require("./utils/logger")"";
     this.log('🚀 Запуск полной диагностики и исправления проблем VHM24', 'info''''''';
       this.log(`❌ Критическая ошибка: ${error._message }`, 'error''''';

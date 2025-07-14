@@ -4,7 +4,7 @@ const { spawn, exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Запуск системы VHM24 (VendHub Manager)...\n');
+...\n');
 
 // Функция для выполнения команд
 function runCommand(command, cwd = process.cwd()) {
@@ -201,11 +201,11 @@ async function startVHM24System() {
         });
 
         backendProcess.stdout.on('data', (data) => {
-            console.log(`[Backend] ${data.toString().trim()}`);
+            .trim()}`);
         });
 
         backendProcess.stderr.on('data', (data) => {
-            console.log(`[Backend Error] ${data.toString().trim()}`);
+            .trim()}`);
         });
 
         // Запускаем telegram bot
@@ -216,21 +216,21 @@ async function startVHM24System() {
         });
 
         botProcess.stdout.on('data', (data) => {
-            console.log(`[Bot] ${data.toString().trim()}`);
+            .trim()}`);
         });
 
         botProcess.stderr.on('data', (data) => {
-            console.log(`[Bot Error] ${data.toString().trim()}`);
+            .trim()}`);
         });
 
         // Ждем немного для инициализации
         await new Promise(resolve => setTimeout(resolve, 3000));
 
-        console.log('\n🎉 Система VHM24 (VendHub Manager) запущена!');
+         запущена!');
         
         
         
-        console.log('   🗄️ База данных: Подключена (если настроена)');
+        ');
         
 
         // Обработка завершения

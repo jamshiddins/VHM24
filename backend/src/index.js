@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Логирование запросов
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  .toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 

@@ -100,7 +100,7 @@ const exampleContent = newEnvContent
     .replace(/="[^"]*"/g, '="your_value_here"')
     .replace(/DATABASE_URL="your_value_here"/, 'DATABASE_URL="postgresql://user:password@host:5432/database"')
     .replace(/JWT_SECRET="your_value_here"/, 'JWT_SECRET=process.env.API_KEY_426 || "your_jwt_secret_64_chars"')
-    .replace(/API_URL="your_value_here"/, 'API_URL=process.env.YOUR-APP_RAILWAY_APP_URL || process.env.YOUR-APP_RAILWAY_APP_URL || "https://your-app.railway.app"')
+    .replace(/API_URL="your_value_here"/, 'API_URL=process.env.YOUR-APP_RAILWAY_APP_URL || process.env.YOUR-APP_RAILWAY_APP_URL || process.env.YOUR-APP_RAILWAY_APP_URL || "https://your-app.railway.app"')
     .replace(/TELEGRAM_BOT_TOKEN="your_value_here"/, 'TELEGRAM_BOT_TOKEN=process.env.API_KEY_427 || "your_telegram_bot_token"');
 
 fs.writeFileSync('.env.example', exampleContent);
@@ -108,11 +108,11 @@ fs.writeFileSync('.env.example', exampleContent);
 
 
 
-console.log(`🗄️ DATABASE_URL: ${railwayData.DATABASE_URL.substring(0, 50)}...`);
-console.log(`🔑 JWT_SECRET: ${railwayData.JWT_SECRET.substring(0, 20)}...`);
+}...`);
+}...`);
 
-console.log(`🤖 TELEGRAM_BOT_TOKEN: ${railwayData.TELEGRAM_BOT_TOKEN.substring(0, 20)}...`);
-console.log(`📦 REDIS_URL: ${railwayData.REDIS_URL.substring(0, 30)}...`);
+}...`);
+}...`);
 
 
 

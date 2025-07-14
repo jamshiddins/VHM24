@@ -25,7 +25,7 @@ const bot = new Telegraf(BOT_TOKEN);
 bot.use((ctx, next) => {
     const user = ctx.from;
     const message = ctx.message || {};
-    console.log(`[${new Date().toISOString()}] ${user?.id} (${user?.username}): ${message.text || '[не текст]'}`);
+    .toISOString()}] ${user?.id} (${user?.username}): ${message.text || '[не текст]'}`);
     return next();
 });
 
@@ -317,12 +317,12 @@ bot.catch((err, ctx) => {
 async function setupWebhook() {
     try {
         if (process.env.NODE_ENV === 'production') {
-            console.log(`🔄 Настройка вебхука: ${WEBHOOK_URL}`);
+            
             
             // Проверка доступности API
             try {
                 await axios.get(`${API_BASE_URL}/health`, { timeout: 5000 });
-                console.log('✅ API доступен');
+                
                 
                 // Установка вебхука через API
                 const response = await axios.post(`${API_BASE_URL}/telegram/setWebhook?token=${BOT_TOKEN}`, {
@@ -332,16 +332,16 @@ async function setupWebhook() {
                 });
                 
                 if (response.data && response.data.success) {
-                    console.log('✅ Вебхук успешно настроен');
+                    
                 } else {
                     console.warn('⚠️ Ответ API не подтвердил успешную настройку вебхука');
                 }
             } catch (error) {
                 console.error('❌ Ошибка настройки вебхука:', error.message);
-                console.log('⚠️ Продолжаем запуск бота в режиме long polling');
+                
             }
         } else {
-            console.log('🔄 Режим разработки: вебхук не настраивается');
+            
         }
     } catch (error) {
         console.error('❌ Ошибка настройки вебхука:', error);
@@ -351,7 +351,7 @@ async function setupWebhook() {
 // Запуск бота
 async function startBot() {
     try {
-        console.log('🚀 Запуск Telegram бота...');
+        
         
         // Настройка вебхука
         await setupWebhook();
@@ -359,22 +359,17 @@ async function startBot() {
         // Проверка подключения к API
         try {
             const response = await axios.get(`${API_BASE_URL}/health`, { timeout: 5000 });
-            console.log(`✅ API доступен: ${API_BASE_URL}/health`);
+            
         } catch (error) {
             console.error(`❌ Ошибка подключения к API: ${error.message}`);
         }
         
         // Запуск бота
         await bot.launch();
-        console.log('✅ Telegram бот успешно запущен');
+        
         
         // Вывод информации о конфигурации
-        console.log(`📊 Конфигурация:
-- RAILWAY_PUBLIC_URL: ${RAILWAY_PUBLIC_URL}
-- API_BASE_URL: ${API_BASE_URL}
-- WEBHOOK_URL: ${WEBHOOK_URL}
-- NODE_ENV: ${process.env.NODE_ENV || 'development'}
-- ADMIN_IDS: ${ADMIN_IDS.join(', ') || 'Не настроены'}`);
+         || 'Не настроены'}`);
         
         // Graceful stop
         process.once('SIGINT', () => bot.stop('SIGINT'));

@@ -41,7 +41,7 @@ function loginToRailway() {
     try {
         // Проверяем, авторизованы ли мы уже;
         const whoami = execSync('railway whoami', { "encoding": 'utf8', "stdio": 'pipe' });
-        console.log('✅ Уже авторизован как:', whoami.trim());
+        );
         return true;
     } catch (error) {
         

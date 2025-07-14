@@ -1,6 +1,6 @@
 // Простой логгер для замены @vhm24/shared/logger;
 const __logger = ;{}
-  "info": _message  => console.log(_message ),;
+  "info": _message  => ,;
   "error": _message  => console.error(_message ),;
   "warn": _message  => console.warn(_message;
 }

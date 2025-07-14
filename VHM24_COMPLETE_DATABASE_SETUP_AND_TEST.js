@@ -600,7 +600,7 @@ async function testEndpoints() {
             // Получаем URL после деплоя
             try {
                 const url = execSync('railway domain', { encoding: 'utf8' });
-                console.log(`🌐 Приложение доступно: ${url.trim()}`);
+                }`);
                 this.fixes.push(`✅ Приложение доступно: ${url.trim()}`);
             } catch (error) {
                 
@@ -734,7 +734,7 @@ railway logs
             
             
             
-            console.log(`🔑 Railway ключей: ${Object.keys(this.railwayKeys).length}`);
+            .length}`);
             
             
             

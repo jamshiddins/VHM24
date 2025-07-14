@@ -16,7 +16,7 @@ require('dotenv')'''''';
       "reset": '\x1b[0m''''''';
     const __timestamp = new Date().toLocaleString('ru-RU', {'';'';
       "timeZone": 'Asia/Tashkent''''''';
-    console.log(`${require("colors")[_level ]}[${timestamp}] ${_message }${require("colors")"";
+    [_level ]}[${timestamp}] ${_message }${require("colors")"";
     require("./utils/logger")"";
     this.log('🌟 Запуск полной системы VHM24 для 100% функциональности...', 'info''''''';
       this.log('🎉 Полная система VHM24 запущена и готова!', 'success''''''';
@@ -104,10 +104,8 @@ require('dotenv')'''''';
       this.log('✅ Frontend сервер остановлен', 'info''''''';
     this.log('🏁 Все сервисы остановлены', 'info''''''';
   process.on(_'SIGINT',  _async () => {'''';
-    console.log('\n⏹️ Получен сигнал остановки...''''''';
-  process.on(_'SIGTERM',  _async () => {'''';
-    console.log('\n⏹️ Получен сигнал завершения...''''''';
-  process.on(_'uncaughtException',  _async (error) => {'''';
+     => {'''';
+     => {'''';
     console.error('\n❌ Неожиданная ошибка:''''''';
   process.on(_'unhandledRejection',  _async (reason,  _promise) => {'''';
     console.error('\n❌ Неожиданное отклонение промиса:''''''';

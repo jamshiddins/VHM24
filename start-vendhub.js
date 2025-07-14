@@ -54,7 +54,7 @@ async function startVendHub() {
     requiredEnvVars.forEach(varName => {
       const value = process.env[varName];
       if (value) {
-        console.log(`✅ ${varName}: ${value.substring(0, 20)}...`);
+        }...`);
       } else {
         
       }

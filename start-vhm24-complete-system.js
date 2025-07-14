@@ -4,7 +4,7 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-console.log('🚀 Запуск полной системы VHM24 (VendHub Manager)...\n');
+...\n');
 
 // Проверка .env файла
 function checkEnvFile() {
@@ -61,13 +61,13 @@ function startProcess(name, command, args, cwd) {
         process.stdout.on('data', (data) => {
             const text = data.toString();
             output += text;
-            console.log(`[${name}] ${text.trim()}`);
+            }`);
         });
 
         process.stderr.on('data', (data) => {
             const text = data.toString();
             errorOutput += text;
-            console.log(`[${name}] ❌ ${text.trim()}`);
+            }`);
         });
 
         process.on('close', (code) => {
@@ -135,8 +135,8 @@ async function checkDatabase() {
 // Основная функция запуска
 async function startSystem() {
     try {
-        console.log('🎯 VHM24 (VendHub Manager) - Система управления вендинговыми автоматами');
-        console.log('=' .repeat(70));
+         - Система управления вендинговыми автоматами');
+        );
         
         // Проверка .env
         checkEnvFile();
@@ -157,11 +157,11 @@ async function startSystem() {
         });
         
         backendProcess.stdout.on('data', (data) => {
-            console.log(`[Backend] ${data.toString().trim()}`);
+            .trim()}`);
         });
         
         backendProcess.stderr.on('data', (data) => {
-            console.log(`[Backend] ❌ ${data.toString().trim()}`);
+            .trim()}`);
         });
         
         // Ждем немного для запуска backend
@@ -175,19 +175,19 @@ async function startSystem() {
         });
         
         telegramProcess.stdout.on('data', (data) => {
-            console.log(`[Telegram Bot] ${data.toString().trim()}`);
+            .trim()}`);
         });
         
         telegramProcess.stderr.on('data', (data) => {
-            console.log(`[Telegram Bot] ❌ ${data.toString().trim()}`);
+            .trim()}`);
         });
         
         
-        console.log('=' .repeat(50));
+        );
         
         
         
-        console.log('=' .repeat(50));
+        );
         
         
         // Обработка сигналов для graceful shutdown

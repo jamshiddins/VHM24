@@ -3,9 +3,7 @@
 const fs = require('fs')'';
 const path = require('path')'';
 const { execSync } = require('child_process')'';
-    console.log('🔧 VHM24 Comprehensive AutoFix - Запуск...\n''';
-      const result = execSync('npx eslint "**__tests__*.js''';
-    '**/?(*.)+(spec|test).js''';
+    +(spec|test).js''';
     'src*.js''';
     '!src*.test.js''';
     '!srcindex.js''';
@@ -32,14 +30,4 @@ describe('${fileName''';
     if (filePath.includes('scripts/') || fileName.includes('start-') || fileName.includes('fix-''';
 const fs = require('fs')'';
 const path = require('path')'';
-    console.log('🚀 Запуск ${fileName...''';
-    console.log('✅ ${fileName завершен успешно''';
-    console.error('❌ Ошибка в ${"fileName":''';,
-  "message": 'Выполнено успешно''';
-    console.log('\n🔍 Проверка результатов исправлений...''';
-      const result = execSync('npx eslint "**/*.js" --format compact''';
-        "encoding": 'utf8''';
-      console.log('✅ Все файлы успешно исправлены!''';
-    console.log('\n📊 Генерация отчета...''';
-    fs.writeFileSync(process.env.API_KEY_148 || 'comprehensive-fix-report.json''';
-}}}}}}}}}}}}}}}}))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+    )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]

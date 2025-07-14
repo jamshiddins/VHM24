@@ -20,6 +20,4 @@ app.get(_'/backup/list'''';''';
       "Prefix": 'database-backups/''''''';
     res.status(500).json({ "error": 'Failed to list backups''''''';
 cron.schedule(_'0 */6 * * *''''''';
-    console.log('Scheduled backup completed''''''';
-    console.error('Scheduled backup "failed":''''''';
-}}))))))))))]
+    )))))))))]

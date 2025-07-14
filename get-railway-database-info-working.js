@@ -24,7 +24,7 @@ async function getRailwayDatabaseInfo() {
         // Проверяем авторизацию
         try {
             const loginCheck = execSync('railway whoami', { stdio: 'pipe', encoding: 'utf8' });
-            console.log('✅ Авторизован в Railway:', loginCheck.trim());
+            );
         } catch (error) {
             
             
@@ -72,7 +72,7 @@ async function getRailwayDatabaseInfo() {
             }
 
             if (databaseUrl) {
-                console.log('\n✅ Найден DATABASE_URL:', databaseUrl.substring(0, 50) + '...');
+                 + '...');
                 
                 // Обновляем .env файл
                 const envPath = path.join(__dirname, '.env');

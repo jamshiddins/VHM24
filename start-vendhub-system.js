@@ -67,7 +67,7 @@ async function startSystem() {
         });
         
         backendProcess.stdout.on('data', (data) => {
-            console.log(`[Backend] ${data.toString().trim()}`);
+            .trim()}`);
         });
         
         backendProcess.stderr.on('data', (data) => {
@@ -85,7 +85,7 @@ async function startSystem() {
         });
         
         botProcess.stdout.on('data', (data) => {
-            console.log(`[Bot] ${data.toString().trim()}`);
+            .trim()}`);
         });
         
         botProcess.stderr.on('data', (data) => {

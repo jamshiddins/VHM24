@@ -107,7 +107,7 @@ function main() {
     
     
     
-    console.log('- .env (корневой)');
+    ');
     
     
     
@@ -118,7 +118,7 @@ function main() {
     
     
     
-    console.log('✅ DigitalOcean Spaces (S3)');
+    ');
     
     
     

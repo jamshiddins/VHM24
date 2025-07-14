@@ -171,7 +171,7 @@ class VHM24CompleteAuditor {
     }
 
     async addMissingRoles(missingRoles) {
-        console.log(`➕ Добавление ролей: ${missingRoles.join(', ')}`);
+        }`);
 
         const schemaPath = path.join(this.projectRoot, 'backend/prisma/schema.prisma');
         if (fs.existsSync(schemaPath)) {
@@ -191,7 +191,7 @@ class VHM24CompleteAuditor {
     }
 
     async addMissingTaskTypes(missingTypes) {
-        console.log(`➕ Добавление типов задач: ${missingTypes.join(', ')}`);
+        }`);
 
         const schemaPath = path.join(this.projectRoot, 'backend/prisma/schema.prisma');
         if (fs.existsSync(schemaPath)) {
@@ -210,7 +210,7 @@ class VHM24CompleteAuditor {
     }
 
     async createMissingRoutes(missingRoutes) {
-        console.log(`➕ Создание недостающих роутов: ${missingRoutes.join(', ')}`);
+        }`);
 
         const routesDir = path.join(this.projectRoot, 'backend/src/routes');
 
@@ -1036,9 +1036,103 @@ module.exports = {
         
         // Поиск временных файлов и логов
         const tempPatterns = [
-            '***.tmp', '**/tmptemp.DS_Store', '**/Thumbs.db', '**
-
-const { spawn } = require('child_process');
+            '*.tmp', '**/.DS_Store', '**/Thumbs.db', '**/.log'
+        ];
+        
+        for (const pattern of tempPatterns) {
+            const files = this.findFilesByPattern(pattern);
+            for (const file of files) {
+                try {
+                    fs.unlinkSync(file);
+                    this.cleanedFiles.push(path.relative(this.projectRoot, file));
+                } catch (error) {
+                    this.errors.push(`Ошибка удаления файла ${file}: ${error.message}`);
+                }
+            }
+        }
+    }
+    
+    async removeUnusedDependencies() {
+        
+        
+        // Проверка package.json на наличие неиспользуемых зависимостей
+        const packageJsonPath = path.join(this.projectRoot, 'package.json');
+        if (fs.existsSync(packageJsonPath)) {
+            try {
+                const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+                const dependencies = packageJson.dependencies || {};
+                const devDependencies = packageJson.devDependencies || {};
+                
+                // Список зависимостей, которые могут быть перемещены в devDependencies
+                const devOnlyPackages = [
+                    'eslint', 'prettier', 'nodemon', 'jest', 'mocha', 'chai',
+                    'supertest', 'webpack', 'babel', 'typescript', 'ts-node'
+                ];
+                
+                // Перемещаем dev-зависимости
+                let modified = false;
+                for (const pkg of Object.keys(dependencies)) {
+                    if (devOnlyPackages.some(devPkg => pkg.includes(devPkg))) {
+                        if (!devDependencies[pkg]) {
+                            devDependencies[pkg] = dependencies[pkg];
+                            delete dependencies[pkg];
+                            modified = true;
+                            this.fixes.push(`Перемещен пакет ${pkg} в devDependencies`);
+                        }
+                    }
+                }
+                
+                if (modified) {
+                    packageJson.dependencies = dependencies;
+                    packageJson.devDependencies = devDependencies;
+                    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+                }
+                
+            } catch (error) {
+                this.errors.push(`Ошибка анализа package.json: ${error.message}`);
+            }
+        }
+    }
+    
+    async removeConsoleLogsAndComments() {
+        
+        
+        // Поиск и удаление лишних console.log и комментариев в продакшен-коде
+        const jsFiles = this.getAllFiles(this.projectRoot, '.js');
+        
+        for (const file of jsFiles) {
+            // Пропускаем файлы в node_modules, .git и тестовые файлы
+            if (file.includes('node_modules') || 
+                file.includes('.git') || 
+                file.includes('test') || 
+                file.includes('spec')) continue;
+            
+            try {
+                let content = fs.readFileSync(file, 'utf8');
+                let modified = false;
+                
+                // Удаление console.log, которые не помечены как DEBUG
+                const consoleLogRegex = /console\.log\([^)]*\);?(?!\s*\/\/\s*DEBUG)/g;
+                const newContent = content.replace(consoleLogRegex, '');
+                
+                if (newContent !== content) {
+                    content = newContent;
+                    modified = true;
+                    this.fixes.push(`Удалены лишние console.log из ${path.relative(this.projectRoot, file)}`);
+                }
+                
+                if (modified) {
+                    fs.writeFileSync(file, content);
+                }
+                
+            } catch (error) {
+                this.errors.push(`Ошибка обработки файла ${file}: ${error.message}`);
+            }
+        }
+        
+        // Создание скрипта запуска в продакшене
+        const startProductionPath = path.join(this.projectRoot, 'start-production.js');
+        const startProductionContent = `const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
@@ -1058,7 +1152,6 @@ if (missingVars.length > 0) {
 }
 
 // Запуск бэкенда
-
 const backendProcess = spawn('node', ['backend/src/index.js'], {
     stdio: 'inherit',
     env: process.env
@@ -1070,7 +1163,6 @@ backendProcess.on('error', (error) => {
 });
 
 // Запуск Telegram бота
-
 const telegramProcess = spawn('node', ['apps/telegram-bot/src/index.js'], {
     stdio: 'inherit',
     env: process.env
@@ -1082,14 +1174,10 @@ telegramProcess.on('error', (error) => {
 
 // Обработка завершения процесса
 process.on('SIGINT', () => {
-    
     backendProcess.kill();
     telegramProcess.kill();
     process.exit(0);
-});
-
-
-`;
+});`;
 
         fs.writeFileSync(startProductionPath, startProductionContent);
         fs.chmodSync(startProductionPath, '755');
@@ -1143,8 +1231,7 @@ RUN npx prisma generate
 EXPOSE 3000
 
 # Запуск приложения
-CMD ["npm", "start"]
-`;
+CMD ["npm", "start"]`;
 
         fs.writeFileSync(dockerfilePath, dockerfileContent);
         this.fixes.push('Создан Dockerfile');
@@ -1228,6 +1315,108 @@ cmd = "npm start"
 
         fs.writeFileSync(nixpacksTomlPath, nixpacksTomlContent);
         this.fixes.push('Создан nixpacks.toml');
+    }
+    
+    // ============================================================================
+    // 6. ПОДГОТОВКА К ДЕПЛОЮ
+    // ============================================================================
+    
+    async prepareForDeployment() {
+        
+        
+        await this.createDockerfiles();
+        await this.setupRailwayConfig();
+        
+        // Создание файла README.md если его нет
+        const readmePath = path.join(this.projectRoot, 'README.md');
+        if (!fs.existsSync(readmePath)) {
+            const readmeContent = `# VHM24 - Система управления вендинговыми аппаратами
+
+## Описание
+
+VHM24 - это комплексная система для управления сетью вендинговых аппаратов, включающая:
+- Бэкенд на Node.js с Express и Prisma ORM
+- Telegram-бот для операторов и техников
+- API для интеграции с вендинговыми аппаратами
+- Панель администратора для управления всей системой
+
+## Требования
+
+- Node.js 16+
+- PostgreSQL 14+
+- Telegram Bot API Token
+
+## Установка и запуск
+
+1. Клонировать репозиторий
+2. Установить зависимости: \`npm install\`
+3. Создать файл .env на основе .env.example
+4. Запустить миграции Prisma: \`npx prisma migrate dev\`
+5. Запустить приложение: \`npm start\`
+
+## Деплой
+
+Проект настроен для деплоя на Railway:
+1. Подключить репозиторий к Railway
+2. Настроить переменные окружения
+3. Запустить деплой
+
+## Структура проекта
+
+- \`/backend\` - Бэкенд API
+- \`/apps/telegram-bot\` - Telegram бот
+- \`/docs\` - Документация
+
+## Лицензия
+
+MIT
+`;
+            fs.writeFileSync(readmePath, readmeContent);
+            this.fixes.push('Создан README.md');
+        }
+        
+        // Создание файла health check для Railway
+        const healthCheckPath = path.join(this.projectRoot, 'backend/src/routes/health.js');
+        if (!fs.existsSync(healthCheckPath)) {
+            const healthCheckContent = `const express = require('express');
+const { PrismaClient } = require('@prisma/client');
+const router = express.Router();
+const prisma = new PrismaClient();
+
+// GET /api/health - Проверка работоспособности API
+router.get('/', async (req, res) => {
+    try {
+        // Проверка соединения с базой данных
+        await prisma.$queryRaw\`SELECT 1\`;
+        
+        res.status(200).json({
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            memory: process.memoryUsage(),
+            version: process.env.npm_package_version || '1.0.0'
+        });
+    } catch (error) {
+        console.error('Health check failed:', error);
+        res.status(500).json({
+            status: 'error',
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+
+module.exports = router;`;
+            
+            // Создаем директорию, если она не существует
+            const routesDir = path.dirname(healthCheckPath);
+            if (!fs.existsSync(routesDir)) {
+                fs.mkdirSync(routesDir, { recursive: true });
+            }
+            
+            fs.writeFileSync(healthCheckPath, healthCheckContent);
+            this.fixes.push('Создан health check для Railway');
+        }
     }
     
     // ============================================================================

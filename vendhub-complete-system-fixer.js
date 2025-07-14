@@ -3,7 +3,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 
-console.log('='.repeat(60));
+);
 
 // Функция для безопасного выполнения команд;
 function safeExec(command, description) {
@@ -513,7 +513,7 @@ checkFiles.forEach(file => {
   }
 });
 
-console.log('\n' + '='.repeat(60));
+);
 if (allFilesExist) {
   
   
@@ -523,4 +523,4 @@ if (allFilesExist) {
 } else {
   
 }
-console.log('='.repeat(60));
+);

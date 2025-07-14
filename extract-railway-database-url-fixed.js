@@ -48,7 +48,7 @@ try {
         databaseUrl = fullUrl;
     }
     
-    console.log('✅ Найден DATABASE_URL:', databaseUrl.substring(0, 50) + '...');
+     + '...');
     
     // Обновляем .env файлы
     const envFiles = ['.env', 'backend/.env', 'apps/telegram-bot/.env'];

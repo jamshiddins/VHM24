@@ -251,7 +251,7 @@ module.exports = app;
             
             
             // Ждем немного меньше времени
-            console.log('⏳ Ожидание запуска (60 секунд)...');
+            ...');
             await new Promise(resolve => setTimeout(resolve, 60000));
             
         } catch (error) {
@@ -299,7 +299,7 @@ module.exports = app;
                             const jsonResponse = JSON.parse(body);
                             
                         } catch {
-                            console.log(`   Response: ${body.substring(0, 50)}...`);
+                            }...`);
                         }
                     }
                 } else {

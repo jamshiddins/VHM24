@@ -394,7 +394,7 @@ function printFinalMessage() {
   
   
   
-  console.log('2. Активируйте Web Role: Settings → Service Type → Web (exposes HTTP port)');
+  ');
   
   
   

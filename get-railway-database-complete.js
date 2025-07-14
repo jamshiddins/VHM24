@@ -66,7 +66,7 @@ try {
         return;
     }
     
-    console.log('✅ Найден DATABASE_URL:', databaseUrl.substring(0, 50) + '...');
+     + '...');
     
     // Обновляем .env файлы
     const envFiles = [

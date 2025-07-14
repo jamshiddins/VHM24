@@ -37,7 +37,7 @@ try {
     databaseUrl = databaseUrl.replace(/\s+/g, '').replace(/║.*$/, '');
     
     if (databaseUrl && databaseUrl.startsWith('postgresql://')) {
-        console.log('✅ Найден DATABASE_URL:', databaseUrl.substring(0, 50) + '...');
+         + '...');
         
         // Создаем полный .env файл с всеми переменными
         const envContent = `# Database
@@ -98,7 +98,7 @@ ADMIN_IDS="42283329"
         
         
         
-        console.log('   ✅ DigitalOcean Spaces (S3)');
+        ');
         
         
     } else {

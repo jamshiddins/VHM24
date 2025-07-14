@@ -138,13 +138,12 @@ const __path = require('path')''';''';
     "review": 'Файлы для ревизии','''';
     "test": 'Тестовые файлы','''';
     "documentation": 'Документация''''''';
-    console.log(`${require("colors").cyan}${title}:${require("colors")"";
+    .cyan}${title}:${require("colors")"";
       let __status = require("colors").green + '✓;''''''';
         _status  = require("colors").red + '✗''''''';
         _status  = require("colors").yellow + '!''''''';
-      console.log(`  ${_status }${require("colors")"";
-    console.log('''''';
-  console.log(`${require("colors").blue}📈 Итоговая статистика:${require("colors")"";
+      "";
+    .blue}📈 Итоговая статистика:${require("colors")"";
       `  ${require("colors").red}Неиспользуемых файлов: ${unusedFiles.length}${require("colors")"";
       `  ${require("colors").red}Размер неиспользуемых файлов: ${(unusedSize / 1024 / 1024).toFixed(2)} MB${require("colors")"";
       `${require("colors").green}✅ Неиспользуемых файлов не найдено!${require("colors")"";

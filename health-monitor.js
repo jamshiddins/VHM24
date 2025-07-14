@@ -19,13 +19,13 @@ function checkHealth() {
         res.on('end', () => {
             try {
                 const health = JSON.parse(data);
-                console.log(`✅ [${new Date().toISOString()}] Система работает - Uptime: ${Math.floor(health.uptime)}s`);
+                .toISOString()}] Система работает - Uptime: ${Math.floor(health.uptime)}s`);
             } catch (error) {
-                console.log(`⚠️ [${new Date().toISOString()}] Получен ответ, но не JSON`);
+                .toISOString()}] Получен ответ, но не JSON`);
             }
         });
     }).on('error', (error) => {
-        console.log(`❌ [${new Date().toISOString()}] Система недоступна: ${error.message}`);
+        .toISOString()}] Система недоступна: ${error.message}`);
     });
 }
 
@@ -35,4 +35,4 @@ checkHealth();
 // Периодические проверки
 setInterval(checkHealth, CHECK_INTERVAL);
 
-console.log(`⏰ Мониторинг запущен (интервал: ${CHECK_INTERVAL/1000}s)`);
+`);

@@ -55,38 +55,9 @@ const { execSync } = require('child_process')'''''';
       const _lines = fixedContent.split('\n'''';''';
         line.trim() && !line.trim().startsWith('//') && !line.trim().startsWith('1 * * * *''''''';
     cron.schedule(_'0 * * * *''''''';
-    console.log('🔍 24/7 Monitoring system started''''''';
-    const _maxMemory = parseInt(process.env.MAX_MEMORY_USAGE || '512''''''';
-      console.warn('⚠️ High memory usage "detected":', {'''';
-        "used": Math.round(usage.heapUsed / 1024 / 1024) + 'MB','''';
+     + 'MB','''';
         "max": Math.round(maxMemory / 1024 / 1024) + 'MB''''''';
-    console.log('🧹 Performing scheduled cleanup...''''''';
-      const _tmpDir = './tmp;''''''';
-      console.error('Cleanup "error":''''''';
-if (process.env.MONITORING_ENABLED === 'true''''''';
-    fs.writeFileSync('railway.toml''''';
-    fs.writeFileSync('nixpacks.toml''''';
-    fs.writeFileSync('Procfile''''';
-    fs.writeFileSync('backend/src/routes/health.js''''';
-    fs.writeFileSync('.env.production''''';
-    fs.writeFileSync('monitoring.js''''''';
-    this.log('Created Railway production configuration files', 'success''''''';
-    const _packageJsonPath  = './package.json;';'''';
-    const _packageJson = JSON.parse(fs.readFileSync(_packageJsonPath , 'utf8''''''';
-      '"start":prod': 'NODE_ENV=production node backend/src/index.js','''';
-      'build': 'echo "Build completed"','''';
-      'worker': 'node workers/index.js','''';
-      'scheduler': 'node scheduler/index.js','''';
-      'migrate': 'npx prisma migrate deploy','''';
-      'health': 'curl "http"://"localhost":3000/health''''''';
-      'node-cron': '^3.0.3','''';
-      'helmet': '^7.1.0','''';
-      'express-rate-limit': '^7.1.5''''''';
-      'node': '>=18.0.0','''';
-      'npm': '>=9.0.0''''''';
-    this.log('Updated package.json for production', 'success''''''';
-    this.log('🚀 Starting COMPREHENSIVE Production Ready Fixer...''''''';
-        if (fs.existsSync(filePath) && filePath.endsWith('.js') && !filePath.includes('.backup')) {'''';
+     && filePath.endsWith('.js') && !filePath.includes('.backup')) {'''';
           let _content = fs.readFileSync(filePath, 'utf8''''''';
           if (content.length !== originalLength || content !== fs.readFileSync(filePath, 'utf8''''''';
           if (stat.isDirectory() && !item.startsWith('.') && item !== 'node_modules''''''';

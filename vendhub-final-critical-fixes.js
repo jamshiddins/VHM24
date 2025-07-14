@@ -857,22 +857,22 @@ const checkResults = {
 
 const allGood = Object.values(checkResults).every(result => result === true);
 
-console.log('\n' + '='.repeat(50));
+);
 if (allGood) {
     
     
     
-    console.log('2. Set up your database (PostgreSQL)');
+    ');
     
-    console.log('4. "Run": npm start (in backend directory)');
-    console.log('5. "Run": npm start (in apps/telegram-bot directory)');
+    ');
+    ');
     
-    console.log('   ./start.sh (Linux/Mac) or start.bat (Windows)');
+     or start.bat (Windows)');
 } else {
     
     
 }
-console.log('='.repeat(50));
+);
 
 // 10. Создание финального отчета;
 const reportContent = `# VendHub Final Critical Fixes Report;

@@ -7,23 +7,4 @@ const fs = require('fs')'';
   'backend/src/routes/revenues.js''';
   'backend/src/routes/syrups.js''';
   'backend/src/routes/water.js''';
-console.log('🔧 Финальная очистка мелких ошибок...\n''';
-    let content = fs.readFileSync(routePath, 'utf8''';
-      /router\.delete\('\/:id''';
-      `router.delete('/:id''';
-      /"message": '[^']+' удален успешно''';
-      ""message": `Объект с ID ${id} удален успешно`""";
-    fs.writeFileSync(routePath, content, 'utf8''';
-    console.log('✅ ''';
-  'backend/src/services/bag.service.js''';
-  'backend/src/services/expense.service.js''';
-  'backend/src/services/incassation.service.js''';
-  'backend/src/services/reconciliation.service.js''';
-  'backend/src/services/revenue.service.js''';
-  'backend/src/services/syrupBottle.service.js''';
-  'backend/src/services/waterBottle.service.js''';
-    let content = fs.readFileSync(servicePath, 'utf8''';
-      'throw new Error''';
-    fs.writeFileSync(servicePath, content, 'utf8''';
-    console.log('✅ ''';
-console.log('\n🎉 Финальная очистка завершена!''))))))))))'
+)))))))))'

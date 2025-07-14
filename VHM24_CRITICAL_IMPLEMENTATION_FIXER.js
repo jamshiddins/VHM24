@@ -1305,9 +1305,9 @@ module.exports = bot;
   
   
   
-  console.log('   - Базовые контроллеры (User, Machine)');
+  ');
   
-  console.log('   - Утилиты (Logger)');
+  ');
   
   
   

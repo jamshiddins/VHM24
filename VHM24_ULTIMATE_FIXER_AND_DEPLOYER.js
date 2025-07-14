@@ -567,7 +567,7 @@ try {
     // Показываем URL
     try {
         const url = execSync('railway domain', { encoding: 'utf8' });
-        console.log(\`🌐 Приложение доступно по адресу: \${url.trim()}\`);
+        }\`);
     } catch {
         
     }
@@ -604,13 +604,13 @@ function checkHealth() {
         res.on('end', () => {
             try {
                 const health = JSON.parse(data);
-                console.log(\`✅ [\${new Date().toISOString()}] Система работает - Uptime: \${Math.floor(health.uptime)}s\`);
+                .toISOString()}] Система работает - Uptime: \${Math.floor(health.uptime)}s\`);
             } catch (error) {
-                console.log(\`⚠️ [\${new Date().toISOString()}] Получен ответ, но не JSON\`);
+                .toISOString()}] Получен ответ, но не JSON\`);
             }
         });
     }).on('error', (error) => {
-        console.log(\`❌ [\${new Date().toISOString()}] Система недоступна: \${error.message}\`);
+        .toISOString()}] Система недоступна: \${error.message}\`);
     });
 }
 
@@ -620,7 +620,7 @@ checkHealth();
 // Периодические проверки
 setInterval(checkHealth, CHECK_INTERVAL);
 
-console.log(\`⏰ Мониторинг запущен (интервал: \${CHECK_INTERVAL/1000}s)\`);
+\`);
 `;
         fs.writeFileSync(path.join(this.projectRoot, 'health-monitor.js'), monitorContent);
         this.fixes.push('Создан монитор состояния системы');

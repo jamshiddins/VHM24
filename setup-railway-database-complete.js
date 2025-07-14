@@ -50,7 +50,7 @@ class RailwayDatabaseSetup {
         
         try {
             const version = execSync('railway --version', { encoding: 'utf8' });
-            console.log(`✅ Railway CLI найден: ${version.trim()}`);
+            }`);
         } catch (error) {
             
             
@@ -118,7 +118,7 @@ class RailwayDatabaseSetup {
             try {
                 // Альтернативный способ
                 execSync('railway plugin add postgresql --service postgres', { stdio: 'inherit' });
-                console.log('✅ PostgreSQL добавлен (альтернативный способ)');
+                ');
             } catch (altError) {
                 throw new Error('Не удалось добавить PostgreSQL');
             }
@@ -268,7 +268,7 @@ testConnection();
             for (const envVar of envVars) {
                 try {
                     execSync(`railway variables set "${envVar}"`, { stdio: 'pipe' });
-                    console.log(`✅ Установлена переменная: ${envVar.split('=')[0]}`);
+                    [0]}`);
                 } catch (error) {
                     
                 }
@@ -281,7 +281,7 @@ testConnection();
             // Получаем URL
             try {
                 const url = execSync('railway domain', { encoding: 'utf8' });
-                console.log(`🌐 Приложение доступно: ${url.trim()}`);
+                }`);
             } catch (error) {
                 
             }

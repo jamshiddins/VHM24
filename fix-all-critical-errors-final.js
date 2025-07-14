@@ -208,7 +208,7 @@ fs.writeFileSync('.env', envContent);
 const startWithoutDbContent = `const { spawn } = require('child_process');
 const path = require('path');
 
-console.log('🚀 Запуск VHM24 без базы данных (только API и Telegram бот)...');
+...');
 
 // Запуск backend без Prisma
 const backendProcess = spawn('node', ['src/index-no-db.js'], {

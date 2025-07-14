@@ -226,7 +226,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Логирование
 app.use((req, res, next) => {
-    console.log(\`\${new Date().toISOString()} - \${req.method} \${req.path}\`);
+    .toISOString()} - \${req.method} \${req.path}\`);
     next();
 });
 
@@ -366,7 +366,7 @@ async function startServer() {
         }
         
         app.listen(PORT, '0.0.0.0', () => {
-            console.log(\`🚀 VHM24 API Server (Optimized) running on port \${PORT}\`);
+             running on port \${PORT}\`);
             
             
             
@@ -458,7 +458,7 @@ module.exports = { app, startServer };
         
         const baseUrl = this.optimizedVars.PUBLIC_DOMAIN 
             ? `https://${this.optimizedVars.PUBLIC_DOMAIN}`
-            : process.env.WEB-PRODUCTION-73916_UP_RAILWAY_APP_URL || process.env.WEB-PRODUCTION-73916_UP_RAILWAY_APP_URL || 'https://web-production-73916.up.railway.app';
+            : process.env.WEB-PRODUCTION-73916_UP_RAILWAY_APP_URL || process.env.WEB-PRODUCTION-73916_UP_RAILWAY_APP_URL || process.env.WEB-PRODUCTION-73916_UP_RAILWAY_APP_URL || 'https://web-production-73916.up.railway.app';
         
         const endpoints = [
             '/api/health',
@@ -474,9 +474,9 @@ module.exports = { app, startServer };
                 const statusCode = response.slice(-3);
                 
                 if (statusCode === '200') {
-                    console.log(`✅ ${endpoint}: OK (200)`);
+                    `);
                 } else if (statusCode === '308') {
-                    console.log(`⚠️ ${endpoint}: 308 Redirect (needs fixing)`);
+                    `);
                 } else {
                     
                 }

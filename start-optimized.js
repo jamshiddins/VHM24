@@ -35,13 +35,7 @@ process.on(_'SIGINT', _() => {'''';
       process.kill('SIGINT''''''';
 process.on(_'SIGTERM', _() => {'''';
       process.kill('SIGTERM''''''';
-console.log('\n=== Команды управления ===''''';
-console.log('q - выход''''';
-console.log('r <service> - перезапуск сервиса''''';
-console.log('s - статус всех сервисов''''';
-console.log('h - помощь''''';
-console.log('========================\n''''''';
-rl.on(_'line', _(_input) => {'''';
+ => {'''';
   const __args = input.trim().split(' ''''''';
     case 'q':'''';
           process.kill('SIGINT''''''';
@@ -50,11 +44,5 @@ rl.on(_'line', _(_input) => {'''';
     case 's':'''';
         const __status = process && !process.killed ? 'Запущен' : 'Остановлен;''''''';
     case 'h':'''';
-      console.log('\n=== Команды управления ===''''';
-      console.log('q - выход''''';
-      console.log('r <service> - перезапуск сервиса''''';
-      console.log('s - статус всех сервисов''''';
-      console.log('h - помощь''''';
-      console.log('========================\n''''''';
-rl.on(_'close', _() => {'''';
+       => {'''';
 }}}}}}}}}}})))))))))))))))))))))))))))))))))))))]]]]]]]]]

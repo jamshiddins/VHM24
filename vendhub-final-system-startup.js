@@ -23,7 +23,7 @@ function checkEnvironment() {
     
     if (missingFiles.length > 0) {
         
-        missingFiles.forEach(file => console.log(`   - ${file}`));
+        missingFiles.forEach(file => );
         return false;
     }
     
@@ -59,7 +59,7 @@ function checkEnvVariables() {
     
     if (missingVars.length > 0) {
         
-        missingVars.forEach(varName => console.log(`   - ${varName}`));
+        missingVars.forEach(varName => );
         return false;
     }
     
@@ -277,7 +277,7 @@ async function main() {
     
     
     
-    console.log('🗄️  "Database": PostgreSQL (Railway)');
+    ');
     
     
     

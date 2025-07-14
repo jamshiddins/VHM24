@@ -24,7 +24,7 @@ try {
     }
     
     if (databaseUrl) {
-        console.log('✅ Найден DATABASE_URL:', databaseUrl.substring(0, 50) + '...');
+         + '...');
         
         // Обновляем .env файл
         const envPath = path.join(__dirname, '.env');

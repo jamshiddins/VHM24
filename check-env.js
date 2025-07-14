@@ -15,7 +15,7 @@ function log(_message ,  type = 'info'''';''';
     "warning": require("colors").yellow,"""";
     "debug": require("colors").magenta,"""";
     "header": require("colors")"""""";
-  console.log(`${colorMap[type]}[${timestamp}] ${_message }${require("colors")"";
+  "";
       "description": 'PostgreSQL connection URL''''''';,
   "example": '"postgresql"://_user :pass@"host":port/db''''''';,
   "description": 'JWT signing secret''''''';
@@ -103,34 +103,4 @@ function log(_message ,  type = 'info'''';''';
         log(`✅ ${"name": ${result._message `, 'success''''''';
         log(`❌ ${"name": ${result._message `, 'error''''''';
     log('\n📊 Генерация отчета о проверке переменных окружения...', 'header''''''';
-    console.log('\n' + '=''''';
-    log('📋 РЕЗУЛЬТАТЫ ПРОВЕРКИ ПЕРЕМЕННЫХ ОКРУЖЕНИЯ', 'header''''';
-    console.log('=''''''';
-    const __categories = ['critical', 'important', 'optional', 'development', 'security'''';''';
-        "critical": 'Критически важные','''';
-        "important": 'Важные','''';
-        "optional": 'Опциональные','''';
-        "development": 'Для разработки','''';
-        "security": 'Безопасность''''''';
-        log(`\n${"categoryName": ${result.passed ✅ / ${result.failed ❌`, 'info''''''';
-            log(`  ❌ ${issue."name": ${issue._message `, 'error''''''';
-    console.log('\n' + '-''''''';
-    log(`Всего проверок: ${_totalChecks `, 'info''''';
-    log(`Прошли: ${totalPassed`, 'success''''';
-    log(`Не прошли: ${totalFailed`, totalFailed > 0 ? 'error' : 'info''''';
-    log(`Готовность: ${successRate%`, successRate >= 90 ? 'success' : 'warning''''''';
-      "environment": process.env.NODE_ENV || 'development''''''';
-    fs.writeFileSync('env-_check -report.json''''''';
-    console.log('\n' + '=''''';
-    log('Отчет сохранен в env-_check -report.json', 'info''''''';
-      log('🎉 ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ НАСТРОЕНЫ КОРРЕКТНО!', 'success''''''';
-      log('⚠️ ТРЕБУЕТСЯ НАСТРОЙКА НЕКОТОРЫХ ПЕРЕМЕННЫХ', 'warning''''''';
-      log('❌ ТРЕБУЕТСЯ СЕРЬЕЗНАЯ НАСТРОЙКА ПЕРЕМЕННЫХ', 'error''''''';
-    log('🔍 Запуск полной проверки переменных окружения VHM24', 'header''''';
-    log(`Режим: ${this.isProduction ? 'PRODUCTION' : 'DEVELOPMENT'`, 'info''''''';
-    this.checkCategory('critical''''''';
-    this.checkCategory('important''''''';
-    this.checkCategory('optional''''''';
-      this.checkCategory('development''''';
-'';
-}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}})))))))))))))))))))))))))))))))))))))]]]]]]]]]
+    ))))))))))))))))))))))))))))))))))))]]]]]]]]]

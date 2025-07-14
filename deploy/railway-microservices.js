@@ -95,19 +95,7 @@ app.get(_'/backup/list'''';''';
       "Prefix": 'database-backups/''''''';
     res.status(500).json({ "error": 'Failed to list backups''''''';
 cron.schedule(_'0 */6 * * *''''''';
-    console.log('Scheduled backup completed''''''';
-    console.error('Scheduled backup "failed":''''''';
-  fs.writeFileSync('_services /backups/index.js''''';
-  fs.writeFileSync('_services /backups/package.json', JSON.stringify({'''';
-    "name": 'vhm24-backups-service','''';
-    "version": '1.0.0','''';
-    "main": 'index.js''''''';
-      'express': '^4.18.2','''';
-      '@aws-sdk/client-s3': '^3.844.0','''';
-      '@prisma/client': '^6.11.1','''';
-      'node-cron': '^3.0.3''''''';
-  log('INFO', 'Created backups service''''''';
-// const __express = require('express')'''';
+    '''';
 // const __axios = require('axios')'''''';
 app.get(_'/health''''''';
     _status : 'ok','''';
