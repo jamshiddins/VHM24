@@ -170,7 +170,7 @@ class VHM24CompleteAuditor {
         }
     }
 
-    async addMissingRoles(missingRoles) {
+async addMissingRoles(missingRoles) {
         }`);
 
         const schemaPath = path.join(this.projectRoot, 'backend/prisma/schema.prisma');
@@ -190,7 +190,7 @@ class VHM24CompleteAuditor {
         }
     }
 
-    async addMissingTaskTypes(missingTypes) {
+async addMissingTaskTypes(missingTypes) {
         }`);
 
         const schemaPath = path.join(this.projectRoot, 'backend/prisma/schema.prisma');
@@ -209,7 +209,7 @@ class VHM24CompleteAuditor {
         }
     }
 
-    async createMissingRoutes(missingRoutes) {
+async createMissingRoutes(missingRoutes) {
         }`);
 
         const routesDir = path.join(this.projectRoot, 'backend/src/routes');
@@ -1212,7 +1212,7 @@ process.on('SIGINT', () => {
     async createDockerfiles() {
         
         
-        const dockerfilePath = path.join(this.projectRoot, 'Dockerfile');
+const dockerfilePath = path.join(this.projectRoot, 'Dockerfile');
         const dockerfileContent = `FROM node:16-alpine
 
 WORKDIR /app

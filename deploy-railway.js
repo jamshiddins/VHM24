@@ -31,7 +31,7 @@ try {
     
     // Устанавливаем переменные окружения
     
-    execSync('railway variables set NODE_ENV=production', { stdio: 'inherit' });
+    execSync('railway variables --set "NODE_ENV=production"', { stdio: 'inherit' });
     
     // Деплоим
     
@@ -42,8 +42,8 @@ try {
     // Показываем URL
     try {
         const url = execSync('railway domain', { encoding: 'utf8' });
-        }`);
-    } catch {
+        
+    } catch (error) {
         
     }
     

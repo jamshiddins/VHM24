@@ -100,7 +100,7 @@ const exampleContent = newEnvContent
     .replace(/="[^"]*"/g, '="your_value_here"')
     .replace(/DATABASE_URL="your_value_here"/, 'DATABASE_URL="postgresql://user:password@host:5432/database"')
     .replace(/JWT_SECRET="your_value_here"/, 'JWT_SECRET=process.env.API_KEY_426 || "your_jwt_secret_64_chars"')
-    .replace(/API_URL="your_value_here"/, 'API_URL=process.env.YOUR-APP_RAILWAY_APP_URL || process.env.YOUR-APP_RAILWAY_APP_URL || process.env.YOUR-APP_RAILWAY_APP_URL || "https://your-app.railway.app"')
+    .replace(/API_URL="your_value_here"/, 'API_URL=process.env.YOUR-APP_RAILWAY_APP_URL || process.env.YOUR-APP_RAILWAY_APP_URL || process.env.YOUR-APP_RAILWAY_APP_URL || process.env.YOUR-APP_RAILWAY_APP_URL || "https://your-app.railway.app"')
     .replace(/TELEGRAM_BOT_TOKEN="your_value_here"/, 'TELEGRAM_BOT_TOKEN=process.env.API_KEY_427 || "your_telegram_bot_token"');
 
 fs.writeFileSync('.env.example', exampleContent);
