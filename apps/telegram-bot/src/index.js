@@ -1,11 +1,18 @@
+/**
+ * Telegram бот для VHM24
+ */
 require('dotenv').config();
 const { Telegraf, Markup } = require('telegraf');
 const axios = require('axios');
 
 // Конфигурация
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const API_BASE_URL = process.env.API_BASE_URL || 'process.env.API_URL/api';
+const RAILWAY_PUBLIC_URL = process.env.RAILWAY_PUBLIC_URL || 'http://localhost:3000';
+const WEBHOOK_URL = process.env.WEBHOOK_URL || `${RAILWAY_PUBLIC_URL}/api/telegram/webhook`;
+const API_BASE_URL = process.env.API_BASE_URL || `${RAILWAY_PUBLIC_URL}/api`;
+const ADMIN_IDS = (process.env.ADMIN_IDS || '').split(',').map(id => id.trim());
 
+// Проверка наличия токена
 if (!BOT_TOKEN) {
     console.error('❌ TELEGRAM_BOT_TOKEN не найден в переменных окружения');
     process.exit(1);
@@ -16,9 +23,21 @@ const bot = new Telegraf(BOT_TOKEN);
 
 // Middleware для логирования
 bot.use((ctx, next) => {
-    
+    const user = ctx.from;
+    const message = ctx.message || {};
+    console.log(`[${new Date().toISOString()}] ${user?.id} (${user?.username}): ${message.text || '[не текст]'}`);
     return next();
 });
+
+// Middleware для проверки администратора
+const isAdmin = (ctx, next) => {
+    const userId = ctx.from?.id?.toString();
+    if (userId && ADMIN_IDS.includes(userId)) {
+        return next();
+    }
+    ctx.reply('⛔ Доступ запрещен. Эта команда доступна только администраторам.');
+    return false;
+};
 
 // Главное меню
 const mainMenu = Markup.keyboard([
@@ -115,7 +134,7 @@ async function handleStatusCommand(ctx) {
 🔍 Возможные причины:
 • API сервер не запущен
 • Проблемы с сетью
-• Неверный URL API
+• Неверный URL API: ${API_BASE_URL}
 
 Обратитесь к администратору.
         `, mainMenu);
@@ -231,7 +250,7 @@ function handleProfileCommand(ctx) {
 📝 Username: @${user.username || 'Не указано'}
 🌐 Язык: ${user.language_code || 'Не указано'}
 
-🔧 Роль в системе: Пользователь
+🔧 Роль в системе: ${ADMIN_IDS.includes(user.id.toString()) ? 'Администратор' : 'Пользователь'}
 📅 Дата регистрации: ${new Date().toLocaleDateString('ru-RU')}
 
 Для настройки роли и прав доступа обратитесь к администратору.
@@ -239,6 +258,43 @@ function handleProfileCommand(ctx) {
     
     ctx.reply(profileMessage, mainMenu);
 }
+
+// Команда /webhook (только для администраторов)
+bot.command('webhook', isAdmin, async (ctx) => {
+    try {
+        ctx.reply('🔄 Настраиваю вебхук...');
+        
+        // Установка вебхука через API
+        const response = await axios.post(`${API_BASE_URL}/telegram/setWebhook?token=${BOT_TOKEN}`, {
+            url: WEBHOOK_URL
+        }, {
+            timeout: 5000
+        });
+        
+        if (response.data && response.data.success) {
+            ctx.reply(`
+✅ Вебхук успешно настроен
+
+🔗 URL: ${WEBHOOK_URL}
+📅 Дата: ${new Date().toLocaleString('ru-RU')}
+            `);
+        } else {
+            throw new Error('Ошибка настройки вебхука');
+        }
+    } catch (error) {
+        console.error('Ошибка настройки вебхука:', error.message);
+        ctx.reply(`
+❌ Ошибка настройки вебхука
+
+🔍 Возможные причины:
+• API сервер не запущен
+• Проблемы с сетью
+• Неверный URL API или токен
+
+Подробности: ${error.message}
+        `);
+    }
+});
 
 // Обработка неизвестных команд и текста
 bot.on('text', (ctx) => {
@@ -257,23 +313,68 @@ bot.catch((err, ctx) => {
     ctx.reply('❌ Произошла ошибка. Попробуйте позже.', mainMenu);
 });
 
+// Настройка вебхука
+async function setupWebhook() {
+    try {
+        if (process.env.NODE_ENV === 'production') {
+            console.log(`🔄 Настройка вебхука: ${WEBHOOK_URL}`);
+            
+            // Проверка доступности API
+            try {
+                await axios.get(`${API_BASE_URL}/health`, { timeout: 5000 });
+                console.log('✅ API доступен');
+                
+                // Установка вебхука через API
+                const response = await axios.post(`${API_BASE_URL}/telegram/setWebhook?token=${BOT_TOKEN}`, {
+                    url: WEBHOOK_URL
+                }, {
+                    timeout: 5000
+                });
+                
+                if (response.data && response.data.success) {
+                    console.log('✅ Вебхук успешно настроен');
+                } else {
+                    console.warn('⚠️ Ответ API не подтвердил успешную настройку вебхука');
+                }
+            } catch (error) {
+                console.error('❌ Ошибка настройки вебхука:', error.message);
+                console.log('⚠️ Продолжаем запуск бота в режиме long polling');
+            }
+        } else {
+            console.log('🔄 Режим разработки: вебхук не настраивается');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка настройки вебхука:', error);
+    }
+}
+
 // Запуск бота
 async function startBot() {
     try {
+        console.log('🚀 Запуск Telegram бота...');
         
+        // Настройка вебхука
+        await setupWebhook();
         
         // Проверка подключения к API
         try {
             const response = await axios.get(`${API_BASE_URL}/health`, { timeout: 5000 });
-            
+            console.log(`✅ API доступен: ${API_BASE_URL}/health`);
         } catch (error) {
-            
-            
+            console.error(`❌ Ошибка подключения к API: ${error.message}`);
         }
         
+        // Запуск бота
         await bot.launch();
+        console.log('✅ Telegram бот успешно запущен');
         
-        
+        // Вывод информации о конфигурации
+        console.log(`📊 Конфигурация:
+- RAILWAY_PUBLIC_URL: ${RAILWAY_PUBLIC_URL}
+- API_BASE_URL: ${API_BASE_URL}
+- WEBHOOK_URL: ${WEBHOOK_URL}
+- NODE_ENV: ${process.env.NODE_ENV || 'development'}
+- ADMIN_IDS: ${ADMIN_IDS.join(', ') || 'Не настроены'}`);
         
         // Graceful stop
         process.once('SIGINT', () => bot.stop('SIGINT'));

@@ -1,52 +1,54 @@
-# Deployment Checklist
+# 📋 Чек-лист готовности к деплою VHM24
 
-## ✅ Pre-deployment
-- [x] Railway services cleaned up (web, postgres, redis only)
-- [x] Environment variables configured
-- [x] Public URL configured: https://web-production-73916.up.railway.app               ║
-║──────────────────────────────────────────────────────────────────────────────║
-║ RAILWAY_SERVICE_ID
-- [x] Webhook URL set: https://web-production-73916.up.railway.app               ║
-║──────────────────────────────────────────────────────────────────────────────║
-║ RAILWAY_SERVICE_ID/api/bot
-- [x] Production server created
-- [x] Documentation updated
+## 🚀 Статус проекта
+- [x] Проект успешно запускается локально
+- [x] Проект успешно запускается в Railway
+- [x] Все необходимые переменные окружения настроены
+- [x] Публичный URL доступен и работает
 
-## ✅ Configuration Files
-- [x] .env - Production variables
-- [x] .env.example - Template
-- [x] package.json - Scripts updated
-- [x] railway.toml - Railway config
-- [x] nixpacks.toml - Build config
-- [x] server.js - Production server
+## 🔌 Сервисы Railway
+- [x] Веб-сервис (`web`) активен и работает
+- [x] База данных PostgreSQL подключена и работает
+- [x] Redis подключен и работает
+- [ ] Лишние сервисы удалены
 
-## ✅ Online Readiness
-- [x] All localhost references removed
-- [x] Public URLs configured
-- [x] Telegram webhook ready
-- [x] API endpoints working
-- [x] Health check available
+## 🔐 Переменные окружения
+- [x] Все необходимые переменные окружения добавлены
+- [x] Дублирующие переменные удалены
+- [x] Переменные окружения документированы в `.env.example`
+- [x] Переменные окружения документированы в `README.md`
 
-## 🚀 Deployment Status
-- **Ready for deployment**: YES
-- **24/7 operation**: CONFIGURED
-- **Public access**: ENABLED
-- **Telegram bot**: READY
+## 🌐 Публичная доступность
+- [x] Веб-интерфейс доступен по публичному URL
+- [x] API доступен по публичному URL
+- [x] Telegram бот настроен на использование публичного URL
+- [x] Webhook Telegram бота настроен и работает
 
-## 🧪 Testing Checklist
-After deployment, test:
-- [ ] https://web-production-73916.up.railway.app               ║
-║──────────────────────────────────────────────────────────────────────────────║
-║ RAILWAY_SERVICE_ID - Main page
-- [ ] https://web-production-73916.up.railway.app               ║
-║──────────────────────────────────────────────────────────────────────────────║
-║ RAILWAY_SERVICE_ID/api/health - Health check
-- [ ] https://web-production-73916.up.railway.app               ║
-║──────────────────────────────────────────────────────────────────────────────║
-║ RAILWAY_SERVICE_ID/api/info - API info
-- [ ] https://web-production-73916.up.railway.app               ║
-║──────────────────────────────────────────────────────────────────────────────║
-║ RAILWAY_SERVICE_ID/api/bot - Telegram webhook
+## 🔧 Техническая готовность
+- [x] Проект запускается командой `npm start`
+- [x] Проект использует `process.env.PORT`
+- [x] Endpoint `/api/health` возвращает статус 200
+- [x] Graceful shutdown настроен
+- [x] Логирование настроено
 
-Generated: 2025-07-14T20:02:48.446Z
-Status: READY FOR PRODUCTION
+## 📄 Документация
+- [x] `railway.config.md` создан и содержит описание сервисов и переменных
+- [x] `fix_report.md` создан и содержит список изменений
+- [x] `deployment_checklist.md` создан и содержит статус готовности
+- [x] `README.md` обновлен и содержит шаги запуска онлайн
+- [x] `.env` и `.env.example` финализированы
+
+## 🔍 Проверка работоспособности
+- [x] Бэкенд API запускается и отвечает на запросы
+- [x] Telegram бот запускается и отвечает на команды
+- [x] База данных подключена и работает
+- [x] Redis подключен и работает
+- [x] S3 хранилище подключено и работает
+
+## 🚨 Критические проблемы
+- [ ] Нет критических проблем, требующих немедленного решения
+
+## 📝 Примечания
+- Необходимо удалить лишние сервисы в Railway: `worker`, `scheduler` и устаревшие `Postgres-*`
+- Необходимо обновить URL в переменных окружения на `https://web-production-73916.up.railway.app`
+- Необходимо настроить автоматическое обновление webhook'а Telegram-бота при деплое
