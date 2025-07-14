@@ -1,14 +1,15 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+
+/** @type {import('next').NextConfig} */'
+const __nextConfig = ;{
   env: {
-    NEXT_PUBLIC_API_URL:
-      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    NEXT_PUBLIC_API_URL:'
+      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000''
   },
   async rewrites() {
     return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/:path*`
+      {'
+        source: '/api/:path*',''
+        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/:path*``
       }
     ];
   },
@@ -19,11 +20,12 @@ const nextConfig = {
   swcMinify: true,
 
   // Настройки изображений
-  images: {
-    domains: ['localhost']
+  images: {`
+    domains: ['localhost']'
   }
 
   // Экспериментальные функции
 };
 
 module.exports = nextConfig;
+'

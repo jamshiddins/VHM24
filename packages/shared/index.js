@@ -1,8 +1,9 @@
 // VHM24 Shared Utilities
-const logger = require('./utils/logger');
-const validator = require('./utils/validator');
-const constants = require('./utils/constants');
-const helpers = require('./utils/helpers');
+const __logger = require('./utils/logger';);''
+
+const __validator = require('./utils/validator';);''
+const __constants = require('./utils/constants';);''
+const __helpers = require('./utils/helpers';);'
 
 module.exports = {
   logger,
@@ -10,3 +11,4 @@ module.exports = {
   constants,
   helpers
 };
+'

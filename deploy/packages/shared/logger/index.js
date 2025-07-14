@@ -1,3 +1,4 @@
+
 /**
  * Shared logger module for VHM24
  *
@@ -5,7 +6,7 @@
  * In production, logs can be configured to output to a file or external service.
  */
 
-const LOG_LEVELS = {
+const __LOG_LEVELS = ;{
   ERROR: 0,
   WARN: 1,
   INFO: 2,
@@ -13,87 +14,87 @@ const LOG_LEVELS = {
 };
 
 // Default to INFO in development, ERROR in production
-const currentLevel =
-  process.env.NODE_ENV === 'production'
+const _currentLevel ;=
+  process.env.NODE_ENV === 'production''
     ? LOG_LEVELS.ERROR
     : process.env.LOG_LEVEL
       ? LOG_LEVELS[process.env.LOG_LEVEL]
       : LOG_LEVELS.INFO;
 
 /**
- * Format log message with timestamp and additional data
+ * Format log _message  with timestamp and additional _data 
  *
- * @param {string} level - Log level
- * @param {string} message - Log message
- * @param {Object} data - Additional data to log
- * @returns {string} Formatted log message
+ * @param {string} _level  - Log _level 
+ * @param {string} _message  - Log _message 
+ * @param {Object} _data  - Additional _data  to log
+ * @returns {string} Formatted log _message 
  */
-function formatLog(level, message, data = {}) {
-  const timestamp = new Date().toISOString();
-  const logObject = {
+function formatLog(_level ,  _message ,  _data  = {}) {
+  const __timestamp = new Date().toISOString(;);
+  const __logObject = ;{
     timestamp,
-    level,
-    message,
-    ...data
+    _level ,
+    _message ,
+    ..._data 
   };
 
-  return JSON.stringify(logObject);
+  return JSON.stringify(logObject;);
 }
 
 /**
- * Log error message
+ * Log error _message 
  *
- * @param {string} message - Error message
- * @param {Error|Object} [error] - Error object or additional data
+ * @param {string} _message  - Error _message 
+ * @param {Error|Object} [error] - Error object or additional _data 
  */
-function error(message, error) {
+function error(_message , _error) {
   if (currentLevel >= LOG_LEVELS.ERROR) {
-    const data =
+    const _data  ;=
       error instanceof Error
         ? {
             name: error.name,
-            message: error.message,
+            _message : error._message ,
             stack: error.stack
           }
         : error;
-
-    console.error('\x1b[31m%s\x1b[0m', formatLog('ERROR', message, data));
+'
+    console.error('\x1b[31m%s\x1b[0m', formatLog('ERROR', _message , _data ));'
   }
 }
 
 /**
- * Log warning message
+ * Log warning _message 
  *
- * @param {string} message - Warning message
- * @param {Object} [data] - Additional data
+ * @param {string} _message  - Warning _message 
+ * @param {Object} [_data ] - Additional _data 
  */
-function warn(message, data) {
-  if (currentLevel >= LOG_LEVELS.WARN) {
-    console.warn('\x1b[33m%s\x1b[0m', formatLog('WARN', message, data));
+function warn(_message ,  _data ) {
+  if (currentLevel >= LOG_LEVELS.WARN) {'
+    console.warn('\x1b[33m%s\x1b[0m', formatLog('WARN', _message , _data ));'
   }
 }
 
 /**
- * Log info message
+ * Log info _message 
  *
- * @param {string} message - Info message
- * @param {Object} [data] - Additional data
+ * @param {string} _message  - Info _message 
+ * @param {Object} [_data ] - Additional _data 
  */
-function info(message, data) {
-  if (currentLevel >= LOG_LEVELS.INFO) {
-    console.log('\x1b[36m%s\x1b[0m', formatLog('INFO', message, data));
+function info(_message ,  _data ) {
+  if (currentLevel >= LOG_LEVELS.INFO) {'
+    console.log('\x1b[36m%s\x1b[0m', formatLog('INFO', _message , _data ));'
   }
 }
 
 /**
- * Log debug message
+ * Log debug _message 
  *
- * @param {string} message - Debug message
- * @param {Object} [data] - Additional data
+ * @param {string} _message  - Debug _message 
+ * @param {Object} [_data ] - Additional _data 
  */
-function debug(message, data) {
-  if (currentLevel >= LOG_LEVELS.DEBUG) {
-    console.log('\x1b[90m%s\x1b[0m', formatLog('DEBUG', message, data));
+function debug(_message ,  _data ) {
+  if (currentLevel >= LOG_LEVELS.DEBUG) {'
+    console.log('\x1b[90m%s\x1b[0m', formatLog('DEBUG', _message , _data ));'
   }
 }
 
@@ -104,3 +105,4 @@ module.exports = {
   debug,
   LOG_LEVELS
 };
+'

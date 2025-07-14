@@ -1,10 +1,10 @@
-require('dotenv').config();
-const express = require('express');
 const cors = require('cors');
+const express = require('express');
 const helmet = require('helmet');
+const logger = require('./utils/logger');
 const morgan = require('morgan');
 const { PrismaClient } = require('@prisma/client');
-const logger = require('./utils/logger');
+require('dotenv').config();
 
 // Инициализация
 const app = express();
@@ -34,6 +34,17 @@ const dataImportRoutes = require('./routes/data-import');
 const incompleteDataRoutes = require('./routes/incomplete-data');
 const telegramRoutes = require('./routes/telegram');
 
+// VendHubBot роуты
+const syrupsRoutes = require('./routes/syrups');
+const waterRoutes = require('./routes/water');
+const bagsRoutes = require('./routes/bags');
+const revenuesRoutes = require('./routes/revenues');
+const expensesRoutes = require('./routes/expenses');
+const incassationsRoutes = require('./routes/incassations');
+const reconciliationsRoutes = require('./routes/reconciliations');
+const taskTemplatesRoutes = require('./routes/taskTemplates');
+const taskExecutionRoutes = require('./routes/taskExecution');
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({
@@ -58,6 +69,17 @@ app.use('/api/v1/audit', auditRoutes);
 app.use('/api/v1/data-import', dataImportRoutes);
 app.use('/api/v1/incomplete-data', incompleteDataRoutes);
 app.use('/api/v1/telegram', telegramRoutes);
+
+// VendHubBot API Routes
+app.use('/api/v1/syrups', syrupsRoutes);
+app.use('/api/v1/water', waterRoutes);
+app.use('/api/v1/bags', bagsRoutes);
+app.use('/api/v1/revenues', revenuesRoutes);
+app.use('/api/v1/expenses', expensesRoutes);
+app.use('/api/v1/incassations', incassationsRoutes);
+app.use('/api/v1/reconciliations', reconciliationsRoutes);
+app.use('/api/v1/task-templates', taskTemplatesRoutes);
+app.use('/api/v1/task-execution', taskExecutionRoutes);
 
 // Error handling
 app.use((err, req, res, _next) => {
@@ -112,3 +134,6 @@ process.on('SIGINT', async () => {
 });
 
 startServer();
+
+// Экспорт для тестирования
+module.exports = app;

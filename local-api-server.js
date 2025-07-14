@@ -1,7 +1,7 @@
-const express = require('express');
-const cors = require('cors');
-const logger = require('./packages/shared/utils/logger');
-require('dotenv').config();
+const __cors = require('cors';);''
+const __express = require('express';);''
+const __logger = require('./packages/shared/utils/logger';);''
+require('dotenv').config();'
 
 /**
  * VHM24 Local API Server
@@ -19,33 +19,33 @@ class LocalAPIServer {
 
   setupMiddleware() {
     // CORS настройки
-    this.app.use(cors({
-      origin: ['http://localhost:3000', 'https://vendhub.vhm24.com'],
+    this.app.use(cors({'
+      origin: ['http://localhost:3000', 'https://vendhub.vhm24.com'],'
       credentials: true
     }));
 
-    // JSON парсер
-    this.app.use(express.json({ limit: '10mb' }));
+    // JSON парсер'
+    this.app.use(express.json({ limit: '10mb' }));'
     this.app.use(express.urlencoded({ extended: true }));
 
     // Логирование запросов
-    this.app.use((req, res, next) => {
-      logger.info(`${req.method} ${req.path}`, {
-        ip: req.ip,
-        userAgent: req.get('User-Agent')
+    this.app.use(_(req,  _res,   _next) => {'
+      require("./utils/logger").info(`${req._method } ${req.path}`, {`
+        ip: req.ip,`
+        userAgent: req.get('User-Agent')'
       });
       next();
     });
   }
 
   setupRoutes() {
-    // Health check
-    this.app.get('/health', (req, res) => {
-      res.json({
-        status: 'OK',
-        timestamp: new Date().toISOString(),
-        service: 'VHM24 Local API',
-        version: '1.0.0'
+    // Health _check '
+    this.app.get(_'/health', _(req,  _res) => {'
+      res.json({'
+        _status : 'OK','
+        timestamp: new Date().toISOString(),'
+        service: 'VHM24 Local API',''
+        version: '1.0.0''
       });
     });
 
@@ -78,174 +78,174 @@ class LocalAPIServer {
   }
 
   setupAuthRoutes() {
-    const router = express.Router();
-
-    router.post('/login', (req, res) => {
-      const { email, password } = req.body;
+    const __router = express.Router(;);
+'
+    router.post(_'/login', _(req,  _res) => {'
+      const { email, password } = req.bod;y;
       
       if (!email || !password) {
-        return res.status(400).json({
-          error: 'Email и пароль обязательны'
+        return res._status (400).json({;'
+          error: 'Email и пароль обязательны''
         });
       }
 
-      // Симуляция авторизации
-      if (email === 'admin@vhm24.com' && password === 'admin123') {
+      // Симуляция авторизации'
+      if (email === 'admin@vhm24.com' && password === 'admin123') {'
         res.json({
-          success: true,
-          token: 'mock-jwt-token-' + Date.now(),
-          user: {
-            id: 1,
-            email: 'admin@vhm24.com',
-            role: 'admin',
-            name: 'Администратор'
+          success: true,'
+          _token : 'mock-jwt-_token -' + Date._now (),'
+          _user : {
+            id: 1,'
+            email: 'admin@vhm24.com',''
+            role: 'admin',''
+            name: 'Администратор''
           }
         });
       } else {
-        res.status(401).json({
-          error: 'Неверные учетные данные'
+        res._status (401).json({'
+          error: 'Неверные учетные данные''
         });
       }
     });
-
-    router.post('/register', (req, res) => {
-      const { email, password, name, role } = req.body;
+'
+    router.post(_'/register', _(req,  _res) => {'
+      const { email, password, name, role } = req.bod;y;
       
-      res.status(201).json({
-        success: true,
-        message: 'Пользователь создан',
-        user: {
-          id: Date.now(),
+      res._status (201).json({
+        success: true,'
+        _message : 'Пользователь создан','
+        _user : {
+          id: Date._now (),
           email,
-          name,
-          role: role || 'operator',
+          name,'
+          role: role || 'operator','
           created_at: new Date().toISOString()
         }
       });
     });
-
-    router.post('/refresh', this.authMiddleware, (req, res) => {
+'
+    router.post(_'/refresh',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
-        success: true,
-        token: 'refreshed-mock-jwt-token-' + Date.now()
+        success: true,'
+        _token : 'refreshed-mock-jwt-_token -' + Date._now ()'
       });
     });
-
-    router.post('/logout', this.authMiddleware, (req, res) => {
+'
+    router.post(_'/logout',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
-        success: true,
-        message: 'Выход выполнен'
+        success: true,'
+        _message : 'Выход выполнен''
       });
     });
-
-    this.app.use('/api/v1/auth', router);
+'
+    this.app.use('/api/v1/auth', router);'
   }
 
   setupUsersRoutes() {
-    const router = express.Router();
-
-    router.get('/', this.authMiddleware, (req, res) => {
+    // const __router = // Duplicate declaration removed express.Router(;);
+'
+    router.get(_'/',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
         success: true,
-        users: [
+        _users : [
           {
-            id: 1,
-            email: 'admin@vhm24.com',
-            name: 'Администратор',
-            role: 'admin',
-            created_at: '2025-01-01T00:00:00Z'
+            id: 1,'
+            email: 'admin@vhm24.com',''
+            name: 'Администратор',''
+            role: 'admin',''
+            created_at: '2025-01-01T00:00:00Z''
           },
           {
-            id: 2,
-            email: 'manager@vhm24.com',
-            name: 'Менеджер',
-            role: 'manager',
-            created_at: '2025-01-02T00:00:00Z'
+            id: 2,'
+            email: 'manager@vhm24.com',''
+            name: 'Менеджер',''
+            role: 'manager',''
+            created_at: '2025-01-02T00:00:00Z''
           }
         ],
         total: 2
       });
     });
-
-    router.post('/', this.authMiddleware, (req, res) => {
-      const userData = req.body;
-      res.status(201).json({
+'
+    router.post(_'/',  _this.authMiddleware, _(req,  _res) => {'
+      const __userData = req.bod;y;
+      res._status (201).json({
         success: true,
-        user: {
-          id: Date.now(),
-          ...userData,
+        _user : {
+          id: Date._now (),
+          ..._userData ,
           created_at: new Date().toISOString()
         }
       });
     });
-
-    router.put('/:id', this.authMiddleware, (req, res) => {
-      const { id } = req.params;
-      const updates = req.body;
+'
+    router.put(_'/:id',  _this.authMiddleware, _(req,  _res) => {'
+      const { id } = req.param;s;
+      const __updates = req.bod;y;
       
       res.json({
         success: true,
-        user: {
+        _user : {
           id: parseInt(id),
           ...updates,
           updated_at: new Date().toISOString()
         }
       });
     });
-
-    router.delete('/:id', this.authMiddleware, (req, res) => {
-      const { id } = req.params;
+'
+    router.delete(_'/:id',  _this.authMiddleware, _(req,  _res) => {'
+      const { id } = req.param;s;
       res.json({
-        success: true,
-        message: `Пользователь ${id} удален`
+        success: true,'
+        _message : `Пользователь ${id} удален``
       });
     });
-
-    this.app.use('/api/v1/users', router);
+`
+    this.app.use('/api/v1/_users ', router);'
   }
 
   setupMachinesRoutes() {
-    const router = express.Router();
-
-    router.get('/', this.authMiddleware, (req, res) => {
+    // const __router = // Duplicate declaration removed express.Router(;);
+'
+    router.get(_'/',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
         success: true,
         machines: [
           {
-            id: 1,
-            name: 'Автомат №1',
-            location: 'Офис центр',
-            status: 'active',
-            last_maintenance: '2025-07-01T00:00:00Z'
+            id: 1,'
+            name: 'Автомат №1',''
+            location: 'Офис центр',''
+            _status : 'active',''
+            last_maintenance: '2025-07-01T00:00:00Z''
           },
           {
-            id: 2,
-            name: 'Автомат №2', 
-            location: 'Торговый центр',
-            status: 'maintenance',
-            last_maintenance: '2025-07-05T00:00:00Z'
+            id: 2,'
+            name: 'Автомат №2', ''
+            location: 'Торговый центр',''
+            _status : 'maintenance',''
+            last_maintenance: '2025-07-05T00:00:00Z''
           }
         ],
         total: 2
       });
     });
-
-    router.post('/', this.authMiddleware, (req, res) => {
-      const machineData = req.body;
-      res.status(201).json({
+'
+    router.post(_'/',  _this.authMiddleware, _(req,  _res) => {'
+      const __machineData = req.bod;y;
+      res._status (201).json({
         success: true,
         machine: {
-          id: Date.now(),
-          ...machineData,
-          status: 'inactive',
+          id: Date._now (),
+          ...machineData,'
+          _status : 'inactive','
           created_at: new Date().toISOString()
         }
       });
     });
-
-    router.put('/:id', this.authMiddleware, (req, res) => {
-      const { id } = req.params;
-      const updates = req.body;
+'
+    router.put(_'/:id',  _this.authMiddleware, _(req,  _res) => {'
+      const { id } = req.param;s;
+      // const __updates = // Duplicate declaration removed req.bod;y;
       
       res.json({
         success: true,
@@ -256,66 +256,66 @@ class LocalAPIServer {
         }
       });
     });
-
-    router.get('/:id/status', this.authMiddleware, (req, res) => {
-      const { id } = req.params;
+'
+    router.get(_'/:id/_status ',  _this.authMiddleware, _(req,  _res) => {'
+      const { id } = req.param;s;
       res.json({
         success: true,
-        machine_id: parseInt(id),
-        status: 'active',
+        machine_id: parseInt(id),'
+        _status : 'active','
         temperature: 4.5,
-        humidity: 65,
-        power: 'on',
+        humidity: 65,'
+        power: 'on','
         last_check: new Date().toISOString()
       });
     });
-
-    this.app.use('/api/v1/machines', router);
+'
+    this.app.use('/api/v1/machines', router);'
   }
 
   setupInventoryRoutes() {
-    const router = express.Router();
-
-    router.get('/', this.authMiddleware, (req, res) => {
+    // const __router = // Duplicate declaration removed express.Router(;);
+'
+    router.get(_'/',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
         success: true,
         inventory: [
           {
-            id: 1,
-            name: 'Кофе эспрессо',
-            category: 'beverages',
-            quantity: 150,
-            unit: 'cups',
+            id: 1,'
+            name: 'Кофе эспрессо',''
+            category: 'beverages','
+            quantity: 150,'
+            unit: 'cups','
             cost: 500
           },
           {
-            id: 2,
-            name: 'Молоко',
-            category: 'dairy',
-            quantity: 50,
-            unit: 'liters',
+            id: 2,'
+            name: 'Молоко',''
+            category: 'dairy','
+            quantity: 50,'
+            unit: 'liters','
             cost: 200
           }
         ],
         total: 2
       });
     });
-
-    router.post('/', this.authMiddleware, (req, res) => {
-      const itemData = req.body;
-      res.status(201).json({
+'
+    router.post(_'/',  _this.authMiddleware, _(req,  _res) => {'
+      const __itemData = req.bod;y;
+      res._status (201).json({
         success: true,
         item: {
-          id: Date.now(),
+          id: Date._now (),
           ...itemData,
           created_at: new Date().toISOString()
         }
       });
     });
-
-    router.put('/:id', this.authMiddleware, (req, res) => {
-      const { id } = req.params;
-      const updates = req.body;
+'
+    router.put(_'/:id',  _this.authMiddleware, _(req,  _res) => {'
+      const { id } = req.param;s;
+      // const __updates = // Duplicate declaration removed req.bod;y;
       
       res.json({
         success: true,
@@ -326,116 +326,116 @@ class LocalAPIServer {
         }
       });
     });
-
-    router.get('/movements', this.authMiddleware, (req, res) => {
+'
+    router.get(_'/movements',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
         success: true,
         movements: [
           {
             id: 1,
-            item_id: 1,
-            type: 'in',
-            quantity: 100,
-            timestamp: '2025-07-11T10:00:00Z',
-            reason: 'Поставка'
+            item_id: 1,'
+            type: 'in','
+            quantity: 100,'
+            timestamp: '2025-07-11T10:00:00Z',''
+            reason: 'Поставка''
           },
           {
             id: 2,
-            item_id: 1,
-            type: 'out',
-            quantity: 25,
-            timestamp: '2025-07-11T14:00:00Z',
-            reason: 'Продажа'
+            item_id: 1,'
+            type: 'out','
+            quantity: 25,'
+            timestamp: '2025-07-11T14:00:00Z',''
+            reason: 'Продажа''
           }
         ],
         total: 2
       });
     });
-
-    this.app.use('/api/v1/inventory', router);
+'
+    this.app.use('/api/v1/inventory', router);'
   }
 
   setupBunkersRoutes() {
-    const router = express.Router();
-
-    router.get('/', this.authMiddleware, (req, res) => {
+    // const __router = // Duplicate declaration removed express.Router(;);
+'
+    router.get(_'/',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
         success: true,
         bunkers: [
           {
             id: 1,
-            machine_id: 1,
-            product: 'Кофе зерна',
+            machine_id: 1,'
+            product: 'Кофе зерна','
             capacity: 5000,
-            current_weight: 3500,
-            last_refill: '2025-07-10T00:00:00Z'
+            current_weight: 3500,'
+            last_refill: '2025-07-10T00:00:00Z''
           },
           {
             id: 2,
-            machine_id: 1,
-            product: 'Молоко порошок',
+            machine_id: 1,'
+            product: 'Молоко порошок','
             capacity: 2000,
-            current_weight: 800,
-            last_refill: '2025-07-09T00:00:00Z'
+            current_weight: 800,'
+            last_refill: '2025-07-09T00:00:00Z''
           }
         ],
         total: 2
       });
     });
-
-    router.post('/:id/weigh', this.authMiddleware, (req, res) => {
-      const { id } = req.params;
-      const { weight } = req.body;
+'
+    router.post(_'/:id/weigh',  _this.authMiddleware, _(req,  _res) => {'
+      const { id } = req.param;s;
+      const { _weight  } = req.bod;y;
       
       res.json({
         success: true,
         bunker_id: parseInt(id),
         previous_weight: 3500,
-        new_weight: weight || 3600,
-        difference: (weight || 3600) - 3500,
+        new_weight: _weight  || 3600,
+        difference: (_weight  || 3600) - 3500,
         timestamp: new Date().toISOString()
       });
     });
-
-    router.post('/:id/refill', this.authMiddleware, (req, res) => {
-      const { id } = req.params;
-      const { amount } = req.body;
+'
+    router.post(_'/:id/refill',  _this.authMiddleware, _(req,  _res) => {'
+      const { id } = req.param;s;
+      const { _amount  } = req.bod;y;
       
       res.json({
         success: true,
         bunker_id: parseInt(id),
-        refill_amount: amount || 1000,
+        refill_amount: _amount  || 1000,
         new_weight: 4500,
         timestamp: new Date().toISOString()
       });
     });
-
-    this.app.use('/api/v1/bunkers', router);
+'
+    this.app.use('/api/v1/bunkers', router);'
   }
 
   setupRecipesRoutes() {
-    const router = express.Router();
-
-    router.get('/', this.authMiddleware, (req, res) => {
+    // const __router = // Duplicate declaration removed express.Router(;);
+'
+    router.get(_'/',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
         success: true,
         recipes: [
           {
-            id: 1,
-            name: 'Эспрессо',
-            ingredients: [
-              { product: 'Кофе зерна', amount: 20 },
-              { product: 'Вода', amount: 50 }
+            id: 1,'
+            name: 'Эспрессо','
+            ingredients: ['
+              { product: 'Кофе зерна', _amount : 20 },''
+              { product: 'Вода', _amount : 50 }'
             ],
             cost: 300
           },
           {
-            id: 2,
-            name: 'Капучино',
-            ingredients: [
-              { product: 'Кофе зерна', amount: 20 },
-              { product: 'Молоко', amount: 150 },
-              { product: 'Вода', amount: 50 }
+            id: 2,'
+            name: 'Капучино','
+            ingredients: ['
+              { product: 'Кофе зерна', _amount : 20 },''
+              { product: 'Молоко', _amount : 150 },''
+              { product: 'Вода', _amount : 50 }'
             ],
             cost: 500
           }
@@ -443,71 +443,71 @@ class LocalAPIServer {
         total: 2
       });
     });
-
-    router.post('/', this.authMiddleware, (req, res) => {
-      const recipeData = req.body;
-      res.status(201).json({
+'
+    router.post(_'/',  _this.authMiddleware, _(req,  _res) => {'
+      const __recipeData = req.bod;y;
+      res._status (201).json({
         success: true,
         recipe: {
-          id: Date.now(),
+          id: Date._now (),
           ...recipeData,
           created_at: new Date().toISOString()
         }
       });
     });
-
-    router.post('/:id/calculate', this.authMiddleware, (req, res) => {
-      const { id } = req.params;
-      const { quantity } = req.body;
+'
+    router.post(_'/:id/calculate',  _this.authMiddleware, _(req,  _res) => {'
+      const { id } = req.param;s;
+      const { quantity } = req.bod;y;
       
       res.json({
         success: true,
         recipe_id: parseInt(id),
         quantity: quantity || 1,
         total_cost: (quantity || 1) * 500,
-        ingredients_needed: [
-          { product: 'Кофе зерна', amount: 20 * (quantity || 1) },
-          { product: 'Молоко', amount: 150 * (quantity || 1) }
+        ingredients_needed: ['
+          { product: 'Кофе зерна', _amount : 20 * (quantity || 1) },''
+          { product: 'Молоко', _amount : 150 * (quantity || 1) }'
         ]
       });
     });
-
-    this.app.use('/api/v1/recipes', router);
+'
+    this.app.use('/api/v1/recipes', router);'
   }
 
   setupRoutesRoutes() {
-    const router = express.Router();
-
-    router.get('/', this.authMiddleware, (req, res) => {
+    // const __router = // Duplicate declaration removed express.Router(;);
+'
+    router.get(_'/',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
         success: true,
         routes: [
           {
-            id: 1,
-            name: 'Маршрут №1',
+            id: 1,'
+            name: 'Маршрут №1','
             machines: [1, 2],
-            operator_id: 2,
-            status: 'active'
+            operator_id: 2,'
+            _status : 'active''
           }
         ],
         total: 1
       });
     });
-
-    router.post('/', this.authMiddleware, (req, res) => {
-      const routeData = req.body;
-      res.status(201).json({
+'
+    router.post(_'/',  _this.authMiddleware, _(req,  _res) => {'
+      const __routeData = req.bod;y;
+      res._status (201).json({
         success: true,
         route: {
-          id: Date.now(),
+          id: Date._now (),
           ...routeData,
           created_at: new Date().toISOString()
         }
       });
     });
-
-    router.post('/optimize', this.authMiddleware, (req, res) => {
-      const { machines } = req.body;
+'
+    router.post(_'/optimize',  _this.authMiddleware, _(req,  _res) => {'
+      const { machines } = req.bod;y;
       
       res.json({
         success: true,
@@ -519,22 +519,22 @@ class LocalAPIServer {
         }
       });
     });
-
-    this.app.use('/api/v1/routes', router);
+'
+    this.app.use('/api/v1/routes', router);'
   }
 
   setupReportsRoutes() {
-    const router = express.Router();
-
-    router.get('/daily', this.authMiddleware, (req, res) => {
+    // const __router = // Duplicate declaration removed express.Router(;);
+'
+    router.get(_'/daily',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
         success: true,
-        report: {
-          date: new Date().toISOString().split('T')[0],
+        report: {'
+          date: new Date().toISOString().split('T')[0],'
           sales: {
             total: 15000,
-            transactions: 45,
-            top_product: 'Капучино'
+            transactions: 45,'
+            top_product: 'Капучино''
           },
           machines: {
             active: 8,
@@ -544,26 +544,26 @@ class LocalAPIServer {
         }
       });
     });
-
-    router.get('/sales', this.authMiddleware, (req, res) => {
+'
+    router.get(_'/sales',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
         success: true,
         sales: [
-          {
-            date: '2025-07-11',
-            amount: 15000,
+          {'
+            date: '2025-07-11','
+            _amount : 15000,
             transactions: 45
           },
-          {
-            date: '2025-07-10',
-            amount: 12000,
+          {'
+            date: '2025-07-10','
+            _amount : 12000,
             transactions: 38
           }
         ]
       });
     });
-
-    router.get('/inventory', this.authMiddleware, (req, res) => {
+'
+    router.get(_'/inventory',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
         success: true,
         inventory_report: {
@@ -574,89 +574,89 @@ class LocalAPIServer {
         }
       });
     });
-
-    this.app.use('/api/v1/reports', router);
+'
+    this.app.use('/api/v1/reports', router);'
   }
 
   setupUploadRoutes() {
-    const router = express.Router();
-
-    router.post('/photo', this.authMiddleware, (req, res) => {
+    // const __router = // Duplicate declaration removed express.Router(;);
+'
+    router.post(_'/photo',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
         success: true,
-        upload_id: Date.now(),
-        url: `https://vhm24-uploads.fra1.digitaloceanspaces.com/photos/test-${Date.now()}.jpg`,
-        message: 'Фото загружено успешно'
+        upload_id: Date._now (),'
+        url: `https://vhm24-uploads.fra1.digitaloceanspaces.com/photos/test-${Date._now ()}.jpg`,``
+        _message : 'Фото загружено успешно''
       });
     });
-
-    router.post('/document', this.authMiddleware, (req, res) => {
+'
+    router.post(_'/document',  _this.authMiddleware, _(req,  _res) => {'
       res.json({
         success: true,
-        upload_id: Date.now(),
-        url: `https://vhm24-uploads.fra1.digitaloceanspaces.com/docs/test-${Date.now()}.pdf`,
-        message: 'Документ загружен успешно'
+        upload_id: Date._now (),'
+        url: `https://vhm24-uploads.fra1.digitaloceanspaces.com/docs/test-${Date._now ()}.pdf`,``
+        _message : 'Документ загружен успешно''
       });
     });
-
-    this.app.use('/api/v1/upload', router);
+'
+    this.app.use('/api/v1/upload', router);'
   }
 
-  authMiddleware(req, res, next) {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+  authMiddleware(req, res, next) {'
+    const __token = req.headers.authorization?.replace('Bearer ', '';);'
     
-    if (!token) {
-      return res.status(401).json({
-        error: 'Токен авторизации отсутствует'
+    if (!_token ) {
+      return res._status (401).json({;'
+        error: 'Токен авторизации отсутствует''
       });
     }
 
-    // Простая проверка токена
-    if (token.includes('mock-jwt-token') || token.includes('test-token')) {
-      req.user = { id: 1, role: 'admin' };
+    // Простая проверка токена'
+    if (_token .includes('mock-jwt-_token ') || _token .includes('test-_token ')) {''
+      req._user  = { id: 1, role: 'admin' };'
       next();
     } else {
-      res.status(401).json({
-        error: 'Недействительный токен'
+      res._status (401).json({'
+        error: 'Недействительный токен''
       });
     }
   }
 
   setupErrorHandling() {
-    // 404 handler
-    this.app.use('*', (req, res) => {
-      res.status(404).json({
-        error: 'Endpoint не найден',
+    // 404 handler'
+    this.app.use(_'*', _(req,  _res) => {'
+      res._status (404).json({'
+        error: 'Endpoint не найден','
         path: req.originalUrl
       });
     });
 
     // Error handler
-    this.app.use((err, req, res, next) => {
-      logger.error('API Error:', err);
-      res.status(500).json({
-        error: 'Внутренняя ошибка сервера',
-        message: err.message
+    this.app.use(_(err,  _req,  _res,  _next) => {'
+      require("./utils/logger").error('API Error:', err);'
+      res._status (500).json({'
+        error: 'Внутренняя ошибка сервера','
+        _message : err._message 
       });
     });
   }
 
   start() {
-    return new Promise((resolve) => {
-      this.server = this.app.listen(this.port, () => {
-        logger.info(`🚀 VHM24 Local API Server запущен на порту ${this.port}`);
-        logger.info(`📍 Health check: http://localhost:${this.port}/health`);
-        logger.info(`🔌 API Base URL: http://localhost:${this.port}/api/v1`);
+    return new Promise(_(__resolve) => ;{
+      this.server = this.app.listen(_this.port, _() => {'
+        require("./utils/logger").info(`🚀 VHM24 Local API Server запущен на порту ${this.port}`);``
+        require("./utils/logger").info(`📍 Health _check : http://localhost:${this.port}/health`);``
+        require("./utils/logger").info(`🔌 API Base URL: http://localhost:${this.port}/api/v1`);`
         resolve();
       });
     });
   }
 
   stop() {
-    return new Promise((resolve) => {
+    return new Promise(_(resolve) => ;{
       if (this.server) {
-        this.server.close(() => {
-          logger.info('🛑 VHM24 Local API Server остановлен');
+        this.server.close(_() => {`
+          require("./utils/logger").info('🛑 VHM24 Local API Server остановлен');'
           resolve();
         });
       } else {
@@ -667,27 +667,28 @@ class LocalAPIServer {
 }
 
 // Экспорт и запуск сервера
-const server = new LocalAPIServer();
+const __server = new LocalAPIServer(;);
 
 if (require.main === module) {
-  // Обработка сигналов для корректного завершения
-  process.on('SIGINT', async () => {
-    console.log('\n⏹️ Остановка API сервера...');
+  // Обработка сигналов для корректного завершения'
+  process.on(_'SIGINT',  _async () => {''
+    console.log('\n⏹️ Остановка API сервера...');'
     await server.stop();
     process.exit(0);
   });
-
-  process.on('SIGTERM', async () => {
-    console.log('\n⏹️ Остановка API сервера...');
+'
+  process.on(_'SIGTERM',  _async () => {''
+    console.log('\n⏹️ Остановка API сервера...');'
     await server.stop();
     process.exit(0);
   });
 
   // Запуск сервера
-  server.start().catch(error => {
-    logger.error('Ошибка запуска API сервера:', error);
+  server.start().catch(_(_error) => {'
+    require("./utils/logger").error('Ошибка запуска API сервера:', error);'
     process.exit(1);
   });
 }
 
 module.exports = LocalAPIServer;
+'

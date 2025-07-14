@@ -16,6 +16,8 @@ model User {
   phoneNumber    String?
   telegramId     String?          @unique
   telegramUsername String?        @unique
+  warehouseAccess Boolean         @default(false)
+  assignedMachines String[]       // ID автоматов, к которым есть доступ
   isActive       Boolean          @default(true)
   isDriver       Boolean          @default(false)
   registrationStatus RegistrationStatus @default(PENDING)
@@ -36,6 +38,19 @@ model User {
   driverLogs     DriverLog[]
   notifications  Notification[]
   bunkerOperations BunkerOperation[]
+  // Новые связи для VendHubBot
+  bags           Bag[]
+  waterBottles   WaterBottle[]
+  syrupBottles   SyrupBottle[]
+  incassations   Incassation[]    @relation("IncassationOperator")
+  incassationsManaged Incassation[] @relation("IncassationManager")
+  expenses       Expense[]
+  revenues       Revenue[]
+  syrupOperations SyrupOperation[]
+  waterOperations WaterOperation[]
+  bagOperations  BagOperation[]
+  salesReconciliations SalesReconciliation[]
+  ingredientReconciliations IngredientReconciliation[]
 }
 
 model Location {
@@ -70,6 +85,15 @@ model Machine {
   tasks          Task[]
   routeStops     RouteStop[]
   bunkers        Bunker[]
+  // VendHubBot расширения
+  syrupBottles   SyrupBottle[]
+  waterBottles   WaterBottle[]
+  bags           Bag[]
+  incassations   Incassation[]
+  revenues       Revenue[]
+  expenses       Expense[]
+  salesReconciliations SalesReconciliation[]
+  ingredientReconciliations IngredientReconciliation[]
 }
 
 model Task {
@@ -78,20 +102,35 @@ model Task {
   description  String       @default("")
   status       TaskStatus   @default(CREATED)
   priority     TaskPriority @default(MEDIUM)
+  type         TaskType     @default(GENERAL) // тип задачи
   dueDate      DateTime?
   completedAt  DateTime?
+  startedAt    DateTime?    // время начала выполнения
   machineId    String?
   assignedToId String?
   createdById  String
+  bagId        String?      // связь с сумкой
+  templateId   String?      // шаблон задачи
+  estimatedDuration Int?    // оценочное время выполнения (минуты)
+  actualDuration    Int?    // фактическое время выполнения
+  location     String?      // геолокация
+  photos       String[]     // фото результата выполнения
+  metadata     Json?        // дополнительные данные
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   assignedTo   User?        @relation("TaskAssignee", fields: [assignedToId], references: [id])
   createdBy    User         @relation("TaskCreator", fields: [createdById], references: [id])
   machine      Machine?     @relation(fields: [machineId], references: [id])
+  bag          Bag?         @relation(fields: [bagId], references: [id])
+  template     TaskTemplate? @relation(fields: [templateId], references: [id])
   actions      TaskAction[]
+  checklists   TaskChecklist[]
+  executions   TaskStepExecution[]
 
   @@index([status, assignedToId])
   @@index([machineId])
+  @@index([type])
+  @@index([templateId])
 }
 
 model TaskAction {
@@ -129,6 +168,9 @@ model InventoryItem {
   stockMovements   StockMovement[]
   recipeIngredients RecipeIngredient[]
   bunkers          Bunker[]
+  bagContents      BagContent[]
+  ingredientReconciliations IngredientReconciliation[]
+  ingredientBatches IngredientBatch[]
 
   @@index([category])
   @@index([sku])
@@ -395,6 +437,7 @@ enum UserRole {
   OPERATOR
   TECHNICIAN
   DRIVER
+  INVESTOR
 }
 
 enum MachineStatus {
@@ -606,6 +649,7 @@ model Bunker {
   machine       Machine      @relation(fields: [machineId], references: [id])
   item          InventoryItem? @relation(fields: [itemId], references: [id])
   operations    BunkerOperation[]
+  bagContents   BagContent[]
   
   @@index([machineId])
   @@index([status])
@@ -647,4 +691,629 @@ enum BunkerOperationType {
   MAINTENANCE
   INSPECTION
   REPAIR
+}
+
+// ============= VENDHUB EXTENSIONS =============
+
+// Сиропы
+model SyrupBottle {
+  id          String            @id @default(cuid())
+  name        String            // ваниль, карамель, кокос
+  bottleId    String   @unique  // уникальный номер бутылки
+  volume      Float             // объем в литрах
+  status      SyrupBottleStatus @default(ON_WAREHOUSE)
+  openedAt    DateTime?         // дата открытия
+  expiryDate  DateTime?         // срок годности
+  assignedTo  String?           // кому назначена
+  machineId   String?           // в каком автомате
+  photos      String[]          // фото бутылки
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  
+  user        User?             @relation(fields: [assignedTo], references: [id])
+  machine     Machine?          @relation(fields: [machineId], references: [id])
+  operations  SyrupOperation[]
+  bagContents BagContent[]
+  
+  @@index([status])
+  @@index([assignedTo])
+  @@index([machineId])
+}
+
+// Вода
+model WaterBottle {
+  id             String            @id @default(cuid())
+  bottleId       String   @unique  // уникальный номер
+  volume         Float             // объем (18.9л)
+  weightEmpty    Float             // вес пустой
+  weightFull     Float             // вес полной
+  weightCurrent  Float             // текущий вес
+  status         WaterBottleStatus @default(ON_WAREHOUSE)
+  assignedTo     String?           // кому назначена
+  machineId      String?           // в каком автомате
+  photos         String[]          // фото бутылки и наклейки
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  
+  user           User?             @relation(fields: [assignedTo], references: [id])
+  machine        Machine?          @relation(fields: [machineId], references: [id])
+  operations     WaterOperation[]
+  
+  @@index([status])
+  @@index([assignedTo])
+  @@index([machineId])
+}
+
+// Сумки/комплекты
+model Bag {
+  id          String    @id @default(cuid())
+  bagId       String    @unique // номер сумки
+  status      BagStatus @default(CREATED)
+  assignedTo  String?   // кому назначена
+  machineId   String?   // для какого автомата
+  description String?   // описание содержимого
+  photos      String[]  // фото упаковки
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  user        User?     @relation(fields: [assignedTo], references: [id])
+  machine     Machine?  @relation(fields: [machineId], references: [id])
+  contents    BagContent[]
+  operations  BagOperation[]
+  tasks       Task[]
+  
+  @@index([status])
+  @@index([assignedTo])
+  @@index([machineId])
+}
+
+// Содержимое сумки
+model BagContent {
+  id         String @id @default(cuid())
+  bagId      String
+  bunkerId   String?
+  syrupId    String?
+  itemId     String? // расходники
+  quantity   Float?
+  
+  bag        Bag           @relation(fields: [bagId], references: [id])
+  bunker     Bunker?       @relation(fields: [bunkerId], references: [id])
+  syrup      SyrupBottle?  @relation(fields: [syrupId], references: [id])
+  item       InventoryItem? @relation(fields: [itemId], references: [id])
+  
+  @@index([bagId])
+}
+
+// Операции с сиропами
+model SyrupOperation {
+  id          String              @id @default(cuid())
+  syrupId     String
+  userId      String
+  type        SyrupOperationType
+  description String
+  photos      String[]
+  eventTime   DateTime            // время события
+  inputTime   DateTime            @default(now()) // время ввода
+  metadata    Json?
+  
+  syrup       SyrupBottle         @relation(fields: [syrupId], references: [id])
+  user        User                @relation(fields: [userId], references: [id])
+  
+  @@index([syrupId])
+  @@index([userId])
+  @@index([type])
+  @@index([eventTime])
+}
+
+// Операции с водой
+model WaterOperation {
+  id          String              @id @default(cuid())
+  bottleId    String
+  userId      String
+  type        WaterOperationType
+  description String
+  weightBefore Float?
+  weightAfter  Float?
+  photos      String[]
+  eventTime   DateTime
+  inputTime   DateTime            @default(now())
+  metadata    Json?
+  
+  bottle      WaterBottle         @relation(fields: [bottleId], references: [id])
+  user        User                @relation(fields: [userId], references: [id])
+  
+  @@index([bottleId])
+  @@index([userId])
+  @@index([type])
+  @@index([eventTime])
+}
+
+// Операции с сумками
+model BagOperation {
+  id          String             @id @default(cuid())
+  bagId       String
+  userId      String
+  type        BagOperationType
+  description String
+  photos      String[]
+  eventTime   DateTime
+  inputTime   DateTime           @default(now())
+  metadata    Json?
+  
+  bag         Bag                @relation(fields: [bagId], references: [id])
+  user        User               @relation(fields: [userId], references: [id])
+  
+  @@index([bagId])
+  @@index([userId])
+  @@index([type])
+  @@index([eventTime])
+}
+
+enum SyrupBottleStatus {
+  ON_WAREHOUSE
+  ASSIGNED
+  IN_MACHINE
+  OPENED
+  EMPTY
+  EXPIRED
+}
+
+enum WaterBottleStatus {
+  ON_WAREHOUSE
+  ASSIGNED
+  IN_MACHINE
+  EMPTY
+  NEEDS_REPLACEMENT
+}
+
+enum BagStatus {
+  CREATED
+  PACKED
+  ASSIGNED
+  IN_TRANSIT
+  DELIVERED
+  RETURNED
+}
+
+enum SyrupOperationType {
+  RECEIVED
+  ASSIGNED
+  INSTALLED
+  OPENED
+  REMOVED
+  RETURNED
+  EXPIRED
+}
+
+enum WaterOperationType {
+  RECEIVED
+  ASSIGNED
+  INSTALLED
+  WEIGHT_CHECK
+  REMOVED
+  RETURNED
+  REPLACED
+}
+
+enum BagOperationType {
+  CREATED
+  PACKED
+  ASSIGNED
+  DELIVERED
+  RETURNED
+  UNPACKED
+}
+
+// ============= ФИНАНСОВЫЙ МОДУЛЬ =============
+
+// Доходы
+model Revenue {
+  id           String         @id @default(cuid())
+  amount       Float
+  currency     String         @default("UZS")
+  source       RevenueSource
+  machineId    String?
+  userId       String?
+  paymentType  PaymentType
+  isTest       Boolean        @default(false) // тестовая продажа
+  fiscalized   Boolean        @default(false) // фискализирован
+  description  String?
+  metadata     Json?
+  photos       String[]       // фото чеков
+  eventTime    DateTime       // время события
+  inputTime    DateTime       @default(now())
+  createdAt    DateTime       @default(now())
+  
+  machine      Machine?       @relation(fields: [machineId], references: [id])
+  user         User?          @relation(fields: [userId], references: [id])
+  
+  @@index([machineId])
+  @@index([source])
+  @@index([eventTime])
+  @@index([paymentType])
+}
+
+// Расходы
+model Expense {
+  id           String         @id @default(cuid())
+  amount       Float
+  currency     String         @default("UZS")
+  category     ExpenseCategory
+  subcategory  String?
+  machineId    String?
+  userId       String
+  paymentMethod PaymentMethod
+  supplierId   String?
+  description  String
+  receiptPhoto String?        // фото чека
+  status       ExpenseStatus  @default(PENDING)
+  metadata     Json?
+  eventTime    DateTime
+  inputTime    DateTime       @default(now())
+  createdAt    DateTime       @default(now())
+  
+  machine      Machine?       @relation(fields: [machineId], references: [id])
+  user         User           @relation(fields: [userId], references: [id])
+  supplier     Supplier?      @relation(fields: [supplierId], references: [id])
+  
+  @@index([category])
+  @@index([userId])
+  @@index([machineId])
+  @@index([eventTime])
+}
+
+// Инкассация
+model Incassation {
+  id          String           @id @default(cuid())
+  machineId   String
+  operatorId  String
+  managerId   String?
+  amount      Float
+  photos      String[]         // фото наличных
+  status      IncassationStatus @default(COLLECTED)
+  description String?
+  eventTime   DateTime         // время сбора
+  handoverTime DateTime?       // время передачи менеджеру
+  inputTime   DateTime         @default(now())
+  createdAt   DateTime         @default(now())
+  
+  machine     Machine          @relation(fields: [machineId], references: [id])
+  operator    User             @relation("IncassationOperator", fields: [operatorId], references: [id])
+  manager     User?            @relation("IncassationManager", fields: [managerId], references: [id])
+  
+  @@index([machineId])
+  @@index([operatorId])
+  @@index([eventTime])
+}
+
+// Поставщики
+model Supplier {
+  id          String    @id @default(cuid())
+  name        String
+  type        String    // ингредиенты, расходники, запчасти
+  contactInfo Json?     // телефон, email, адрес
+  paymentTerms String?  // условия оплаты
+  currency    String    @default("UZS")
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  expenses    Expense[]
+  ingredientBatches IngredientBatch[]
+  
+  @@index([type])
+  @@index([isActive])
+}
+
+// Сверка продаж и платежей
+model SalesReconciliation {
+  id               String                    @id @default(cuid())
+  machineId        String
+  date             DateTime                  // дата сверки
+  salesFromMachine Float                     // продажи по логам автомата
+  cashCollected    Float                     // собрано наличными
+  qrPayments       Float                     // QR платежи
+  vipSales         Float                     // VIP продажи
+  testSales        Float                     // тестовые продажи
+  totalRevenue     Float                     // общая выручка
+  discrepancy      Float                     // расхождение
+  status           ReconciliationStatus      @default(PENDING)
+  notes            String?                   // комментарии
+  createdById      String
+  createdAt        DateTime                  @default(now())
+  
+  machine          Machine                   @relation(fields: [machineId], references: [id])
+  createdBy        User                      @relation(fields: [createdById], references: [id])
+  
+  @@unique([machineId, date])
+  @@index([date])
+  @@index([status])
+}
+
+// Сверка ингредиентов
+model IngredientReconciliation {
+  id                 String                 @id @default(cuid())
+  machineId          String
+  itemId             String
+  date               DateTime
+  normativeConsumption Float                // нормативный расход по рецептам
+  actualConsumption  Float                 // фактический расход
+  discrepancy        Float                 // расхождение
+  discrepancyPercent Float                 // расхождение в %
+  status             ReconciliationStatus   @default(PENDING)
+  notes              String?
+  createdById        String
+  createdAt          DateTime               @default(now())
+  
+  machine            Machine                @relation(fields: [machineId], references: [id])
+  item               InventoryItem          @relation(fields: [itemId], references: [id])
+  createdBy          User                   @relation(fields: [createdById], references: [id])
+  
+  @@unique([machineId, itemId, date])
+  @@index([date])
+  @@index([status])
+}
+
+// Партии ингредиентов для учета сроков годности
+model IngredientBatch {
+  id             String        @id @default(cuid())
+  itemId         String
+  batchNumber    String
+  productionDate DateTime?
+  expiryDate     DateTime?
+  quantity       Float
+  purchasePrice  Float?
+  supplierId     String?
+  status         BatchStatus   @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+  
+  item           InventoryItem @relation(fields: [itemId], references: [id])
+  supplier       Supplier?     @relation(fields: [supplierId], references: [id])
+  
+  @@unique([itemId, batchNumber])
+  @@index([status])
+  @@index([expiryDate])
+}
+
+enum RevenueSource {
+  SALES
+  QR_PAYME
+  QR_CLICK
+  QR_UZUM
+  CASH
+  VIP_SALE
+  TEST_SALE
+  REFUND
+}
+
+enum PaymentType {
+  CASH
+  QR
+  CARD
+  BANK_TRANSFER
+}
+
+enum ExpenseCategory {
+  INGREDIENTS
+  SUPPLIES
+  MAINTENANCE
+  RENT
+  UTILITIES
+  TRANSPORT
+  SALARY
+  TAXES
+  OTHER
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  BANK_TRANSFER
+  ONLINE
+}
+
+enum ExpenseStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PAID
+}
+
+enum IncassationStatus {
+  COLLECTED
+  HANDED_OVER
+  DEPOSITED
+  DISCREPANCY
+}
+
+enum ReconciliationStatus {
+  PENDING
+  REVIEWED
+  APPROVED
+  REJECTED
+}
+
+enum BatchStatus {
+  ACTIVE
+  CONSUMED
+  EXPIRED
+  RETURNED
+}
+
+// ============= СИСТЕМА ЗАДАЧ И ЧЕКЛИСТОВ =============
+
+// Типы задач
+enum TaskType {
+  GENERAL           // общая задача
+  MAINTENANCE       // техническое обслуживание
+  CLEANING          // уборка
+  REFILL            // заправка
+  INSPECTION        // инспекция
+  REPAIR            // ремонт
+  INVENTORY_CHECK   // проверка остатков
+  CASH_COLLECTION   // инкассация
+  SYRUP_REPLACEMENT // замена сиропов
+  WATER_REPLACEMENT // замена воды
+  SUPPLY_DELIVERY   // доставка расходников
+  EMERGENCY         // экстренная задача
+}
+
+// Шаблоны задач
+model TaskTemplate {
+  id               String                @id @default(cuid())
+  name             String                @unique
+  description      String?
+  type             TaskType              @default(GENERAL)
+  priority         TaskPriority          @default(MEDIUM)
+  estimatedDuration Int?                 // в минутах
+  isActive         Boolean               @default(true)
+  instructions     String?               // инструкции по выполнению
+  requiredRoles    UserRole[]            // какие роли могут выполнять
+  requiredPhotos   String[]              // обязательные фото (описания)
+  metadata         Json?                 // дополнительные настройки
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  
+  tasks            Task[]
+  checklists       TaskTemplateChecklist[]
+  
+  @@index([type])
+  @@index([isActive])
+}
+
+// Шаблоны чек-листов для задач
+model TaskTemplateChecklist {
+  id          String             @id @default(cuid())
+  templateId  String
+  name        String
+  description String?
+  order       Int                @default(0)
+  isRequired  Boolean            @default(true)
+  
+  template    TaskTemplate       @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  steps       TaskTemplateStep[]
+  
+  @@unique([templateId, order])
+  @@index([templateId])
+}
+
+// Шаги шаблонов чек-листов
+model TaskTemplateStep {
+  id          String                @id @default(cuid())
+  checklistId String
+  name        String
+  description String?
+  order       Int                   @default(0)
+  stepType    TaskStepType          @default(CHECK)
+  isRequired  Boolean               @default(true)
+  requiresPhoto Boolean             @default(false)
+  requiresNote  Boolean             @default(false)
+  validationRules Json?             // правила валидации
+  metadata    Json?
+  
+  checklist   TaskTemplateChecklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+  
+  @@unique([checklistId, order])
+  @@index([checklistId])
+}
+
+// Экземпляры чек-листов для конкретных задач
+model TaskChecklist {
+  id          String             @id @default(cuid())
+  taskId      String
+  templateId  String?            // ссылка на шаблон
+  name        String
+  description String?
+  order       Int                @default(0)
+  status      ChecklistStatus    @default(NOT_STARTED)
+  startedAt   DateTime?
+  completedAt DateTime?
+  
+  task        Task               @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  steps       TaskChecklistStep[]
+  
+  @@unique([taskId, order])
+  @@index([taskId])
+  @@index([status])
+}
+
+// Шаги чек-листов для конкретных задач
+model TaskChecklistStep {
+  id          String            @id @default(cuid())
+  checklistId String
+  templateStepId String?        // ссылка на шаблон
+  name        String
+  description String?
+  order       Int               @default(0)
+  stepType    TaskStepType      @default(CHECK)
+  status      StepStatus        @default(PENDING)
+  isRequired  Boolean           @default(true)
+  requiresPhoto Boolean         @default(false)
+  requiresNote  Boolean         @default(false)
+  validationRules Json?
+  
+  checklist   TaskChecklist     @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+  executions  TaskStepExecution[]
+  
+  @@unique([checklistId, order])
+  @@index([checklistId])
+  @@index([status])
+}
+
+// Выполнение шагов чек-листов
+model TaskStepExecution {
+  id           String            @id @default(cuid())
+  taskId       String
+  stepId       String
+  userId       String
+  status       StepStatus        @default(PENDING)
+  result       String?           // результат выполнения
+  note         String?           // заметка пользователя
+  photos       String[]          // фото результата
+  gpsLocation  String?           // GPS координаты
+  duration     Int?              // время выполнения в секундах
+  metadata     Json?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime          @default(now())
+  
+  task         Task              @relation(fields: [taskId], references: [id])
+  step         TaskChecklistStep @relation(fields: [stepId], references: [id])
+  user         User              @relation(fields: [userId], references: [id])
+  
+  @@index([taskId])
+  @@index([stepId])
+  @@index([userId])
+  @@index([status])
+}
+
+// Типы шагов чек-листов
+enum TaskStepType {
+  CHECK         // простая галочка
+  PHOTO         // требует фото
+  INPUT_TEXT    // ввод текста
+  INPUT_NUMBER  // ввод числа
+  SELECTION     // выбор из вариантов
+  MEASUREMENT   // измерение
+  SIGNATURE     // подпись
+  GPS_LOCATION  // геолокация
+  QR_SCAN       // сканирование QR
+  TIMER         // таймер
+}
+
+// Статусы чек-листов
+enum ChecklistStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  SKIPPED
+}
+
+// Статусы шагов
+enum StepStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  SKIPPED
+  FAILED
 }

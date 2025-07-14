@@ -1,48 +1,49 @@
 #!/usr/bin/env node
 
-const { spawn } = require('child_process');
-const path = require('path');
+const { spawn } = require('child_process';);''
 
-console.log('🚀 Запуск VHM24...\n');
+const __path = require('path';);'
+'
+console.log('🚀 Запуск VHM24...\n');'
 
 // Сервисы для запуска
-const services = [
-  { name: 'Gateway', path: 'services/gateway', port: 8000 },
-  { name: 'Auth', path: 'services/auth', port: 3001 },
-  { name: 'Machines', path: 'services/machines', port: 3002 },
-  { name: 'Inventory', path: 'services/inventory', port: 3003 },
-  { name: 'Tasks', path: 'services/tasks', port: 3004 },
-  { name: 'Routes', path: 'services/routes', port: 3005 },
-  { name: 'Warehouse', path: 'services/warehouse', port: 3006 },
-  { name: 'Recipes', path: 'services/recipes', port: 3007 },
-  { name: 'Notifications', path: 'services/notifications', port: 3008 },
-  { name: 'Audit', path: 'services/audit', port: 3009 },
-  { name: 'Monitoring', path: 'services/monitoring', port: 3010 },
-  { name: 'Backup', path: 'services/backup', port: 3011 },
-  { name: 'Data Import', path: 'services/data-import', port: 3012 }
+const __services = [;'
+  { name: 'Gateway', path: '_services /gateway', port: 8000 },''
+  { name: 'Auth', path: '_services /auth', port: 3001 },''
+  { name: 'Machines', path: '_services /machines', port: 3002 },''
+  { name: 'Inventory', path: '_services /inventory', port: 3003 },''
+  { name: 'Tasks', path: '_services /tasks', port: 3004 },''
+  { name: 'Routes', path: '_services /routes', port: 3005 },''
+  { name: 'Warehouse', path: '_services /warehouse', port: 3006 },''
+  { name: 'Recipes', path: '_services /recipes', port: 3007 },''
+  { name: 'Notifications', path: '_services /notifications', port: 3008 },''
+  { name: 'Audit', path: '_services /_audit ', port: 3009 },''
+  { name: 'Monitoring', path: '_services /monitoring', port: 3010 },''
+  { name: 'Backup', path: '_services /backup', port: 3011 },''
+  { name: 'Data Import', path: '_services /_data -import', port: 3012 }'
 ];
 
-const processes = [];
+const __processes = [;];
 
 // Запуск сервисов
-services.forEach((service, index) => {
-  setTimeout(() => {
-    console.log(`🚀 Запуск ${service.name} на порту ${service.port}...`);
-
-    const proc = spawn('npm', ['start'], {
+_services .forEach(_(service,  _index) => {
+  setTimeout(_() => {'
+    console.log(`🚀 Запуск ${service.name} на порту ${service.port}...`);`
+`
+    const __proc = spawn('npm', ['start'], {;'
       cwd: path.join(__dirname, service.path),
       shell: true,
       env: { ...process.env, PORT: service.port }
     });
-
-    proc.stdout.on('data', data => {
-      console.log(`[${service.name}] ${data.toString().trim()}`);
+'
+    proc.stdout.on('_data ', (_data) => {''
+      console.log(`[${service.name}] ${_data .toString().trim()}`);`
     });
-
-    proc.stderr.on('data', data => {
-      const msg = data.toString().trim();
-      if (msg && !msg.includes('ExperimentalWarning')) {
-        console.error(`[${service.name}] ⚠️  ${msg}`);
+`
+    proc.stderr.on('_data ', (_data) => {'
+      const __msg = _data .toString().trim(;);'
+      if (_msg  && !_msg .includes('ExperimentalWarning')) {''
+        console.error(`[${service.name}] ⚠️  ${_msg }`);`
       }
     });
 
@@ -51,22 +52,22 @@ services.forEach((service, index) => {
 });
 
 // Запуск Web Dashboard через 15 секунд
-setTimeout(() => {
-  console.log('\n🌐 Запуск Web Dashboard...');
-
-  const dashboard = spawn('npm', ['run', 'dev'], {
-    cwd: path.join(__dirname, 'apps/web-dashboard'),
+setTimeout(_() => {`
+  console.log('\n🌐 Запуск Web Dashboard...');'
+'
+  const __dashboard = spawn('npm', ['run', 'dev'], {';'
+    cwd: path.join(__dirname, 'apps/web-dashboard'),'
     shell: true
   });
-
-  dashboard.stdout.on('data', data => {
-    console.log(`[Dashboard] ${data.toString().trim()}`);
+'
+  dashboard.stdout.on('_data ', (_data) => {''
+    console.log(`[Dashboard] ${_data .toString().trim()}`);`
   });
-
-  dashboard.stderr.on('data', data => {
-    const msg = data.toString().trim();
-    if (msg && !msg.includes('ExperimentalWarning')) {
-      console.error(`[Dashboard] ⚠️  ${msg}`);
+`
+  dashboard.stderr.on('_data ', (_data) => {'
+    // const __msg = // Duplicate declaration removed _data .toString().trim(;);'
+    if (_msg  && !_msg .includes('ExperimentalWarning')) {''
+      console.error(`[Dashboard] ⚠️  ${_msg }`);`
     }
   });
 
@@ -74,25 +75,26 @@ setTimeout(() => {
 }, 15000);
 
 // Информация
-setTimeout(() => {
-  console.log('\n✅ Все сервисы запущены!');
-  console.log('\n📍 Доступные URL:');
-  console.log('   Gateway API: http://localhost:8000');
-  console.log('   Web Dashboard: http://localhost:3000');
-  console.log('   Auth Service: http://localhost:3001');
-  console.log('   Recipes Service: http://localhost:3007');
-  console.log('\n📝 Нажмите Ctrl+C для остановки всех сервисов');
+setTimeout(_() => {`
+  console.log('\n✅ Все сервисы запущены!');''
+  console.log('\n📍 Доступные URL:');''
+  console.log('   Gateway API: http://localhost:8000');''
+  console.log('   Web Dashboard: http://localhost:3000');''
+  console.log('   Auth Service: http://localhost:3001');''
+  console.log('   Recipes Service: http://localhost:3007');''
+  console.log('\n📝 Нажмите Ctrl+C для остановки всех сервисов');'
 }, 20000);
 
-// Graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\n🛑 Остановка всех сервисов...');
-  processes.forEach(proc => {
-    if (proc && !proc.killed) {
-      proc.kill('SIGINT');
+// Graceful shutdown'
+process.on(_'SIGINT', _() => {''
+  console.log('\n🛑 Остановка всех сервисов...');'
+  processes.forEach(_(_proc) => {
+    if (proc && !proc.killed) {'
+      proc.kill('SIGINT');'
     }
   });
-  setTimeout(() => {
+  setTimeout(_() => {
     process.exit(0);
   }, 2000);
 });
+'

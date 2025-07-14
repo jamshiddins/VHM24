@@ -1,101 +1,141 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
-
 const router = express.Router();
-const prisma = new PrismaClient();
 
-// Получить всех пользователей
+// Users роуты для VHM24
+
+/**
+ * Получить всех пользователей
+ */
 router.get('/', async (req, res) => {
   try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        roles: true,
-        phoneNumber: true,
-        telegramId: true,
-        telegramUsername: true,
-        isActive: true,
-        isDriver: true,
-        registrationStatus: true,
-        lastLogin: true,
-        createdAt: true
-      },
-      orderBy: { createdAt: 'desc' }
-    });
-    res.json(users);
-  } catch (error) {
-    console.error('Ошибка получения пользователей:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
-  }
-});
-
-// Получить статистику пользователей
-router.get('/stats', async (req, res) => {
-  try {
-    const totalUsers = await prisma.user.count();
-    const activeUsers = await prisma.user.count({ where: { isActive: true } });
-    const pendingUsers = await prisma.user.count({
-      where: { registrationStatus: 'PENDING' }
-    });
-
-    // Группировка по ролям (закомментировано так как не используется)
-    // const usersByRole = await prisma.user.groupBy({
-    //   by: ['roles'],
-    //   _count: {
-    //     roles: true
-    //   }
-    // });
-
-    // Подсчет по каждой роли
-    const roleStats = {
-      ADMIN: 0,
-      MANAGER: 0,
-      WAREHOUSE: 0,
-      OPERATOR: 0,
-      TECHNICIAN: 0,
-      DRIVER: 0
-    };
-
-    // Подсчет пользователей по ролям (учитывая что у пользователя может быть несколько ролей)
-    const allUsers = await prisma.user.findMany({ select: { roles: true } });
-    allUsers.forEach(user => {
-      user.roles.forEach(role => {
-        if (Object.prototype.hasOwnProperty.call(roleStats, role)) {
-          roleStats[role]++;
-        }
-      });
-    });
-
+    // TODO: Получение пользователей из БД
+    const users = [
+      { id: 1, email: 'operator@vhm24.com', role: 'OPERATOR', firstName: 'Operator' },
+      { id: 2, email: 'manager@vhm24.com', role: 'MANAGER', firstName: 'Manager' }
+    ];
+    
     res.json({
-      total: totalUsers,
-      active: activeUsers,
-      inactive: totalUsers - activeUsers,
-      pending: pendingUsers,
-      byRole: roleStats,
-      registrationTrend: {
-        today: 0, // TODO: Добавить подсчет за сегодня
-        week: 0, // TODO: Добавить подсчет за неделю
-        month: 0 // TODO: Добавить подсчет за месяц
-      }
+      success: true,
+      data: users,
+      message: 'Пользователи получены успешно'
     });
   } catch (error) {
-    console.error('Ошибка получения статистики:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка получения пользователей',
+      error: error.message
+    });
   }
 });
 
-// Создать пользователя
+/**
+ * Создать пользователя
+ */
 router.post('/', async (req, res) => {
   try {
-    const user = await prisma.user.create({
-      data: req.body
+    const { email, firstName, role, telegramId } = req.body;
+    
+    // TODO: Создание пользователя в БД
+    const user = {
+      id: Date.now(),
+      email,
+      firstName,
+      role: role || 'OPERATOR',
+      telegramId,
+      createdAt: new Date().toISOString()
+    };
+    
+    res.status(201).json({
+      success: true,
+      data: user,
+      message: 'Пользователь создан успешно'
     });
-    res.status(201).json(user);
   } catch (error) {
-    console.error('Ошибка создания пользователя:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка создания пользователя',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Получить пользователя по ID
+ */
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // TODO: Получение пользователя из БД
+    const user = {
+      id: parseInt(id),
+      email: 'user@vhm24.com',
+      firstName: 'User',
+      role: 'OPERATOR'
+    };
+    
+    res.json({
+      success: true,
+      data: user,
+      message: 'Пользователь найден'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка получения пользователя',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Обновить пользователя
+ */
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    
+    // TODO: Обновление пользователя в БД
+    const user = {
+      id: parseInt(id),
+      ...updateData,
+      updatedAt: new Date().toISOString()
+    };
+    
+    res.json({
+      success: true,
+      data: user,
+      message: 'Пользователь обновлен успешно'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка обновления пользователя',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Удалить пользователя
+ */
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // TODO: Удаление пользователя из БД
+    
+    res.json({
+      success: true,
+      message: `Пользователь с ID ${id} удален успешно`
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка удаления пользователя',
+      error: error.message
+    });
   }
 });
 

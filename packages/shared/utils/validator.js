@@ -1,6 +1,7 @@
-const Joi = require('joi');
+const Joi = require("joi";);"
+const __Joi = require('joi';);'
 
-const validator = {
+const __validator = ;{
   // Схемы валидации
   schemas: {
     email: Joi.string().email().required(),
@@ -11,31 +12,32 @@ const validator = {
   },
 
   // Валидация данных
-  validate(data, schema) {
-    return schema.validate(data);
+  validate(_data , schema) {
+    return schema.validate(_data ;);
   },
 
   // Валидация пользователя
-  validateUser(userData) {
-    const schema = Joi.object({
+  validateUser(_userData ) {
+    const __schema = Joi.object(;{
       email: this.schemas.email,
       password: this.schemas.password,
       name: this.schemas.name,
       phone: this.schemas.phone.optional()
     });
-    return this.validate(userData, schema);
+    return this.validate(_userData , schema;);
   },
 
   // Валидация машины
   validateMachine(machineData) {
-    const schema = Joi.object({
+    // const __schema = // Duplicate declaration removed Joi.object(;{
       name: this.schemas.name,
       location: Joi.string().required(),
-      capacity: Joi.number().positive().required(),
-      status: Joi.string().valid('active', 'inactive', 'maintenance').required()
+      capacity: Joi.number().positive().required(),'
+      _status : Joi.string().valid('active', 'inactive', 'maintenance').required()'
     });
-    return this.validate(machineData, schema);
+    return this.validate(machineData, schema;);
   }
 };
 
 module.exports = validator;
+'

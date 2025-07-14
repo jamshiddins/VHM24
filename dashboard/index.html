@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VHM24 - Real-time Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .label {
+            color: #7f8c8d;
+            font-size: 1em;
+        }
+
+        .revenue { color: #27ae60; }
+        .machines { color: #3498db; }
+        .tasks { color: #f39c12; }
+        .operators { color: #e74c3c; }
+        .blockchain { color: #9b59b6; }
+        .iot { color: #1abc9c; }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container, .alerts-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-container h3, .alerts-container h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        .chart {
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .alert-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .alert-critical {
+            background: #fdf2f2;
+            border-left-color: #e74c3c;
+        }
+
+        .alert-warning {
+            background: #fefcf3;
+            border-left-color: #f39c12;
+        }
+
+        .alert-info {
+            background: #f0f8ff;
+            border-left-color: #3498db;
+        }
+
+        .alert-time {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .secondary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .panel h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        .machine-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .machine-status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            color: white;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-online { background: #27ae60; }
+        .status-offline { background: #e74c3c; }
+        .status-warning { background: #f39c12; }
+
+        .operator-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .efficiency-bar {
+            width: 100px;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .efficiency-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c 0%, #f39c12 50%, #27ae60 100%);
+            transition: width 0.3s ease;
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #27ae60;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+
+        .prediction-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .prediction-panel h3 {
+            color: white;
+            border-bottom-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .prediction-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .prediction-confidence {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .blockchain-panel {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+        }
+
+        .blockchain-panel h3 {
+            color: white;
+            border-bottom-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .block-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .iot-panel {
+            background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+            color: white;
+        }
+
+        .iot-panel h3 {
+            color: white;
+            border-bottom-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .sensor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+
+        .sensor-value {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-tachometer-alt"></i> VHM24 Dashboard</h1>
+            <p class="subtitle">
+                <span class="live-indicator"></span>
+                Real-time Vending Machine Management System
+            </p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon revenue"><i class="fas fa-money-bill-wave"></i></div>
+                <div class="value" id="revenue-value">Loading...</div>
+                <div class="label">Today's Revenue</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon machines"><i class="fas fa-robot"></i></div>
+                <div class="value" id="machines-value">Loading...</div>
+                <div class="label">Active Machines</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon tasks"><i class="fas fa-tasks"></i></div>
+                <div class="value" id="tasks-value">Loading...</div>
+                <div class="label">Active Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon operators"><i class="fas fa-users"></i></div>
+                <div class="value" id="operators-value">Loading...</div>
+                <div class="label">Online Operators</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon blockchain"><i class="fas fa-cube"></i></div>
+                <div class="value" id="blockchain-value">Loading...</div>
+                <div class="label">Blockchain Blocks</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon iot"><i class="fas fa-wifi"></i></div>
+                <div class="value" id="iot-value">Loading...</div>
+                <div class="label">IoT Devices</div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <div class="chart-container">
+                <h3><i class="fas fa-chart-line"></i> Revenue Analytics</h3>
+                <div class="chart" id="revenue-chart">
+                    Real-time revenue chart will be displayed here
+                </div>
+            </div>
+            <div class="alerts-container">
+                <h3><i class="fas fa-exclamation-triangle"></i> Live Alerts</h3>
+                <div id="alerts-list">
+                    <!-- Alerts will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Grid -->
+        <div class="secondary-grid">
+            <!-- Machine Status Panel -->
+            <div class="panel">
+                <h3><i class="fas fa-robot"></i> Machine Status</h3>
+                <div id="machines-list">
+                    <!-- Machine list will be populated here -->
+                </div>
+            </div>
+
+            <!-- Operator Efficiency Panel -->
+            <div class="panel">
+                <h3><i class="fas fa-user-clock"></i> Operator Efficiency</h3>
+                <div id="operators-list">
+                    <!-- Operators list will be populated here -->
+                </div>
+            </div>
+
+            <!-- AI Predictions Panel -->
+            <div class="panel prediction-panel">
+                <h3><i class="fas fa-brain"></i> AI Predictions</h3>
+                <div id="predictions-list">
+                    <!-- AI predictions will be populated here -->
+                </div>
+            </div>
+
+            <!-- IoT Sensors Panel -->
+            <div class="panel iot-panel">
+                <h3><i class="fas fa-thermometer-half"></i> IoT Sensors</h3>
+                <div id="sensors-list">
+                    <!-- IoT sensors will be populated here -->
+                </div>
+            </div>
+
+            <!-- Blockchain Panel -->
+            <div class="panel blockchain-panel">
+                <h3><i class="fas fa-cube"></i> Blockchain</h3>
+                <div id="blockchain-list">
+                    <!-- Blockchain blocks will be populated here -->
+                </div>
+            </div>
+
+            <!-- Task Queue Panel -->
+            <div class="panel">
+                <h3><i class="fas fa-list-ol"></i> Task Queue</h3>
+                <div id="tasks-list">
+                    <!-- Tasks will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>&copy; 2024 VHM24 - Enterprise Vending Hub Manager | Powered by AI & Blockchain</p>
+        </div>
+    </div>
+
+    <script>
+        // Mock data and real-time simulation
+        class VHM24Dashboard {
+            constructor() {
+                this.isConnected = false;
+                this.updateInterval = 5000; // 5 seconds
+                this.init();
+            }
+
+            init() {
+                this.connectWebSocket();
+                this.loadInitialData();
+                this.startRealTimeUpdates();
+            }
+
+            connectWebSocket() {
+                // In production, connect to real WebSocket
+                console.log('Connecting to WebSocket...');
+                this.isConnected = true;
+            }
+
+            loadInitialData() {
+                this.updateStats();
+                this.updateAlerts();
+                this.updateMachines();
+                this.updateOperators();
+                this.updatePredictions();
+                this.updateIoTSensors();
+                this.updateBlockchain();
+                this.updateTasks();
+            }
+
+            startRealTimeUpdates() {
+                setInterval(() => {
+                    this.updateStats();
+                    this.updateAlerts();
+                    this.updateMachines();
+                    this.updateOperators();
+                    
+                    // Update predictions less frequently
+                    if (Math.random() > 0.7) {
+                        this.updatePredictions();
+                    }
+                    
+                    // Update IoT sensors
+                    if (Math.random() > 0.5) {
+                        this.updateIoTSensors();
+                    }
+                    
+                    // Update blockchain occasionally
+                    if (Math.random() > 0.8) {
+                        this.updateBlockchain();
+                    }
+                }, this.updateInterval);
+            }
+
+            updateStats() {
+                const revenue = (Math.random() * 500000 + 1200000).toLocaleString('ru-RU');
+                const machines = Math.floor(Math.random() * 10 + 85);
+                const tasks = Math.floor(Math.random() * 20 + 15);
+                const operators = Math.floor(Math.random() * 5 + 12);
+                const blockchain = Math.floor(Math.random() * 10 + 1250);
+                const iot = Math.floor(Math.random() * 5 + 48);
+
+                document.getElementById('revenue-value').textContent = revenue + ' ₽';
+                document.getElementById('machines-value').textContent = machines;
+                document.getElementById('tasks-value').textContent = tasks;
+                document.getElementById('operators-value').textContent = operators;
+                document.getElementById('blockchain-value').textContent = blockchain;
+                document.getElementById('iot-value').textContent = iot;
+            }
+
+            updateAlerts() {
+                const alerts = [
+                    {
+                        type: 'critical',
+                        message: 'Автомат VM-042 не отвечает более 10 минут',
+                        time: new Date(Date.now() - Math.random() * 600000).toLocaleTimeString()
+                    },
+                    {
+                        type: 'warning',
+                        message: 'Низкий остаток сиропа в автомате VM-015',
+                        time: new Date(Date.now() - Math.random() * 1800000).toLocaleTimeString()
+                    },
+                    {
+                        type: 'info',
+                        message: 'AI рекомендует провести ТО автомата VM-033',
+                        time: new Date(Date.now() - Math.random() * 3600000).toLocaleTimeString()
+                    },
+                    {
+                        type: 'critical',
+                        message: 'Превышена температура в автомате VM-028',
+                        time: new Date(Date.now() - Math.random() * 900000).toLocaleTimeString()
+                    }
+                ].sort((a, b) => new Date('1970/01/01 ' + b.time) - new Date('1970/01/01 ' + a.time));
+
+                const alertsHtml = alerts.slice(0, 4).map(alert => `
+                    <div class="alert-item alert-${alert.type}">
+                        <div class="alert-time">${alert.time}</div>
+                        <div>${alert.message}</div>
+                    </div>
+                `).join('');
+
+                document.getElementById('alerts-list').innerHTML = alertsHtml;
+            }
+
+            updateMachines() {
+                const machines = [
+                    { id: 'VM-001', location: 'ТЦ Mega Planet', status: 'online' },
+                    { id: 'VM-015', location: 'Парк Ашхабад', status: 'warning' },
+                    { id: 'VM-028', location: 'Метро Олмазор', status: 'warning' },
+                    { id: 'VM-042', location: 'УзЭкспоЦентр', status: 'offline' },
+                    { id: 'VM-055', location: 'ТЦ Next', status: 'online' },
+                    { id: 'VM-067', location: 'Аэропорт', status: 'online' }
+                ];
+
+                const machinesHtml = machines.map(machine => `
+                    <div class="machine-item">
+                        <div>
+                            <strong>${machine.id}</strong><br>
+                            <small>${machine.location}</small>
+                        </div>
+                        <span class="machine-status status-${machine.status}">
+                            ${machine.status.toUpperCase()}
+                        </span>
+                    </div>
+                `).join('');
+
+                document.getElementById('machines-list').innerHTML = machinesHtml;
+            }
+
+            updateOperators() {
+                const operators = [
+                    { name: 'Алексей К.', efficiency: 92, tasks: 8 },
+                    { name: 'Мария П.', efficiency: 88, tasks: 6 },
+                    { name: 'Дмитрий С.', efficiency: 85, tasks: 7 },
+                    { name: 'Анна В.', efficiency: 95, tasks: 9 },
+                    { name: 'Сергей М.', efficiency: 78, tasks: 5 }
+                ];
+
+                const operatorsHtml = operators.map(operator => `
+                    <div class="operator-item">
+                        <div>
+                            <strong>${operator.name}</strong><br>
+                            <small>${operator.tasks} задач</small>
+                        </div>
+                        <div>
+                            <div class="efficiency-bar">
+                                <div class="efficiency-fill" style="width: ${operator.efficiency}%"></div>
+                            </div>
+                            <small>${operator.efficiency}%</small>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('operators-list').innerHTML = operatorsHtml;
+            }
+
+            updatePredictions() {
+                const predictions = [
+                    {
+                        title: 'Предиктивное ТО',
+                        message: 'VM-033 потребует обслуживания через 3 дня',
+                        confidence: 85
+                    },
+                    {
+                        title: 'Прогноз спроса',
+                        message: 'Пиковая нагрузка ожидается в 14:00-16:00',
+                        confidence: 78
+                    },
+                    {
+                        title: 'Оптимизация маршрута',
+                        message: 'Рекомендуется изменить маршрут оператора #3',
+                        confidence: 92
+                    }
+                ];
+
+                const predictionsHtml = predictions.map(pred => `
+                    <div class="prediction-item">
+                        <strong>${pred.title}</strong><br>
+                        ${pred.message}
+                        <div class="prediction-confidence">Уверенность: ${pred.confidence}%</div>
+                    </div>
+                `).join('');
+
+                document.getElementById('predictions-list').innerHTML = predictionsHtml;
+            }
+
+            updateIoTSensors() {
+                const sensors = [
+                    { name: 'Температура', value: (Math.random() * 10 + 20).toFixed(1) + '°C', unit: '' },
+                    { name: 'Влажность', value: (Math.random() * 20 + 40).toFixed(0) + '%', unit: '' },
+                    { name: 'Вибрация', value: (Math.random() * 0.5).toFixed(2), unit: 'g' },
+                    { name: 'Давление', value: (Math.random() * 50 + 950).toFixed(0), unit: 'hPa' }
+                ];
+
+                const sensorsHtml = sensors.map(sensor => `
+                    <div class="sensor-item">
+                        <span>${sensor.name}</span>
+                        <span class="sensor-value">${sensor.value}</span>
+                    </div>
+                `).join('');
+
+                document.getElementById('sensors-list').innerHTML = sensorsHtml;
+            }
+
+            updateBlockchain() {
+                const blocks = [
+                    {
+                        height: 1253,
+                        hash: 'a7f5c8e9...d4b2',
+                        transactions: 12,
+                        time: '2 мин назад'
+                    },
+                    {
+                        height: 1252,
+                        hash: 'f3e8a1c2...9b7e',
+                        transactions: 8,
+                        time: '7 мин назад'
+                    },
+                    {
+                        height: 1251,
+                        hash: '5d9c4f7a...e1c6',
+                        transactions: 15,
+                        time: '12 мин назад'
+                    }
+                ];
+
+                const blocksHtml = blocks.map(block => `
+                    <div class="block-item">
+                        #${block.height} | ${block.hash}<br>
+                        <small>${block.transactions} транзакций | ${block.time}</small>
+                    </div>
+                `).join('');
+
+                document.getElementById('blockchain-list').innerHTML = blocksHtml;
+            }
+
+            updateTasks() {
+                const tasks = [
+                    { id: 'T-001', type: 'Инкассация', operator: 'Алексей К.', status: 'В процессе' },
+                    { id: 'T-002', type: 'Заправка сиропа', operator: 'Мария П.', status: 'Ожидает' },
+                    { id: 'T-003', type: 'Техобслуживание', operator: 'Дмитрий С.', status: 'Завершено' },
+                    { id: 'T-004', type: 'Чистка бункера', operator: 'Анна В.', status: 'В процессе' }
+                ];
+
+                const tasksHtml = tasks.map(task => `
+                    <div style="padding: 10px; margin-bottom: 8px; background: #f8f9fa; border-radius: 8px;">
+                        <strong>${task.id}</strong> - ${task.type}<br>
+                        <small>Оператор: ${task.operator} | ${task.status}</small>
+                    </div>
+                `).join('');
+
+                document.getElementById('tasks-list').innerHTML = tasksHtml;
+            }
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new VHM24Dashboard();
+        });
+    </script>
+</body>
+</html>

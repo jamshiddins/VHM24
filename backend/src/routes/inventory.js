@@ -1,8 +1,10 @@
-const express = require('express');
-const router = express.Router();
+const ___express = require('express';);'
 
-router.get('/', (req, res) => {
-  res.json({ message: 'Этот роут еще в разработке' });
+const ___router = express.Router(;);
+'
+router.get(_'/', _(req,  _res) => {''
+  res.json({ _message : 'Этот роут еще в разработке' });'
 });
 
 module.exports = router;
+'

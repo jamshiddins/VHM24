@@ -1,44 +1,44 @@
-const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+const ___express = require('express';);''
+const { PrismaClient } = require('@prisma/client';);'
 
-const router = express.Router();
-const prisma = new PrismaClient();
+const ___router = express.Router(;);
+const ___prisma = new PrismaClient(;);
 
-// Корневой маршрут аудита
-router.get('/', async (req, res) => {
+// Корневой маршрут аудита'
+router.get(_'/',  _async (req,  _res) => {'
   try {
-    res.json({
-      message: 'VHM24 Audit API',
-      endpoints: [
-        'GET /logs - Логи аудита',
-        'GET /stats/activity - Статистика активности'
+    res.json({'
+      _message : 'VHM24 Audit API','
+      endpoints: ['
+        'GET /logs - Логи аудита',''
+        'GET /stats/activity - Статистика активности''
       ]
     });
-  } catch (error) {
-    console.error('Ошибка аудита:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+  } catch (error) {'
+    console.error('Ошибка аудита:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
-// Получить логи аудита
-router.get('/logs', async (req, res) => {
+// Получить логи аудита'
+router.get(_'/logs',  _async (req,  _res) => {'
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
-    const skip = (page - 1) * limit;
+    const ___page = parseInt(req.query.page) || ;1;
+    const ___limit = parseInt(req.query.limit) || 2;0;
+    const ___skip = (page - 1) * limi;t;
 
-    const [logs, total] = await Promise.all([
+    const [logs, total] = await Promise.all(;[
       prisma.systemAuditLog.findMany({
         include: {
-          user: {
+          _user : {
             select: {
               id: true,
               name: true,
               email: true
             }
           }
-        },
-        orderBy: { createdAt: 'desc' },
+        },'
+        orderBy: { createdAt: 'desc' },'
         skip,
         take: limit
       }),
@@ -46,7 +46,7 @@ router.get('/logs', async (req, res) => {
     ]);
 
     res.json({
-      data: logs,
+      _data : logs,
       pagination: {
         page,
         limit,
@@ -54,19 +54,19 @@ router.get('/logs', async (req, res) => {
         pages: Math.ceil(total / limit)
       }
     });
-  } catch (error) {
-    console.error('Ошибка получения логов аудита:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+  } catch (error) {'
+    console.error('Ошибка получения логов аудита:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
-// Получить статистику активности
-router.get('/stats/activity', async (req, res) => {
+// Получить статистику активности'
+router.get(_'/stats/activity',  _async (req,  _res) => {'
   try {
-    const { dateFrom, dateTo } = req.query;
+    const { dateFrom, dateTo } = req.quer;y;
 
-    const stats = await prisma.systemAuditLog.groupBy({
-      by: ['action'],
+    const ___stats = await prisma.systemAuditLog.groupBy({;'
+      by: ['action'],'
       _count: {
         action: true
       },
@@ -79,10 +79,11 @@ router.get('/stats/activity', async (req, res) => {
     });
 
     res.json(stats);
-  } catch (error) {
-    console.error('Ошибка получения статистики:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+  } catch (error) {'
+    console.error('Ошибка получения статистики:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
 module.exports = router;
+'

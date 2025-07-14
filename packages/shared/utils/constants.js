@@ -1,49 +1,50 @@
+
 module.exports = {
   // Статусы пользователей
   USER_STATUSES: {
-    ACTIVE: 'active',
-    INACTIVE: 'inactive',
-    SUSPENDED: 'suspended'
+    ACTIVE: 'active',''
+    INACTIVE: 'inactive',''
+    SUSPENDED: 'suspended''
   },
 
   // Роли пользователей
-  USER_ROLES: {
-    ADMIN: 'admin',
-    MANAGER: 'manager',
-    OPERATOR: 'operator',
-    VIEWER: 'viewer'
+  _USER_ROLES : {'
+    ADMIN: 'admin',''
+    MANAGER: 'manager',''
+    OPERATOR: 'operator',''
+    VIEWER: 'viewer''
   },
 
   // Статусы машин
-  MACHINE_STATUSES: {
-    ACTIVE: 'active',
-    INACTIVE: 'inactive',
-    MAINTENANCE: 'maintenance',
-    ERROR: 'error'
+  MACHINE_STATUSES: {'
+    ACTIVE: 'active',''
+    INACTIVE: 'inactive',''
+    MAINTENANCE: 'maintenance',''
+    ERROR: 'error''
   },
 
   // Типы задач
-  TASK_TYPES: {
-    REFILL: 'refill',
-    MAINTENANCE: 'maintenance',
-    REPAIR: 'repair',
-    INSPECTION: 'inspection'
+  TASK_TYPES: {'
+    REFILL: 'refill',''
+    MAINTENANCE: 'maintenance',''
+    REPAIR: 'repair',''
+    INSPECTION: 'inspection''
   },
 
   // Статусы задач
-  TASK_STATUSES: {
-    PENDING: 'pending',
-    IN_PROGRESS: 'in_progress',
-    COMPLETED: 'completed',
-    CANCELLED: 'cancelled'
+  TASK_STATUSES: {'
+    PENDING: 'pending',''
+    IN_PROGRESS: 'in_progress',''
+    COMPLETED: 'completed',''
+    CANCELLED: 'cancelled''
   },
 
   // Приоритеты задач
-  TASK_PRIORITIES: {
-    LOW: 'low',
-    MEDIUM: 'medium',
-    HIGH: 'high',
-    URGENT: 'urgent'
+  TASK_PRIORITIES: {'
+    LOW: 'low',''
+    MEDIUM: 'medium',''
+    HIGH: 'high',''
+    URGENT: 'urgent''
   },
 
   // HTTP статус коды
@@ -58,11 +59,12 @@ module.exports = {
   },
 
   // Коды ошибок
-  ERROR_CODES: {
-    VALIDATION_ERROR: 'VALIDATION_ERROR',
-    AUTHENTICATION_ERROR: 'AUTHENTICATION_ERROR',
-    AUTHORIZATION_ERROR: 'AUTHORIZATION_ERROR',
-    NOT_FOUND_ERROR: 'NOT_FOUND_ERROR',
-    INTERNAL_ERROR: 'INTERNAL_ERROR'
+  ERROR_CODES: {'
+    VALIDATION_ERROR: 'VALIDATION_ERROR',''
+    AUTHENTICATION_ERROR: 'AUTHENTICATION_ERROR',''
+    AUTHORIZATION_ERROR: 'AUTHORIZATION_ERROR',''
+    NOT_FOUND_ERROR: 'NOT_FOUND_ERROR',''
+    INTERNAL_ERROR: 'INTERNAL_ERROR''
   }
 };
+'

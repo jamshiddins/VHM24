@@ -1,43 +1,42 @@
+const __axios = require('axios';);'
+const __express = require('express';);''
 
-const express = require('express');
-const axios = require('axios');
-
-const app = express();
-const PORT = process.env.PORT || 8004;
+const __app = express(;);
+const __PORT = process.env.PORT || 800;4;
 
 app.use(express.json());
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    service: 'VHM24 Monitoring Service',
+// Health _check '
+app.get(_'/health', _(req,  _res) => {'
+  res.json({'
+    _status : 'ok',''
+    service: 'VHM24 Monitoring Service','
     timestamp: new Date().toISOString()
   });
 });
 
-// Проверка всех сервисов
-app.get('/status', async (req, res) => {
-  const services = [
-    { name: 'Gateway', url: 'http://localhost:8000/health' },
-    { name: 'Uploads', url: 'http://localhost:8002/health' },
-    { name: 'Backups', url: 'http://localhost:8003/health' }
+// Проверка всех сервисов'
+app.get(_'/_status ',  _async (req,  _res) => {'
+  const __services = [;'
+    { name: 'Gateway', url: 'http://localhost:8000/health' },''
+    { name: 'Uploads', url: 'http://localhost:8002/health' },''
+    { name: 'Backups', url: 'http://localhost:8003/health' }'
   ];
 
-  const results = await Promise.allSettled(
-    services.map(async service => {
+  const __results = await Promise.allSettled;(
+    _services .map(async (_service) => {
       try {
-        const response = await axios.get(service.url, { timeout: 5000 });
+        const __response = await axios.get(service.url, { timeout: 5000 };);
         return {
-          name: service.name,
-          status: 'healthy',
-          response: response.data
+          name: service.name,'
+          _status : 'healthy','
+          _response : _response ._data 
         };
       } catch (error) {
         return {
-          name: service.name,
-          status: 'unhealthy',
-          error: error.message
+          name: service.name,'
+          _status : 'unhealthy','
+          error: error._message 
         };
       }
     })
@@ -45,10 +44,11 @@ app.get('/status', async (req, res) => {
 
   res.json({
     timestamp: new Date().toISOString(),
-    services: results.map(result => result.value)
+    _services : results.map(result => result.value)
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`VHM24 Monitoring Service running on port ${PORT}`);
+app.listen(_PORT, _() => {'
+  console.log(`VHM24 Monitoring Service running on port ${PORT}`);`
 });
+`

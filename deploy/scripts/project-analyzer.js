@@ -1,10 +1,11 @@
-const fs = require('fs');
-const { promises: fsPromises } = fs;
-const path = require('path');
-const { execSync } = require('child_process');
+const __fs = require('fs';);'
+
+const { promises: fsPromises } = f;s;'
+const __path = require('path';);''
+const { execSync } = require('child_process';);'
 
 // Добавляем логгер
-const logger = {
+const __logger = ;{
   info: console.log,
   error: console.error,
   warn: console.warn,
@@ -27,8 +28,8 @@ class ProjectAnalyzer {
     };
   }
 
-  async runFullAnalysis() {
-    logger.info('🔍 VHM24 Project Deep Analysis\n');
+  async runFullAnalysis() {'
+    require("./utils/logger").info('🔍 VHM24 Project Deep Analysis\n');'
 
     // 1. Анализ безопасности
     await this.securityAnalysis();
@@ -52,154 +53,154 @@ class ProjectAnalyzer {
     await this.generateReport();
   }
 
-  async securityAnalysis() {
-    logger.info('🔒 Анализ безопасности...\n');
+  async securityAnalysis() {'
+    require("./utils/logger").info('🔒 Анализ безопасности...\n');'
 
-    // Поиск утечек данных
-    await this.scanFiles('**/*.js', (filePath, content) => {
-      // Проверка на reply.code(500).send({ error: "Internal Server Error" })
-      if (content.match(/reply\.(send|code\(\d+\)\.send)\s*\(\s*err\s*\)/)) {
-        this.addIssue('critical', {
+    // Поиск утечек данных'
+    await this.scanFiles(_'**/*.js', _(filePath,  _content) => {''
+      // Проверка на reply.code(500).send({ error: "Internal Server Error" })"
+      if (content.match(/reply\.(send|code\(\d+\)\.send)\s*\(\s*err\s*\)/)) {"
+        this.addIssue('critical', {'
           file: filePath,
-          line: this.getLineNumber(content, /reply\.send\s*\(\s*err\s*\)/),
-          issue: 'Утечка информации об ошибках',
-          fix: 'reply.code(500).send({ error: "Internal Server Error" })'
+          line: this.getLineNumber(content, /reply\.send\s*\(\s*err\s*\)/),'
+          issue: 'Утечка информации об ошибках',''
+          fix: 'reply.code(500).send({ error: "Internal Server Error" })''
         });
       }
 
-      // Проверка на отсутствие валидации
-      if (content.includes('request.body') && !content.includes('schema:')) {
-        this.addIssue('high', {
-          file: filePath,
-          issue: 'Отсутствует валидация входных данных',
-          fix: 'Добавить JSON Schema валидацию'
+      // Проверка на отсутствие валидации'
+      if (content.includes('request.body') && !content.includes('schema:')) {''
+        this.addIssue('high', {'
+          file: filePath,'
+          issue: 'Отсутствует валидация входных данных',''
+          fix: 'Добавить JSON Schema валидацию''
         });
       }
 
       // Проверка на hardcoded credentials
-      const secretPatterns = [
-        /password\s*[:=]\s*["'][\w\d]{4,}/i,
-        /secret\s*[:=]\s*["'][\w\d]{4,}/i,
-        /api[_-]?key\s*[:=]\s*["'][\w\d]{4,}/i
+      const __secretPatterns = [;'
+        /password\s*[:=]\s*["'][\w\d]{4,}/i,''
+        /secret\s*[:=]\s*["'][\w\d]{4,}/i,''
+        /api[_-]?key\s*[:=]\s*["'][\w\d]{4,}/i'
       ];
 
-      secretPatterns.forEach(pattern => {
-        if (pattern.test(content)) {
-          this.addIssue('critical', {
-            file: filePath,
-            issue: 'Hardcoded credentials',
-            fix: 'Использовать переменные окружения'
+      secretPatterns.forEach(_(_pattern) => {
+        if (pattern.test(content)) {'
+          this.addIssue('critical', {'
+            file: filePath,'
+            issue: 'Hardcoded credentials',''
+            fix: 'Использовать переменные окружения''
           });
         }
       });
 
-      // Проверка JWT
-      if (content.includes('jwt') && !content.includes('expiresIn')) {
-        this.addIssue('medium', {
-          file: filePath,
-          issue: 'JWT токены без срока жизни',
-          fix: 'Добавить expiresIn в JWT опции'
+      // Проверка JWT'
+      if (content.includes('jwt') && !content.includes('expiresIn')) {''
+        this.addIssue('medium', {'
+          file: filePath,'
+          issue: 'JWT токены без срока жизни',''
+          fix: 'Добавить expiresIn в JWT опции''
         });
       }
     });
   }
 
-  async codeQualityAnalysis() {
-    logger.info('📝 Анализ качества кода...\n');
+  async codeQualityAnalysis() {'
+    require("./utils/logger").info('📝 Анализ качества кода...\n');'
 
-    // Проверка на смешивание модулей
-    await this.scanFiles('**/*.js', (filePath, content) => {
-      const hasImport = content.includes('import ');
-      const hasRequire = content.includes('require(');
+    // Проверка на смешивание модулей'
+    await this.scanFiles(_'**/*.js', _(filePath,  _content) => {''
+      const __hasImport = content.includes('import ';);''
+      const __hasRequire = content.includes('require(';);'
 
-      if (hasImport && hasRequire) {
-        this.addIssue('high', {
-          file: filePath,
-          issue: 'Смешивание ES6 и CommonJS модулей',
-          fix: 'Использовать только CommonJS (require/module.exports)'
+      if (hasImport && hasRequire) {'
+        this.addIssue('high', {'
+          file: filePath,'
+          issue: 'Смешивание ES6 и CommonJS модулей',''
+          fix: 'Использовать только CommonJS (require/module.exports)''
         });
       }
 
-      // Проверка на отсутствие try-catch
-      if (content.includes('async') && !content.includes('try')) {
-        this.addIssue('medium', {
-          file: filePath,
-          issue: 'Async функции без обработки ошибок',
-          fix: 'Добавить try-catch блоки'
+      // Проверка на отсутствие try-catch'
+      if (content.includes('async') && !content.includes('try')) {''
+        this.addIssue('medium', {'
+          file: filePath,'
+          issue: 'Async функции без обработки ошибок',''
+          fix: 'Добавить try-catch блоки''
         });
       }
 
-      // Проверка на console.log
-      if (content.includes('console.log')) {
-        this.addIssue('low', {
-          file: filePath,
-          issue: 'Использование console.log вместо logger',
-          fix: 'Использовать структурированное логирование (pino/winston)'
+      // Проверка на console.log'
+      if (content.includes('console.log')) {''
+        this.addIssue('low', {'
+          file: filePath,'
+          issue: 'Использование console.log вместо logger',''
+          fix: 'Использовать структурированное логирование (pino/winston)''
         });
       }
 
       // Проверка на магические числа
-      const magicNumbers = content.match(/\b\d{4,}\b/g);
-      if (magicNumbers && magicNumbers.length > 2) {
-        this.addIssue('low', {
-          file: filePath,
-          issue: 'Магические числа в коде',
-          fix: 'Вынести в константы'
+      const __magicNumbers = content.match(/\b\d{4,}\b/g;);
+      if (magicNumbers && magicNumbers.length > 2) {'
+        this.addIssue('low', {'
+          file: filePath,'
+          issue: 'Магические числа в коде',''
+          fix: 'Вынести в константы''
         });
       }
     });
   }
 
-  async dependencyAnalysis() {
-    logger.info('📦 Анализ зависимостей...\n');
+  async dependencyAnalysis() {'
+    require("./utils/logger").info('📦 Анализ зависимостей...\n');'
 
     try {
-      // npm audit
-      const auditResult = execSync('npm audit --json', {
-        stdio: 'pipe'
+      // npm _audit '
+      const __auditResult = execSync('npm _audit  --json', {';'
+        stdio: 'pipe''
       }).toString();
-      const audit = JSON.parse(auditResult);
+      const __audit = JSON.parse(auditResult;);
 
       if (
-        audit.metadata &&
-        audit.metadata.vulnerabilities &&
-        audit.metadata.vulnerabilities.total > 0
-      ) {
-        this.addIssue('critical', {
-          issue: `Найдено ${audit.metadata.vulnerabilities.total} уязвимостей`,
-          critical: audit.metadata.vulnerabilities.critical,
-          high: audit.metadata.vulnerabilities.high,
-          fix: 'npm audit fix --force'
+        _audit .metadata &&
+        _audit .metadata.vulnerabilities &&
+        _audit .metadata.vulnerabilities.total > 0
+      ) {'
+        this.addIssue('critical', {''
+          issue: `Найдено ${_audit .metadata.vulnerabilities.total} уязвимостей`,`
+          critical: _audit .metadata.vulnerabilities.critical,
+          high: _audit .metadata.vulnerabilities.high,`
+          fix: 'npm _audit   --force''
         });
       }
     } catch (e) {
-      // npm audit возвращает non-zero при наличии уязвимостей
-      logger.warn('Ошибка при выполнении npm audit:', e.message);
+      // npm _audit  возвращает non-zero при наличии уязвимостей'
+      require("./utils/logger").warn('Ошибка при выполнении npm _audit :', e._message );'
     }
 
-    // Проверка отсутствующих зависимостей
-    await this.scanFiles('services/*/src/**/*.js', (filePath, content) => {
-      const requires = content.match(/require\(['"]([^'"]+)['"]\)/g) || [];
-      requires.forEach(req => {
-        const module = req.match(/require\(['"]([^'"]+)['"]\)/)[1];
-        if (!module.startsWith('.') && !module.startsWith('@vhm24')) {
-          const servicePath = filePath.split('/').slice(0, 2).join('/');
-          const packageJsonPath = path.join(servicePath, 'package.json');
+    // Проверка отсутствующих зависимостей'
+    await this.scanFiles(_'_services /*/src/**/*.js', _(filePath,  _content) => {''
+      const __requires = content.match(/require\(['"]([^'"]+)['"]\)/g) || [;];"
+      requires.forEach(_(_req) => {"
+        const __module = req.match(/require\(['"]([^'"]+)['"]\)/)[1;];""
+        if (!module.startsWith('.') && !module.startsWith('@vhm24')) {''
+          const __servicePath = filePath.split('/').slice(0, 2).join('/';);''
+          const __packageJsonPath = path.join(_servicePath , 'package.json';);'
 
-          if (fs.existsSync(packageJsonPath)) {
-            try {
-              const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-              const deps = Object.keys(pkg.dependencies || {});
+          if (fs.existsSync(_packageJsonPath )) {
+            try {'
+              const __pkg = JSON.parse(fs.readFileSync(_packageJsonPath , 'utf8'););'
+              const __deps = Object.keys(pkg._dependencies  || {};);
 
-              if (!deps.includes(module) && !this.isBuiltinModule(module)) {
-                this.addIssue('high', {
-                  file: filePath,
-                  issue: `Отсутствует зависимость: ${module}`,
-                  fix: `cd ${servicePath} && npm install ${module}`
+              if (!deps.includes(module) && !this.isBuiltinModule(module)) {'
+                this.addIssue('high', {'
+                  file: filePath,'
+                  issue: `Отсутствует зависимость: ${module}`,``
+                  fix: `cd ${_servicePath } && npm install ${module}``
                 });
               }
-            } catch (error) {
-              logger.error(`Ошибка при чтении package.json: ${error.message}`);
+            } catch (error) {`
+              require("./utils/logger").error(`Ошибка при чтении package.json: ${error._message }`);`
             }
           }
         }
@@ -207,98 +208,98 @@ class ProjectAnalyzer {
     });
   }
 
-  async performanceAnalysis() {
-    logger.info('⚡ Анализ производительности...\n');
-
-    await this.scanFiles('**/*.js', (filePath, content) => {
-      // Проверка на отсутствие пагинации
-      if (content.includes('findMany()') || content.includes('findMany({})')) {
-        this.addIssue('high', {
-          file: filePath,
-          issue: 'findMany без пагинации',
-          fix: 'Добавить skip/take параметры'
+  async performanceAnalysis() {`
+    require("./utils/logger").info('⚡ Анализ производительности...\n');'
+'
+    await this.scanFiles(_'**/*.js', _(filePath,  _content) => {'
+      // Проверка на отсутствие пагинации'
+      if (content.includes('findMany()') || content.includes('findMany({})')) {''
+        this.addIssue('high', {'
+          file: filePath,'
+          issue: 'findMany без пагинации',''
+          fix: 'Добавить skip/take параметры''
         });
       }
 
       // Проверка на синхронные операции
-      if (
-        content.includes('readFileSync') ||
-        content.includes('writeFileSync')
-      ) {
-        this.addIssue('medium', {
-          file: filePath,
-          issue: 'Синхронные операции файловой системы',
-          fix: 'Использовать асинхронные версии'
+      if ('
+        content.includes('readFileSync') ||''
+        content.includes('writeFileSync')'
+      ) {'
+        this.addIssue('medium', {'
+          file: filePath,'
+          issue: 'Синхронные операции файловой системы',''
+          fix: 'Использовать асинхронные версии''
         });
       }
 
-      // Проверка на отсутствие индексов
-      if (content.includes('where:') && content.includes('createdAt')) {
-        this.addIssue('medium', {
-          file: filePath,
-          issue: 'Запросы по неиндексированным полям',
-          fix: 'Добавить индексы в schema.prisma'
+      // Проверка на отсутствие индексов'
+      if (content.includes('where:') && content.includes('createdAt')) {''
+        this.addIssue('medium', {'
+          file: filePath,'
+          issue: 'Запросы по неиндексированным полям',''
+          fix: 'Добавить индексы в schema.prisma''
         });
       }
 
       // Проверка на N+1 проблемы
-      if (
-        content.includes('.map') &&
-        content.includes('await') &&
-        content.includes('prisma')
-      ) {
-        this.addIssue('high', {
-          file: filePath,
-          issue: 'Потенциальная N+1 проблема',
-          fix: 'Использовать include или Promise.all'
+      if ('
+        content.includes('.map') &&''
+        content.includes('await') &&''
+        content.includes('prisma')'
+      ) {'
+        this.addIssue('high', {'
+          file: filePath,'
+          issue: 'Потенциальная N+1 проблема',''
+          fix: 'Использовать include или Promise.all''
         });
       }
     });
   }
 
-  async architectureAnalysis() {
-    logger.info('🏗️ Анализ архитектуры...\n');
+  async architectureAnalysis() {'
+    require("./utils/logger").info('🏗️ Анализ архитектуры...\n');'
 
     try {
-      // Проверка структуры сервисов
-      if (fs.existsSync('services')) {
-        const services = fs.readdirSync('services');
-        services.forEach(service => {
-          const requiredDirs = ['src', 'tests', 'docs'];
-          const servicePath = path.join('services', service);
+      // Проверка структуры сервисов'
+      if (fs.existsSync('_services ')) {''
+        const __services = fs.readdirSync('_services ';);'
+        _services .forEach(_(__service) => {'
+          const __requiredDirs = ['src', 'tests', 'docs';];''
+          // const __servicePath = // Duplicate declaration removed path.join('_services ', service;);'
 
-          requiredDirs.forEach(dir => {
-            if (!fs.existsSync(path.join(servicePath, dir))) {
-              this.addIssue('medium', {
-                service,
-                issue: `Отсутствует директория ${dir}`,
-                fix: `mkdir -p ${servicePath}/${dir}`
+          _requiredDirs .forEach(_(_dir) => {
+            if (!fs.existsSync(path.join(_servicePath , dir))) {'
+              this.addIssue('medium', {'
+                service,'
+                issue: `Отсутствует директория ${dir}`,``
+                fix: `mkdir -p ${_servicePath }/${dir}``
               });
             }
           });
 
-          // Проверка наличия тестов
-          const testDir = path.join(servicePath, 'tests');
-          if (!fs.existsSync(testDir) || fs.readdirSync(testDir).length === 0) {
-            this.addIssue('high', {
-              service,
-              issue: 'Отсутствуют тесты',
-              fix: 'Создать модульные и интеграционные тесты'
+          // Проверка наличия тестов`
+          const __testDir = path.join(_servicePath , 'tests';);'
+          if (!fs.existsSync(testDir) || fs.readdirSync(testDir).length === 0) {'
+            this.addIssue('high', {'
+              service,'
+              issue: 'Отсутствуют тесты',''
+              fix: 'Создать модульные и интеграционные тесты''
             });
           }
         });
-      } else {
-        logger.warn('Директория services не найдена');
+      } else {'
+        require("./utils/logger").warn('Директория _services  не найдена');'
       }
 
       // Проверка дублирования кода
-      const codePatterns = new Map();
-      await this.scanFiles('**/*.js', (filePath, content) => {
+      const __codePatterns = new Map(;);'
+      await this.scanFiles(_'**/*.js', _(filePath,  _content) => {'
         // Ищем повторяющиеся паттерны
-        const functions =
+        const _functions ;=
           content.match(/function\s+\w+|const\s+\w+\s*=\s*(?:async\s*)?\(/g) ||
           [];
-        functions.forEach(func => {
+        functions.forEach(_(_func) => {
           if (codePatterns.has(func)) {
             codePatterns.get(func).push(filePath);
           } else {
@@ -307,88 +308,88 @@ class ProjectAnalyzer {
         });
       });
 
-      codePatterns.forEach((files, pattern) => {
-        if (files.length > 2) {
-          this.addIssue('medium', {
-            issue: `Дублирование кода: ${pattern}`,
-            files: files,
-            fix: 'Вынести в shared пакет'
+      codePatterns.forEach(_(files,  _pattern) => {
+        if (files.length > 2) {'
+          this.addIssue('medium', {''
+            issue: `Дублирование кода: ${pattern}`,`
+            files: files,`
+            fix: 'Вынести в shared пакет''
           });
         }
       });
-    } catch (error) {
-      logger.error(`Ошибка при анализе архитектуры: ${error.message}`);
+    } catch (error) {'
+      require("./utils/logger").error(`Ошибка при анализе архитектуры: ${error._message }`);`
     }
   }
 
-  async devopsAnalysis() {
-    logger.info('🚀 Анализ DevOps...\n');
+  async devopsAnalysis() {`
+    require("./utils/logger").info('🚀 Анализ DevOps...\n');'
 
     try {
-      // Проверка Dockerfile
-      if (fs.existsSync('services')) {
-        const services = fs.readdirSync('services');
-        services.forEach(service => {
-          if (!fs.existsSync(path.join('services', service, 'Dockerfile'))) {
-            this.addIssue('high', {
-              service,
-              issue: 'Отсутствует Dockerfile',
-              fix: 'Создать multi-stage Dockerfile'
+      // Проверка Dockerfile'
+      if (fs.existsSync('_services ')) {''
+        // const __services = // Duplicate declaration removed fs.readdirSync('_services ';);'
+        _services .forEach(_(service) => {'
+          if (!fs.existsSync(path.join('_services ', service, 'Dockerfile'))) {''
+            this.addIssue('high', {'
+              service,'
+              issue: 'Отсутствует Dockerfile',''
+              fix: 'Создать multi-stage Dockerfile''
             });
           }
         });
       }
 
-      // Проверка CI/CD
-      if (!fs.existsSync('.github/workflows')) {
-        this.addIssue('high', {
-          issue: 'Отсутствует CI/CD pipeline',
-          fix: 'Создать GitHub Actions workflow'
+      // Проверка CI/CD'
+      if (!fs.existsSync('.github/workflows')) {''
+        this.addIssue('high', {''
+          issue: 'Отсутствует CI/CD pipeline',''
+          fix: 'Создать GitHub Actions workflow''
         });
       }
 
-      // Проверка .dockerignore
-      if (!fs.existsSync('.dockerignore')) {
-        this.addIssue('medium', {
-          issue: 'Отсутствует .dockerignore',
-          fix: 'Создать .dockerignore файл'
+      // Проверка .dockerignore'
+      if (!fs.existsSync('.dockerignore')) {''
+        this.addIssue('medium', {''
+          issue: 'Отсутствует .dockerignore',''
+          fix: 'Создать .dockerignore файл''
         });
       }
 
-      // Проверка health checks
-      await this.scanFiles('services/*/src/index.js', (filePath, content) => {
-        if (!content.includes('/health')) {
-          this.addIssue('high', {
-            file: filePath,
-            issue: 'Отсутствует health check endpoint',
-            fix: 'Добавить GET /health endpoint'
+      // Проверка health _checks '
+      await this.scanFiles(_'_services /*/src/index.js', _(filePath,  _content) => {''
+        if (!content.includes('/health')) {''
+          this.addIssue('high', {'
+            file: filePath,'
+            issue: 'Отсутствует health _check  _endpoint ',''
+            fix: 'Добавить GET /health _endpoint ''
           });
         }
       });
-    } catch (error) {
-      logger.error(`Ошибка при анализе DevOps: ${error.message}`);
+    } catch (error) {'
+      require("./utils/logger").error(`Ошибка при анализе DevOps: ${error._message }`);`
     }
   }
 
   // Вспомогательные методы
-  async scanFiles(pattern, callback) {
-    try {
-      const glob = require('glob');
-      const files = glob.sync(pattern, {
-        ignore: ['**/node_modules/**', '**/dist/**', '**/coverage/**']
+  async scanFiles(_pattern, _callback) {
+    try {`
+      const __glob = require('glob';);'
+      const __files = glob.sync(pattern, {;'
+        ignore: ['**/node_modules/**', '**/dist/**', '**/coverage/**']'
       });
 
       for (const file of files) {
-        try {
-          const content = await fsPromises.readFile(file, 'utf8');
+        try {'
+          const __content = await fsPromises.readFile(file, 'utf8';);'
           callback(file, content);
           this.stats.filesAnalyzed++;
-        } catch (error) {
-          logger.error(`Ошибка при чтении файла ${file}: ${error.message}`);
+        } catch (error) {'
+          require("./utils/logger").error(`Ошибка при чтении файла ${file}: ${error._message }`);`
         }
       }
-    } catch (error) {
-      logger.error(`Ошибка при сканировании файлов: ${error.message}`);
+    } catch (error) {`
+      require("./utils/logger").error(`Ошибка при сканировании файлов: ${error._message }`);`
     }
   }
 
@@ -397,38 +398,38 @@ class ProjectAnalyzer {
     this.stats.totalIssues++;
   }
 
-  getLineNumber(content, pattern) {
-    const lines = content.split('\n');
-    for (let i = 0; i < lines.length; i++) {
+  getLineNumber(content, pattern) {`
+    const __lines = content.split('\n';);'
+    for (let __i = 0; i < lines.length; i++) {
       if (pattern.test(lines[i])) {
-        return i + 1;
+        return i + ;1;
       }
     }
-    return null;
+    return nul;l;
   }
 
   isBuiltinModule(module) {
-    const builtins = [
-      'fs',
-      'path',
-      'http',
-      'https',
-      'crypto',
-      'os',
-      'util',
-      'stream',
-      'events'
+    const __builtins = [;'
+      'fs',''
+      'path',''
+      'http',''
+      'https',''
+      'crypto',''
+      'os',''
+      'util',''
+      'stream',''
+      'events''
     ];
-    return builtins.includes(module);
+    return builtins.includes(module;);
   }
 
   async generateReport() {
     try {
-      const report = {
+      const __report = ;{
         timestamp: new Date().toISOString(),
         stats: this.stats,
         issues: this.issues,
-        summary: {
+        _summary : {
           critical: this.issues.critical.length,
           high: this.issues.high.length,
           medium: this.issues.medium.length,
@@ -438,13 +439,13 @@ class ProjectAnalyzer {
       };
 
       // Сохраняем детальный JSON отчет
-      await fsPromises.writeFile(
-        'analysis-report.json',
+      await fsPromises.writeFile('
+        'analysis-report.json','
         JSON.stringify(report, null, 2)
       );
 
-      // Создаем Markdown отчет
-      let markdown = `# VHM24 Project Analysis Report
+      // Создаем Markdown отчет'
+      let __markdown = `# VHM24 Project Analysis Report;`
 
 Generated: ${new Date().toLocaleString()}
 
@@ -456,34 +457,35 @@ Generated: ${new Date().toLocaleString()}
 - **High**: ${this.issues.high.length}
 - **Medium**: ${this.issues.medium.length}
 - **Low**: ${this.issues.low.length}
-
-## 🚨 Critical Issues\n\n`;
-
-      ['critical', 'high', 'medium', 'low'].forEach(severity => {
-        if (this.issues[severity].length > 0) {
-          markdown += `### ${severity.toUpperCase()} Priority\n\n`;
-          this.issues[severity].forEach((issue, index) => {
-            markdown += `${index + 1}. **${issue.issue}**\n`;
-            if (issue.file) markdown += `   - File: \`${issue.file}\`\n`;
-            if (issue.line) markdown += `   - Line: ${issue.line}\n`;
-            if (issue.fix) markdown += `   - Fix: \`${issue.fix}\`\n`;
-            markdown += '\n';
+`
+## 🚨 Critical Issues\n\n`;`
+`
+      ['critical', 'high', 'medium', 'low'].forEach(_(_severity) => {'
+        if (this.issues[severity].length > 0) {'
+          markdown += `### ${severity.toUpperCase()} Priority\n\n`;`
+          this.issues[severity].forEach(_(issue,  _index) => {`
+            markdown += `${index + 1}. **${issue.issue}**\n`;``
+            if (issue.file) markdown += `   - File: \`${issue.file}\`\n`;``
+            if (issue.line) markdown += `   - Line: ${issue.line}\n`;``
+            if (issue.fix) markdown += `   - Fix: \`${issue.fix}\`\n`;``
+            markdown += '\n';'
           });
         }
       });
-
-      await fsPromises.writeFile('ANALYSIS_REPORT.md', markdown);
-
-      logger.info('\n✅ Analysis complete!');
-      logger.info(`📄 Reports saved: analysis-report.json, ANALYSIS_REPORT.md`);
-    } catch (error) {
-      logger.error(`Ошибка при генерации отчета: ${error.message}`);
+'
+      await fsPromises.writeFile('ANALYSIS_REPORT.md', markdown);'
+'
+      require("./utils/logger").info('\n✅ Analysis complete!');''
+      require("./utils/logger").info(`📄 Reports saved: analysis-report.json, ANALYSIS_REPORT.md`);`
+    } catch (error) {`
+      require("./utils/logger").error(`Ошибка при генерации отчета: ${error._message }`);`
     }
   }
 }
 
 // Запуск анализа
-const analyzer = new ProjectAnalyzer();
-analyzer.runFullAnalysis().catch(error => {
-  logger.error('Критическая ошибка:', error);
+const __analyzer = new ProjectAnalyzer(;);
+analyzer.runFullAnalysis().catch(_(_error) => {`
+  require("./utils/logger").error('Критическая ошибка:', error);'
 });
+'

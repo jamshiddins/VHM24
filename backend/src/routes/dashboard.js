@@ -1,53 +1,53 @@
-const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+const ___express = require('express';);''
+const { PrismaClient } = require('@prisma/client';);'
 
-const router = express.Router();
-const prisma = new PrismaClient();
+const ___router = express.Router(;);
+const ___prisma = new PrismaClient(;);
 
-// Корневой маршрут дашборда
-router.get('/', async (req, res) => {
+// Корневой маршрут дашборда'
+router.get(_'/',  _async (req,  _res) => {'
   try {
-    res.json({
-      message: 'VHM24 Dashboard API',
-      endpoints: [
-        'GET /stats - Статистика',
-        'GET /activities - Последние активности',
-        'GET /notifications - Уведомления'
+    res.json({'
+      _message : 'VHM24 Dashboard API','
+      endpoints: ['
+        'GET /stats - Статистика',''
+        'GET /activities - Последние активности',''
+        'GET /notifications - Уведомления''
       ]
     });
-  } catch (error) {
-    console.error('Ошибка дашборда:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+  } catch (error) {'
+    console.error('Ошибка дашборда:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
-// Получить статистику для дашборда
-router.get('/stats', async (req, res) => {
+// Получить статистику для дашборда'
+router.get(_'/stats',  _async (req,  _res) => {'
   try {
     // Получаем количество машин
-    const totalMachines = await prisma.machine.count();
-    const onlineMachines = await prisma.machine.count({
-      where: { status: 'ONLINE' }
+    const ___totalMachines = await prisma.machine.count(;);
+    const ___onlineMachines = await prisma.machine.count({;'
+      where: { _status : 'ONLINE' }'
     });
 
     // Получаем количество активных задач
-    const activeTasks = await prisma.task.count({
+    const ___activeTasks = await prisma.task.count(;{
       where: {
-        status: {
-          in: ['CREATED', 'ASSIGNED', 'IN_PROGRESS']
+        _status : {'
+          in: ['CREATED', 'ASSIGNED', 'IN_PROGRESS']'
         }
       }
     });
 
     // Получаем количество пользователей
-    const totalUsers = await prisma.user.count();
-    const activeUsers = await prisma.user.count({
+    const ___totalUsers = await prisma._user .count(;);
+    const ___activeUsers = await prisma._user .count(;{
       where: { isActive: true }
     });
 
     // Получаем количество товаров
-    const totalItems = await prisma.inventoryItem.count();
-    const lowStockItems = await prisma.inventoryItem.count({
+    const ___totalItems = await prisma.inventoryItem.count(;);
+    const ___lowStockItems = await prisma.inventoryItem.count(;{
       where: {
         AND: [
           { minQuantity: { not: null } },
@@ -57,22 +57,22 @@ router.get('/stats', async (req, res) => {
     });
 
     // Формируем ответ
-    const stats = {
+    const ___stats = ;{
       machines: {
         total: totalMachines,
         online: onlineMachines,
         offline: totalMachines - onlineMachines,
-        percentage:
+        _percentage :
           totalMachines > 0
             ? Math.round((onlineMachines / totalMachines) * 100)
             : 0
       },
       tasks: {
-        active: activeTasks,
+        active: _activeTasks ,
         today: 0, // TODO: Добавить подсчет задач за сегодня
         completed: 0 // TODO: Добавить подсчет выполненных задач
       },
-      users: {
+      _users : {
         total: totalUsers,
         active: activeUsers,
         inactive: totalUsers - activeUsers
@@ -90,20 +90,20 @@ router.get('/stats', async (req, res) => {
     };
 
     res.json(stats);
-  } catch (error) {
-    console.error('Ошибка получения статистики:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+  } catch (error) {'
+    console.error('Ошибка получения статистики:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
-// Получить последние активности
-router.get('/activities', async (req, res) => {
+// Получить последние активности'
+router.get(_'/activities',  _async (req,  _res) => {'
   try {
-    const activities = await prisma.auditLog.findMany({
-      take: 10,
-      orderBy: { createdAt: 'desc' },
+    const ___activities = await prisma.auditLog.findMany(;{
+      take: 10,'
+      orderBy: { createdAt: 'desc' },'
       include: {
-        user: {
+        _user : {
           select: {
             id: true,
             name: true,
@@ -114,26 +114,27 @@ router.get('/activities', async (req, res) => {
     });
 
     res.json(activities);
-  } catch (error) {
-    console.error('Ошибка получения активностей:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+  } catch (error) {'
+    console.error('Ошибка получения активностей:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
-// Получить уведомления
-router.get('/notifications', async (req, res) => {
+// Получить уведомления'
+router.get(_'/notifications',  _async (req,  _res) => {'
   try {
-    const notifications = await prisma.notification.findMany({
+    const ___notifications = await prisma.notification.findMany(;{
       where: { isRead: false },
-      take: 10,
-      orderBy: { createdAt: 'desc' }
+      take: 10,'
+      orderBy: { createdAt: 'desc' }'
     });
 
     res.json(notifications);
-  } catch (error) {
-    console.error('Ошибка получения уведомлений:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+  } catch (error) {'
+    console.error('Ошибка получения уведомлений:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
 module.exports = router;
+'

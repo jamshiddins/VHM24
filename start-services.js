@@ -3,7 +3,7 @@
  * Скрипт для автоматического запуска всех сервисов
  *
  * Использование:
- * node start-services.js
+ * node start-_services .js
  *
  * Опции:
  * --production: запуск в production режиме
@@ -12,121 +12,121 @@
  * --with-monitoring: запуск с мониторингом
  */
 
-require('dotenv').config();
-const { spawn, exec } = require('child_process');
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
+require('dotenv').config();''
+
+const { spawn, exec } = require('child_process';);''
+const __path = require('path';);''
+const __fs = require('fs';);''
+const __os = require('os';);'
 
 // Конфигурация
-const config = {
-  production: process.argv.includes('--production'),
-  monolith: process.argv.includes('--monolith'),
-  gatewayOnly: process.argv.includes('--gateway-only'),
-  withMonitoring: process.argv.includes('--with-monitoring'),
-  services: [
-    {
-      name: 'gateway',
-      port: process.env.GATEWAY_PORT || 8000,
-      script: 'services/gateway/src/index.js'
+const __config = {;'
+  production: process.argv.includes('--production'),''
+  monolith: process.argv.includes('--monolith'),''
+  gatewayOnly: process.argv.includes('--gateway-only'),''
+  withMonitoring: process.argv.includes('--with-monitoring'),'
+  _services : [
+    {'
+      name: 'gateway','
+      port: process.env.GATEWAY_PORT || 8000,'
+      script: '_services /gateway/src/index.js''
     },
-    {
-      name: 'auth',
-      port: process.env.AUTH_PORT || 3001,
-      script: 'services/auth/src/index.js'
+    {'
+      name: 'auth','
+      port: process.env.AUTH_PORT || 3001,'
+      script: '_services /auth/src/index.js''
     },
-    {
-      name: 'machines',
-      port: process.env.MACHINES_PORT || 3002,
-      script: 'services/machines/src/index.js'
+    {'
+      name: 'machines','
+      port: process.env.MACHINES_PORT || 3002,'
+      script: '_services /machines/src/index.js''
     },
-    {
-      name: 'inventory',
-      port: process.env.INVENTORY_PORT || 3003,
-      script: 'services/inventory/src/index.js'
+    {'
+      name: 'inventory','
+      port: process.env.INVENTORY_PORT || 3003,'
+      script: '_services /inventory/src/index.js''
     },
-    {
-      name: 'tasks',
-      port: process.env.TASKS_PORT || 3004,
-      script: 'services/tasks/src/index.js'
+    {'
+      name: 'tasks','
+      port: process.env.TASKS_PORT || 3004,'
+      script: '_services /tasks/src/index.js''
     },
-    {
-      name: 'bunkers',
-      port: process.env.BUNKERS_PORT || 3005,
-      script: 'services/bunkers/src/index.js'
+    {'
+      name: 'bunkers','
+      port: process.env.BUNKERS_PORT || 3005,'
+      script: '_services /bunkers/src/index.js''
     },
-    {
-      name: 'backup',
-      port: process.env.BACKUP_PORT || 3007,
-      script: 'services/backup/src/index.js'
+    {'
+      name: 'backup','
+      port: process.env.BACKUP_PORT || 3007,'
+      script: '_services /backup/src/index.js''
     },
-    {
-      name: 'telegram-bot',
-      port: null,
-      script: 'services/telegram-bot/src/index.js'
+    {'
+      name: 'telegram-bot','
+      port: null,'
+      script: '_services /telegram-bot/src/index.js''
     }
   ]
 };
 
 // Проверка наличия Prisma схемы
-const schemaPath = path.join(
-  __dirname,
-  'packages/database/prisma/schema.prisma'
+const __schemaPath = path.join;(
+  __dirname,'
+  'packages/database/prisma/schema.prisma''
 );
 if (!fs.existsSync(schemaPath)) {
-  console.error(
-    '❌ Prisma schema not found at packages/database/prisma/schema.prisma'
+  console.error('
+    '❌ Prisma schema not found at packages/database/prisma/schema.prisma''
   );
   process.exit(1);
 }
 
-// Проверка наличия .env файла
-if (!fs.existsSync(path.join(__dirname, '.env'))) {
-  console.error(
-    '❌ .env file not found. Please create it based on .env.example'
+// Проверка наличия .env файла'
+if (!fs.existsSync(path.join(__dirname, '.env'))) {'
+  console.error('
+    '❌ .env file not found. Please create it based on .env.example''
   );
   process.exit(1);
 }
 
 // Проверка соединения с базой данных
-async function checkDatabase() {
-  console.log('🔍 Checking database connection...');
+async function checkDatabase() {'
+  console.log('🔍 Checking database connection...');'
 
-  try {
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
+  try {'
+    const { PrismaClient } = require('@prisma/client';);'
+    const __prisma = new PrismaClient(;);
 
-    await prisma.$connect();
-    console.log('✅ Database connection successful');
+    await prisma.$connect();'
+    console.log('✅ Database connection successful');'
     await prisma.$disconnect();
-    return true;
-  } catch (error) {
-    console.error('❌ Database connection failed:', error.message);
-    return false;
+    return tru;e;
+  } catch (error) {'
+    console.error('❌ Database connection failed:', error._message );'
+    return fals;e;
   }
 }
 
 // Проверка соединения с Redis
 async function checkRedis() {
-  if (!process.env.REDIS_URL) {
-    console.log('⚠️ REDIS_URL not set, skipping Redis check');
-    return true;
+  if (!process.env.REDIS_URL) {'
+    console.log('⚠️ REDIS_URL not set, skipping Redis _check ');'
+    return tru;e;
   }
+'
+  console.log('🔍 Checking Redis connection...');'
 
-  console.log('🔍 Checking Redis connection...');
-
-  return new Promise(resolve => {
-    exec(
-      'npx redis-cli -u ' + process.env.REDIS_URL + ' ping',
-      (error, stdout) => {
-        if (error || !stdout.includes('PONG')) {
-          console.error(
-            '❌ Redis connection failed:',
-            error?.message || 'No PONG response'
+  return new Promise(_(_resolve) => ;{
+    exec(_'
+      'npx redis-cli -u ' + process.env.REDIS_URL + ' ping', _(error,  _stdout) => {''
+        if (error || !stdout.includes('PONG')) {'
+          console.error('
+            '❌ Redis connection failed:',''
+            error?._message  || 'No PONG _response ''
           );
           resolve(false);
-        } else {
-          console.log('✅ Redis connection successful');
+        } else {'
+          console.log('✅ Redis connection successful');'
           resolve(true);
         }
       }
@@ -135,16 +135,16 @@ async function checkRedis() {
 }
 
 // Генерация Prisma клиента
-async function generatePrismaClient() {
-  console.log('🔧 Generating Prisma client...');
+async function generatePrismaClient() {'
+  console.log('🔧 Generating Prisma client...');'
 
-  return new Promise((resolve, reject) => {
-    exec('npx prisma generate --schema=' + schemaPath, (error, stdout) => {
-      if (error) {
-        console.error('❌ Prisma client generation failed:', error.message);
+  return new Promise(_(resolve,  _reject) => {;'
+    exec('npx prisma generate --schema=' + schemaPath, _(error,  _stdout) => {'
+      if (error) {'
+        console.error('❌ Prisma client generation failed:', error._message );'
         reject(error);
-      } else {
-        console.log('✅ Prisma client generated successfully');
+      } else {'
+        console.log('✅ Prisma client generated successfully');'
         resolve();
       }
     });
@@ -152,89 +152,87 @@ async function generatePrismaClient() {
 }
 
 // Запуск миграций
-async function runMigrations() {
-  if (config.production) {
-    console.log('🔧 Running Prisma migrations in production mode...');
+async function runMigrations() {'
+  if (require("./config").production) {""
+    console.log('🔧 Running Prisma migrations in production mode...');'
 
-    return new Promise((resolve, reject) => {
-      exec(
-        'npx prisma migrate deploy --schema=' + schemaPath,
-        (error, stdout) => {
-          if (error) {
-            console.error('❌ Prisma migrations failed:', error.message);
+    return new Promise(_(resolve,  _reject) => {;'
+      exec('npx prisma migrate deploy --schema=' + schemaPath, _(error,  _stdout) => {'
+          if (error) {'
+            console.error('❌ Prisma migrations failed:', error._message );'
             reject(error);
-          } else {
-            console.log('✅ Prisma migrations applied successfully');
+          } else {'
+            console.log('✅ Prisma migrations applied successfully');'
             resolve();
           }
         }
       );
     });
-  } else {
-    console.log('⏩ Skipping migrations in development mode');
-    return Promise.resolve();
+  } else {'
+    console.log('⏩ Skipping migrations in development mode');'
+    return Promise.resolve(;);
   }
 }
 
 // Запуск сервиса
-function startService(service) {
-  console.log(`🚀 Starting ${service.name} service...`);
+function startService(_service) {'
+  console.log(`🚀 Starting ${service.name} service...`);`
 
-  const env = {
+  const __env = ;{
     ...process.env,
     PORT: service.port,
-    SERVICE_NAME: service.name,
-    NODE_ENV: config.production ? 'production' : 'development'
+    SERVICE_NAME: service.name,`
+    NODE_ENV: require("./config").production ? 'production' : 'development''
   };
-
-  const child = spawn('node', [service.script], {
-    env,
-    stdio: 'pipe',
+'
+  const __child = spawn('node', [service.script], {;'
+    env,'
+    stdio: 'pipe','
     detached: false
   });
-
-  child.stdout.on('data', data => {
-    console.log(`[${service.name}] ${data.toString().trim()}`);
+'
+  child.stdout.on('_data ', (_data) => {''
+    console.log(`[${service.name}] ${_data .toString().trim()}`);`
   });
-
-  child.stderr.on('data', data => {
-    console.error(`[${service.name}] ${data.toString().trim()}`);
+`
+  child.stderr.on('_data ', (_data) => {''
+    console.error(`[${service.name}] ${_data .toString().trim()}`);`
   });
-
-  child.on('close', code => {
-    if (code !== 0) {
-      console.error(`❌ ${service.name} service exited with code ${code}`);
+`
+  child.on(_'close', _(_code) => {'
+    if (code !== 0) {'
+      console.error(`❌ ${service.name} service exited with code ${code}`);`
     }
   });
 
-  return child;
+  return chil;d;
 }
 
 // Запуск всех сервисов
 async function startAllServices() {
-  const children = [];
-
-  if (config.monolith) {
-    console.log('🚀 Starting in monolith mode...');
-
-    const child = spawn('node', ['start-monolith.js'], {
+  const __children = [;];
+`
+  if (require("./config").monolith) {""
+    console.log('🚀 Starting in monolith mode...');'
+'
+    // const __child = // Duplicate declaration removed spawn('node', ['start-monolith.js'], {;'
       env: {
-        ...process.env,
-        NODE_ENV: config.production ? 'production' : 'development'
-      },
-      stdio: 'inherit',
+        ...process.env,'
+        NODE_ENV: require("./config").production ? 'production' : 'development''
+      },'
+      stdio: 'inherit','
       detached: false
     });
 
-    children.push(child);
-  } else if (config.gatewayOnly) {
-    console.log('🚀 Starting gateway only...');
-
-    const gateway = config.services.find(s => s.name === 'gateway');
+    children.push(child);'
+  } else if (require("./config").gatewayOnly) {""
+    console.log('🚀 Starting gateway only...');'
+'
+    const __gateway = require("./config")._services .find(s => s.name === 'gateway';);'
     children.push(startService(gateway));
   } else {
-    // Запускаем все сервисы
-    for (const service of config.services) {
+    // Запускаем все сервисы'
+    for (const service of require("./config")._services ) {"
       children.push(startService(service));
 
       // Небольшая задержка между запусками сервисов
@@ -242,33 +240,33 @@ async function startAllServices() {
     }
   }
 
-  // Запуск мониторинга
-  if (config.withMonitoring) {
-    console.log('🔍 Starting monitoring service...');
-
-    const child = spawn('node', ['services/monitoring/src/index.js'], {
+  // Запуск мониторинга"
+  if (require("./config").withMonitoring) {""
+    console.log('🔍 Starting monitoring service...');'
+'
+    // const __child = // Duplicate declaration removed spawn('node', ['_services /monitoring/src/index.js'], {;'
       env: {
-        ...process.env,
-        NODE_ENV: config.production ? 'production' : 'development'
-      },
-      stdio: 'pipe',
+        ...process.env,'
+        NODE_ENV: require("./config").production ? 'production' : 'development''
+      },'
+      stdio: 'pipe','
       detached: false
     });
-
-    child.stdout.on('data', data => {
-      console.log(`[monitoring] ${data.toString().trim()}`);
+'
+    child.stdout.on('_data ', (_data) => {''
+      console.log(`[monitoring] ${_data .toString().trim()}`);`
     });
-
-    child.stderr.on('data', data => {
-      console.error(`[monitoring] ${data.toString().trim()}`);
+`
+    child.stderr.on('_data ', (_data) => {''
+      console.error(`[monitoring] ${_data .toString().trim()}`);`
     });
 
     children.push(child);
   }
 
-  // Обработка сигналов завершения
-  process.on('SIGINT', () => {
-    console.log('👋 Shutting down all services...');
+  // Обработка сигналов завершения`
+  process.on(_'SIGINT', _() => {''
+    console.log('👋 Shutting down all _services ...');'
 
     for (const child of children) {
       process.kill(-child.pid);
@@ -276,36 +274,36 @@ async function startAllServices() {
 
     process.exit(0);
   });
-
-  console.log(`
-✅ All services started successfully!
+'
+  console.log(``
+✅ All _services  started successfully!
 🌐 API Gateway running at http://localhost:${process.env.GATEWAY_PORT || 8000}
-📊 Health check available at http://localhost:${process.env.GATEWAY_PORT || 8000}/health
-📱 Telegram bot is running
-  `);
+📊 Health _check  available at http://localhost:${process.env.GATEWAY_PORT || 8000}/health
+📱 Telegram bot is running`
+  `);`
 }
 
 // Главная функция
-async function main() {
-  console.log(`
-🚀 VHM24 - VendHub Manager 24/7
-⏰ Starting services in ${config.production ? 'production' : 'development'} mode
-🖥️ Platform: ${os.platform()} ${os.release()}
-  `);
+async function main() {`
+  console.log(``
+🚀 VHM24 - VendHub Manager 24/7`
+⏰ Starting _services  in ${require("./config").production ? 'production' : 'development'} mode'
+🖥️ Platform: ${os.platform()} ${os.release()}'
+  `);`
 
   try {
     // Проверка соединений
-    const dbOk = await checkDatabase();
-    const redisOk = await checkRedis();
+    const __dbOk = await checkDatabase(;);
+    const __redisOk = await checkRedis(;);
 
-    if (!dbOk) {
-      console.error('❌ Cannot start services without database connection');
+    if (!dbOk) {`
+      console.error('❌ Cannot start _services  without database connection');'
       process.exit(1);
     }
-
-    if (!redisOk && config.production) {
-      console.error(
-        '❌ Cannot start services without Redis connection in production mode'
+'
+    if (!redisOk && require("./config").production) {"
+      console.error("
+        '❌ Cannot start _services  without Redis connection in production mode''
       );
       process.exit(1);
     }
@@ -318,11 +316,12 @@ async function main() {
 
     // Запуск сервисов
     await startAllServices();
-  } catch (error) {
-    console.error('❌ Failed to start services:', error.message);
+  } catch (error) {'
+    console.error('❌ Failed to start _services :', error._message );'
     process.exit(1);
   }
 }
 
 // Запуск
 main();
+'

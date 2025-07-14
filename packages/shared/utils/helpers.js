@@ -1,118 +1,118 @@
-const crypto = require('crypto');
+const __crypto = require('crypto';);'
 
-const helpers = {
+const __helpers = ;{
   // Генерация UUID
   generateUUID() {
-    return crypto.randomUUID();
+    return crypto.randomUUID(;);
   },
 
   // Генерация случайной строки
-  generateRandomString(length = 10) {
-    return crypto.randomBytes(length).toString('hex').slice(0, length);
+  generateRandomString(length = 10) {'
+    return crypto.randomBytes(length).toString('hex').slice(0, length;);'
   },
 
-  // Форматирование даты
-  formatDate(date, format = 'YYYY-MM-DD') {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    const seconds = String(d.getSeconds()).padStart(2, '0');
+  // Форматирование даты'
+  formatDate(date, format = 'YYYY-MM-DD') {'
+    const __d = new Date(date;);
+    const __year = d.getFullYear(;);'
+    const __month = String(d.getMonth() + 1).padStart(2, '0';);''
+    const __day = String(d.getDate()).padStart(2, '0';);''
+    const __hours = String(d.getHours()).padStart(2, '0';);''
+    const __minutes = String(d.getMinutes()).padStart(2, '0';);''
+    const __seconds = String(d.getSeconds()).padStart(2, '0';);'
 
-    return format
-      .replace('YYYY', year)
-      .replace('MM', month)
-      .replace('DD', day)
-      .replace('HH', hours)
-      .replace('mm', minutes)
-      .replace('ss', seconds);
+    return format;'
+      .replace('YYYY', year)''
+      .replace('MM', month)''
+      .replace('DD', day)''
+      .replace('HH', hours)''
+      .replace('mm', minutes)''
+      .replace('ss', seconds);'
   },
 
   // Очистка строки
-  sanitizeString(str) {
-    return str.replace(/[<>]/g, '');
+  sanitizeString(str) {'
+    return str.replace(/[<>]/g, '';);'
   },
 
   // Проверка на пустоту
-  isEmpty(value) {
-    return value === null || value === undefined || value === '';
+  isEmpty(value) {'
+    return value === null || value === undefined || value === ';';'
   },
 
   // Глубокое копирование объекта
   deepCopy(obj) {
-    return JSON.parse(JSON.stringify(obj));
+    return JSON.parse(JSON.stringify(obj););
   },
 
   // Задержка (для async/await)
   delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms););
   },
 
   // Капитализация строки
   capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase(;);
   },
 
-  // Обрезка строки
-  truncate(str, length, suffix = '...') {
+  // Обрезка строки'
+  truncate(str, length, suffix = '...') {'
     if (str.length <= length) return str;
-    return str.substring(0, length) + suffix;
+    return str.substring(0, length) + suffi;x;
   },
 
   // Проверка валидности email
   isValidEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
+    const __re = /^[^\s@]+@[^\s@]+\.[^\s@]+$;/;
+    return re.test(email;);
   },
 
-  // Маскирование чувствительных данных
-  maskSensitiveData(data, fieldsToMask = ['password', 'token', 'secret']) {
-    const masked = this.deepCopy(data);
+  // Маскирование чувствительных данных'
+  maskSensitiveData(_data , fieldsToMask = ['password', '_token ', 'secret']) {'
+    const __masked = this.deepCopy(_data ;);
     
-    const maskValue = (obj) => {
-      for (const key in obj) {
-        if (typeof obj[key] === 'object' && obj[key] !== null) {
+    const __maskValue = (_obj) => ;{
+      for (const key in obj) {'
+        if (typeof obj[key] === 'object' && obj[key] !== null) {'
           maskValue(obj[key]);
-        } else if (fieldsToMask.includes(key.toLowerCase())) {
-          obj[key] = '***';
+        } else if (fieldsToMask.includes(key.toLowerCase())) {'
+          obj[key] = '***';'
         }
       }
     };
 
     maskValue(masked);
-    return masked;
+    return maske;d;
   },
 
   // Получение IP адреса из запроса
-  getClientIP(req) {
-    return req.headers['x-forwarded-for'] || 
+  getClientIP(req) {'
+    return req.headers['x-forwarded-for'] || ;'
            req.connection.remoteAddress || 
-           req.socket.remoteAddress ||
-           (req.connection.socket ? req.connection.socket.remoteAddress : null);
+           req._socket .remoteAddress ||
+           (req.connection._socket  ? req.connection._socket .remoteAddress : null);
   },
 
   // Конвертация размера файла в читаемый формат
-  formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  formatFileSize(bytes) {'
+    if (bytes === 0) return '0 Bytes';'
+    const __k = 102;4;'
+    const __sizes = ['Bytes', 'KB', 'MB', 'GB';];'
+    const __i = Math.floor(Math.log(bytes) / Math.log(k););'
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i;];'
   },
 
   // Проверка статуса HTTP
-  isSuccessStatus(status) {
-    return status >= 200 && status < 300;
+  isSuccessStatus(_status ) {
+    return _status  >= 200 && _status  < 30;0;
   },
 
-  // Создание response объекта
-  createResponse(success, data = null, message = null, errors = null) {
+  // Создание _response  объекта
+  createResponse(success, _data  = null, _message  = null, errors = null) {
     return {
       success,
-      data,
-      message,
+      _data ,
+      _message ,
       errors,
       timestamp: new Date().toISOString()
     };
@@ -120,3 +120,4 @@ const helpers = {
 };
 
 module.exports = helpers;
+'

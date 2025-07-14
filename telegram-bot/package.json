@@ -1,0 +1,47 @@
+{
+  "name": "vendhub-telegram-bot",
+  "version": "1.0.0",
+  "description": "VendHub Telegram FSM Bot for vending machine operations management",
+  "main": "src/bot.js",
+  "scripts": {
+    "start": "node src/bot.js",
+    "dev": "nodemon src/bot.js",
+    "test": "jest",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "fsm",
+    "vending",
+    "operations",
+    "management"
+  ],
+  "author": "VendHub Team",
+  "license": "MIT",
+  "dependencies": {
+    "telegraf": "^4.15.6",
+    "redis": "^4.6.12",
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.1",
+    "winston": "^3.11.0",
+    "node-cron": "^3.0.3",
+    "joi": "^17.12.0",
+    "moment": "^2.30.1",
+    "qrcode": "^1.5.3",
+    "sharp": "^0.33.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3",
+    "jest": "^29.7.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

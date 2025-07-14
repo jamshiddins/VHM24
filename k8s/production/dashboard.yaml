@@ -1,0 +1,482 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard
+  namespace: vhm24-production
+  labels:
+    app: dashboard
+    component: frontend
+    version: v1
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: dashboard
+  template:
+    metadata:
+      labels:
+        app: dashboard
+        component: frontend
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: dashboard
+        image: ghcr.io/vhm24/dashboard:latest
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: API_BASE_URL
+          value: "https://api.vhm24.com"
+        - name: WEBSOCKET_URL
+          value: "wss://ws.vhm24.com"
+        - name: APP_VERSION
+          value: "1.0.0"
+        - name: BUILD_DATE
+          value: "2025-01-13"
+        - name: ENABLE_PWA
+          value: "true"
+        - name: ENABLE_ANALYTICS
+          value: "true"
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: vhm24-secrets
+              key: sentry-dsn
+              optional: true
+        - name: GOOGLE_ANALYTICS_ID
+          valueFrom:
+            secretKeyRef:
+              name: vhm24-secrets
+              key: ga-tracking-id
+              optional: true
+        - name: CDN_BASE_URL
+          value: "https://cdn.vhm24.com"
+        - name: CACHE_CONTROL
+          value: "public, max-age=31536000"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        volumeMounts:
+        - name: dashboard-config
+          mountPath: /usr/share/nginx/html/config
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d
+        - name: static-assets
+          mountPath: /usr/share/nginx/html/assets
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 101
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: dashboard-config
+        configMap:
+          name: dashboard-config
+      - name: nginx-config
+        configMap:
+          name: nginx-dashboard-config
+      - name: static-assets
+        emptyDir: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - dashboard
+              topologyKey: kubernetes.io/hostname
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard-service
+  namespace: vhm24-production
+  labels:
+    app: dashboard
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: dashboard
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dashboard-hpa
+  namespace: vhm24-production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dashboard
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 30
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dashboard-config
+  namespace: vhm24-production
+data:
+  app-config.js: |
+    window.APP_CONFIG = {
+      version: '1.0.0',
+      buildDate: '2025-01-13',
+      environment: 'production',
+      api: {
+        baseUrl: 'https://api.vhm24.com',
+        timeout: 30000,
+        retries: 3
+      },
+      websocket: {
+        url: 'wss://ws.vhm24.com',
+        reconnectInterval: 5000,
+        maxReconnectAttempts: 10
+      },
+      features: {
+        realTimeUpdates: true,
+        notifications: true,
+        analytics: true,
+        darkMode: true,
+        exportFeatures: true,
+        advancedCharts: true,
+        aiInsights: true,
+        blockchainExplorer: true,
+        iotMonitoring: true
+      },
+      ui: {
+        theme: 'glassmorphism',
+        primaryColor: '#6366f1',
+        secondaryColor: '#8b5cf6',
+        updateInterval: 5000,
+        animationDuration: 300,
+        chartRefreshRate: 10000
+      },
+      monitoring: {
+        sentry: {
+          enabled: true,
+          environment: 'production'
+        },
+        analytics: {
+          enabled: true,
+          trackPageViews: true,
+          trackUserActions: true
+        }
+      },
+      security: {
+        enableCSP: true,
+        enableXSS: true,
+        enableCORS: true,
+        tokenRefreshThreshold: 300
+      },
+      performance: {
+        enableServiceWorker: true,
+        enablePrefetching: true,
+        enableLazyLoading: true,
+        enableImageOptimization: true
+      }
+    };
+  
+  manifest.json: |
+    {
+      "name": "VHM24 Enterprise Dashboard",
+      "short_name": "VHM24",
+      "description": "Enterprise Vending Management Platform",
+      "start_url": "/",
+      "display": "standalone",
+      "theme_color": "#6366f1",
+      "background_color": "#ffffff",
+      "orientation": "portrait-primary",
+      "icons": [
+        {
+          "src": "/assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "maskable any"
+        },
+        {
+          "src": "/assets/icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "maskable any"
+        }
+      ],
+      "categories": ["business", "productivity", "utilities"],
+      "screenshots": [
+        {
+          "src": "/assets/screenshot-1.png",
+          "sizes": "1280x720",
+          "type": "image/png",
+          "form_factor": "wide"
+        }
+      ]
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-dashboard-config
+  namespace: vhm24-production
+data:
+  default.conf: |
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types
+      text/plain
+      text/css
+      text/xml
+      text/javascript
+      application/javascript
+      application/xml+rss
+      application/json
+      image/svg+xml;
+
+    # Brotli compression
+    brotli on;
+    brotli_comp_level 6;
+    brotli_types
+      text/plain
+      text/css
+      application/json
+      application/javascript
+      text/xml
+      application/xml
+      text/javascript;
+
+    server {
+        listen 80;
+        server_name _;
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # Security headers
+        add_header X-Frame-Options "DENY" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
+        
+        # CSP header
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' wss: https:; frame-ancestors 'none';" always;
+
+        # Cache static assets
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+            try_files $uri =404;
+        }
+
+        # Cache HTML with shorter expiry
+        location ~* \.html$ {
+            expires 1h;
+            add_header Cache-Control "public, must-revalidate";
+            try_files $uri =404;
+        }
+
+        # API proxy to prevent CORS issues in development
+        location /api/ {
+            proxy_pass https://api.vhm24.com;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_cache_bypass $http_upgrade;
+        }
+
+        # WebSocket proxy
+        location /ws/ {
+            proxy_pass https://ws.vhm24.com;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_cache_bypass $http_upgrade;
+            proxy_read_timeout 86400;
+        }
+
+        # Health check endpoints
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+
+        location /ready {
+            access_log off;
+            return 200 "ready\n";
+            add_header Content-Type text/plain;
+        }
+
+        # Metrics endpoint for Prometheus
+        location /metrics {
+            access_log off;
+            return 200 "# No metrics available for static content\n";
+            add_header Content-Type text/plain;
+        }
+
+        # Handle SPA routing
+        location / {
+            try_files $uri $uri/ /index.html;
+            
+            # Add no-cache for index.html to ensure fresh content
+            location = /index.html {
+                add_header Cache-Control "no-cache, no-store, must-revalidate";
+                add_header Pragma "no-cache";
+                add_header Expires "0";
+            }
+        }
+
+        # Block access to sensitive files
+        location ~ /\. {
+            deny all;
+            access_log off;
+            log_not_found off;
+        }
+
+        location ~ ~$ {
+            deny all;
+            access_log off;
+            log_not_found off;
+        }
+
+        # Error pages
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+    }
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: dashboard-pdb
+  namespace: vhm24-production
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: dashboard
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: dashboard-network-policy
+  namespace: vhm24-production
+spec:
+  podSelector:
+    matchLabels:
+      app: dashboard
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    - podSelector:
+        matchLabels:
+          app: nginx-ingress
+    ports:
+    - protocol: TCP
+      port: 80
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+    - protocol: UDP
+      port: 53
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: dashboard-monitor
+  namespace: vhm24-production
+  labels:
+    app: dashboard
+spec:
+  selector:
+    matchLabels:
+      app: dashboard
+  endpoints:
+  - port: http
+    interval: 30s
+    path: /metrics

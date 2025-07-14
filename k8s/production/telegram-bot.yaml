@@ -1,0 +1,468 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-bot
+  namespace: vhm24-production
+  labels:
+    app: telegram-bot
+    component: bot
+    version: v1
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: telegram-bot
+  template:
+    metadata:
+      labels:
+        app: telegram-bot
+        component: bot
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3001"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: telegram-bot
+        image: ghcr.io/vhm24/telegram-bot:latest
+        ports:
+        - containerPort: 3001
+          name: metrics
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: vhm24-secrets
+              key: telegram-bot-token
+        - name: API_BASE_URL
+          value: "http://backend-service:3000"
+        - name: WEBSOCKET_URL
+          value: "ws://websocket-service:8080"
+        - name: REDIS_URL
+          value: "redis://redis-service:6379"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: vhm24-secrets
+              key: database-url
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: vhm24-secrets
+              key: jwt-secret
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: vhm24-secrets
+              key: openai-api-key
+              optional: true
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: access-key-id
+              optional: true
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: secret-access-key
+              optional: true
+        - name: S3_BUCKET_NAME
+          value: "vhm24-bot-media"
+        - name: BOT_WEBHOOK_URL
+          value: "https://bot.vhm24.com/webhook"
+        - name: BOT_WEBHOOK_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: vhm24-secrets
+              key: webhook-secret
+        - name: LOG_LEVEL
+          value: "info"
+        - name: METRICS_PORT
+          value: "3001"
+        - name: ENABLE_AI
+          value: "true"
+        - name: ENABLE_BLOCKCHAIN
+          value: "true"
+        - name: ENABLE_IOT
+          value: "true"
+        - name: ENABLE_OCR
+          value: "true"
+        - name: SESSION_TTL
+          value: "24h"
+        - name: RATE_LIMIT_WINDOW
+          value: "1m"
+        - name: RATE_LIMIT_MAX_REQUESTS
+          value: "30"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3001
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        volumeMounts:
+        - name: bot-config
+          mountPath: /app/config
+        - name: bot-data
+          mountPath: /app/data
+        - name: logs
+          mountPath: /app/logs
+        - name: temp-files
+          mountPath: /tmp
+      volumes:
+      - name: bot-config
+        configMap:
+          name: telegram-bot-config
+      - name: bot-data
+        persistentVolumeClaim:
+          claimName: bot-data-pvc
+      - name: logs
+        persistentVolumeClaim:
+          claimName: logs-pvc
+      - name: temp-files
+        emptyDir:
+          sizeLimit: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram-bot-service
+  namespace: vhm24-production
+  labels:
+    app: telegram-bot
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3001
+    targetPort: 3001
+    protocol: TCP
+    name: metrics
+  selector:
+    app: telegram-bot
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegram-bot-config
+  namespace: vhm24-production
+data:
+  bot.config.js: |
+    module.exports = {
+      bot: {
+        token: process.env.BOT_TOKEN,
+        webhookUrl: process.env.BOT_WEBHOOK_URL,
+        webhookSecret: process.env.BOT_WEBHOOK_SECRET,
+        polling: false,
+        webhook: true
+      },
+      api: {
+        baseUrl: process.env.API_BASE_URL,
+        timeout: 30000,
+        retries: 3
+      },
+      redis: {
+        url: process.env.REDIS_URL,
+        keyPrefix: 'vhm24:bot:',
+        sessionTTL: process.env.SESSION_TTL || '24h'
+      },
+      features: {
+        ai: process.env.ENABLE_AI === 'true',
+        blockchain: process.env.ENABLE_BLOCKCHAIN === 'true',
+        iot: process.env.ENABLE_IOT === 'true',
+        ocr: process.env.ENABLE_OCR === 'true'
+      },
+      rateLimit: {
+        window: process.env.RATE_LIMIT_WINDOW || '1m',
+        max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 30
+      },
+      logging: {
+        level: process.env.LOG_LEVEL || 'info',
+        format: 'json',
+        filename: '/app/logs/bot.log',
+        maxFiles: 7,
+        maxSize: '100m'
+      },
+      monitoring: {
+        enabled: true,
+        port: parseInt(process.env.METRICS_PORT) || 3001,
+        metricsPath: '/metrics',
+        healthPath: '/health',
+        readyPath: '/ready'
+      },
+      media: {
+        uploadPath: '/app/data/uploads',
+        maxFileSize: 50 * 1024 * 1024, // 50MB
+        allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'audio/mpeg', 'application/pdf'],
+        s3Bucket: process.env.S3_BUCKET_NAME
+      },
+      ai: {
+        openaiApiKey: process.env.OPENAI_API_KEY,
+        model: 'gpt-4',
+        maxTokens: 1000,
+        temperature: 0.7
+      },
+      ocr: {
+        enabled: true,
+        language: 'rus+eng',
+        confidence: 60
+      },
+      fsm: {
+        stateTimeout: '30m',
+        maxStatesPerUser: 100,
+        cleanupInterval: '1h'
+      }
+    };
+  
+  roles.config.js: |
+    module.exports = {
+      OPERATOR: {
+        name: 'Operator',
+        permissions: [
+          'task.view',
+          'task.execute',
+          'incassation.create',
+          'incassation.photo',
+          'machine.status',
+          'qr.scan',
+          'report.daily'
+        ],
+        states: [
+          'IDLE',
+          'TASK_SELECTION',
+          'TASK_EXECUTION',
+          'INCASSATION_PROCESS',
+          'PHOTO_CAPTURE',
+          'QR_SCANNING',
+          'REPORT_GENERATION'
+        ]
+      },
+      WAREHOUSE: {
+        name: 'Warehouse Manager',
+        permissions: [
+          'inventory.view',
+          'inventory.manage',
+          'bag.assembly',
+          'bag.tracking',
+          'order.create',
+          'supplier.contact',
+          'report.inventory'
+        ],
+        states: [
+          'IDLE',
+          'INVENTORY_MANAGEMENT',
+          'BAG_ASSEMBLY',
+          'ORDER_PROCESSING',
+          'SUPPLIER_COMMUNICATION',
+          'REPORT_GENERATION'
+        ]
+      },
+      TECHNICIAN: {
+        name: 'Technician',
+        permissions: [
+          'machine.view',
+          'machine.diagnose',
+          'maintenance.schedule',
+          'maintenance.execute',
+          'iot.monitor',
+          'alert.manage',
+          'report.technical'
+        ],
+        states: [
+          'IDLE',
+          'MACHINE_DIAGNOSTICS',
+          'MAINTENANCE_PLANNING',
+          'MAINTENANCE_EXECUTION',
+          'IOT_MONITORING',
+          'ALERT_HANDLING',
+          'REPORT_GENERATION'
+        ]
+      },
+      MANAGER: {
+        name: 'Manager',
+        permissions: [
+          'analytics.view',
+          'team.manage',
+          'performance.monitor',
+          'strategy.plan',
+          'report.executive',
+          'goal.set',
+          'resource.allocate'
+        ],
+        states: [
+          'IDLE',
+          'ANALYTICS_REVIEW',
+          'TEAM_MANAGEMENT',
+          'PERFORMANCE_ANALYSIS',
+          'STRATEGIC_PLANNING',
+          'RESOURCE_ALLOCATION',
+          'REPORT_GENERATION'
+        ]
+      },
+      ADMIN: {
+        name: 'Administrator',
+        permissions: [
+          'system.configure',
+          'user.manage',
+          'security.monitor',
+          'backup.manage',
+          'audit.review',
+          'integration.configure',
+          'report.system'
+        ],
+        states: [
+          'IDLE',
+          'SYSTEM_CONFIGURATION',
+          'USER_MANAGEMENT',
+          'SECURITY_MONITORING',
+          'BACKUP_MANAGEMENT',
+          'AUDIT_REVIEW',
+          'INTEGRATION_SETUP',
+          'REPORT_GENERATION'
+        ]
+      }
+    };
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bot-data-pvc
+  namespace: vhm24-production
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: fast-ssd
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: telegram-bot-webhook
+  namespace: vhm24-production
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+spec:
+  tls:
+  - hosts:
+    - bot.vhm24.com
+    secretName: bot-vhm24-tls
+  rules:
+  - host: bot.vhm24.com
+    http:
+      paths:
+      - path: /webhook
+        pathType: Prefix
+        backend:
+          service:
+            name: telegram-bot-service
+            port:
+              number: 3001
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: telegram-bot-monitor
+  namespace: vhm24-production
+  labels:
+    app: telegram-bot
+spec:
+  selector:
+    matchLabels:
+      app: telegram-bot
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: bot-cleanup
+  namespace: vhm24-production
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cleanup
+            image: ghcr.io/vhm24/telegram-bot:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting bot cleanup..."
+              
+              # Clean old session data
+              node -e "
+                const Redis = require('redis');
+                const client = Redis.createClient({ url: process.env.REDIS_URL });
+                client.connect().then(async () => {
+                  const keys = await client.keys('vhm24:bot:session:*');
+                  const expired = [];
+                  for (const key of keys) {
+                    const ttl = await client.ttl(key);
+                    if (ttl < 3600) expired.push(key); // Less than 1 hour TTL
+                  }
+                  if (expired.length > 0) {
+                    await client.del(expired);
+                    console.log(\`Cleaned \${expired.length} expired sessions\`);
+                  }
+                  await client.quit();
+                });
+              "
+              
+              # Clean old log files
+              find /app/logs -name "*.log" -mtime +7 -delete
+              
+              # Clean old uploaded files
+              find /app/data/uploads -mtime +30 -delete
+              
+              echo "Bot cleanup completed"
+            env:
+            - name: REDIS_URL
+              value: "redis://redis-service:6379"
+            volumeMounts:
+            - name: bot-data
+              mountPath: /app/data
+            - name: logs
+              mountPath: /app/logs
+          volumes:
+          - name: bot-data
+            persistentVolumeClaim:
+              claimName: bot-data-pvc
+          - name: logs
+            persistentVolumeClaim:
+              claimName: logs-pvc
+          restartPolicy: OnFailure

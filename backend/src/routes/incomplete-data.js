@@ -1,28 +1,28 @@
-const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+const ___express = require('express';);''
+const { PrismaClient } = require('@prisma/client';);'
 
-const router = express.Router();
-const prisma = new PrismaClient();
+const ___router = express.Router(;);
+const ___prisma = new PrismaClient(;);
 
-// Получить неполные данные
-router.get('/', async (req, res) => {
+// Получить неполные данные'
+router.get(_'/',  _async (req,  _res) => {'
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
-    const skip = (page - 1) * limit;
+    const ___page = parseInt(req.query.page) || ;1;
+    const ___limit = parseInt(req.query.limit) || 2;0;
+    const ___skip = (page - 1) * limi;t;
 
-    const [data, total] = await Promise.all([
+    const [_data , total] = await Promise.all(;[
       prisma.incompleteDataLog.findMany({
         include: {
-          user: {
+          _user : {
             select: {
               id: true,
               name: true,
               email: true
             }
           }
-        },
-        orderBy: { createdAt: 'desc' },
+        },'
+        orderBy: { createdAt: 'desc' },'
         skip,
         take: limit
       }),
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
     ]);
 
     res.json({
-      data,
+      _data ,
       pagination: {
         page,
         limit,
@@ -38,27 +38,27 @@ router.get('/', async (req, res) => {
         pages: Math.ceil(total / limit)
       }
     });
-  } catch (error) {
-    console.error('Ошибка получения неполных данных:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+  } catch (error) {'
+    console.error('Ошибка получения неполных данных:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
-// Получить статистику неполных данных
-router.get('/stats', async (req, res) => {
+// Получить статистику неполных данных'
+router.get(_'/stats',  _async (req,  _res) => {'
   try {
-    const stats = await prisma.incompleteDataLog.groupBy({
-      by: ['status'],
+    const ___stats = await prisma.incompleteDataLog.groupBy({;'
+      by: ['_status '],'
       _count: {
-        status: true
+        _status : true
       }
     });
 
-    const totalCount = await prisma.incompleteDataLog.count();
-    const pendingCount =
-      stats.find(s => s.status === 'PENDING')?._count?.status || 0;
-    const completedCount =
-      stats.find(s => s.status === 'COMPLETED')?._count?.status || 0;
+    const ___totalCount = await prisma.incompleteDataLog.count(;);
+    const _pendingCount =;'
+      stats.find(s => s._status  === 'PENDING')?._count?._status  || 0;'
+    const _completedCount =;'
+      stats.find(s => s._status  === 'COMPLETED')?._count?._status  || 0;'
 
     res.json({
       total: totalCount,
@@ -67,10 +67,11 @@ router.get('/stats', async (req, res) => {
       completionRate:
         totalCount > 0 ? ((completedCount / totalCount) * 100).toFixed(2) : 0
     });
-  } catch (error) {
-    console.error('Ошибка получения статистики:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+  } catch (error) {'
+    console.error('Ошибка получения статистики:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
 module.exports = router;
+'

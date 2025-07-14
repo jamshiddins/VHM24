@@ -1,0 +1,336 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: vhm24-production
+  annotations:
+    config.kubernetes.io/local-config: "true"
+
+namespace: vhm24-production
+
+resources:
+  - namespace.yaml
+  - database.yaml
+  - redis.yaml
+  - backend.yaml
+  - websocket.yaml
+  - telegram-bot.yaml
+  - dashboard.yaml
+  - monitoring.yaml
+  - ingress.yaml
+  - secrets.yaml
+  - storage.yaml
+
+commonLabels:
+  app.kubernetes.io/name: vhm24
+  app.kubernetes.io/version: v1.0.0
+  app.kubernetes.io/component: production
+  app.kubernetes.io/part-of: vhm24-platform
+  app.kubernetes.io/managed-by: kustomize
+  environment: production
+
+commonAnnotations:
+  app.kubernetes.io/documentation: "https://docs.vhm24.com"
+  app.kubernetes.io/support: "support@vhm24.com"
+  deployment.kubernetes.io/revision: "1"
+
+images:
+  - name: vhm24/backend
+    newName: ghcr.io/vhm24/backend
+    newTag: latest
+  - name: vhm24/websocket
+    newName: ghcr.io/vhm24/websocket-server
+    newTag: latest
+  - name: vhm24/telegram-bot
+    newName: ghcr.io/vhm24/telegram-bot
+    newTag: latest
+  - name: vhm24/dashboard
+    newName: ghcr.io/vhm24/dashboard
+    newTag: latest
+
+replicas:
+  - name: backend
+    count: 3
+  - name: websocket
+    count: 2
+  - name: postgres
+    count: 3
+  - name: redis
+    count: 3
+
+configMapGenerator:
+  - name: vhm24-config
+    literals:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      - API_VERSION=v1
+      - CORS_ORIGIN=https://vhm24.com,https://app.vhm24.com
+      - MAX_FILE_SIZE=10MB
+      - SESSION_TIMEOUT=24h
+      - RATE_LIMIT_WINDOW=15m
+      - RATE_LIMIT_MAX_REQUESTS=1000
+      - BLOCKCHAIN_MINING_INTERVAL=30s
+      - AI_MODEL_UPDATE_INTERVAL=24h
+      - IOT_DATA_RETENTION=30d
+      - BACKUP_RETENTION=7d
+  
+  - name: app-info
+    literals:
+      - APP_NAME=VHM24 Enterprise Platform
+      - APP_VERSION=1.0.0
+      - BUILD_DATE=2025-01-13
+      - COMMIT_SHA=${COMMIT_SHA}
+      - RELEASE_NOTES=Production release with full feature set
+
+secretGenerator:
+  - name: database-credentials
+    literals:
+      - username=vhm24_admin
+      - password=${DB_PASSWORD}
+      - replication-password=${DB_REPLICATION_PASSWORD}
+      - monitoring-password=${DB_MONITORING_PASSWORD}
+    options:
+      disableNameSuffixHash: true
+
+  - name: redis-credentials
+    literals:
+      - password=${REDIS_PASSWORD}
+    options:
+      disableNameSuffixHash: true
+
+  - name: jwt-secrets
+    literals:
+      - jwt-secret=${JWT_SECRET}
+      - refresh-secret=${REFRESH_SECRET}
+    options:
+      disableNameSuffixHash: true
+
+  - name: external-services
+    literals:
+      - telegram-bot-token=${TELEGRAM_BOT_TOKEN}
+      - smtp-password=${SMTP_PASSWORD}
+      - slack-webhook=${SLACK_WEBHOOK_URL}
+      - s3-access-key=${S3_ACCESS_KEY}
+      - s3-secret-key=${S3_SECRET_KEY}
+    options:
+      disableNameSuffixHash: true
+
+patches:
+  # Production resource limits
+  - target:
+      kind: Deployment
+      name: backend
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 2Gi
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: 1000m
+
+  # Production database configuration
+  - target:
+      kind: StatefulSet
+      name: postgres
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 8Gi
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: 4000m
+
+  # Production monitoring configuration
+  - target:
+      kind: Deployment
+      name: prometheus
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args
+        value:
+          - '--config.file=/etc/prometheus/prometheus.yml'
+          - '--storage.tsdb.path=/prometheus/'
+          - '--storage.tsdb.retention.time=90d'
+          - '--storage.tsdb.retention.size=100GB'
+          - '--web.enable-lifecycle'
+          - '--web.enable-admin-api'
+          - '--query.max-concurrency=50'
+          - '--query.timeout=2m'
+
+  # Add production security contexts
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: add
+        path: /spec/template/spec/securityContext
+        value:
+          runAsNonRoot: true
+          runAsUser: 1000
+          fsGroup: 2000
+          seccompProfile:
+            type: RuntimeDefault
+
+  # Add production node affinity
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: add
+        path: /spec/template/spec/affinity/nodeAffinity
+        value:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                - production
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+
+transformers:
+  - |-
+    apiVersion: builtin
+    kind: NamespaceTransformer
+    metadata:
+      name: namespace-transformer
+    namespace: vhm24-production
+    setRoleBindingSubjects: allServiceAccounts
+    unsetOnly: false
+
+  - |-
+    apiVersion: builtin
+    kind: PrefixSuffixTransformer
+    metadata:
+      name: prefix-transformer
+    prefix: vhm24-prod-
+    fieldSpecs:
+    - kind: Service
+      path: metadata/name
+    - kind: ConfigMap
+      path: metadata/name
+    - kind: Secret
+      path: metadata/name
+
+vars:
+  - name: NAMESPACE
+    objref:
+      kind: Namespace
+      name: vhm24-production
+      apiVersion: v1
+    fieldref:
+      fieldpath: metadata.name
+
+  - name: DATABASE_URL
+    objref:
+      kind: Secret
+      name: database-credentials
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.url
+
+  - name: REDIS_URL
+    objref:
+      kind: Service
+      name: redis-service
+      apiVersion: v1
+    fieldref:
+      fieldpath: spec.clusterIP
+
+replacements:
+  - source:
+      kind: ConfigMap
+      name: vhm24-config
+      fieldPath: data.NODE_ENV
+    targets:
+    - select:
+        kind: Deployment
+      fieldPaths:
+      - spec.template.spec.containers.[name=backend].env.[name=NODE_ENV].value
+      - spec.template.spec.containers.[name=websocket].env.[name=NODE_ENV].value
+
+  - source:
+      kind: Secret
+      name: database-credentials
+      fieldPath: data.password
+    targets:
+    - select:
+        kind: StatefulSet
+        name: postgres
+      fieldPaths:
+      - spec.template.spec.containers.[name=postgres].env.[name=POSTGRES_PASSWORD].valueFrom.secretKeyRef.key
+
+generators:
+  - |-
+    apiVersion: builtin
+    kind: ConfigMapGenerator
+    metadata:
+      name: nginx-config
+    files:
+      - nginx.conf=configs/nginx.conf
+      - ssl.conf=configs/ssl.conf
+
+  - |-
+    apiVersion: builtin
+    kind: SecretGenerator
+    metadata:
+      name: tls-certificates
+    files:
+      - tls.crt=certs/tls.crt
+      - tls.key=certs/tls.key
+    type: kubernetes.io/tls
+
+helmCharts:
+  - name: nginx-ingress
+    repo: https://kubernetes.github.io/ingress-nginx
+    version: 4.8.3
+    releaseName: nginx-ingress
+    namespace: ingress-nginx
+    valuesInline:
+      controller:
+        replicaCount: 3
+        service:
+          type: LoadBalancer
+        metrics:
+          enabled: true
+        podAnnotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "10254"
+
+  - name: cert-manager
+    repo: https://charts.jetstack.io
+    version: v1.13.2
+    releaseName: cert-manager
+    namespace: cert-manager
+    valuesInline:
+      installCRDs: true
+      global:
+        leaderElection:
+          namespace: cert-manager
+
+buildMetadata:
+  - buildDate
+  - buildArgs
+  - buildEnvironment
+
+openapi:
+  path: openapi/swagger.yaml
+
+crds:
+  - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
+  - https://raw.githubusercontent.com/cert-manager/cert-manager/release-1.13/deploy/crds/crd-clusterissuers.yaml
+
+inventory:
+  type: ConfigMap
+  configMap:
+    name: inventory
+    namespace: vhm24-production
+
+validators:
+  - kubeval
+  - kube-score
+
+sortOptions:
+  order: fifo
+  legacySortOrder: false

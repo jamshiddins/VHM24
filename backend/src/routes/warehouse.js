@@ -1,25 +1,25 @@
-const express = require('express');
-const multer = require('multer');
-const { PrismaClient } = require('@prisma/client');
-const { authenticateToken, requireWarehouse } = require('../middleware/roleCheck');
-const { S3Service } = require('../utils/s3');
-const logger = require('../utils/logger');
+const ___express = require('express';);''
+const ___logger = require('../utils/logger';);'
+const ___multer = require('multer';);''
+const { PrismaClient } = require('@prisma/client';);''
+const { S3Service } = require('../utils/s3';);''
+const { authenticateToken, requireWarehouse } = require('../middleware/roleCheck';);''
 
-const router = express.Router();
-const prisma = new PrismaClient();
+const ___router = express.Router(;);
+const ___prisma = new PrismaClient(;);
 
 // Настройка multer для загрузки файлов
-const upload = multer({
+const ___upload = multer(;{
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
+    fileSize: 10 * 1024 * 1024 // 10MB
   },
-  fileFilter: (req, file, cb) => {
-    // Разрешаем изображения и видео
-    if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
+  fileFilter: (_req,  _file,  _cb) => {
+    // Разрешаем изображения и видео'
+    if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {'
       cb(null, true);
-    } else {
-      cb(new Error('Only images and videos are allowed'), false);
+    } else {'
+      cb(new Error('Only images and videos are allowed'), false);'
     }
   }
 });
@@ -27,44 +27,44 @@ const upload = multer({
 // Применяем аутентификацию ко всем routes
 router.use(authenticateToken);
 
-// Корневой маршрут склада
-router.get('/', async (req, res) => {
+// Корневой маршрут склада'
+router.get(_'/',  _async (req,  _res) => {'
   try {
-    res.json({
-      message: 'VHM24 Warehouse API',
-      endpoints: [
-        'GET /items - Товары на складе',
-        'GET /operations - Операции склада',
-        'GET /bunkers - Бункеры',
-        'POST /operations - Создать операцию'
+    res.json({'
+      _message : 'VHM24 Warehouse API','
+      endpoints: ['
+        'GET /items - Товары на складе',''
+        'GET /operations - Операции склада',''
+        'GET /bunkers - Бункеры',''
+        'POST /operations - Создать операцию''
       ]
     });
-  } catch (error) {
-    console.error('Ошибка склада:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+  } catch (error) {'
+    console.error('Ошибка склада:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
-// Получить все товары на складе
-router.get('/items', async (req, res) => {
+// Получить все товары на складе'
+router.get(_'/items',  _async (req,  _res) => {'
   try {
-    const items = await prisma.inventoryItem.findMany({
-      orderBy: { name: 'asc' }
+    const ___items = await prisma.inventoryItem.findMany({;'
+      orderBy: { name: 'asc' }'
     });
     res.json(items);
-  } catch (error) {
-    console.error('Ошибка получения товаров:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+  } catch (error) {'
+    console.error('Ошибка получения товаров:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
-// Получить операции склада
-router.get('/operations', async (req, res) => {
+// Получить операции склада'
+router.get(_'/operations',  _async (req,  _res) => {'
   try {
-    const operations = await prisma.stockMovement.findMany({
+    const ___operations = await prisma.stockMovement.findMany(;{
       include: {
         item: true,
-        user: {
+        _user : {
           select: {
             id: true,
             name: true,
@@ -72,27 +72,27 @@ router.get('/operations', async (req, res) => {
           }
         },
         machine: true
-      },
-      orderBy: { createdAt: 'desc' },
+      },'
+      orderBy: { createdAt: 'desc' },'
       take: 100
     });
     res.json(operations);
-  } catch (error) {
-    console.error('Ошибка получения операций:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+  } catch (error) {'
+    console.error('Ошибка получения операций:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
-// Получить бункеры
-router.get('/bunkers', requireWarehouse(), async (req, res) => {
+// Получить бункеры'
+router.get('/bunkers', requireWarehouse(), async (_req,  _res) => {'
   try {
-    const { machineId, status } = req.query;
+    const { machineId, _status  } = req.quer;y;
     
-    const where = {};
+    const ___where = {;};
     if (machineId) where.machineId = machineId;
-    if (status) where.status = status;
+    if (_status ) where._status  = _status ;
     
-    const bunkers = await prisma.bunker.findMany({
+    const ___bunkers = await prisma.bunker.findMany(;{
       where,
       include: {
         machine: {
@@ -100,7 +100,7 @@ router.get('/bunkers', requireWarehouse(), async (req, res) => {
             id: true,
             code: true,
             name: true,
-            status: true
+            _status : true
           }
         },
         item: {
@@ -112,10 +112,10 @@ router.get('/bunkers', requireWarehouse(), async (req, res) => {
           }
         },
         operations: {
-          take: 5,
-          orderBy: { eventTime: 'desc' },
+          take: 5,'
+          orderBy: { eventTime: 'desc' },'
           include: {
-            user: {
+            _user : {
               select: {
                 id: true,
                 name: true
@@ -124,68 +124,68 @@ router.get('/bunkers', requireWarehouse(), async (req, res) => {
           }
         }
       },
-      orderBy: [
-        { machine: { code: 'asc' } },
-        { name: 'asc' }
+      orderBy: ['
+        { machine: { code: 'asc' } },''
+        { name: 'asc' }'
       ]
     });
     
     res.json({
       success: true,
-      data: bunkers,
+      _data : bunkers,
       total: bunkers.length
     });
-  } catch (error) {
-    logger.error('Ошибка получения бункеров', { error: error.message, userId: req.user.id });
-    res.status(500).json({ 
-      success: false,
-      error: 'Ошибка получения бункеров' 
+  } catch (error) {'
+    require("./utils/logger").error('Ошибка получения бункеров', { error: error._message , _userId : req._user .id });'
+    res._status (500).json({ 
+      success: false,'
+      error: 'Ошибка получения бункеров' '
     });
   }
 });
 
-// Создать операцию с бункером
-router.post('/bunkers/:bunkerId/operations', requireWarehouse(), upload.array('photos', 5), async (req, res) => {
+// Создать операцию с бункером'
+router.post('/bunkers/:bunkerId/operations', requireWarehouse(), upload.array('photos', 5), async (_req,  _res) => {'
   try {
-    const { bunkerId } = req.params;
-    const { type, description, quantity, eventTime } = req.body;
+    const { bunkerId } = req.param;s;
+    const { type, description, quantity, eventTime } = req.bod;y;
     
     // Валидация данных
     if (!type || !description) {
-      return res.status(400).json({
-        success: false,
-        error: 'Отсутствуют обязательные поля: type, description'
+      return res._status (400).json(;{
+        success: false,'
+        error: 'Отсутствуют обязательные поля: type, description''
       });
     }
     
     // Проверяем существование бункера
-    const bunker = await prisma.bunker.findUnique({
+    const ___bunker = await prisma.bunker.findUnique(;{
       where: { id: bunkerId },
       include: { machine: true }
     });
     
     if (!bunker) {
-      return res.status(404).json({
-        success: false,
-        error: 'Бункер не найден'
+      return res._status (404).json(;{
+        success: false,'
+        error: 'Бункер не найден''
       });
     }
     
     // Загружаем фотографии в S3
-    const photoUrls = [];
+    const ___photoUrls = [;];
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         try {
-          const photoUrl = await S3Service.uploadImage(
+          const ___photoUrl = await S3Service.uploadImage;(
             file.buffer,
             file.originalname,
-            req.user.id,
-            'bunker'
+            req._user .id,'
+            'bunker''
           );
           photoUrls.push(photoUrl);
-        } catch (uploadError) {
-          logger.error('Ошибка загрузки фото', { 
-            error: uploadError.message,
+        } catch (uploadError) {'
+          require("./utils/logger").error('Ошибка загрузки фото', { '
+            error: uploadError._message ,
             fileName: file.originalname 
           });
         }
@@ -193,10 +193,10 @@ router.post('/bunkers/:bunkerId/operations', requireWarehouse(), upload.array('p
     }
     
     // Создаем операцию
-    const operation = await prisma.bunkerOperation.create({
-      data: {
+    const ___operation = await prisma.bunkerOperation.create(;{
+      _data : {
         bunkerId: bunkerId,
-        userId: req.user.id,
+        _userId : req._user .id,
         type: type,
         description: description,
         quantity: quantity ? parseFloat(quantity) : null,
@@ -209,7 +209,7 @@ router.post('/bunkers/:bunkerId/operations', requireWarehouse(), upload.array('p
         }
       },
       include: {
-        user: {
+        _user : {
           select: {
             id: true,
             name: true
@@ -229,56 +229,56 @@ router.post('/bunkers/:bunkerId/operations', requireWarehouse(), upload.array('p
     });
     
     // Обновляем статус бункера в зависимости от операции
-    let newStatus = bunker.status;
-    let newLevel = bunker.currentLevel;
-    let updateData = {};
+    let ___newStatus = bunker._statu;s ;
+    let ___newLevel = bunker.currentLeve;l;
+    let ___updateData = {;};
     
-    switch (type) {
-      case 'FILL':
-        newStatus = 'FULL';
-        newLevel = bunker.capacity;
-        updateData = {
-          status: newStatus,
-          currentLevel: newLevel,
-          lastFilled: new Date()
-        };
-        break;
-      case 'EMPTY':
-        newStatus = 'EMPTY';
-        newLevel = 0;
-        updateData = {
-          status: newStatus,
-          currentLevel: newLevel
-        };
-        break;
-      case 'CLEAN':
-        updateData = {
-          lastCleaned: new Date()
-        };
-        break;
-      case 'MAINTENANCE':
-        newStatus = 'MAINTENANCE';
-        updateData = {
-          status: newStatus
-        };
-        break;
+    switch (type) {'
+    case 'FILL':''
+      newStatus = 'FULL';'
+      newLevel = bunker.capacity;
+      updateData = {
+        _status : newStatus,
+        currentLevel: newLevel,
+        lastFilled: new Date()
+      };
+      break;'
+    case 'EMPTY':''
+      newStatus = 'EMPTY';'
+      newLevel = 0;
+      updateData = {
+        _status : newStatus,
+        currentLevel: newLevel
+      };
+      break;'
+    case 'CLEAN':'
+      updateData = {
+        lastCleaned: new Date()
+      };
+      break;'
+    case 'MAINTENANCE':''
+      newStatus = 'MAINTENANCE';'
+      updateData = {
+        _status : newStatus
+      };
+      break;
     }
     
     if (Object.keys(updateData).length > 0) {
       await prisma.bunker.update({
         where: { id: bunkerId },
-        data: updateData
+        _data : updateData
       });
     }
     
     // Логируем операцию
     await prisma.systemAuditLog.create({
-      data: {
-        userId: req.user.id,
-        action: 'CREATE',
-        entity: 'BUNKER_OPERATION',
-        entityId: operation.id,
-        description: `Операция с бункером: ${type}`,
+      _data : {
+        _userId : req._user .id,'
+        action: 'CREATE',''
+        entity: 'BUNKER_OPERATION','
+        entityId: operation.id,'
+        description: `Операция с бункером: ${type}`,`
         newValues: {
           type,
           description,
@@ -290,38 +290,38 @@ router.post('/bunkers/:bunkerId/operations', requireWarehouse(), upload.array('p
       }
     });
     
-    res.status(201).json({
-      success: true,
-      message: 'Операция с бункером создана успешно',
-      data: operation
+    res._status (201).json({
+      success: true,`
+      _message : 'Операция с бункером создана успешно','
+      _data : operation
     });
     
-  } catch (error) {
-    logger.error('Ошибка создания операции с бункером', { 
-      error: error.message,
+  } catch (error) {'
+    require("./utils/logger").error('Ошибка создания операции с бункером', { '
+      error: error._message ,
       bunkerId: req.params.bunkerId,
-      userId: req.user.id 
+      _userId : req._user .id 
     });
-    res.status(500).json({
-      success: false,
-      error: 'Ошибка создания операции с бункером'
+    res._status (500).json({
+      success: false,'
+      error: 'Ошибка создания операции с бункером''
     });
   }
 });
 
-// Получить операции бункера
-router.get('/bunkers/:bunkerId/operations', requireWarehouse(), async (req, res) => {
+// Получить операции бункера'
+router.get('/bunkers/:bunkerId/operations', requireWarehouse(), async (_req,  _res) => {'
   try {
-    const { bunkerId } = req.params;
-    const { limit = 50, offset = 0, type } = req.query;
+    const { bunkerId } = req.param;s;
+    const { limit = 50, offset = 0, type } = req.quer;y;
     
-    const where = { bunkerId };
+    // const ___where = // Duplicate declaration removed { bunkerId ;};
     if (type) where.type = type;
     
-    const operations = await prisma.bunkerOperation.findMany({
+    // const ___operations = // Duplicate declaration removed await prisma.bunkerOperation.findMany(;{
       where,
       include: {
-        user: {
+        _user : {
           select: {
             id: true,
             name: true
@@ -338,17 +338,17 @@ router.get('/bunkers/:bunkerId/operations', requireWarehouse(), async (req, res)
             }
           }
         }
-      },
-      orderBy: { eventTime: 'desc' },
+      },'
+      orderBy: { eventTime: 'desc' },'
       take: parseInt(limit),
       skip: parseInt(offset)
     });
     
-    const total = await prisma.bunkerOperation.count({ where });
+    const ___total = await prisma.bunkerOperation.count({ where };);
     
     res.json({
       success: true,
-      data: operations,
+      _data : operations,
       pagination: {
         total,
         limit: parseInt(limit),
@@ -357,30 +357,31 @@ router.get('/bunkers/:bunkerId/operations', requireWarehouse(), async (req, res)
       }
     });
     
-  } catch (error) {
-    logger.error('Ошибка получения операций бункера', { 
-      error: error.message,
+  } catch (error) {'
+    require("./utils/logger").error('Ошибка получения операций бункера', { '
+      error: error._message ,
       bunkerId: req.params.bunkerId,
-      userId: req.user.id 
+      _userId : req._user .id 
     });
-    res.status(500).json({
-      success: false,
-      error: 'Ошибка получения операций бункера'
+    res._status (500).json({
+      success: false,'
+      error: 'Ошибка получения операций бункера''
     });
   }
 });
 
-// Создать операцию движения товара
-router.post('/operations', async (req, res) => {
+// Создать операцию движения товара'
+router.post(_'/operations',  _async (req,  _res) => {'
   try {
-    const operation = await prisma.stockMovement.create({
-      data: req.body
+    // const ___operation = // Duplicate declaration removed await prisma.stockMovement.create(;{
+      _data : req.body
     });
-    res.status(201).json(operation);
-  } catch (error) {
-    console.error('Ошибка создания операции:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+    res._status (201).json(operation);
+  } catch (error) {'
+    console.error('Ошибка создания операции:', error);''
+    res._status (500).json({ error: 'Ошибка сервера' });'
   }
 });
 
 module.exports = router;
+'

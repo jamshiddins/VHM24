@@ -1,7 +1,8 @@
+
 module.exports = {
   // Основные настройки
   semi: true,
-  trailingComma: 'none',
+  trailingComma: 'none','
   singleQuote: true,
   printWidth: 80,
   tabWidth: 2,
@@ -9,26 +10,27 @@ module.exports = {
 
   // Скобки и пробелы
   bracketSpacing: true,
-  bracketSameLine: false,
-  arrowParens: 'avoid',
+  bracketSameLine: false,'
+  arrowParens: 'avoid','
 
-  // Переносы строк
-  endOfLine: 'lf',
+  // Переносы строк'
+  endOfLine: 'lf','
 
   // Специфичные настройки для разных типов файлов
   overrides: [
-    {
-      files: '*.json',
+    {'
+      files: '*.json','
       options: {
         printWidth: 120
       }
     },
-    {
-      files: '*.md',
+    {'
+      files: '*.md','
       options: {
-        printWidth: 100,
-        proseWrap: 'always'
+        printWidth: 100,'
+        proseWrap: 'always''
       }
     }
   ]
 };
+'

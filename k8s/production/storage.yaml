@@ -1,0 +1,465 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-ssd
+  labels:
+    app: vhm24
+    component: storage
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp3
+  iops: "3000"
+  throughput: "125"
+  encrypted: "true"
+  fsType: ext4
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard-ssd
+  labels:
+    app: vhm24
+    component: storage
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+  encrypted: "true"
+  fsType: ext4
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: backup-storage
+  labels:
+    app: vhm24
+    component: backup
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: sc1
+  encrypted: "true"
+  fsType: ext4
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: uploads-pvc
+  namespace: vhm24-production
+  labels:
+    app: vhm24
+    component: storage
+    usage: uploads
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: fast-ssd
+  resources:
+    requests:
+      storage: 100Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: logs-pvc
+  namespace: vhm24-production
+  labels:
+    app: vhm24
+    component: storage
+    usage: logs
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: standard-ssd
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-pvc
+  namespace: vhm24-production
+  labels:
+    app: vhm24
+    component: storage
+    usage: backup
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: backup-storage
+  resources:
+    requests:
+      storage: 500Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cache-pvc
+  namespace: vhm24-production
+  labels:
+    app: vhm24
+    component: storage
+    usage: cache
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: fast-ssd
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: storage-policy
+  namespace: vhm24-production
+data:
+  policy.yaml: |
+    # Storage Policy for VHM24 Production
+    
+    classes:
+      fast-ssd:
+        description: "High-performance SSD for databases and critical data"
+        iops: 3000
+        throughput: 125
+        encryption: true
+        backup: true
+        replication: true
+        
+      standard-ssd:
+        description: "Standard SSD for application data"
+        iops: 1000
+        throughput: 50
+        encryption: true
+        backup: true
+        replication: false
+        
+      backup-storage:
+        description: "Cold storage for backups and archives"
+        iops: 250
+        throughput: 25
+        encryption: true
+        backup: false
+        replication: true
+    
+    retention:
+      logs: "30d"
+      uploads: "1y"
+      backups: "7y"
+      cache: "7d"
+      metrics: "90d"
+    
+    encryption:
+      enabled: true
+      algorithm: "AES-256"
+      keyRotation: "quarterly"
+      
+    backup:
+      enabled: true
+      schedule: "daily"
+      retention: "30d"
+      compression: true
+      encryption: true
+      
+    monitoring:
+      enabled: true
+      alerts:
+        - usage > 80%
+        - iops > 2500
+        - latency > 100ms
+        - error_rate > 1%
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-shared-storage
+  labels:
+    app: vhm24
+    component: storage
+    type: shared
+spec:
+  capacity:
+    storage: 1Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-storage
+  nfs:
+    server: nfs-server.vhm24-production.svc.cluster.local
+    path: /shared
+  mountOptions:
+    - nfsvers=4.1
+    - rsize=1048576
+    - wsize=1048576
+    - hard
+    - intr
+    - timeo=600
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-storage-pvc
+  namespace: vhm24-production
+  labels:
+    app: vhm24
+    component: storage
+    usage: shared
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-storage
+  resources:
+    requests:
+      storage: 1Ti
+  volumeName: nfs-shared-storage
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: storage-cleanup
+  namespace: vhm24-production
+spec:
+  schedule: "0 3 * * *"  # Daily at 3 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cleanup
+            image: alpine:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting storage cleanup..."
+              
+              # Clean old log files
+              find /logs -name "*.log" -mtime +30 -delete
+              find /logs -name "*.log.gz" -mtime +90 -delete
+              
+              # Clean old temporary files
+              find /uploads/temp -mtime +1 -delete
+              
+              # Clean old cache files
+              find /cache -mtime +7 -delete
+              
+              # Clean old backup files (keep last 30 days)
+              find /backup -name "*.backup" -mtime +30 -delete
+              
+              # Report disk usage
+              echo "Disk usage after cleanup:"
+              df -h /logs /uploads /cache /backup
+              
+              echo "Storage cleanup completed"
+            volumeMounts:
+            - name: logs
+              mountPath: /logs
+            - name: uploads
+              mountPath: /uploads
+            - name: cache
+              mountPath: /cache
+            - name: backup
+              mountPath: /backup
+          volumes:
+          - name: logs
+            persistentVolumeClaim:
+              claimName: logs-pvc
+          - name: uploads
+            persistentVolumeClaim:
+              claimName: uploads-pvc
+          - name: cache
+            persistentVolumeClaim:
+              claimName: cache-pvc
+          - name: backup
+            persistentVolumeClaim:
+              claimName: backup-pvc
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: storage-backup
+  namespace: vhm24-production
+spec:
+  schedule: "0 1 * * *"  # Daily at 1 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: vhm24/storage-backup:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting storage backup..."
+              
+              BACKUP_DATE=$(date +%Y%m%d-%H%M%S)
+              
+              # Backup uploads
+              tar -czf /backup/uploads-${BACKUP_DATE}.tar.gz -C /uploads .
+              
+              # Backup logs (compress and archive)
+              tar -czf /backup/logs-${BACKUP_DATE}.tar.gz -C /logs .
+              
+              # Upload to S3 if configured
+              if [ ! -z "$AWS_ACCESS_KEY_ID" ]; then
+                aws s3 cp /backup/uploads-${BACKUP_DATE}.tar.gz s3://$S3_BACKUP_BUCKET/storage/uploads/
+                aws s3 cp /backup/logs-${BACKUP_DATE}.tar.gz s3://$S3_BACKUP_BUCKET/storage/logs/
+              fi
+              
+              # Verify backup integrity
+              tar -tzf /backup/uploads-${BACKUP_DATE}.tar.gz > /dev/null && echo "Uploads backup verified"
+              tar -tzf /backup/logs-${BACKUP_DATE}.tar.gz > /dev/null && echo "Logs backup verified"
+              
+              echo "Storage backup completed"
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backup-credentials
+                  key: s3-access-key
+                  optional: true
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backup-credentials
+                  key: s3-secret-key
+                  optional: true
+            - name: S3_BACKUP_BUCKET
+              value: "vhm24-production-backups"
+            volumeMounts:
+            - name: uploads
+              mountPath: /uploads
+              readOnly: true
+            - name: logs
+              mountPath: /logs
+              readOnly: true
+            - name: backup
+              mountPath: /backup
+          volumes:
+          - name: uploads
+            persistentVolumeClaim:
+              claimName: uploads-pvc
+          - name: logs
+            persistentVolumeClaim:
+              claimName: logs-pvc
+          - name: backup
+            persistentVolumeClaim:
+              claimName: backup-pvc
+          restartPolicy: OnFailure
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: storage-monitor
+  namespace: vhm24-production
+  labels:
+    app: storage-monitor
+    component: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: storage-monitor
+  template:
+    metadata:
+      labels:
+        app: storage-monitor
+        component: monitoring
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9100"
+        prometheus.io/path: "/metrics"
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - name: node-exporter
+        image: prom/node-exporter:latest
+        args:
+        - '--path.procfs=/host/proc'
+        - '--path.sysfs=/host/sys'
+        - '--path.rootfs=/host/root'
+        - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+        - '--collector.diskstats'
+        - '--collector.filesystem'
+        ports:
+        - containerPort: 9100
+          name: metrics
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        volumeMounts:
+        - name: proc
+          mountPath: /host/proc
+          readOnly: true
+        - name: sys
+          mountPath: /host/sys
+          readOnly: true
+        - name: root
+          mountPath: /host/root
+          readOnly: true
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65534
+      volumes:
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: root
+        hostPath:
+          path: /
+          type: Directory
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: storage-monitor
+  namespace: vhm24-production
+  labels:
+    app: storage-monitor
+spec:
+  selector:
+    matchLabels:
+      app: storage-monitor
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: storage-monitor-service
+  namespace: vhm24-production
+  labels:
+    app: storage-monitor
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - port: 9100
+    targetPort: 9100
+    protocol: TCP
+    name: metrics
+  selector:
+    app: storage-monitor

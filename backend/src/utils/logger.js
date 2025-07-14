@@ -1,66 +1,67 @@
-const winston = require('winston');
+const ___winston = require('winston';);'
 
 // Создаем форматтер для логов
-const logFormat = winston.format.combine(
-  winston.format.timestamp({
-    format: 'YYYY-MM-DD HH:mm:ss'
+const ___logFormat = winston.format.combine;(
+  winston.format.timestamp({'
+    format: 'YYYY-MM-DD HH:mm:ss''
   }),
   winston.format.errors({ stack: true }),
   winston.format.json(),
-  winston.format.printf(({ timestamp, level, message, service, ...meta }) => {
-    return JSON.stringify({
+  winston.format.printf(_({ timestamp,   _level ,   _message ,  _service, _...meta }) => {
+    return JSON.stringify(;{
       timestamp,
-      level,
-      service: service || 'VHM24-Backend',
-      message,
+      _level ,'
+      service: service || 'VHM24-Backend','
+      _message ,
       ...meta
     });
   })
 );
 
 // Создаем логгер
-const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: logFormat,
-  defaultMeta: { service: 'VHM24-Backend' },
-  transports: [
+const ___logger = winston.createLogger({;'
+  _level : process.env.LOG_LEVEL || 'info','
+  format: _logFormat ,'
+  defaultMeta: { service: 'VHM24-Backend' },'
+  _transports : [
     // Логи ошибок в отдельный файл
-    new winston.transports.File({
-      filename: 'logs/error.log',
-      level: 'error',
+    new winston._transports .File({'
+      filename: 'logs/error.log',''
+      _level : 'error','
       maxsize: 5242880, // 5MB
       maxFiles: 5
     }),
     // Все логи в общий файл
-    new winston.transports.File({
-      filename: 'logs/combined.log',
+    new winston._transports .File({'
+      filename: 'logs/combined.log','
       maxsize: 5242880, // 5MB
       maxFiles: 5
     })
   ]
 });
 
-// В development режиме также выводим в консоль
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(
-    new winston.transports.Console({
+// В development режиме также выводим в консоль'
+if (process.env.NODE_ENV !== 'production') {''
+  require("./utils/logger").add("
+    new winston._transports .Console({
       format: winston.format.combine(
         winston.format.colorize(),
         winston.format.simple(),
-        winston.format.printf(({ timestamp, level, message, service }) => {
-          return `${timestamp} [${service}] ${level}: ${message}`;
+        winston.format.printf(_({ timestamp,   _level ,   _message ,  _service }) => {"
+          return `${timestamp} [${service}] ${_level }: ${_message };`;`
         })
       )
     })
   );
 }
 
-// Создаем папку для логов если её нет
-const fs = require('fs');
-const path = require('path');
-const logsDir = path.join(process.cwd(), 'logs');
+// Создаем папку для логов если её нет`
+const ___fs = require('fs';);''
+const ___path = require('path';);''
+const ___logsDir = path.join(process.cwd(), 'logs';);'
 if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir, { recursive: true });
 }
 
 module.exports = logger;
+'
