@@ -4,6 +4,9 @@
  * Скрипт запуска VHM24 в продакшене
  */
 
+// Загрузка переменных окружения из файла .env
+require('dotenv').config();
+
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -22,6 +25,15 @@ if (missingVars.length > 0) {
     console.error('Пожалуйста, создайте файл .env или установите переменные окружения');
     process.exit(1);
 }
+
+// Вывод информации о конфигурации
+console.log('📊 Конфигурация:');
+console.log(`- DATABASE_URL: ${process.env.DATABASE_URL ? '✅ Настроен' : '❌ Отсутствует'}`);
+console.log(`- REDIS_URL: ${process.env.REDIS_URL ? '✅ Настроен' : '❌ Отсутствует'}`);
+console.log(`- TELEGRAM_BOT_TOKEN: ${process.env.TELEGRAM_BOT_TOKEN ? '✅ Настроен' : '❌ Отсутствует'}`);
+console.log(`- RAILWAY_PUBLIC_URL: ${process.env.RAILWAY_PUBLIC_URL}`);
+console.log(`- PORT: ${process.env.PORT}`);
+console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
 
 // Запуск бэкенда
 console.log('🚀 Запуск бэкенда...');
