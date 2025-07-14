@@ -8,6 +8,8 @@
 |-----------|--------|-------------|
 | Railway Project | ✅ Настроен | Project ID: 740ca318-2ca1-49bb-8827-75feb0a5639c |
 | Web Service | ✅ Активен | URL: https://web-production-73916.up.railway.app |
+| Worker Service | ✅ Активен | Фоновые задачи и обработка очередей |
+| Scheduler Service | ✅ Активен | Планировщик периодических задач |
 | PostgreSQL | ✅ Подключен | Актуальная версия |
 | Redis | ✅ Подключен | Для кэширования и очередей |
 | S3 Storage | ✅ Настроен | DigitalOcean Spaces |
