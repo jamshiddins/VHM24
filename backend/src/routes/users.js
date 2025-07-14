@@ -1,142 +1,89 @@
 const express = require('express');
+const { PrismaClient } = require('@prisma/client');
+const { authenticateToken, requireRole } = require('../middleware/roleCheck');
+
 const router = express.Router();
+const prisma = new PrismaClient();
 
-// Users роуты для VHM24
-
-/**
- * Получить всех пользователей
- */
-router.get('/', async (req, res) => {
-  try {
-    // TODO: Получение пользователей из БД
-    const users = [
-      { id: 1, email: 'operator@vhm24.com', role: 'OPERATOR', firstName: 'Operator' },
-      { id: 2, email: 'manager@vhm24.com', role: 'MANAGER', firstName: 'Manager' }
-    ];
-    
-    res.json({
-      success: true,
-      data: users,
-      message: 'Пользователи получены успешно'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка получения пользователей',
-      error: error.message
-    });
-  }
+// GET /users - Получить всех пользователей
+router.get('/', authenticateToken, requireRole(['ADMIN', 'MANAGER']), async (req, res) => {
+    try {
+        const users = await prisma.user.findMany({
+            select: {
+                id: true,
+                name: true,
+                phone: true,
+                role: true,
+                status: true,
+                createdAt: true
+            }
+        });
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: 'Ошибка получения пользователей' });
+    }
 });
 
-/**
- * Создать пользователя
- */
-router.post('/', async (req, res) => {
-  try {
-    const { email, firstName, role, telegramId } = req.body;
-    
-    // TODO: Создание пользователя в БД
-    const user = {
-      id: Date.now(),
-      email,
-      firstName,
-      role: role || 'OPERATOR',
-      telegramId,
-      createdAt: new Date().toISOString()
-    };
-    
-    res.status(201).json({
-      success: true,
-      data: user,
-      message: 'Пользователь создан успешно'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка создания пользователя',
-      error: error.message
-    });
-  }
+// GET /users/:id - Получить пользователя по ID
+router.get('/:id', authenticateToken, async (req, res) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: req.params.id },
+            select: {
+                id: true,
+                name: true,
+                phone: true,
+                role: true,
+                status: true,
+                createdAt: true
+            }
+        });
+        
+        if (!user) {
+            return res.status(404).json({ error: 'Пользователь не найден' });
+        }
+        
+        res.json(user);
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ error: 'Ошибка получения пользователя' });
+    }
 });
 
-/**
- * Получить пользователя по ID
- */
-router.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    // TODO: Получение пользователя из БД
-    const user = {
-      id: parseInt(id),
-      email: 'user@vhm24.com',
-      firstName: 'User',
-      role: 'OPERATOR'
-    };
-    
-    res.json({
-      success: true,
-      data: user,
-      message: 'Пользователь найден'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка получения пользователя',
-      error: error.message
-    });
-  }
+// POST /users - Создать пользователя
+router.post('/', authenticateToken, requireRole(['ADMIN']), async (req, res) => {
+    try {
+        const { telegramId, name, phone, role } = req.body;
+        
+        const user = await prisma.user.create({
+            data: {
+                telegramId,
+                name,
+                phone,
+                role: role || 'OPERATOR'
+            }
+        });
+        
+        res.status(201).json(user);
+    } catch (error) {
+        console.error('Error creating user:', error);
+        res.status(500).json({ error: 'Ошибка создания пользователя' });
+    }
 });
 
-/**
- * Обновить пользователя
- */
-router.put('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updateData = req.body;
-    
-    // TODO: Обновление пользователя в БД
-    const user = {
-      id: parseInt(id),
-      ...updateData,
-      updatedAt: new Date().toISOString()
-    };
-    
-    res.json({
-      success: true,
-      data: user,
-      message: 'Пользователь обновлен успешно'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка обновления пользователя',
-      error: error.message
-    });
-  }
-});
-
-/**
- * Удалить пользователя
- */
-router.delete('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    // TODO: Удаление пользователя из БД
-    
-    res.json({
-      success: true,
-      message: `Пользователь с ID ${id} удален успешно`
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка удаления пользователя',
-      error: error.message
-    });
-  }
+// PUT /users/:id - Обновить пользователя
+router.put('/:id', authenticateToken, requireRole(['ADMIN']), async (req, res) => {
+    try {
+        const user = await prisma.user.update({
+            where: { id: req.params.id },
+            data: req.body
+        });
+        res.json(user);
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ error: 'Ошибка обновления пользователя' });
+    }
 });
 
 module.exports = router;

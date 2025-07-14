@@ -38,17 +38,17 @@ interface Machine {
 }
 
 export default function MachinesPage() {
-  const [machines, setMachines] = useState<Machine[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
-  const [typeFilter, setTypeFilter] = useState<string>('');
-  const [showFilters, setShowFilters] = useState(false);
+  const [machines, setMachines] = useState<Machine[]>([]
+  const [loading, setLoading] = useState(true
+  const [error, setError] = useState<string | null>(null
+  const [searchTerm, setSearchTerm] = useState('
+  const [statusFilter, setStatusFilter] = useState<string>(''
+  const [typeFilter, setTypeFilter] = useState<string>('
+  const [showFilters, setShowFilters] = useState(false
 
   useEffect(() => {
-    fetchMachines();
-  }, [searchTerm, statusFilter, typeFilter]);
+    fetchMachines(
+  }, [searchTerm, statusFilter, typeFilter]
 
   const fetchMachines = async () => {
     try {
@@ -57,23 +57,23 @@ export default function MachinesPage() {
           ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
           : 'http://localhost:8000';
 
-      const params = new URLSearchParams();
-      if (searchTerm) params.append('search', searchTerm);
-      if (statusFilter) params.append('status', statusFilter);
-      if (typeFilter) params.append('type', typeFilter);
-      params.append('take', '50');
+      const params = new URLSearchParams(
+      if (searchTerm) params.append('search', searchTerm
+      if (statusFilter) params.append('status', statusFilter
+      if (typeFilter) params.append('type', typeFilter
+      params.append('take', '50'
 
-      const response = await fetch(`${baseUrl}/api/v1/machines?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch machines');
+      const response = await fetch(`${baseUrl}/api/v1/machines?${params}`
+      if (!response.ok) throw new Error('Failed to fetch machines'
 
-      const data = await response.json();
-      setMachines(data.data.items);
-      setError(null);
+      const data = await response.json(
+      setMachines(data.data.items
+      setError(null
     } catch (err) {
-      setError('Ошибка загрузки автоматов');
-      console.error('Machines fetch error:', err);
+      setError('Ошибка загрузки автоматов'
+      console.error('Machines fetch error:', err
     } finally {
-      setLoading(false);
+      setLoading(false
     }
   };
 
@@ -149,7 +149,7 @@ export default function MachinesPage() {
           </div>
         </div>
       </div>
-    );
+    
   }
 
   return (
@@ -418,5 +418,5 @@ export default function MachinesPage() {
         </div>
       )}
     </div>
-  );
+  
 }

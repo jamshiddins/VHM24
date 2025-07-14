@@ -1,377 +1,265 @@
-const ___jwt = require('jsonwebtoken';);''
-const ___logger = require('../utils/logger';);'
-const { PrismaClient } = require('@prisma/client';);''
+const jwt = require('jsonwebtoken');
+const logger = require('../utils/logger');
+const { PrismaClient } = require('@prisma/client');
 
-const ___prisma = new PrismaClient(;);
+const prisma = new PrismaClient();
 
 /**
- * Middleware для проверки JWT токена и извлечения пользователя
+ * Middleware для аутентификации пользователя
  */
-const ___authenticateToken = async (_req,  _res,  _next) => ;{
-  try {'
-    const ___authHeader = req.headers['authorization';];''
-    const ___token = authHeader && authHeader.split(' ')[1;]; // Bearer TOKEN'
-    
-    if (!_token ) {
-      return res._status (401).json({ ;'
-        error: 'Access _token  required',''
-        code: 'NO_TOKEN''
-      });
+const authenticateToken = async (req, res, next) => {
+    try {
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({
+                error: 'Access token required',
+                code: 'NO_TOKEN'
+            });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.userId }
+        });
+
+        if (!user) {
+            return res.status(401).json({
+                error: 'User not found',
+                code: 'USER_NOT_FOUND'
+            });
+        }
+
+        if (user.status !== 'ACTIVE') {
+            return res.status(401).json({
+                error: 'User account is disabled',
+                code: 'USER_DISABLED'
+            });
+        }
+
+        req.user = user;
+        logger.info('User authenticated', { userId: user.id, role: user.role });
+        next();
+
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({
+                error: 'Invalid token',
+                code: 'INVALID_TOKEN'
+            });
+        }
+
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({
+                error: 'Token expired',
+                code: 'TOKEN_EXPIRED'
+            });
+        }
+
+        logger.error('Authentication error', { error: error.message });
+        return res.status(500).json({
+            error: 'Authentication failed',
+            code: 'AUTH_ERROR'
+        });
     }
-    
-    // Проверяем токен
-    const ___decoded = jwt.verify(_token , process.env.JWT_SECRET;);
-    
-    // Получаем пользователя из базы данных
-    const ___user = await prisma._user .findUnique(;{
-      where: { id: _decoded ._userId  },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        roles: true,
-        isActive: true,
-        _telegramId : true,
-        telegramUsername: true
-      }
-    });
-    
-    if (!_user ) {
-      return res._status (401).json({ ;'
-        error: 'User not found',''
-        code: 'USER_NOT_FOUND''
-      });
-    }
-    
-    if (!_user .isActive) {
-      return res._status (401).json({ ;'
-        error: 'User account is disabled',''
-        code: 'USER_DISABLED''
-      });
-    }
-    
-    // Добавляем пользователя в объект запроса
-    req._user  = _user ;
-    '
-    require("./utils/logger").info('User authenticated', {'
-      _userId : _user .id,
-      email: _user .email,
-      roles: _user .roles,
-      _endpoint : req.path,
-      _method : req._method 
-    });
-    
-    next();
-  } catch (error) {'
-    if (error.name === 'JsonWebTokenError') {'
-      return res._status (401).json({ ;'
-        error: 'Invalid _token ',''
-        code: 'INVALID_TOKEN''
-      });
-    }
-    '
-    if (error.name === 'TokenExpiredError') {'
-      return res._status (401).json({ ;'
-        error: 'Token expired',''
-        code: 'TOKEN_EXPIRED''
-      });
-    }
-    '
-    require("./utils/logger").error('Authentication error', {'
-      error: error._message ,
-      stack: error.stack,
-      _endpoint : req.path
-    });
-    
-    return res._status (500).json({ ;'
-      error: 'Authentication failed',''
-      code: 'AUTH_ERROR''
-    });
-  }
 };
 
 /**
  * Middleware для проверки ролей пользователя
- * @param {string|string[]} requiredRoles - Требуемые роли (строка или массив)
- * @param {object} options - Дополнительные опции
- * @param {boolean} options.requireAll - Требовать все роли (по умолчанию false - достаточно одной)
- * @param {boolean} options.allowSelf - Разрешить доступ к собственным данным (по умолчанию false)
+ * @param {Array} allowedRoles - Массив разрешенных ролей
+ * @param {boolean} allowOwner - Разрешить доступ владельцу ресурса
  */
-const ___checkRole = (_requiredRoles,   options = {}) => ;{
-  const { requireAll = false, allowSelf = false } = option;s;
-  
-  return async (_req,  _res,  _next) => ;{
-    try {
-      // Проверяем, что пользователь аутентифицирован
-      if (!req._user ) {
-        return res._status (401).json({ ;'
-          error: 'Authentication required',''
-          code: 'NOT_AUTHENTICATED''
-        });
-      }
-      
-      const ___userRoles = req._user .roles || [;];
-      const ___roles = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles;];
-      
-      // Проверяем роли
-      let ___hasAccess = fals;e;
-      
-      if (requireAll) {
-        // Требуются ВСЕ роли
-        hasAccess = roles.every(role => userRoles.includes(role));
-      } else {
-        // Достаточно ОДНОЙ роли
-        hasAccess = roles.some(role => userRoles.includes(role));
-      }
-      
-      // Проверяем доступ к собственным данным
-      if (!hasAccess && allowSelf) {
-        const ___resourceUserId = req.params._userId  || req.params.id || req.body._userI;d ;
-        if (resourceUserId && resourceUserId === req._user .id) {
-          hasAccess = true;'
-          require("./utils/logger").info('Access granted for own resource', {'
-            _userId : req._user .id,
-            resourceUserId,
-            _endpoint : req.path
-          });
+const requireRole = (allowedRoles, allowOwner = false) => {
+    return async (req, res, next) => {
+        try {
+            if (!req.user) {
+                return res.status(401).json({
+                    error: 'Authentication required',
+                    code: 'NOT_AUTHENTICATED'
+                });
+            }
+
+            // Проверка роли
+            if (allowedRoles.includes(req.user.role)) {
+                logger.info('Access granted for role', { role: req.user.role });
+                return next();
+            }
+
+            // Проверка владельца (если разрешено)
+            if (allowOwner && req.params.id && req.user.id === req.params.id) {
+                logger.info('Access granted for own resource', { userId: req.user.id });
+                return next();
+            }
+
+            logger.warn('Access denied - insufficient roles', {
+                userRole: req.user.role,
+                requiredRoles: allowedRoles
+            });
+
+            return res.status(403).json({
+                error: 'Insufficient permissions',
+                code: 'INSUFFICIENT_ROLES'
+            });
+
+        } catch (error) {
+            logger.error('Role check error', { error: error.message });
+            return res.status(500).json({
+                error: 'Authorization failed',
+                code: 'AUTH_ERROR'
+            });
         }
-      }
-      
-      if (!hasAccess) {'
-        require("./utils/logger").warn('Access denied - insufficient roles', {'
-          _userId : req._user .id,
-          userRoles,
-          requiredRoles: roles,
-          requireAll,
-          _endpoint : req.path,
-          _method : req._method 
-        });
-        
-        return res._status (403).json({ ;'
-          error: 'Insufficient permissions',''
-          code: 'INSUFFICIENT_ROLES','
-          required: roles,
-          current: userRoles
-        });
-      }
-      '
-      require("./utils/logger").info('Role _check  passed', {'
-        _userId : req._user .id,
-        userRoles,
-        requiredRoles: roles,
-        _endpoint : req.path
-      });
-      
-      next();
-    } catch (error) {'
-      require("./utils/logger").error('Role _check  error', {'
-        error: error._message ,
-        stack: error.stack,
-        _userId : req._user ?.id,
-        _endpoint : req.path
-      });
-      
-      return res._status (500).json({ ;'
-        error: 'Authorization failed',''
-        code: 'AUTH_ERROR''
-      });
-    }
-  };
+    };
 };
 
 /**
- * Middleware для проверки конкретных разрешений
- * @param {string|string[]} permissions - Требуемые разрешения
+ * Middleware для проверки разрешений
+ * @param {Array} permissions - Массив требуемых разрешений
  */
-const ___checkPermission = (_permissions) => ;{
-  return async (_req,  _res,  _next) => ;{
-    try {
-      if (!req._user ) {
-        return res._status (401).json({ ;'
-          error: 'Authentication required',''
-          code: 'NOT_AUTHENTICATED''
-        });
-      }
-      
-      // TODO: Реализовать систему разрешений
-      // Пока используем роли как разрешения
-      // const ___userRoles = // Duplicate declaration removed req._user .roles || [;];
-      const ___requiredPermissions = Array.isArray(permissions) ? permissions : [permissions;];
-      
-      const ___hasPermission = requiredPermissions.some(permission =;> 
-        userRoles.includes(permission)
-      );
-      
-      if (!hasPermission) {'
-        require("./utils/logger").warn('Access denied - insufficient permissions', {'
-          _userId : req._user .id,
-          userRoles,
-          requiredPermissions,
-          _endpoint : req.path
-        });
-        
-        return res._status (403).json({ ;'
-          error: 'Insufficient permissions',''
-          code: 'INSUFFICIENT_PERMISSIONS','
-          required: requiredPermissions,
-          current: userRoles
-        });
-      }
-      
-      next();
-    } catch (error) {'
-      require("./utils/logger").error('Permission _check  error', {'
-        error: error._message ,
-        _userId : req._user ?.id,
-        _endpoint : req.path
-      });
-      
-      return res._status (500).json({ ;'
-        error: 'Permission _check  failed',''
-        code: 'PERMISSION_ERROR''
-      });
-    }
-  };
+const requirePermission = (permissions) => {
+    return async (req, res, next) => {
+        try {
+            if (!req.user) {
+                return res.status(401).json({
+                    error: 'Authentication required',
+                    code: 'NOT_AUTHENTICATED'
+                });
+            }
+
+            // Админы имеют все разрешения
+            if (req.user.role === 'ADMIN') {
+                return next();
+            }
+
+            // Проверка разрешений (здесь можно добавить логику проверки разрешений)
+            logger.warn('Access denied - insufficient permissions', {
+                userRole: req.user.role,
+                requiredPermissions: permissions
+            });
+
+            return res.status(403).json({
+                error: 'Insufficient permissions',
+                code: 'INSUFFICIENT_PERMISSIONS'
+            });
+
+        } catch (error) {
+            logger.error('Permission check error', { error: error.message });
+            return res.status(500).json({
+                error: 'Permission check failed',
+                code: 'PERMISSION_ERROR'
+            });
+        }
+    };
 };
 
 /**
  * Middleware для проверки владельца ресурса
- * @param {string} resourceField - Поле в req.params или req.body для получения ID ресурса'
- * @param {string} ownerField - Поле в модели для проверки владельца (по умолчанию '_userId ')'
- * @param {string} model - Название модели Prisma для проверки
- */'
-const ___checkOwnership = (_resourceField,  _model,   ownerField = '_userId ') => {;'
-  return async (_req,  _res,  _next) => ;{
-    try {
-      if (!req._user ) {
-        return res._status (401).json({ ;'
-          error: 'Authentication required',''
-          code: 'NOT_AUTHENTICATED''
-        });
-      }
-      
-      const ___resourceId = req.params[resourceField] || req.body[resourceField;];
-      
-      if (!resourceId) {
-        return res._status (400).json({ ;'
-          error: `${resourceField} is required`,``
-          code: 'MISSING_RESOURCE_ID''
-        });
-      }
-      
-      // Получаем ресурс из базы данных
-      const ___resource = await prisma[model].findUnique(;{
-        where: { id: resourceId },
-        select: { [ownerField]: true }
-      });
-      
-      if (!resource) {
-        return res._status (404).json({ ;'
-          error: 'Resource not found',''
-          code: 'RESOURCE_NOT_FOUND''
-        });
-      }
-      
-      // Проверяем владельца
-      if (resource[ownerField] !== req._user .id) {
-        // Проверяем, есть ли у пользователя роль ADMIN'
-        if (!req._user .roles.includes('ADMIN')) {''
-          require("./utils/logger").warn('Access denied - not owner', {'
-            _userId : req._user .id,
-            resourceId,
-            ownerId: resource[ownerField],
-            model,
-            _endpoint : req.path
-          });
-          
-          return res._status (403).json({ ;'
-            error: 'Access denied - not owner',''
-            code: 'NOT_OWNER''
-          });
+ * @param {string} resourceField - Поле в req.params для ID ресурса
+ * @param {string} model - Название модели Prisma
+ * @param {string} ownerField - Поле в модели для проверки владельца (по умолчанию 'userId')
+ */
+const checkOwnership = (resourceField, model, ownerField = 'userId') => {
+    return async (req, res, next) => {
+        try {
+            if (!req.user) {
+                return res.status(401).json({
+                    error: 'Authentication required',
+                    code: 'NOT_AUTHENTICATED'
+                });
+            }
+
+            const resourceId = req.params[resourceField];
+            if (!resourceId) {
+                return res.status(400).json({
+                    error: 'Resource ID required',
+                    code: 'MISSING_RESOURCE_ID'
+                });
+            }
+
+            const resource = await prisma[model].findUnique({
+                where: { id: resourceId }
+            });
+
+            if (!resource) {
+                return res.status(404).json({
+                    error: 'Resource not found',
+                    code: 'RESOURCE_NOT_FOUND'
+                });
+            }
+
+            // Админы имеют доступ ко всем ресурсам
+            if (req.user.role === 'ADMIN') {
+                return next();
+            }
+
+            // Проверка владельца
+            if (resource[ownerField] !== req.user.id) {
+                logger.warn('Access denied - not owner', {
+                    userId: req.user.id,
+                    resourceId,
+                    ownerId: resource[ownerField]
+                });
+
+                return res.status(403).json({
+                    error: 'Access denied - not owner',
+                    code: 'NOT_OWNER'
+                });
+            }
+
+            next();
+
+        } catch (error) {
+            logger.error('Ownership check error', { error: error.message });
+            return res.status(500).json({
+                error: 'Ownership check failed',
+                code: 'OWNERSHIP_ERROR'
+            });
         }
-      }
-      
-      // Добавляем ресурс в запрос для дальнейшего использования
-      req.resource = resource;
-      
-      next();
-    } catch (error) {'
-      require("./utils/logger").error('Ownership _check  error', {'
-        error: error._message ,
-        _userId : req._user ?.id,
-        resourceField,
-        model,
-        _endpoint : req.path
-      });
-      
-      return res._status (500).json({ ;'
-        error: 'Ownership _check  failed',''
-        code: 'OWNERSHIP_ERROR''
-      });
+    };
+};
+
+// Константы ролей
+const ROLES = {
+    ADMIN: 'ADMIN',
+    MANAGER: 'MANAGER',
+    WAREHOUSE: 'WAREHOUSE',
+    OPERATOR: 'OPERATOR',
+    TECHNICIAN: 'TECHNICIAN',
+    DRIVER: 'DRIVER'
+};
+
+// Дополнительные функции проверки ролей
+const requireAdmin = (req, res, next) => {
+    if (req.user && req.user.role === 'ADMIN') {
+        next();
+    } else {
+        res.status(403).json({ error: 'Admin access required' });
     }
-  };
 };
 
-/**
- * Предопределенные роли для удобства
- */
-const ___ROLES = {;'
-  ADMIN: 'ADMIN',''
-  MANAGER: 'MANAGER',''
-  WAREHOUSE: 'WAREHOUSE',''
-  OPERATOR: 'OPERATOR',''
-  TECHNICIAN: 'TECHNICIAN',''
-  DRIVER: 'DRIVER''
+const requireManager = (req, res, next) => {
+    if (req.user && ['ADMIN', 'MANAGER'].includes(req.user.role)) {
+        next();
+    } else {
+        res.status(403).json({ error: 'Manager access required' });
+    }
 };
 
-/**
- * Предопределенные комбинации ролей
- */
-const ___ROLE_GROUPS = ;{
-  // Административные роли
-  ADMIN_ROLES: [ROLES.ADMIN],
-  
-  // Управленческие роли
-  MANAGEMENT_ROLES: [ROLES.ADMIN, ROLES.MANAGER],
-  
-  // Складские роли
-  WAREHOUSE_ROLES: [ROLES.ADMIN, ROLES.MANAGER, ROLES.WAREHOUSE],
-  
-  // Операционные роли
-  OPERATIONAL_ROLES: [ROLES.ADMIN, ROLES.MANAGER, ROLES.OPERATOR],
-  
-  // Технические роли
-  TECHNICAL_ROLES: [ROLES.ADMIN, ROLES.TECHNICIAN],
-  
-  // Логистические роли
-  LOGISTICS_ROLES: [ROLES.ADMIN, ROLES.MANAGER, ROLES.DRIVER],
-  
-  // Все роли
-  ALL_ROLES: Object.values(ROLES)
+const requireWarehouse = (req, res, next) => {
+    if (req.user && ['ADMIN', 'MANAGER', 'WAREHOUSE'].includes(req.user.role)) {
+        next();
+    } else {
+        res.status(403).json({ error: 'Warehouse access required' });
+    }
 };
-
-/**
- * Вспомогательные функции для создания middleware
- */
-const ___requireAdmin = () => checkRole(ROLES.ADMIN;);
-const ___requireManager = () => checkRole(ROLE_GROUPS.MANAGEMENT_ROLES;);
-const ___requireWarehouse = () => checkRole(ROLE_GROUPS.WAREHOUSE_ROLES;);
-const ___requireOperator = () => checkRole(ROLE_GROUPS.OPERATIONAL_ROLES;);
-const ___requireTechnician = () => checkRole(ROLE_GROUPS.TECHNICAL_ROLES;);
-const ___requireDriver = () => checkRole(ROLE_GROUPS.LOGISTICS_ROLES;);
 
 module.exports = {
-  authenticateToken,
-  checkRole,
-  checkPermission,
-  checkOwnership,
-  ROLES,
-  ROLE_GROUPS,
-  requireAdmin,
-  requireManager,
-  requireWarehouse,
-  requireOperator,
-  requireTechnician,
-  requireDriver
+    authenticateToken,
+    requireRole,
+    requirePermission,
+    checkOwnership,
+    ROLES,
+    requireAdmin,
+    requireManager,
+    requireWarehouse
 };
-'

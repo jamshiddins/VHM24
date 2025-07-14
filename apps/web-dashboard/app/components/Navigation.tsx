@@ -38,14 +38,14 @@ const navigation = [
 ];
 
 export default function Navigation() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false
+  const pathname = usePathname(
 
   return (
     <>
       {/* Mobile sidebar */}
       <div
-        className={`fixed inset-0 flex z-40 md:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}
+        className={`fixed inset-0 flex z-40 md:hidden ${sidebarOpen ? ' : 'pointer-events-none'}`}
       >
         <div
           className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity ease-linear duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`}
@@ -91,7 +91,7 @@ export default function Navigation() {
                     />
                     {item.name}
                   </Link>
-                );
+                
               })}
             </nav>
           </div>
@@ -127,7 +127,7 @@ export default function Navigation() {
                     />
                     {item.name}
                   </Link>
-                );
+                
               })}
             </nav>
           </div>
@@ -166,5 +166,5 @@ export default function Navigation() {
         </div>
       </div>
     </>
-  );
+  
 }

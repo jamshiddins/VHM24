@@ -3,6 +3,8 @@
     "target": "ES2022",
     "module": "commonjs",
     "lib": ["ES2022"],
+    "outDir": "./dist",
+    "rootDir": "./",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -10,16 +12,32 @@
     "resolveJsonModule": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "removeComments": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
     "types": ["node"],
-    "typeRoots": ["./node_modules/@types"]
+    "typeRoots": ["./node_modules/@types", "./@types"]
   },
   "include": [
     "**/*.ts",
-    "**/*.js"
+    "**/*.js",
+    "backend/**/*",
+    "apps/**/*"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "build"
-  ]
+    "build",
+    "coverage",
+    "logs",
+    "backup*",
+    "mocks"
+  ],
+  "ts-node": {
+    "esm": false,
+    "experimentalSpecifierResolution": "node"
+  }
 }

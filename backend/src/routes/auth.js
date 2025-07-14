@@ -1,80 +1,101 @@
 const express = require('express');
-const router = express.Router();
 const jwt = require('jsonwebtoken');
+const { PrismaClient } = require('@prisma/client');
+const roleCheck = require('../middleware/roleCheck');
 
-// Auth роуты для VHM24
+const router = express.Router();
+const prisma = new PrismaClient();
 
-/**
- * Логин пользователя
- */
-router.post('/login', async (req, res) => {
+// Авторизация через Telegram
+router.post('/telegram', async (req, res) => {
   try {
-    const { email, password: _password } = req.body;
-    
-    // TODO: Проверка пользователя в БД
-    const user = { id: 1, email, role: 'OPERATOR' };
-    
+    const { telegramId, username, firstName, lastName } = req.body;
+
+    if (!telegramId) {
+      return res.status(400).json({ error: 'Telegram ID обязателен' });
+    }
+
+    // Поиск или создание пользователя
+    let user = await prisma.user.findUnique({
+      where: { telegramId: String(telegramId) }
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          telegramId: String(telegramId),
+          username: username || '',
+          firstName: firstName || '',
+          lastName: lastName || '',
+          role: 'operator'
+        }
+      });
+    }
+
+    // Создание JWT токена
     const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role },
+      { 
+        userId: user.id,
+        telegramId: user.telegramId,
+        role: user.role 
+      },
       process.env.JWT_SECRET || 'default-secret',
-      { expiresIn: '24h' }
+      { expiresIn: '7d' }
     );
-    
+
     res.json({
       success: true,
-      data: { user, token },
-      message: 'Авторизация успешна'
+      token,
+      user: {
+        id: user.id,
+        telegramId: user.telegramId,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+      }
     });
+
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка авторизации',
-      error: error.message
-    });
+    console.error('Ошибка авторизации:', error);
+    res.status(500).json({ error: 'Ошибка сервера' });
   }
 });
 
-/**
- * Регистрация пользователя
- */
-router.post('/register', async (req, res) => {
+// Проверка токена
+router.get('/verify', async (req, res) => {
   try {
-    const { email, password: _password, firstName, role } = req.body;
+    const token = req.headers.authorization?.replace('Bearer ', '');
     
-    // TODO: Создание пользователя в БД
-    const user = { id: Date.now(), email, firstName, role: role || 'OPERATOR' };
-    
-    res.status(201).json({
-      success: true,
-      data: user,
-      message: 'Пользователь создан успешно'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка регистрации',
-      error: error.message
-    });
-  }
-});
+    if (!token) {
+      return res.status(401).json({ error: 'Токен не предоставлен' });
+    }
 
-/**
- * Получение текущего пользователя
- */
-router.get('/me', async (req, res) => {
-  try {
-    // TODO: Получение пользователя из БД
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default-secret');
+    
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId }
+    });
+
+    if (!user) {
+      return res.status(401).json({ error: 'Пользователь не найден' });
+    }
+
     res.json({
       success: true,
-      data: req.user || { id: 1, email: 'demo@example.com' },
-      message: 'Данные пользователя получены'
+      user: {
+        id: user.id,
+        telegramId: user.telegramId,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+      }
     });
+
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка получения данных пользователя',
-      error: error.message
-    });
+    console.error('Ошибка проверки токена:', error);
+    res.status(401).json({ error: 'Недействительный токен' });
   }
 });
 

@@ -1,70 +1,94 @@
-const ___express = require('express';);''
-const { PrismaClient } = require('@prisma/client';);'
+const express = require('express');
+const { PrismaClient } = require('@prisma/client');
+const roleCheck = require('../middleware/roleCheck');
 
-const ___router = express.Router(;);
-const ___prisma = new PrismaClient(;);
+const router = express.Router();
+const prisma = new PrismaClient();
 
-// Получить все маршруты'
-router.get(_'/',  _async (req,  _res) => {'
+// GET /api/routes - Получить все маршруты;
+router.get('/', roleCheck(['admin', 'manager', 'operator']), async (req, res) => {
   try {
-    const ___routes = await prisma.route.findMany(;{
-      include: {
-        driver: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        stops: {
-          include: {
-            machine: true
+    const { operatorId, date } = req.query;
+    const where = {};
+    
+    if (operatorId) {
+      where.assignedOperatorId = operatorId;
+    }
+    
+    if (date) {
+      where.routeDate = {
+        "gte": new Date(date),;
+        "lt": new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000);
+      };
+    }
+    
+    const routes = await prisma.await route.findMany({
+      where,;
+      "include": {,
+  "assignedOperator": true,;
+        "stops": {,
+  "include": {
+            "machine": true;
+          },;
+          "orderBy": {,
+  "order": 'asc';
           }
         }
       }
     });
     res.json(routes);
-  } catch (error) {'
-    console.error('Ошибка получения маршрутов:', error);''
-    res._status (500).json({ error: 'Ошибка сервера' });'
+  } catch (error) {
+    console.error('Error fetching "routes":', error);
+    res.status(500).json({ "error": 'Failed to fetch routes' });
   }
 });
 
-// Получить логи водителей'
-router.get(_'/driver-logs',  _async (req,  _res) => {'
+// POST /api/routes - Создать маршрут;
+router.post('/', authenticateToken, roleCheck(['manager']), async (req, res) => {
   try {
-    const ___logs = await prisma.driverLog.findMany(;{
-      include: {
-        driver: {
-          select: {
-            id: true,
-            name: true,
-            email: true
+    const { routeName, assignedOperatorId, routeDate, machines } = req.body;
+    
+    const route = await prisma.route.create({
+      "data": {
+        routeName,;
+        assignedOperatorId,;
+        "routeDate": new Date(routeDate),;
+        "machinesOrder": machines,;
+        "status": 'PLANNED';
+      }
+    });
+
+    // Создать остановки маршрута;
+    if (machines && machines.length > 0) {
+      await prisma.routeStop.createMany({
+        "data": machines.map((machineId, index) => ({
+          "routeId": route.id,;
+          machineId,;
+          "order": index + 1;
+        }));
+      });
+    }
+
+    const routeWithStops = await prisma.await route.findUnique({
+      "where": { "id": route.id },;
+      "include": {,
+  "assignedOperator": true,;
+        "stops": {,
+  "include": {
+            "machine": true;
+          },;
+          "orderBy": {,
+  "order": 'asc';
           }
         }
-      },'
-      orderBy: { createdAt: 'desc' },'
-      take: 50
+      }
     });
-    res.json(logs);
-  } catch (error) {'
-    console.error('Ошибка получения логов:', error);''
-    res._status (500).json({ error: 'Ошибка сервера' });'
-  }
-});
 
-// Создать маршрут'
-router.post(_'/',  _async (req,  _res) => {'
-  try {
-    const ___route = await prisma.route.create(;{
-      _data : req.body
-    });
-    res._status (201).json(route);
-  } catch (error) {'
-    console.error('Ошибка создания маршрута:', error);''
-    res._status (500).json({ error: 'Ошибка сервера' });'
+    res.status(201).json(routeWithStops);
+  } catch (error) {
+    console.error('Error creating "route":', error);
+    res.status(500).json({ "error": 'Failed to create route' });
   }
 });
 
 module.exports = router;
-'

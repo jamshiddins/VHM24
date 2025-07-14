@@ -56,42 +56,42 @@ interface UserStats {
 }
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]
   const [stats, setStats] = useState<UserStats>({
     total: 0,
     active: 0,
     inactive: 0,
     pending: 0,
     byRole: {}
-  });
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRole, setSelectedRole] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  }
+  const [loading, setLoading] = useState(true
+  const [searchTerm, setSearchTerm] = useState('
+  const [selectedRole, setSelectedRole] = useState(''
+  const [selectedStatus, setSelectedStatus] = useState('
   const [activeTab, setActiveTab] = useState<'users' | 'roles' | 'permissions'>(
     'users'
-  );
-  const [showCreateUserModal, setShowCreateUserModal] = useState(false);
-  const [showEditUserModal, setShowEditUserModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  
+  const [showCreateUserModal, setShowCreateUserModal] = useState(false
+  const [showEditUserModal, setShowEditUserModal] = useState(false
+  const [selectedUser, setSelectedUser] = useState<User | null>(null
 
   // Form state
   const [userFormData, setUserFormData] = useState({
-    username: '',
+    username: ',
     firstName: '',
-    lastName: '',
+    lastName: ',
     email: '',
-    phone: '',
+    phone: ',
     role: 'OPERATOR' as User['role'],
-    telegramUsername: '',
+    telegramUsername: ',
     password: '',
-    confirmPassword: '',
+    confirmPassword: ',
     permissions: [] as string[],
     assignedMachines: [] as number[],
     bio: '',
     skills: [] as string[],
-    emergencyContact: ''
-  });
+    emergencyContact: '
+  }
 
   const roles = [
     { value: '', label: 'Все роли' },
@@ -104,7 +104,7 @@ export default function UsersPage() {
   ];
 
   const statusOptions = [
-    { value: '', label: 'Все статусы' },
+    { value: ', label: 'Все статусы' },
     { value: 'ACTIVE', label: 'Активный' },
     { value: 'INACTIVE', label: 'Неактивный' },
     { value: 'SUSPENDED', label: 'Заблокирован' },
@@ -130,40 +130,40 @@ export default function UsersPage() {
   ];
 
   useEffect(() => {
-    fetchUsers();
-    fetchStats();
-  }, []);
+    fetchUsers(
+    fetchStats(
+  }, []
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/v1/users');
-      const data = await response.json();
+      const response = await fetch('/api/v1/users'
+      const data = await response.json(
       if (data.success) {
-        setUsers(data.data);
+        setUsers(data.data
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('Error fetching users:', error
     } finally {
-      setLoading(false);
+      setLoading(false
     }
   };
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/v1/users/stats');
-      const data = await response.json();
+      const response = await fetch('/api/v1/users/stats'
+      const data = await response.json(
       if (data.success) {
-        setStats(data.data);
+        setStats(data.data
       }
     } catch (error) {
-      console.error('Error fetching user stats:', error);
+      console.error('Error fetching user stats:', error
     }
   };
 
   const handleCreateUser = async () => {
     try {
       if (userFormData.password !== userFormData.confirmPassword) {
-        alert('Пароли не совпадают');
+        alert('Пароли не совпадают'
         return;
       }
 
@@ -179,18 +179,18 @@ export default function UsersPage() {
             skills: userFormData.skills,
             emergencyContact: userFormData.emergencyContact
           }
-        })
-      });
+        }
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
-        setUsers([data.data, ...users]);
-        setShowCreateUserModal(false);
-        resetUserForm();
-        fetchStats();
+        setUsers([data.data, ...users]
+        setShowCreateUserModal(false
+        resetUserForm(
+        fetchStats(
       }
     } catch (error) {
-      console.error('Error creating user:', error);
+      console.error('Error creating user:', error
     }
   };
 
@@ -211,20 +211,20 @@ export default function UsersPage() {
             skills: userFormData.skills,
             emergencyContact: userFormData.emergencyContact
           }
-        })
-      });
+        }
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
         setUsers(
-          users.map(user => (user.id === selectedUser.id ? data.data : user))
-        );
-        setShowEditUserModal(false);
-        setSelectedUser(null);
-        resetUserForm();
+          users.map(user => (user.id === selectedUser.id ? data.data : user)
+        
+        setShowEditUserModal(false
+        setSelectedUser(null
+        resetUserForm(
       }
     } catch (error) {
-      console.error('Error updating user:', error);
+      console.error('Error updating user:', error
     }
   };
 
@@ -238,22 +238,22 @@ export default function UsersPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ status })
-      });
+        body: JSON.stringify({ status }
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
         setUsers(
           users.map(user =>
             user.id === userId
               ? { ...user, status, updatedAt: new Date().toISOString() }
               : user
-          )
-        );
-        fetchStats();
+          
+        
+        fetchStats(
       }
     } catch (error) {
-      console.error('Error updating user status:', error);
+      console.error('Error updating user status:', error
     }
   };
 
@@ -265,56 +265,56 @@ export default function UsersPage() {
     try {
       const response = await fetch(`/api/v1/users/${userId}`, {
         method: 'DELETE'
-      });
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
-        setUsers(users.filter(user => user.id !== userId));
-        fetchStats();
+        setUsers(users.filter(user => user.id !== userId)
+        fetchStats(
       }
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error('Error deleting user:', error
     }
   };
 
   const resetUserForm = () => {
     setUserFormData({
-      username: '',
+      username: ',
       firstName: '',
-      lastName: '',
+      lastName: ',
       email: '',
-      phone: '',
+      phone: ',
       role: 'OPERATOR',
-      telegramUsername: '',
+      telegramUsername: ',
       password: '',
-      confirmPassword: '',
+      confirmPassword: ',
       permissions: [],
       assignedMachines: [],
       bio: '',
       skills: [],
-      emergencyContact: ''
-    });
+      emergencyContact: '
+    }
   };
 
   const openEditModal = (user: User) => {
-    setSelectedUser(user);
+    setSelectedUser(user
     setUserFormData({
       username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email || '',
-      phone: user.phone || '',
+      phone: user.phone || ',
       role: user.role,
       telegramUsername: user.telegramUsername || '',
-      password: '',
+      password: ',
       confirmPassword: '',
       permissions: user.permissions || [],
       assignedMachines: user.assignedMachines || [],
-      bio: user.profile?.bio || '',
+      bio: user.profile?.bio || ',
       skills: user.profile?.skills || [],
       emergencyContact: user.profile?.emergencyContact || ''
-    });
-    setShowEditUserModal(true);
+    }
+    setShowEditUserModal(true
   };
 
   const getStatusColor = (status: string) => {
@@ -391,19 +391,19 @@ export default function UsersPage() {
       user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (user.email &&
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()));
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesRole = !selectedRole || user.role === selectedRole;
     const matchesStatus = !selectedStatus || user.status === selectedStatus;
 
     return matchesSearch && matchesRole && matchesStatus;
-  });
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
-    );
+    
   }
 
   return (
@@ -501,7 +501,7 @@ export default function UsersPage() {
           >
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
-              Пользователи ({users.length})
+              Пользователи ({users.length}
             </div>
           </button>
           <button
@@ -651,7 +651,7 @@ export default function UsersPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {user.lastLogin
-                        ? new Date(user.lastLogin).toLocaleDateString('ru-RU')
+                        ? new Date(user.lastLogin).toLocaleDateString('ru-RU'
                         : 'Никогда'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -665,7 +665,7 @@ export default function UsersPage() {
                         {user.status === 'ACTIVE' ? (
                           <button
                             onClick={() =>
-                              handleUpdateUserStatus(user.id, 'INACTIVE')
+                              handleUpdateUserStatus(user.id, 'INACTIVE'
                             }
                             className="text-yellow-600 hover:text-yellow-900"
                           >
@@ -674,7 +674,7 @@ export default function UsersPage() {
                         ) : (
                           <button
                             onClick={() =>
-                              handleUpdateUserStatus(user.id, 'ACTIVE')
+                              handleUpdateUserStatus(user.id, 'ACTIVE'
                             }
                             className="text-green-600 hover:text-green-900"
                           >
@@ -785,7 +785,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         username: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -801,7 +801,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         role: e.target.value as User['role']
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
@@ -824,7 +824,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         firstName: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -841,7 +841,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         lastName: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -858,7 +858,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         email: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -875,7 +875,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         phone: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -892,7 +892,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         telegramUsername: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="@username"
@@ -910,7 +910,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         password: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -927,7 +927,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         confirmPassword: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -940,7 +940,7 @@ export default function UsersPage() {
                   <textarea
                     value={userFormData.bio}
                     onChange={e =>
-                      setUserFormData({ ...userFormData, bio: e.target.value })
+                      setUserFormData({ ...userFormData, bio: e.target.value }
                     }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -959,7 +959,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         emergencyContact: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Контакт для экстренных случаев"
@@ -970,8 +970,8 @@ export default function UsersPage() {
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => {
-                    setShowCreateUserModal(false);
-                    resetUserForm();
+                    setShowCreateUserModal(false
+                    resetUserForm(
                   }}
                   className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-50"
                 >
@@ -1010,7 +1010,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         username: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -1026,7 +1026,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         role: e.target.value as User['role']
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
@@ -1049,7 +1049,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         firstName: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -1066,7 +1066,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         lastName: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -1083,7 +1083,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         email: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -1100,7 +1100,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         phone: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -1113,7 +1113,7 @@ export default function UsersPage() {
                   <textarea
                     value={userFormData.bio}
                     onChange={e =>
-                      setUserFormData({ ...userFormData, bio: e.target.value })
+                      setUserFormData({ ...userFormData, bio: e.target.value }
                     }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -1131,7 +1131,7 @@ export default function UsersPage() {
                       setUserFormData({
                         ...userFormData,
                         emergencyContact: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -1141,9 +1141,9 @@ export default function UsersPage() {
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => {
-                    setShowEditUserModal(false);
-                    setSelectedUser(null);
-                    resetUserForm();
+                    setShowEditUserModal(false
+                    setSelectedUser(null
+                    resetUserForm(
                   }}
                   className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-50"
                 >
@@ -1161,5 +1161,5 @@ export default function UsersPage() {
         </div>
       )}
     </div>
-  );
+  
 }

@@ -76,24 +76,24 @@ interface DriverLog {
 }
 
 export default function DriversPage() {
-  const [drivers, setDrivers] = useState<Driver[]>([]);
-  const [routes, setRoutes] = useState<Route[]>([]);
-  const [driverLogs, setDriverLogs] = useState<DriverLog[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
-  const [showCreateRouteModal, setShowCreateRouteModal] = useState(false);
+  const [drivers, setDrivers] = useState<Driver[]>([]
+  const [routes, setRoutes] = useState<Route[]>([]
+  const [driverLogs, setDriverLogs] = useState<DriverLog[]>([]
+  const [loading, setLoading] = useState(true
+  const [searchTerm, setSearchTerm] = useState('
+  const [selectedStatus, setSelectedStatus] = useState(''
+  const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null
+  const [showCreateRouteModal, setShowCreateRouteModal] = useState(false
   const [activeTab, setActiveTab] = useState<'drivers' | 'routes' | 'logs'>(
     'drivers'
-  );
+  
 
   // Form state for creating routes
   const [routeFormData, setRouteFormData] = useState({
-    name: '',
+    name: ',
     driverId: 0,
     stops: [] as { machineId: number; order: number }[]
-  });
+  }
 
   const statusOptions = [
     { value: '', label: 'Все статусы' },
@@ -103,7 +103,7 @@ export default function DriversPage() {
   ];
 
   const routeStatusOptions = [
-    { value: '', label: 'Все маршруты' },
+    { value: ', label: 'Все маршруты' },
     { value: 'PLANNED', label: 'Запланированные' },
     { value: 'IN_PROGRESS', label: 'В процессе' },
     { value: 'COMPLETED', label: 'Завершённые' },
@@ -111,46 +111,46 @@ export default function DriversPage() {
   ];
 
   useEffect(() => {
-    fetchDrivers();
-    fetchRoutes();
-    fetchDriverLogs();
-  }, []);
+    fetchDrivers(
+    fetchRoutes(
+    fetchDriverLogs(
+  }, []
 
   const fetchDrivers = async () => {
     try {
-      const response = await fetch('/api/v1/auth/users?role=DRIVER');
-      const data = await response.json();
+      const response = await fetch('/api/v1/auth/users?role=DRIVER'
+      const data = await response.json(
       if (data.success) {
-        setDrivers(data.data);
+        setDrivers(data.data
       }
     } catch (error) {
-      console.error('Error fetching drivers:', error);
+      console.error('Error fetching drivers:', error
     }
   };
 
   const fetchRoutes = async () => {
     try {
-      const response = await fetch('/api/v1/routes');
-      const data = await response.json();
+      const response = await fetch('/api/v1/routes'
+      const data = await response.json(
       if (data.success) {
-        setRoutes(data.data);
+        setRoutes(data.data
       }
     } catch (error) {
-      console.error('Error fetching routes:', error);
+      console.error('Error fetching routes:', error
     } finally {
-      setLoading(false);
+      setLoading(false
     }
   };
 
   const fetchDriverLogs = async () => {
     try {
-      const response = await fetch('/api/v1/routes/driver-logs');
-      const data = await response.json();
+      const response = await fetch('/api/v1/routes/driver-logs'
+      const data = await response.json(
       if (data.success) {
-        setDriverLogs(data.data);
+        setDriverLogs(data.data
       }
     } catch (error) {
-      console.error('Error fetching driver logs:', error);
+      console.error('Error fetching driver logs:', error
     }
   };
 
@@ -161,26 +161,26 @@ export default function DriversPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(routeFormData)
-      });
+        body: JSON.stringify(routeFormData
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
-        setRoutes([data.data, ...routes]);
-        setShowCreateRouteModal(false);
-        resetRouteForm();
+        setRoutes([data.data, ...routes]
+        setShowCreateRouteModal(false
+        resetRouteForm(
       }
     } catch (error) {
-      console.error('Error creating route:', error);
+      console.error('Error creating route:', error
     }
   };
 
   const resetRouteForm = () => {
     setRouteFormData({
-      name: '',
+      name: ',
       driverId: 0,
       stops: []
-    });
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -226,25 +226,25 @@ export default function DriversPage() {
     const matchesSearch =
       driver.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       driver.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      driver.username?.toLowerCase().includes(searchTerm.toLowerCase());
+      driver.username?.toLowerCase().includes(searchTerm.toLowerCase()
     const matchesStatus = !selectedStatus || driver.status === selectedStatus;
     return matchesSearch && matchesStatus;
-  });
+  }
 
   const filteredRoutes = routes.filter(route => {
     const matchesSearch = route.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+      .toLowerCase(
+      .includes(searchTerm.toLowerCase()
     const matchesStatus = !selectedStatus || route.status === selectedStatus;
     return matchesSearch && matchesStatus;
-  });
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
-    );
+    
   }
 
   return (
@@ -281,7 +281,7 @@ export default function DriversPage() {
           >
             <div className="flex items-center gap-2">
               <Truck className="w-4 h-4" />
-              Водители ({drivers.length})
+              Водители ({drivers.length}
             </div>
           </button>
           <button
@@ -294,7 +294,7 @@ export default function DriversPage() {
           >
             <div className="flex items-center gap-2">
               <Navigation className="w-4 h-4" />
-              Маршруты ({routes.length})
+              Маршруты ({routes.length}
             </div>
           </button>
           <button
@@ -307,7 +307,7 @@ export default function DriversPage() {
           >
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              Логи ({driverLogs.length})
+              Логи ({driverLogs.length}
             </div>
           </button>
         </nav>
@@ -338,7 +338,7 @@ export default function DriversPage() {
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
-              )
+              
             )}
           </select>
         </div>
@@ -442,7 +442,7 @@ export default function DriversPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredRoutes.map(route => {
-                  const driver = drivers.find(d => d.id === route.driverId);
+                  const driver = drivers.find(d => d.id === route.driverId
                   return (
                     <tr key={route.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -483,7 +483,7 @@ export default function DriversPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {route.startTime
-                          ? new Date(route.startTime).toLocaleString('ru-RU')
+                          ? new Date(route.startTime).toLocaleString('ru-RU'
                           : 'Не начат'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -495,7 +495,7 @@ export default function DriversPage() {
                         </button>
                       </td>
                     </tr>
-                  );
+                  
                 })}
               </tbody>
             </table>
@@ -508,7 +508,7 @@ export default function DriversPage() {
           <div className="p-6">
             <div className="space-y-4">
               {driverLogs.map(log => {
-                const driver = drivers.find(d => d.id === log.driverId);
+                const driver = drivers.find(d => d.id === log.driverId
                 return (
                   <div
                     key={log.id}
@@ -556,7 +556,7 @@ export default function DriversPage() {
                       </span>
                     </div>
                   </div>
-                );
+                
               })}
             </div>
           </div>
@@ -584,7 +584,7 @@ export default function DriversPage() {
                       setRouteFormData({
                         ...routeFormData,
                         name: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Например: Маршрут №1 - Центр"
@@ -600,14 +600,14 @@ export default function DriversPage() {
                     onChange={e =>
                       setRouteFormData({
                         ...routeFormData,
-                        driverId: parseInt(e.target.value)
-                      })
+                        driverId: parseInt(e.target.value
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value={0}>Выберите водителя</option>
                     {drivers
-                      .filter(d => d.status === 'ACTIVE')
+                      .filter(d => d.status === 'ACTIVE'
                       .map(driver => (
                         <option key={driver.id} value={driver.id}>
                           {driver.firstName} {driver.lastName}
@@ -620,8 +620,8 @@ export default function DriversPage() {
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => {
-                    setShowCreateRouteModal(false);
-                    resetRouteForm();
+                    setShowCreateRouteModal(false
+                    resetRouteForm(
                   }}
                   className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-50"
                 >
@@ -639,5 +639,5 @@ export default function DriversPage() {
         </div>
       )}
     </div>
-  );
+  
 }

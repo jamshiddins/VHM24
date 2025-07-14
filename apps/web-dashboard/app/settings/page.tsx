@@ -115,18 +115,18 @@ const defaultSettings: SystemSettings = {
 };
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState<SystemSettings>(defaultSettings);
-  const [activeTab, setActiveTab] = useState('general');
-  const [loading, setLoading] = useState(false);
+  const [settings, setSettings] = useState<SystemSettings>(defaultSettings
+  const [activeTab, setActiveTab] = useState('general'
+  const [loading, setLoading] = useState(false
   const [saveStatus, setSaveStatus] = useState<
     'idle' | 'saving' | 'success' | 'error'
-  >('idle');
+  >('idle'
   const [systemStatus, setSystemStatus] = useState({
     database: 'connected',
     redis: 'connected',
     audit: 'active',
     backup: 'scheduled'
-  });
+  }
 
   const tabs = [
     { id: 'general', name: 'Общие', icon: CogIcon },
@@ -139,66 +139,66 @@ export default function SettingsPage() {
   ];
 
   useEffect(() => {
-    loadSettings();
-    checkSystemStatus();
-  }, []);
+    loadSettings(
+    checkSystemStatus(
+  }, []
 
   const loadSettings = async () => {
-    setLoading(true);
+    setLoading(true
     try {
       // Здесь будет загрузка настроек из API
-      // const response = await fetch('/api/v1/settings');
-      // const data = await response.json();
-      // setSettings(data);
+      // const response = await fetch('/api/v1/settings'
+      // const data = await response.json(
+      // setSettings(data
 
       // Пока используем локальные настройки
-      const savedSettings = localStorage.getItem('vhm24-settings');
+      const savedSettings = localStorage.getItem('vhm24-settings'
       if (savedSettings) {
-        setSettings({ ...defaultSettings, ...JSON.parse(savedSettings) });
+        setSettings({ ...defaultSettings, ...JSON.parse(savedSettings) }
       }
     } catch (error) {
-      console.error('Ошибка загрузки настроек:', error);
+      console.error('Ошибка загрузки настроек:', error
     } finally {
-      setLoading(false);
+      setLoading(false
     }
   };
 
   const saveSettings = async () => {
-    setSaveStatus('saving');
+    setSaveStatus('saving'
     try {
       // Здесь будет сохранение настроек через API
       // await fetch('/api/v1/settings', {
       //   method: 'PUT',
       //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(settings)
-      // });
+      //   body: JSON.stringify(settings
+      // }
 
       // Пока сохраняем локально
-      localStorage.setItem('vhm24-settings', JSON.stringify(settings));
+      localStorage.setItem('vhm24-settings', JSON.stringify(settings)
 
-      setSaveStatus('success');
-      setTimeout(() => setSaveStatus('idle'), 3000);
+      setSaveStatus('success'
+      setTimeout(() => setSaveStatus('idle'), 3000
     } catch (error) {
-      console.error('Ошибка сохранения настроек:', error);
-      setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 3000);
+      console.error('Ошибка сохранения настроек:', error
+      setSaveStatus('error'
+      setTimeout(() => setSaveStatus('idle'), 3000
     }
   };
 
   const checkSystemStatus = async () => {
     try {
       // Проверка статуса системы
-      const response = await fetch('/health');
-      const data = await response.json();
+      const response = await fetch('/health'
+      const data = await response.json(
 
       setSystemStatus({
         database: data.dbStatus === 'connected' ? 'connected' : 'error',
         redis: 'connected', // Будет из API
         audit: 'active',
         backup: 'scheduled'
-      });
+      }
     } catch (error) {
-      console.error('Ошибка проверки статуса системы:', error);
+      console.error('Ошибка проверки статуса системы:', error
     }
   };
 
@@ -213,7 +213,7 @@ export default function SettingsPage() {
         ...prev[section],
         [field]: value
       }
-    }));
+    })
   };
 
   const updateNestedSettings = (
@@ -231,7 +231,7 @@ export default function SettingsPage() {
           [field]: value
         }
       }
-    }));
+    })
   };
 
   const renderGeneralSettings = () => (
@@ -244,7 +244,7 @@ export default function SettingsPage() {
           type="text"
           value={settings.general.systemName}
           onChange={e =>
-            updateSettings('general', 'systemName', e.target.value)
+            updateSettings('general', 'systemName', e.target.value
           }
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -258,7 +258,7 @@ export default function SettingsPage() {
           <select
             value={settings.general.timezone}
             onChange={e =>
-              updateSettings('general', 'timezone', e.target.value)
+              updateSettings('general', 'timezone', e.target.value
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
@@ -275,7 +275,7 @@ export default function SettingsPage() {
           <select
             value={settings.general.language}
             onChange={e =>
-              updateSettings('general', 'language', e.target.value)
+              updateSettings('general', 'language', e.target.value
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
@@ -292,7 +292,7 @@ export default function SettingsPage() {
           <select
             value={settings.general.dateFormat}
             onChange={e =>
-              updateSettings('general', 'dateFormat', e.target.value)
+              updateSettings('general', 'dateFormat', e.target.value
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
@@ -309,7 +309,7 @@ export default function SettingsPage() {
           <select
             value={settings.general.currency}
             onChange={e =>
-              updateSettings('general', 'currency', e.target.value)
+              updateSettings('general', 'currency', e.target.value
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
@@ -321,7 +321,7 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
-  );
+  
 
   const renderAuditSettings = () => (
     <div className="space-y-6">
@@ -340,7 +340,7 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Период хранения логов (дни)
+            Период хранения логов (дни
           </label>
           <input
             type="number"
@@ -348,7 +348,7 @@ export default function SettingsPage() {
             max="365"
             value={settings.audit.retentionDays}
             onChange={e =>
-              updateSettings('audit', 'retentionDays', parseInt(e.target.value))
+              updateSettings('audit', 'retentionDays', parseInt(e.target.value)
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -386,7 +386,7 @@ export default function SettingsPage() {
                   'audit',
                   'enableRequestLogging',
                   e.target.checked
-                )
+                
               }
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
@@ -404,7 +404,7 @@ export default function SettingsPage() {
                   'audit',
                   'enableResponseLogging',
                   e.target.checked
-                )
+                
               }
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
@@ -422,7 +422,7 @@ export default function SettingsPage() {
                   'audit',
                   'enableDataChangeTracking',
                   e.target.checked
-                )
+                
               }
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
@@ -440,7 +440,7 @@ export default function SettingsPage() {
                   'audit',
                   'enableIncompleteDataTracking',
                   e.target.checked
-                )
+                
               }
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
@@ -475,7 +475,7 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
-  );
+  
 
   const renderSystemStatus = () => (
     <div className="space-y-6">
@@ -568,16 +568,16 @@ export default function SettingsPage() {
         </ul>
       </div>
     </div>
-  );
+  
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'general':
-        return renderGeneralSettings();
+        return renderGeneralSettings(
       case 'audit':
-        return renderAuditSettings();
+        return renderAuditSettings(
       case 'system':
-        return renderSystemStatus();
+        return renderSystemStatus(
       default:
         return (
           <div className="text-center py-12">
@@ -590,7 +590,7 @@ export default function SettingsPage() {
               будут добавлены в следующих обновлениях.
             </p>
           </div>
-        );
+        
     }
   };
 
@@ -624,7 +624,7 @@ export default function SettingsPage() {
                     <Icon className="h-5 w-5 mr-2" />
                     {tab.name}
                   </button>
-                );
+                
               })}
             </nav>
           </div>
@@ -635,7 +635,7 @@ export default function SettingsPage() {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               </div>
             ) : (
-              renderTabContent()
+              renderTabContent(
             )}
           </div>
 
@@ -667,5 +667,5 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
-  );
+  
 }

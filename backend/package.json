@@ -1,34 +1,44 @@
 {
-  "name": "@vhm24/backend",
+  "name": "vendhub-backend",
   "version": "1.0.0",
+  "description": "VendHub Backend API",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate deploy"
+    "build": "echo 'Build completed'",
+    "test": "jest",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.844.0",
     "@aws-sdk/s3-request-presigner": "^3.844.0",
-    "@prisma/client": "^6.11.1",
-    "bcrypt": "^5.1.1",
+    "@prisma/client": "^5.15.0",
+    "aws-sdk": "^2.1692.0",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "express-rate-limit": "^6.7.0",
-    "helmet": "^7.0.0",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^7.2.0",
     "joi": "^17.13.3",
-    "jsonwebtoken": "^9.0.0",
-    "morgan": "^1.10.0",
-    "multer": "^2.0.1",
-    "redis": "^4.6.5",
-    "telegraf": "^4.16.3",
-    "winston": "^3.11.0",
-    "xlsx": "^0.18.5"
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "redis": "^4.6.14",
+    "winston": "^3.13.0",
+    "xlsx": "^0.18.5",
+    "telegraf": "^4.12.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10",
-    "prisma": "^6.11.1"
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.4",
+    "prisma": "^5.15.0",
+    "supertest": "^7.0.0"
   }
 }

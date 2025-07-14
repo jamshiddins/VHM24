@@ -42,19 +42,19 @@ interface DashboardData {
 }
 
 export default function DashboardScreen() {
-  const navigation = useNavigation();
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const navigation = useNavigation(
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null
+  const [loading, setLoading] = useState(true
+  const [refreshing, setRefreshing] = useState(false
 
   useEffect(() => {
-    loadDashboardData();
-    setupWebSocketListeners();
+    loadDashboardData(
+    setupWebSocketListeners(
     
     return () => {
-      WebSocketService.removeAllListeners();
+      WebSocketService.removeAllListeners(
     };
-  }, []);
+  }, []
 
   const loadDashboardData = async () => {
     try {
@@ -63,52 +63,52 @@ export default function DashboardScreen() {
         ApiService.getRecentTasks(),
         ApiService.getMachines(),
         ApiService.getAlerts(),
-      ]);
+      ]
 
       setDashboardData({
         analytics,
         recentTasks: tasks,
         machines,
         alerts,
-      });
+      }
     } catch (error) {
-      Alert.alert('Ошибка', 'Не удалось загрузить данные');
-      console.error('Dashboard load error:', error);
+      Alert.alert('Ошибка', 'Не удалось загрузить данные'
+      console.error('Dashboard load error:', error
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      setLoading(false
+      setRefreshing(false
     }
   };
 
   const setupWebSocketListeners = () => {
     WebSocketService.on('analytics_update', (data: Analytics) => {
-      setDashboardData(prev => prev ? { ...prev, analytics: data } : null);
-    });
+      setDashboardData(prev => prev ? { ...prev, analytics: data } : null
+    }
 
     WebSocketService.on('task_update', (task: Task) => {
       setDashboardData(prev => {
         if (!prev) return null;
         const updatedTasks = prev.recentTasks.map(t => 
           t.id === task.id ? task : t
-        );
+        
         return { ...prev, recentTasks: updatedTasks };
-      });
-    });
+      }
+    }
 
     WebSocketService.on('machine_status_update', (machine: Machine) => {
       setDashboardData(prev => {
         if (!prev) return null;
         const updatedMachines = prev.machines.map(m => 
           m.id === machine.id ? machine : m
-        );
+        
         return { ...prev, machines: updatedMachines };
-      });
-    });
+      }
+    }
   };
 
   const onRefresh = () => {
-    setRefreshing(true);
-    loadDashboardData();
+    setRefreshing(true
+    loadDashboardData(
   };
 
   const handleQuickAction = (action: string) => {
@@ -116,18 +116,18 @@ export default function DashboardScreen() {
       case 'scan_qr':
         navigation.navigate('QRScanner', {
           onScan: (data: string) => {
-            Alert.alert('QR Сканирован', `Данные: ${data}`);
+            Alert.alert('QR Сканирован', `Данные: ${data}`
           }
-        });
+        }
         break;
       case 'new_task':
-        Alert.alert('Новая задача', 'Функция в разработке');
+        Alert.alert('Новая задача', 'Функция в разработке'
         break;
       case 'incassation':
-        navigation.navigate('Incassation', { machineId: 'select' });
+        navigation.navigate('Incassation', { machineId: 'select' }
         break;
       case 'map_view':
-        navigation.navigate('Map', { machines: dashboardData?.machines });
+        navigation.navigate('Map', { machines: dashboardData?.machines }
         break;
       default:
         break;
@@ -139,7 +139,7 @@ export default function DashboardScreen() {
       <View style={styles.loadingContainer}>
         <Text>Загрузка...</Text>
       </View>
-    );
+    
   }
 
   if (!dashboardData) {
@@ -148,7 +148,7 @@ export default function DashboardScreen() {
         <Text>Ошибка загрузки данных</Text>
         <Button onPress={loadDashboardData}>Повторить</Button>
       </View>
-    );
+    
   }
 
   return (
@@ -228,7 +228,7 @@ export default function DashboardScreen() {
           <MachineStatusGrid 
             machines={dashboardData.machines.slice(0, 6)} 
             onMachinePress={(machine) => 
-              navigation.navigate('MachineDetail', { machineId: machine.id })
+              navigation.navigate('MachineDetail', { machineId: machine.id }
             }
           />
         </Card.Content>
@@ -249,7 +249,7 @@ export default function DashboardScreen() {
           <RecentTasks 
             tasks={dashboardData.recentTasks.slice(0, 5)}
             onTaskPress={(task) => 
-              navigation.navigate('TaskDetail', { taskId: task.id })
+              navigation.navigate('TaskDetail', { taskId: task.id }
             }
           />
         </Card.Content>
@@ -264,7 +264,7 @@ export default function DashboardScreen() {
               alerts={dashboardData.alerts.slice(0, 3)}
               onAlertPress={(alert) => {
                 if (alert.machineId) {
-                  navigation.navigate('MachineDetail', { machineId: alert.machineId });
+                  navigation.navigate('MachineDetail', { machineId: alert.machineId }
                 }
               }}
             />
@@ -330,7 +330,7 @@ export default function DashboardScreen() {
 
       <View style={styles.bottomSpacing} />
     </ScrollView>
-  );
+  
 }
 
 const styles = StyleSheet.create({
@@ -403,4 +403,4 @@ const styles = StyleSheet.create({
   bottomSpacing: {
     height: 20,
   },
-});
+}

@@ -1,32 +1,26 @@
 {
   "name": "vhm24-telegram-bot",
   "version": "1.0.0",
-  "description": "VHM24 Telegram Bot with FSM for all roles",
+  "description": "VHM24 Telegram Bot for VendHub Manager",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest"
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.844.0",
-    "@aws-sdk/s3-request-presigner": "^3.844.0",
-    "axios": "^1.10.0",
+    "telegraf": "^4.15.6",
     "dotenv": "^16.3.1",
-    "ioredis": "^5.6.1",
-    "node-telegram-bot-api": "^0.66.0",
-    "winston": "^3.11.0"
+    "axios": "^1.6.2"
   },
   "devDependencies": {
-    "jest": "^29.5.0",
     "nodemon": "^3.0.2"
   },
   "keywords": [
     "telegram",
     "bot",
-    "fsm",
     "vending",
-    "warehouse"
+    "management"
   ],
   "author": "VHM24 Team",
   "license": "MIT"

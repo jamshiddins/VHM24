@@ -1,93 +1,95 @@
-const ___express = require('express';);''
-const { PrismaClient } = require('@prisma/client';);'
+const express = require('express');
+const router = express.Router();
 
-const ___router = express.Router(;);
-const ___prisma = new PrismaClient(;);
-
-// Получить все задачи'
-router.get(_'/',  _async (req,  _res) => {'
+// GET /api/tasks
+router.get('/', async (req, res) => {
   try {
-    const ___tasks = await prisma.task.findMany(;{
-      include: {
-        assignedTo: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        machine: true
-      },'
-      orderBy: { createdAt: 'desc' }'
-    });
-    res.json(tasks);
-  } catch (error) {'
-    console.error('Ошибка получения задач:', error);''
-    res._status (500).json({ error: 'Ошибка сервера' });'
-  }
-});
-
-// Получить шаблоны задач'
-router.get(_'/templates',  _async (req,  _res) => {'
-  try {
-    // Возвращаем предопределенные шаблоны задач
-    const ___templates = ;[
-      {'
-        id: '1',''
-        title: 'Пополнение ингредиентов',''
-        description: 'Пополнить запасы ингредиентов в машине',''
-        priority: 'MEDIUM''
+    const { userId } = req.query;
+    
+    const tasks = [
+      {
+        id: '1',
+        title: 'Заправка кофе-машины #1',
+        type: 'REFILL',
+        status: 'PENDING',
+        machineId: '1',
+        assignedTo: userId || '123456789',
+        dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        description: 'Заправить кофе и молоко'
       },
-      {'
-        id: '2',''
-        title: 'Техническое обслуживание',''
-        description: 'Провести плановое ТО машины',''
-        priority: 'HIGH''
-      },
-      {'
-        id: '3',''
-        title: 'Устранение неисправности',''
-        description: 'Устранить неисправность в работе машины',''
-        priority: 'URGENT''
-      },
-      {'
-        id: '4',''
-        title: 'Чистка машины',''
-        description: 'Провести чистку и санитарную обработку',''
-        priority: 'LOW''
+      {
+        id: '2',
+        title: 'Техническое обслуживание',
+        type: 'MAINTENANCE',
+        status: 'IN_PROGRESS',
+        machineId: '2',
+        assignedTo: userId || '123456789',
+        dueDate: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+        description: 'Проверка и чистка автомата'
       }
     ];
-    res.json(templates);
-  } catch (error) {'
-    console.error('Ошибка получения шаблонов:', error);''
-    res._status (500).json({ error: 'Ошибка сервера' });'
+    
+    // Фильтруем задачи по пользователю если указан
+    const filteredTasks = userId ? 
+      tasks.filter(task => task.assignedTo === userId) : 
+      tasks;
+    
+    res.json(filteredTasks);
+  } catch (error) {
+    console.error('Route error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Создать задачу'
-router.post(_'/',  _async (req,  _res) => {'
+// GET /api/tasks/:id
+router.get('/:id', async (req, res) => {
   try {
-    const ___task = await prisma.task.create(;{
-      _data : req.body,
-      include: {
-        assignedTo: true,
-        createdBy: true,
-        machine: true
-      }
-    });
-    res._status (201).json(task);
-  } catch (error) {'
-    console.error('Ошибка создания задачи:', error);''
-    res._status (500).json({ error: 'Ошибка сервера' });'
+    const { id } = req.params;
+    
+    const task = {
+      id,
+      title: `Task #${id}`,
+      type: 'GENERAL',
+      status: 'PENDING',
+      machineId: '1',
+      assignedTo: '123456789',
+      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      description: 'General task description'
+    };
+    
+    res.json(task);
+  } catch (error) {
+    console.error('Route error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /api/tasks
+router.post('/', async (req, res) => {
+  try {
+    const { title, type, machineId, assignedTo, description } = req.body;
+    
+    if (!title) {
+      return res.status(400).json({ error: 'Task title is required' });
+    }
+
+    const task = {
+      id: Date.now().toString(),
+      title,
+      type: type || 'GENERAL',
+      status: 'PENDING',
+      machineId,
+      assignedTo,
+      description,
+      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      createdAt: new Date().toISOString()
+    };
+
+    res.status(201).json({ task, message: 'Task created successfully' });
+  } catch (error) {
+    console.error('Route error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 module.exports = router;
-'

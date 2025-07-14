@@ -1,0 +1,78 @@
+{
+  "timestamp": "2025-07-14T15:35:13.513Z",
+  "totalTests": 5,
+  "passed": 4,
+  "failed": 1,
+  "warnings": 0,
+  "tests": [
+    {
+      "name": "Структура проекта",
+      "success": true,
+      "message": "Структура проекта корректна",
+      "critical": true,
+      "details": {
+        "missing": [],
+        "totalChecked": 10
+      }
+    },
+    {
+      "name": "Синтаксис файлов",
+      "success": false,
+      "message": "Ошибки: backend/src/index.js: проблемы с require, backend/src/utils/logger.js: проблемы с require, backend/src/routes/auth.js: проблемы с require, backend/src/routes/machines.js: проблемы с require, apps/telegram-bot/src/index.js: проблемы с require",
+      "critical": true,
+      "details": {
+        "errors": [
+          "backend/src/index.js: проблемы с require",
+          "backend/src/utils/logger.js: проблемы с require",
+          "backend/src/routes/auth.js: проблемы с require",
+          "backend/src/routes/machines.js: проблемы с require",
+          "apps/telegram-bot/src/index.js: проблемы с require"
+        ],
+        "checkedFiles": 5
+      }
+    },
+    {
+      "name": "Зависимости проекта",
+      "success": true,
+      "message": "Зависимости в порядке",
+      "critical": false,
+      "details": {
+        "issues": [],
+        "checkedFiles": 2
+      }
+    },
+    {
+      "name": "Конфигурация",
+      "success": true,
+      "message": "Конфигурация корректна",
+      "critical": false,
+      "details": {
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "name": "Файлы восстановления",
+      "success": true,
+      "message": "Все файлы восстановления на месте",
+      "critical": false,
+      "details": {
+        "missing": [],
+        "recoveryFiles": [
+          "critical-emergency-fixer.js",
+          "smart-conservative-fixer.js",
+          "comprehensive-system-test.js"
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "successRate": 80,
+    "criticalIssues": 1,
+    "recommendations": [
+      "Запустите critical-emergency-fixer.js для исправления синтаксических ошибок",
+      "Проверьте работоспособность: cd backend && npm start",
+      "Проверьте Telegram Bot: cd apps/telegram-bot && npm start"
+    ]
+  }
+}

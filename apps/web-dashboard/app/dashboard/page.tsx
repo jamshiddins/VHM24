@@ -37,17 +37,17 @@ interface Machine {
 }
 
 export default function Dashboard() {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [machines, setMachines] = useState<Machine[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null
+  const [machines, setMachines] = useState<Machine[]>([]
+  const [loading, setLoading] = useState(true
+  const [error, setError] = useState<string | null>(null
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData(
     // Обновляем данные каждые 30 секунд
-    const interval = setInterval(fetchDashboardData, 30000);
-    return () => clearInterval(interval);
-  }, []);
+    const interval = setInterval(fetchDashboardData, 30000
+    return () => clearInterval(interval
+  }, []
 
   const fetchDashboardData = async () => {
     try {
@@ -58,24 +58,24 @@ export default function Dashboard() {
 
       const [statsResponse, machinesResponse] = await Promise.all([
         fetch(`${baseUrl}/api/v1/dashboard/stats`),
-        fetch(`${baseUrl}/api/v1/machines?take=10`)
-      ]);
+        fetch(`${baseUrl}/api/v1/machines?take=10`
+      ]
 
       if (!statsResponse.ok || !machinesResponse.ok) {
-        throw new Error('Failed to fetch data');
+        throw new Error('Failed to fetch data'
       }
 
-      const statsData = await statsResponse.json();
-      const machinesData = await machinesResponse.json();
+      const statsData = await statsResponse.json(
+      const machinesData = await machinesResponse.json(
 
-      setStats(statsData.data);
-      setMachines(machinesData.data.items);
-      setError(null);
+      setStats(statsData.data
+      setMachines(machinesData.data.items
+      setError(null
     } catch (err) {
-      setError('Ошибка загрузки данных');
-      console.error('Dashboard fetch error:', err);
+      setError('Ошибка загрузки данных'
+      console.error('Dashboard fetch error:', err
     } finally {
-      setLoading(false);
+      setLoading(false
     }
   };
 
@@ -114,7 +114,7 @@ export default function Dashboard() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
-    );
+    
   }
 
   if (error) {
@@ -134,7 +134,7 @@ export default function Dashboard() {
           </button>
         </div>
       </div>
-    );
+    
   }
 
   return (
@@ -180,7 +180,7 @@ export default function Dashboard() {
                   {stats?.totalMachines
                     ? Math.round(
                         (stats.onlineMachines / stats.totalMachines) * 100
-                      )
+                      
                     : 0}
                   %
                 </span>
@@ -347,7 +347,7 @@ export default function Dashboard() {
             </div>
             <ul className="divide-y divide-gray-200">
               {stats.recentTransactions
-                .slice(0, 5)
+                .slice(0, 5
                 .map((transaction, index) => (
                   <li key={index} className="px-4 py-4 sm:px-6">
                     <div className="flex items-center justify-between">
@@ -377,5 +377,5 @@ export default function Dashboard() {
         )}
       </div>
     </div>
-  );
+  
 }

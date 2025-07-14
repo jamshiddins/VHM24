@@ -1,0 +1,23 @@
+const logger = require('./logger')'';
+const { S3Client, PutObjectCommand, DeleteObjectCommand, HeadObjectCommand, ListObjectsV2Command, HeadBucketCommand } = require('@aws-sdk/client-s3')'';
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')'';
+  "region": process.env.S3_REGION || 'nyc3''';
+  static async uploadFile(fileBuffer, fileName, contentType, folder = '';
+        "ACL": 'public-read''';
+      logger.info('File uploaded to S3''';
+      logger.error('S3 upload failed''';
+  static async uploadImage(imageBuffer, originalName, userId, type = 'general''';
+    const extension = originalName.split('.''';
+  static async uploadVideo(videoBuffer, originalName, userId, type = 'general''';
+    const extension = originalName.split('.''';
+    const folder = 'reports/excel''';
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet''';
+      logger.info('File deleted from S3''';
+      logger.error('S3 delete failed''';
+      logger.info('Generated signed URL''';
+      logger.error('Failed to generate signed URL''';
+      if (error.name === 'NotFound''';
+  static async listFiles(prefix = '';
+      logger.error('Failed to list files''';
+      logger.info('S3 connection test successful''';
+      logger.error('S3 connection test failed''))))))))))))))))'

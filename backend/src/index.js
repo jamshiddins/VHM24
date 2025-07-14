@@ -1,139 +1,89 @@
-const cors = require('cors');
 const express = require('express');
-const helmet = require('helmet');
-const logger = require('./utils/logger');
-const morgan = require('morgan');
+const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
-require('dotenv').config();
 
-// Инициализация
+// Импорт маршрутов
+const apiRoutes = require('./routes/api');
+
 const app = express();
 const prisma = new PrismaClient();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(helmet());
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan('combined'));
 
-// Импорт роутов
-const authRoutes = require('./routes/auth');
-const machinesRoutes = require('./routes/machines');
-const inventoryRoutes = require('./routes/inventory');
-const tasksRoutes = require('./routes/tasks');
-const recipesRoutes = require('./routes/recipes');
-const usersRoutes = require('./routes/users');
-const dashboardRoutes = require('./routes/dashboard');
-const ingredientsRoutes = require('./routes/ingredients');
-const routesRoutes = require('./routes/routes');
-const warehouseRoutes = require('./routes/warehouse');
-const auditRoutes = require('./routes/audit');
-const dataImportRoutes = require('./routes/data-import');
-const incompleteDataRoutes = require('./routes/incomplete-data');
-const telegramRoutes = require('./routes/telegram');
+// Логирование запросов
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
-// VendHubBot роуты
-const syrupsRoutes = require('./routes/syrups');
-const waterRoutes = require('./routes/water');
-const bagsRoutes = require('./routes/bags');
-const revenuesRoutes = require('./routes/revenues');
-const expensesRoutes = require('./routes/expenses');
-const incassationsRoutes = require('./routes/incassations');
-const reconciliationsRoutes = require('./routes/reconciliations');
-const taskTemplatesRoutes = require('./routes/taskTemplates');
-const taskExecutionRoutes = require('./routes/taskExecution');
+// API маршруты
+app.use('/api', apiRoutes);
 
-// Health check
-app.get('/health', (req, res) => {
+// Главная страница
+app.get('/', (req, res) => {
   res.json({
-    status: 'ok',
-    service: 'VHM24 Backend',
-    timestamp: new Date().toISOString()
-  });
-});
-
-// API Routes
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/machines', machinesRoutes);
-app.use('/api/v1/inventory', inventoryRoutes);
-app.use('/api/v1/tasks', tasksRoutes);
-app.use('/api/v1/recipes', recipesRoutes);
-app.use('/api/v1/users', usersRoutes);
-app.use('/api/v1/dashboard', dashboardRoutes);
-app.use('/api/v1/ingredients', ingredientsRoutes);
-app.use('/api/v1/routes', routesRoutes);
-app.use('/api/v1/warehouse', warehouseRoutes);
-app.use('/api/v1/audit', auditRoutes);
-app.use('/api/v1/data-import', dataImportRoutes);
-app.use('/api/v1/incomplete-data', incompleteDataRoutes);
-app.use('/api/v1/telegram', telegramRoutes);
-
-// VendHubBot API Routes
-app.use('/api/v1/syrups', syrupsRoutes);
-app.use('/api/v1/water', waterRoutes);
-app.use('/api/v1/bags', bagsRoutes);
-app.use('/api/v1/revenues', revenuesRoutes);
-app.use('/api/v1/expenses', expensesRoutes);
-app.use('/api/v1/incassations', incassationsRoutes);
-app.use('/api/v1/reconciliations', reconciliationsRoutes);
-app.use('/api/v1/task-templates', taskTemplatesRoutes);
-app.use('/api/v1/task-execution', taskExecutionRoutes);
-
-// Error handling
-app.use((err, req, res, _next) => {
-  logger.error('Ошибка обработки запроса', {
-    error: err.message,
-    stack: err.stack,
-    url: req.url,
-    method: req.method
-  });
-  res.status(err.status || 500).json({
-    error: {
-      message: err.message || 'Internal Server Error',
-      status: err.status || 500
+    message: 'VendHub API Server',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/api/health',
+      users: '/api/users',
+      tasks: '/api/tasks'
     }
   });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    error: {
-      message: 'Route not found',
-      status: 404
-    }
+// Обработка ошибок
+app.use((err, req, res, next) => {
+  console.error('Ошибка сервера:', err);
+  res.status(500).json({ 
+    error: 'Внутренняя ошибка сервера',
+    message: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
+});
+
+// 404 обработчик
+app.use('*', (req, res) => {
+  res.status(404).json({ error: 'Маршрут не найден' });
 });
 
 // Запуск сервера
 async function startServer() {
   try {
+    // Проверка подключения к БД
     await prisma.$connect();
-    logger.info('Подключение к базе данных установлено');
-
+    console.log('✅ Подключение к базе данных установлено');
+    
     app.listen(PORT, () => {
-      logger.info(`VHM24 Backend запущен на порту ${PORT}`);
-      logger.info(`Health check: http://localhost:${PORT}/health`);
+      console.log(`🚀 VendHub API сервер запущен на порту ${PORT}`);
+      console.log(`📡 API доступен по адресу: http://localhost:${PORT}/api`);
     });
   } catch (error) {
-    logger.error('Ошибка запуска сервера', {
-      error: error.message,
-      stack: error.stack
-    });
-    throw error;
+    console.error('❌ Ошибка запуска сервера:', error);
+    process.exit(1);
   }
 }
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-  logger.info('Остановка сервера...');
+  console.log('\n🛑 Получен сигнал SIGINT, завершение работы...');
   await prisma.$disconnect();
   process.exit(0);
 });
 
-startServer();
+process.on('SIGTERM', async () => {
+  console.log('\n🛑 Получен сигнал SIGTERM, завершение работы...');
+  await prisma.$disconnect();
+  process.exit(0);
+});
 
-// Экспорт для тестирования
-module.exports = app;
+// Запуск если файл выполняется напрямую
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = { app, startServer };

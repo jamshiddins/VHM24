@@ -59,11 +59,11 @@ const theme = {
   },
 };
 
-const Stack = createStackNavigator<RootStackParamList>();
-const Tab = createBottomTabNavigator<TabParamList>();
+const Stack = createStackNavigator<RootStackParamList>(
+const Tab = createBottomTabNavigator<TabParamList>(
 
 // Keep splash screen visible while loading
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync(
 
 function TabNavigator() {
   return (
@@ -98,7 +98,7 @@ function TabNavigator() {
               size={size}
               color={color}
             />
-          );
+          
         },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: 'gray',
@@ -145,24 +145,24 @@ function TabNavigator() {
         options={{ title: 'Профиль' }}
       />
     </Tab.Navigator>
-  );
+  
 }
 
 function AppNavigator() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null
 
   useEffect(() => {
-    checkAuthStatus();
-  }, []);
+    checkAuthStatus(
+  }, []
 
   const checkAuthStatus = async () => {
     try {
-      const token = await AsyncStorage.getItem('authToken');
-      const isValid = await AuthService.validateToken(token);
-      setIsAuthenticated(isValid);
+      const token = await AsyncStorage.getItem('authToken'
+      const isValid = await AuthService.validateToken(token
+      setIsAuthenticated(isValid
     } catch (error) {
-      console.error('Auth check failed:', error);
-      setIsAuthenticated(false);
+      console.error('Auth check failed:', error
+      setIsAuthenticated(false
     }
   };
 
@@ -250,11 +250,11 @@ function AppNavigator() {
         </>
       )}
     </Stack.Navigator>
-  );
+  
 }
 
 export default function App() {
-  const [appIsReady, setAppIsReady] = useState(false);
+  const [appIsReady, setAppIsReady] = useState(false
 
   useEffect(() => {
     async function prepare() {
@@ -263,29 +263,29 @@ export default function App() {
         await Font.loadAsync({
           'Roboto': require('./assets/fonts/Roboto-Regular.ttf'),
           'Roboto-Bold': require('./assets/fonts/Roboto-Bold.ttf'),
-        });
+        }
 
         // Initialize services
-        await NotificationService.initialize();
-        WebSocketService.initialize();
+        await NotificationService.initialize(
+        WebSocketService.initialize(
 
         // Artificial delay to show splash screen
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 2000)
       } catch (e) {
-        console.warn('App preparation failed:', e);
+        console.warn('App preparation failed:', e
       } finally {
-        setAppIsReady(true);
+        setAppIsReady(true
       }
     }
 
-    prepare();
-  }, []);
+    prepare(
+  }, []
 
   const onLayoutRootView = React.useCallback(async () => {
     if (appIsReady) {
-      await SplashScreen.hideAsync();
+      await SplashScreen.hideAsync(
     }
-  }, [appIsReady]);
+  }, [appIsReady]
 
   if (!appIsReady) {
     return <LoadingScreen />;
@@ -305,7 +305,7 @@ export default function App() {
         </PaperProvider>
       </PersistGate>
     </ReduxProvider>
-  );
+  
 }
 
-registerRootComponent(App);
+registerRootComponent(App

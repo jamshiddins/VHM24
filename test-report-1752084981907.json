@@ -1,0 +1,220 @@
+{
+  "summary": {
+    "total": 25,
+    "passed": 7,
+    "failed": 16,
+    "warnings": 2,
+    "successRate": 28,
+    "totalTime": 3350,
+    "timestamp": "2025-07-09T18:16:21.907Z"
+  },
+  "results": {
+    "services": {
+      "inventory": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "inventory"
+        },
+        "timestamp": "2025-07-09T18:16:18.713Z"
+      },
+      "tasks": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "tasks"
+        },
+        "timestamp": "2025-07-09T18:16:18.715Z"
+      },
+      "bunkers": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "bunkers",
+          "description": "VHM24 Bunkers Service - 24/7 Operation",
+          "uptime": 41.9363514
+        },
+        "timestamp": "2025-07-09T18:16:18.716Z"
+      },
+      "backup": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "backup",
+          "storage": {
+            "s3": "not configured",
+            "local": "available"
+          },
+          "schedule": "0 2 * * *"
+        },
+        "timestamp": "2025-07-09T18:16:18.718Z"
+      },
+      "notifications": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "notifications",
+          "channels": {
+            "email": "not configured",
+            "telegram": "configured",
+            "push": "not configured"
+          }
+        },
+        "timestamp": "2025-07-09T18:16:18.723Z"
+      },
+      "monitoring": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "monitoring",
+          "metrics": {
+            "prometheus": "enabled",
+            "endpoint": "/metrics"
+          }
+        },
+        "timestamp": "2025-07-09T18:16:18.729Z"
+      },
+      "auth": {
+        "status": "failed",
+        "message": "Service is not responding: Request failed with status code 500",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.746Z"
+      },
+      "machines": {
+        "status": "failed",
+        "message": "Service is not responding: Request failed with status code 500",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.748Z"
+      },
+      "gateway": {
+        "status": "failed",
+        "message": "Service is not responding: Request failed with status code 500",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.749Z"
+      }
+    },
+    "api": {
+      "auth_register": {
+        "status": "failed",
+        "message": "Registration failed (500)",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.757Z"
+      },
+      "GET /health": {
+        "status": "failed",
+        "message": "Endpoint failed (500): AppError",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.762Z"
+      },
+      "GET /api/v1/test-db": {
+        "status": "failed",
+        "message": "Endpoint failed (500): AppError",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.766Z"
+      },
+      "GET /api/v1/dashboard/stats": {
+        "status": "warning",
+        "message": "Authentication required (401)",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.769Z"
+      },
+      "GET /api/v1/machines": {
+        "status": "failed",
+        "message": "Endpoint failed (500): AppError",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.774Z"
+      },
+      "GET /api/v1/machines/stats": {
+        "status": "failed",
+        "message": "Endpoint failed (500): AppError",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.780Z"
+      }
+    },
+    "database": {
+      "connection": {
+        "status": "failed",
+        "message": "Database test failed: Request failed with status code 500",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.785Z"
+      },
+      "performance": {
+        "status": "failed",
+        "message": "Performance test failed: Request failed with status code 500",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.790Z"
+      }
+    },
+    "security": {
+      "headers": {
+        "status": "failed",
+        "message": "Security headers test failed: Request failed with status code 500",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.796Z"
+      },
+      "rate_limiting": {
+        "status": "warning",
+        "message": "Rate limiting not detected (may be configured with high limits)",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.861Z"
+      },
+      "authorization": {
+        "status": "failed",
+        "message": "2/3 endpoints properly protected",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.870Z"
+      }
+    },
+    "performance": {
+      "health_check": {
+        "status": "failed",
+        "message": "Performance test failed: Request failed with status code 500",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.873Z"
+      },
+      "database_test": {
+        "status": "failed",
+        "message": "Performance test failed: Request failed with status code 500",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.877Z"
+      },
+      "concurrent_requests": {
+        "status": "failed",
+        "message": "Concurrent requests test failed: Request failed with status code 500",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.884Z"
+      }
+    },
+    "integration": {
+      "service_communication": {
+        "status": "passed",
+        "message": "Gateway can communicate with backend services",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.903Z"
+      },
+      "websocket_availability": {
+        "status": "failed",
+        "message": "WebSocket endpoint not available",
+        "data": null,
+        "timestamp": "2025-07-09T18:16:21.906Z"
+      }
+    },
+    "summary": {
+      "total": 25,
+      "passed": 7,
+      "failed": 16,
+      "warnings": 2
+    }
+  },
+  "environment": {
+    "nodeVersion": "v22.17.0",
+    "platform": "win32",
+    "baseUrl": "http://localhost:8000"
+  }
+}

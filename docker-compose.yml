@@ -1,219 +1,40 @@
 version: '3.8'
 
 services:
-  # PostgreSQL database
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
   postgres:
     image: postgres:15-alpine
-    container_name: vhm24-postgres
     environment:
-      POSTGRES_DB: vhm24db
-      POSTGRES_USER: vhm24
-      POSTGRES_PASSWORD: vhm24pass
-    ports:
-      - "5432:5432"
+      - POSTGRES_DB=vhm24
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-password}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vhm24 -d vhm24db"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
-  # Redis для кеширования
   redis:
     image: redis:7-alpine
-    container_name: vhm24-redis
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     ports:
       - "6379:6379"
-    volumes:
-      - redis_data:/data
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # MinIO для файлов (опционально)
-  minio:
-    image: minio/minio:latest
-    container_name: vhm24-minio
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    volumes:
-      - minio_data:/data
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
-
-  # API Gateway
-  gateway:
-    build:
-      context: .
-      dockerfile: services/gateway/Dockerfile
-    container_name: vhm24-gateway
-    ports:
-      - "8000:8000"
-    environment:
-      - NODE_ENV=production
-      - PORT=8000
-      - JWT_SECRET=${JWT_SECRET}
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - redis
-      - auth
-      - machines
-      - inventory
-      - tasks
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Auth Service
-  auth:
-    build:
-      context: .
-      dockerfile: services/auth/Dockerfile
-    container_name: vhm24-auth
-    environment:
-      - NODE_ENV=production
-      - PORT=3001
-      - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_URL=postgresql://vhm24:vhm24pass@postgres:5432/vhm24db
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - postgres
-      - redis
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Machines Service
-  machines:
-    build:
-      context: .
-      dockerfile: services/machines/Dockerfile
-    container_name: vhm24-machines
-    environment:
-      - NODE_ENV=production
-      - PORT=3002
-      - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_URL=postgresql://vhm24:vhm24pass@postgres:5432/vhm24db
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - postgres
-      - redis
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Inventory Service
-  inventory:
-    build:
-      context: .
-      dockerfile: services/inventory/Dockerfile
-    container_name: vhm24-inventory
-    environment:
-      - NODE_ENV=production
-      - PORT=3003
-      - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_URL=postgresql://vhm24:vhm24pass@postgres:5432/vhm24db
-      - REDIS_URL=redis://redis:6379
-      - S3_ENDPOINT=${S3_ENDPOINT}
-      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
-      - S3_SECRET_KEY=${S3_SECRET_KEY}
-      - S3_BUCKET=${S3_BUCKET}
-    depends_on:
-      - postgres
-      - redis
-      - minio
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Tasks Service
-  tasks:
-    build:
-      context: .
-      dockerfile: services/tasks/Dockerfile
-    container_name: vhm24-tasks
-    environment:
-      - NODE_ENV=production
-      - PORT=3004
-      - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_URL=postgresql://vhm24:vhm24pass@postgres:5432/vhm24db
-      - REDIS_URL=redis://redis:6379
-      - ENABLE_SCHEDULED_TASKS=true
-    depends_on:
-      - postgres
-      - redis
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Telegram Bot Service
-  telegram-bot:
-    build:
-      context: .
-      dockerfile: services/telegram-bot/Dockerfile
-    container_name: vhm24-telegram-bot
-    environment:
-      - NODE_ENV=production
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - API_URL=http://gateway:8000/api/v1
-      - JWT_SECRET=${JWT_SECRET}
-      - ADMIN_IDS=${ADMIN_IDS}
-    depends_on:
-      - gateway
-    restart: unless-stopped
-
-  # Audit Service
-  audit:
-    build:
-      context: .
-      dockerfile: services/audit/Dockerfile
-    container_name: vhm24-audit
-    environment:
-      - NODE_ENV=production
-      - PORT=3009
-      - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_URL=postgresql://vhm24:vhm24pass@postgres:5432/vhm24db
-      - AUDIT_RETENTION_DAYS=90
-    depends_on:
-      - postgres
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3009/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 volumes:
   postgres_data:
-  redis_data:
-  minio_data:

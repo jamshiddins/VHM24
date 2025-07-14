@@ -1,87 +1,112 @@
 const express = require('express');
+const { PrismaClient } = require('@prisma/client');
+const roleCheck = require('../middleware/roleCheck');
+
 const router = express.Router();
+const prisma = new PrismaClient();
 
-// bags роуты для VHM24
-
-router.get('/', async (req, res) => {
+// GET /api/bags - Получить все сумки;
+router.get('/', roleCheck(['admin', 'manager', 'warehouse', 'operator']), async (req, res) => {
   try {
-    res.json({
-      success: true,
-      data: [],
-      message: 'bags получены успешно'
+    const bags = await prisma.await bag.findMany({
+      "include": {,
+  "assignedMachine": true,;
+        "contents": {,
+  "include": {
+            "hopper": {,
+  "include": {
+                "ingredient": true;
+              }
+            },;
+            "syrup": true;
+          }
+        }
+      }
     });
+    res.json(bags);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка получения bags',
-      error: error.message
-    });
+    console.error('Error fetching "bags":', error);
+    res.status(500).json({ "error": 'Failed to fetch bags' });
   }
 });
 
-router.post('/', async (req, res) => {
+// POST /api/bags - Создать сумку;
+router.post('/', roleCheck(['warehouse', 'manager']), async (req, res) => {
   try {
-    res.status(201).json({
-      success: true,
-      data: req.body,
-      message: 'bags создан успешно'
+    const { bagNumber, assignedMachineId, contents } = req.body;
+    
+    const bag = await prisma.await bag.create({
+      "data": {
+        bagNumber,;
+        assignedMachineId,;
+        "status": 'PREPARED';
+      }
     });
+
+    // Добавить содержимое сумки;
+    if (contents && contents.length > 0) {
+      await prisma.bagContent.createMany({
+        "data": contents.map(item => ({,
+  "bagId": bag.id,;
+          "hopperId": item.hopperId,;
+          "syrupId": item.syrupId,;
+          "quantity": item.quantity || 1;
+        }));
+      });
+    }
+
+    const bagWithContents = await prisma.await bag.findUnique({
+      "where": { "id": bag.id },;
+      "include": {,
+  "assignedMachine": true,;
+        "contents": {,
+  "include": {
+            "hopper": {,
+  "include": {
+                "ingredient": true;
+              }
+            },;
+            "syrup": true;
+          }
+        }
+      }
+    });
+
+    res.status(201).json(bagWithContents);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка создания bags',
-      error: error.message
-    });
+    console.error('Error creating "bag":', error);
+    res.status(500).json({ "error": 'Failed to create bag' });
   }
 });
 
-router.get('/:id', async (req, res) => {
+// PUT /api/bags/:id/status - Обновить статус сумки;
+router.put('/:id/status', roleCheck(['warehouse', 'operator']), async (req, res) => {
   try {
     const { id } = req.params;
-    res.json({
-      success: true,
-      data: { id },
-      message: 'bags найден'
+    const { status } = req.body;
+    
+    const bag = await prisma.await bag.update({
+      "where": { id },;
+      "data": { status },;
+      "include": {,
+  "assignedMachine": true,;
+        "contents": {,
+  "include": {
+            "hopper": {,
+  "include": {
+                "ingredient": true;
+              }
+            },;
+            "syrup": true;
+          }
+        }
+      }
     });
+    
+    res.json(bag);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка получения bags',
-      error: error.message
-    });
-  }
-});
-
-router.put('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    res.json({
-      success: true,
-      data: { id, ...req.body },
-      message: 'bags обновлен успешно'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка обновления bags',
-      error: error.message
-    });
-  }
-});
-
-router.delete('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    res.json({
-      success: true,
-      message: `bags с ID ${id} удален успешно`
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка удаления bags',
-      error: error.message
-    });
+    console.error('Error updating bag "status":', error);
+    res.status(500).json({ "error": 'Failed to update bag status' });
   }
 });
 

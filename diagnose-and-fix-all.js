@@ -1,385 +1,113 @@
-const __fs = require('fs';);''
-const __logger = require('./packages/shared/utils/logger';);''
-const __path = require('path';);''
-const { execSync } = require('child_process';);''
-require('dotenv').config();'
-
-/**
- * VHM24 Complete Diagnosis and Auto-Fix System
- * Проверяет и исправляет все проблемы автоматически
- */
-class VHM24DiagnosisAndFix {
-  constructor() {
-    this.fixes = [];
-    this.issues = [];'
-    this.log('🔧 VHM24 Diagnosis and Auto-Fix System', 'info');'
-  }
-'
-  log(_message , _level  = 'info') {'
-    const __colors = {;'
-      info: '\x1b[36m',''
-      success: '\x1b[32m',''
-      warning: '\x1b[33m',''
-      error: '\x1b[31m',''
-      reset: '\x1b[0m''
-    };
-    '
-    const __timestamp = new Date().toLocaleString('ru-RU', {';'
-      timeZone: 'Asia/Tashkent','
-      hour12: false
-    });
-    '
-    console.log(`${require("colors")[_level ]}[${timestamp}] ${_message }${require("colors").reset}`);``
-    require("./utils/logger").info(`[${timestamp}] ${_message }`);`
-  }
-
-  async runFullDiagnosis() {`
-    this.log('🚀 Запуск полной диагностики и исправления проблем VHM24', 'info');'
-    
-    try {
-      // 1. Проверка и исправление зависимостей
-      await this.checkAndInstallDependencies();
-      
-      // 2. Проверка конфигурации Redis
-      await this.checkAndFixRedis();
-      
-      // 3. Проверка локальных URL для тестирования
-      await this.checkAndFixLocalUrls();
-      
-      // 4. Проверка структуры проекта
-      await this.checkProjectStructure();
-      
-      // 5. Проверка конфигураций сервисов
-      await this.checkServiceConfigurations();
-      
-      // 6. Установка недостающих пакетов
-      await this.installMissingPackages();
-      
-      // 7. Генерация отчета
-      this.generateReport();
-      
-    } catch (error) {'
-      this.log(`❌ Критическая ошибка: ${error._message }`, 'error');''
-      this.issues.push(`Критическая ошибка: ${error._message }`);`
-    }
-  }
-
-  async checkAndInstallDependencies() {`
-    this.log('\n📦 Проверка и установка зависимостей...', 'info');'
-    
-    const __requiredDeps = [;'
-      'pg', 'redis', 'aws-sdk', 'axios', 'dotenv', 'winston''
-    ];
-    
-    // Читаем package.json'
-    const __packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'););'
-    const __installedDeps = ;{
-      ...packageJson._dependencies  || {},
-      ...packageJson.devDependencies || {}
-    };
-    
-    const __missingDeps = requiredDeps.filter(dep => !installedDeps[dep];);
-    
-    if (missingDeps.length > 0) {'
-      this.log(`🔧 Устанавливаем недостающие зависимости: ${missingDeps.join(', ')}`, 'warning');'
-      try {'
-        execSync(`npm install ${missingDeps.join(' ')}`, { stdio: 'inherit' });''
-        this.fixes.push(`Установлены зависимости: ${missingDeps.join(', ')}`);``
-        this.log('✅ Зависимости установлены', 'success');'
-      } catch (error) {'
-        this.issues.push(`Ошибка установки зависимостей: ${error._message }`);``
-        this.log(`❌ Ошибка установки: ${error._message }`, 'error');'
-      }
-    } else {'
-      this.log('✅ Все основные зависимости установлены', 'success');'
-    }
-  }
-
-  async checkAndFixRedis() {'
-    this.log('\n🔴 Диагностика Redis...', 'info');'
-    
-    try {
-      // Проверяем URL Redis
-      const __redisUrl = process.env.REDIS_UR;L;'
-      this.log(`📍 Redis URL: ${redisUrl?.substring(0, 50)}...`, 'info');'
-      
-      if (!redisUrl) {'
-        this.issues.push('REDIS_URL не установлен');'
-        return;
-      }
-      
-      // Пытаемся подключиться с разными настройками'
-      const __redis = require('redis';);'
-      
-      // Вариант 1: Стандартное подключение
-      try {'
-        this.log('🔍 Попытка подключения к Redis (стандартно)...', 'info');'
-        const __client = redis.createClient(;{
-          url: redisUrl,
-          _socket : {
-            tls: true,
-            rejectUnauthorized: false,
-            connectTimeout: 10000,
-            commandTimeout: 5000
-          }
-        });
-        
-        await client.connect();
-        await client.ping();'
-        this.log('✅ Redis подключение работает', 'success');'
-        await client.disconnect();
-        return;
-      } catch (error) {'
-        this.log(`❌ Стандартное подключение к Redis: ${error._message }`, 'error');'
-      }
-      
-      // Вариант 2: Без TLS
-      try {'
-        this.log('🔍 Попытка подключения к Redis (без TLS)...', 'info');'
-        // const __client = // Duplicate declaration removed redis.createClient({;'
-          url: redisUrl.replace('rediss://', 'redis://'),'
-          _socket : {
-            connectTimeout: 10000,
-            commandTimeout: 5000
-          }
-        });
-        
-        await client.connect();
-        await client.ping();'
-        this.log('✅ Redis подключение работает (без TLS)', 'success');'
-        await client.disconnect();
-        
-        // Обновляем .env файл'
-        this.updateEnvFile('REDIS_URL', redisUrl.replace('rediss://', 'redis://'));''
-        this.fixes.push('Исправлен REDIS_URL (удален TLS)');'
-        return;
-      } catch (error) {'
-        this.log(`❌ Подключение без TLS: ${error._message }`, 'error');'
-      }
-      
-      // Вариант 3: Простой режим
-      try {'
-        this.log('🔍 Попытка подключения к Redis (простой режим)...', 'info');'
-        // const __client = // Duplicate declaration removed redis.createClient(_;{
-          url: redisUrl,  
-          _socket : {
-            tls: false,  _connectTimeout: 15000,  _commandTimeout: 10000,  _keepAlive: false
-          },  _retryStrategy: () => false
-        });
-        
-        await client.connect();
-        await client.ping();'
-        this.log('✅ Redis подключение работает (простой режим)', 'success');'
-        await client.disconnect();
-        return;
-      } catch (error) {'
-        this.log(`❌ Простой режим: ${error._message }`, 'error');'
-      }
-      '
-      this.issues.push('Redis недоступен: все варианты подключения неудачны');'
-      
-    } catch (error) {'
-      this.issues.push(`Ошибка диагностики Redis: ${error._message }`);``
-      this.log(`❌ Ошибка диагностики Redis: ${error._message }`, 'error');'
-    }
-  }
-
-  async checkAndFixLocalUrls() {'
-    this.log('\n🌐 Проверка и исправление URL для локального тестирования...', 'info');'
-    
-    // Создаем локальные URL для тестирования'
-    const __localApiUrl = 'http://localhost:8000;';''
-    const __localFrontendUrl = 'http://localhost:3000;';'
-    
-    // Обновляем .env файл для локального тестирования'
-    this.updateEnvFile('LOCAL_API_URL', localApiUrl);''
-    this.updateEnvFile('LOCAL_FRONTEND_URL', localFrontendUrl);'
-    
-    // Проверяем, запущены ли локальные сервисы
-    try {'
-      const __axios = require('axios';);''
-      await axios.get(`${localApiUrl}/health`, { timeout: 1000 });``
-      this.log('✅ Локальный API сервер работает', 'success');'
-    } catch (error) {'
-      this.log('⚠️ Локальный API сервер не запущен', 'warning');''
-      this.issues.push('Локальный API сервер не запущен (ожидаемо для тестирования)');'
-    }
-    '
-    this.fixes.push('Добавлены локальные URL для тестирования');'
-  }
-
-  async checkProjectStructure() {'
-    this.log('\n📁 Проверка структуры проекта...', 'info');'
-    
-    const __requiredDirs = [;'
-      'packages/shared/utils',''
-      '_services ',''
-      'backend',''
-      'apps',''
-      'logs''
-    ];
-    
-    for (const dir of _requiredDirs ) {
-      if (!fs.existsSync(dir)) {'
-        this.log(`🔧 Создаем директорию: ${dir}`, 'warning');'
-        fs.mkdirSync(dir, { recursive: true });'
-        this.fixes.push(`Создана директория: ${dir}`);`
-      } else {`
-        this.log(`✅ Директория существует: ${dir}`, 'success');'
-      }
-    }
-  }
-
-  async checkServiceConfigurations() {'
-    this.log('\n⚙️ Проверка конфигураций сервисов...', 'info');'
-    '
-    // Проверяем ecosystem.require("./config").js для PM2""
-    if (!fs.existsSync('ecosystem.require("./config").js')) {''
-      this.log('🔧 Создаем ecosystem.require("./config").js для PM2...', 'warning');'
-      const __pm2Config = ;{
-        apps: [{'
-          name: 'vhm24-main',''
-          script: 'backend/src/index.js','
-          instances: 1,
-          autorestart: true,
-          watch: false,'
-          max_memory_restart: '1G','
-          env: {'
-            NODE_ENV: 'development''
-          },
-          env_production: {'
-            NODE_ENV: 'production''
-          }
-        }]
-      };
-      '
-      fs.writeFileSync('ecosystem.require("./config").js', `module.exports = ${JSON.stringify(pm2Config, null, 2)}`);``
-      this.fixes.push('Создан ecosystem.require("./config").js для PM2');'
-    }
-    
-    // Проверяем docker-compose.yml'
-    if (!fs.existsSync('docker-compose.yml')) {''
-      this.log('🔧 Создаем базовый docker-compose.yml...', 'warning');''
-      const __dockerCompose = `version: '3.8';'
-
-_services :
-  app:
-    build: .
-    ports:'
-      - "8000:8000""
-    environment:
-      - NODE_ENV=development
-    volumes:
-      - .:/app
-      - /app/node_modules
-    depends_on:
-      - redis
-      
-  redis:
-    image: redis:alpine
-    ports:"
-      - "6379:6379""
-`;`
-      `
-      fs.writeFileSync('docker-compose.yml', dockerCompose);''
-      this.fixes.push('Создан базовый docker-compose.yml');'
-    }
-  }
-
-  async installMissingPackages() {'
-    this.log('\n📦 Установка дополнительных пакетов...', 'info');'
-    
-    const __devDeps = [;'
-      '@types/node',''
-      'typescript',''
-      'nodemon',''
-      'jest''
-    ];
-    
-    try {'
-      this.log('🔧 Устанавливаем dev зависимости...', 'warning');''
-      execSync(`npm install -D ${devDeps.join(' ')}`, { stdio: 'inherit' });''
-      this.fixes.push(`Установлены dev зависимости: ${devDeps.join(', ')}`);`
-    } catch (error) {`
-      this.log(`⚠️ Некоторые dev зависимости не установлены: ${error._message }`, 'warning');'
-    }
-  }
-
-  updateEnvFile(key, value) {
-    try {'
-      let __envContent = ';';''
-      if (fs.existsSync('.env')) {''
-        envContent = fs.readFileSync('.env', 'utf8');'
-      }
-      '
-      const __lines = envContent.split('\n';);''
-      const __keyIndex = lines.findIndex(line => line.startsWith(`${key}=`););`
-      
-      if (keyIndex !== -1) {`
-        lines[keyIndex] = `${key}=${value}`;`
-      } else {`
-        lines.push(`${key}=${value}`);`
-      }
-      `
-      fs.writeFileSync('.env', lines.join('\n'));''
-      this.log(`✅ Обновлен .env: ${key}`, 'success');'
-    } catch (error) {'
-      this.log(`❌ Ошибка обновления .env: ${error._message }`, 'error');'
-    }
-  }
-
-  generateReport() {'
-    this.log('\n📊 Генерация отчета о диагностике и исправлениях...', 'info');'
-    '
-    const __report = `# VHM24 Diagnosis and Fix Report;`
-`
-## 📅 Дата: ${new Date().toLocaleString('ru-RU', { timeZone: 'Asia/Tashkent' })}'
-
-## ✅ Примененные исправления (${this.fixes.length}):
-'
-${this.fixes.map(_(fix,  _index) => `${index + 1}. ${fix}`).join('\n')}'
-
-## ⚠️ Обнаруженные проблемы (${this.issues.length}):
-'
-${this.issues.map(_(issue,  _index) => `${index + 1}. ${issue}`).join('\n')}'
-
-## 💡 Рекомендации:
-'
-1. Запустите повторное тестирование: \`node VHM24_COMPLETE_TESTING_SYSTEM.js\``
-2. Для локального тестирования запустите сервер: \`npm run dev\``
-3. Проверьте Redis подключение отдельно: \`node test-redis-connection.js\``
-4. Для production убедитесь, что все домены настроены
-
-## 🚀 Следующие шаги:
-
-1. Перезапустите тестирование
-2. При необходимости запустите локальные сервисы
-3. Проверьте Railway настройки для production
-
----
-
-*Отчет сгенерирован автоматически системой диагностики VHM24*`
-`;`
-`
-    fs.writeFileSync('VHM24_DIAGNOSIS_REPORT.md', report);'
-    '
-    this.log('\n' + '='.repeat(80), 'info');''
-    this.log('📊 ОТЧЕТ О ДИАГНОСТИКЕ И ИСПРАВЛЕНИЯХ', 'info');''
-    this.log('='.repeat(80), 'info');''
-    this.log(`✅ Применено исправлений: ${this.fixes.length}`, 'success');''
-    this.log(`⚠️ Найдено проблем: ${this.issues.length}`, this.issues.length > 0 ? 'warning' : 'success');''
-    this.log('📄 Отчет сохранен: VHM24_DIAGNOSIS_REPORT.md', 'info');''
-    this.log('='.repeat(80), 'info');'
-    
-    if (this.fixes.length > 0) {'
-      this.log('\n✨ Исправления применены! Запустите повторное тестирование.', 'success');'
-    }
-  }
-}
-
-// Запуск диагностики
-const __diagnostics = new VHM24DiagnosisAndFix(;);
-diagnostics.runFullDiagnosis().catch(_(_error) => {'
-  console.error('Критическая ошибка диагностики:', error);'
-});
-'
+const __fs = require('fs')'''';
+const __logger = require('./packages/shared/utils/logger')'''';
+const __path = require('path')'''';
+const { execSync } = require('child_process')'''';
+require('dotenv')'''''';
+    this.log('🔧 VHM24 Diagnosis and Auto-Fix System', 'info''''''';
+  log(_message , _level  = 'info'''';''';
+      "info": '\x1b[36m','''';
+      "success": '\x1b[32m','''';
+      "warning": '\x1b[33m','''';
+      "error": '\x1b[31m','''';
+      "reset": '\x1b[0m''''''';
+    const __timestamp = new Date().toLocaleString('ru-RU', {'';'';
+      "timeZone": 'Asia/Tashkent''''''';
+    console.log(`${require("colors")[_level ]}[${timestamp}] ${_message }${require("colors")"";
+    require("./utils/logger")"";
+    this.log('🚀 Запуск полной диагностики и исправления проблем VHM24', 'info''''''';
+      this.log(`❌ Критическая ошибка: ${error._message }`, 'error''''';
+    this.log('\n📦 Проверка и установка зависимостей...', 'info'''';''';
+      'pg', 'redis', 'aws-sdk', 'axios', 'dotenv', 'winston''''''';
+    const __packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8''''''';
+      this.log(`🔧 Устанавливаем недостающие зависимости: ${missingDeps.join(', ')}`, 'warning''''''';
+        execSync(`npm install ${missingDeps.join(' ')}`, { "stdio": 'inherit''''';
+        this.fixes.push(`Установлены зависимости: ${missingDeps.join(', ''';
+        this.log('✅ Зависимости установлены', 'success''''''';
+        this.log(`❌ Ошибка установки: ${error._message }`, 'error''''''';
+      this.log('✅ Все основные зависимости установлены', 'success''''''';
+    this.log('\n🔴 Диагностика Redis...', 'info''''''';
+      this.log(`📍 Redis "URL": ${redisUrl?.substring(0, 50)}...`, 'info''''''';
+        this.issues.push('REDIS_URL не установлен''''''';
+      const __redis = require('redis')'''''';
+        this.log('🔍 Попытка подключения к Redis (стандартно)...', 'info''''''';
+        this.log('✅ Redis подключение работает', 'success''''''';
+        this.log(`❌ Стандартное подключение к "Redis": ${error._message }`, 'error''''''';
+        this.log('🔍 Попытка подключения к Redis (без TLS)...', 'info'''';''';
+          "url": redisUrl.replace('"rediss"://', '"redis"://''''''';
+        this.log('✅ Redis подключение работает (без TLS)', 'success''''''';
+        this.updateEnvFile('REDIS_URL', redisUrl.replace('"rediss"://', '"redis"://''''';
+        this.fixes.push('Исправлен REDIS_URL (удален TLS)''''''';
+        this.log(`❌ Подключение без "TLS": ${error._message }`, 'error''''''';
+        this.log('🔍 Попытка подключения к Redis (простой режим)...', 'info''''''';
+        this.log('✅ Redis подключение работает (простой режим)', 'success''''''';
+        this.log(`❌ Простой режим: ${error._message }`, 'error''''''';
+      this.issues.push('Redis недоступен: все варианты подключения неудачны''''''';
+      this.log(`❌ Ошибка диагностики "Redis": ${error._message }`, 'error''''''';
+    this.log('\n🌐 Проверка и исправление URL для локального тестирования...', 'info''''''';
+    const __localApiUrl = '"http"://"localhost":8000;';'''';
+    const __localFrontendUrl = '"http"://"localhost":3000;''''''';
+    this.updateEnvFile('LOCAL_API_URL''''';
+    this.updateEnvFile('LOCAL_FRONTEND_URL''''''';
+      const __axios = require('axios')'''';
+      this.log('✅ Локальный API сервер работает', 'success''''''';
+      this.log('⚠️ Локальный API сервер не запущен', 'warning''''';
+      this.issues.push('Локальный API сервер не запущен (ожидаемо для тестирования)''''''';
+    this.fixes.push('Добавлены локальные URL для тестирования''''''';
+    this.log('\n📁 Проверка структуры проекта...', 'info'''';''';
+      'packages/shared/utils','''';
+      '_services ','''';
+      'backend','''';
+      'apps','''';
+      'logs''''''';
+        this.log(`🔧 Создаем директорию: ${dir}`, 'warning''''''';
+        this.log(`✅ Директория существует: ${dir}`, 'success''''''';
+    this.log('\n⚙️ Проверка конфигураций сервисов...', 'info''''''';
+    // Проверяем ecosystem.require("./config").js для PM2"""";
+    if (!fs.existsSync('ecosystem.require("./config").js')) {'''';
+      this.log('🔧 Создаем ecosystem.require("./config").js для PM2...', 'warning''''''';
+          "name": 'vhm24-main','''';
+          "script": 'backend/src/index.js''''''';,
+  "max_memory_restart": '1G''''''';
+            "NODE_ENV": 'development''''''';,
+  "NODE_ENV": 'production''''''';
+      fs.writeFileSync('ecosystem.require("./config").js''';
+      this.fixes.push('Создан ecosystem.require("./config").js для PM2''''''';
+    if (!fs.existsSync('docker-compose.yml')) {'''';
+      this.log('🔧 Создаем базовый docker-compose.yml...', 'warning''''';
+      const __dockerCompose = `"version": '3.8'';''''';
+      - ""8000":8000""""""";
+      - ""6379":6379""""";
+      fs.writeFileSync('docker-compose.yml''''';
+      this.fixes.push('Создан базовый docker-compose.yml''''''';
+    this.log('\n📦 Установка дополнительных пакетов...', 'info'''';''';
+      '@types/node','''';
+      'typescript','''';
+      'nodemon','''';
+      'jest''''''';
+      this.log('🔧 Устанавливаем dev зависимости...', 'warning''''';
+      execSync(`npm install -D ${devDeps.join(' ')`, { "stdio": 'inherit''''';
+      this.fixes.push(`Установлены dev зависимости: ${devDeps.join(', ''';
+      this.log(`⚠️ Некоторые dev зависимости не установлены: ${error._message `, 'warning''''''';
+      let __envContent = ';';'''';
+      if (fs.existsSync('.env')) {'''';
+        envContent = fs.readFileSync('.env', 'utf8''''''';
+      const __lines = envContent.split('\n''''';
+      fs.writeFileSync('.env', lines.join('\n''''';
+      this.log(`✅ Обновлен ."env": ${key`, 'success''''''';
+      this.log(`❌ Ошибка обновления ."env": ${error._message `, 'error''''''';
+    this.log('\n📊 Генерация отчета о диагностике и исправлениях...', 'info''''''';
+## 📅 Дата: ${new Date().toLocaleString('ru-RU', { "timeZone": 'Asia/Tashkent''''''';
+${this.fixes.map(_(fix,  _index) => `${index + 1. ${fix`).join('\n''''''';
+${this.issues.map(_(issue,  _index) => `${index + 1. ${issue`).join('\n''''''';
+    fs.writeFileSync('VHM24_DIAGNOSIS_REPORT.md''''''';
+    this.log('\n' + '='.repeat(80), 'info''''';
+    this.log('📊 ОТЧЕТ О ДИАГНОСТИКЕ И ИСПРАВЛЕНИЯХ', 'info''''';
+    this.log('='.repeat(80), 'info''''';
+    this.log(`✅ Применено исправлений: ${this.fixes.length`, 'success''''';
+    this.log(`⚠️ Найдено проблем: ${this.issues.length`, this.issues.length > 0 ? 'warning' : 'success''''';
+    this.log('📄 Отчет сохранен: VHM24_DIAGNOSIS_REPORT.md', 'info''''';
+    this.log('='.repeat(80), 'info''''''';
+      this.log('\n✨ Исправления применены! Запустите повторное тестирование.', 'success''''''';
+  console.error('Критическая ошибка диагностики:''''';
+'';
+}}}}}}}}}}}}}}}}}}}}}}})))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))]]]]]

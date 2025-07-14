@@ -109,55 +109,55 @@ interface IncompleteDataStats {
 }
 
 export default function AuditPage() {
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
-  const [incompleteData, setIncompleteData] = useState<IncompleteData[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]
+  const [incompleteData, setIncompleteData] = useState<IncompleteData[]>([]
   const [activityStats, setActivityStats] = useState<ActivityStats | null>(
     null
-  );
+  
   const [incompleteStats, setIncompleteStats] =
-    useState<IncompleteDataStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+    useState<IncompleteDataStats | null>(null
+  const [loading, setLoading] = useState(true
+  const [error, setError] = useState<string | null>(null
 
   // Фильтры
   const [auditFilters, setAuditFilters] = useState({
-    action: '',
+    action: ',
     entity: '',
-    userId: '',
+    userId: ',
     dateFrom: '',
-    dateTo: ''
-  });
+    dateTo: '
+  }
 
   const [incompleteFilters, setIncompleteFilters] = useState({
     entity: '',
-    status: '',
+    status: ',
     completionRateMin: '',
-    completionRateMax: ''
-  });
+    completionRateMax: '
+  }
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1
+  const [totalPages, setTotalPages] = useState(1
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData(
+  }, []
 
   const loadData = async () => {
-    setLoading(true);
-    setError(null);
+    setLoading(true
+    setError(null
 
     try {
       await Promise.all([
         loadAuditLogs(),
         loadIncompleteData(),
         loadActivityStats(),
-        loadIncompleteStats()
-      ]);
+        loadIncompleteStats(
+      ]
     } catch (err) {
-      setError('Ошибка при загрузке данных');
-      console.error('Error loading audit data:', err);
+      setError('Ошибка при загрузке данных'
+      console.error('Error loading audit data:', err
     } finally {
-      setLoading(false);
+      setLoading(false
     }
   };
 
@@ -165,15 +165,15 @@ export default function AuditPage() {
     const params = new URLSearchParams({
       page: currentPage.toString(),
       limit: '20',
-      ...Object.fromEntries(Object.entries(auditFilters).filter(([_, v]) => v))
-    });
+      ...Object.fromEntries(Object.entries(auditFilters).filter(([_, v]) => v)
+    }
 
-    const response = await fetch(`/api/audit/logs?${params}`);
-    if (!response.ok) throw new Error('Failed to load audit logs');
+    const response = await fetch(`/api/audit/logs?${params}`
+    if (!response.ok) throw new Error('Failed to load audit logs'
 
-    const data = await response.json();
-    setAuditLogs(data.logs);
-    setTotalPages(data.pagination.pages);
+    const data = await response.json(
+    setAuditLogs(data.logs
+    setTotalPages(data.pagination.pages
   };
 
   const loadIncompleteData = async () => {
@@ -181,63 +181,63 @@ export default function AuditPage() {
       page: '1',
       limit: '20',
       ...Object.fromEntries(
-        Object.entries(incompleteFilters).filter(([_, v]) => v)
-      )
-    });
+        Object.entries(incompleteFilters).filter(([_, v]) => v
+      
+    }
 
-    const response = await fetch(`/api/incomplete-data?${params}`);
-    if (!response.ok) throw new Error('Failed to load incomplete data');
+    const response = await fetch(`/api/incomplete-data?${params}`
+    if (!response.ok) throw new Error('Failed to load incomplete data'
 
-    const data = await response.json();
-    setIncompleteData(data.incompleteData);
+    const data = await response.json(
+    setIncompleteData(data.incompleteData
   };
 
   const loadActivityStats = async () => {
     const dateFrom =
       auditFilters.dateFrom ||
-      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    const dateTo = auditFilters.dateTo || new Date().toISOString();
+      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(
+    const dateTo = auditFilters.dateTo || new Date().toISOString(
 
     const response = await fetch(
       `/api/audit/stats/activity?dateFrom=${dateFrom}&dateTo=${dateTo}`
-    );
-    if (!response.ok) throw new Error('Failed to load activity stats');
+    
+    if (!response.ok) throw new Error('Failed to load activity stats'
 
-    const data = await response.json();
-    setActivityStats(data);
+    const data = await response.json(
+    setActivityStats(data
   };
 
   const loadIncompleteStats = async () => {
-    const response = await fetch('/api/incomplete-data/stats');
-    if (!response.ok) throw new Error('Failed to load incomplete data stats');
+    const response = await fetch('/api/incomplete-data/stats'
+    if (!response.ok) throw new Error('Failed to load incomplete data stats'
 
-    const data = await response.json();
-    setIncompleteStats(data);
+    const data = await response.json(
+    setIncompleteStats(data
   };
 
   const handleExport = async (reportType: string, format: string = 'csv') => {
     try {
-      const params = new URLSearchParams({ format });
-      if (auditFilters.dateFrom)
-        params.append('dateFrom', auditFilters.dateFrom);
-      if (auditFilters.dateTo) params.append('dateTo', auditFilters.dateTo);
+      const params = new URLSearchParams({ format }
+      if (auditFilters.dateFrom
+        params.append('dateFrom', auditFilters.dateFrom
+      if (auditFilters.dateTo) params.append('dateTo', auditFilters.dateTo
 
       const response = await fetch(
         `/api/reports/export/${reportType}?${params}`
-      );
-      if (!response.ok) throw new Error('Failed to export data');
+      
+      if (!response.ok) throw new Error('Failed to export data'
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const blob = await response.blob(
+      const url = window.URL.createObjectURL(blob
+      const a = document.createElement('a'
       a.href = url;
       a.download = `${reportType}-${new Date().toISOString().split('T')[0]}.${format}`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      document.body.appendChild(a
+      a.click(
+      window.URL.revokeObjectURL(url
+      document.body.removeChild(a
     } catch (err) {
-      setError('Ошибка при экспорте данных');
+      setError('Ошибка при экспорте данных'
     }
   };
 
@@ -259,7 +259,7 @@ export default function AuditPage() {
         <Icon className="w-3 h-3 mr-1" />
         {status}
       </Badge>
-    );
+    
   };
 
   const getActionBadge = (action: string) => {
@@ -282,7 +282,7 @@ export default function AuditPage() {
       >
         {action}
       </Badge>
-    );
+    
   };
 
   if (loading) {
@@ -291,7 +291,7 @@ export default function AuditPage() {
         <RefreshCw className="w-8 h-8 animate-spin" />
         <span className="ml-2">Загрузка данных аудита...</span>
       </div>
-    );
+    
   }
 
   return (
@@ -402,7 +402,7 @@ export default function AuditPage() {
                 <Select
                   value={auditFilters.action}
                   onValueChange={value =>
-                    setAuditFilters({ ...auditFilters, action: value })
+                    setAuditFilters({ ...auditFilters, action: value }
                   }
                 >
                   <SelectTrigger>
@@ -422,7 +422,7 @@ export default function AuditPage() {
                   placeholder="Сущность"
                   value={auditFilters.entity}
                   onChange={e =>
-                    setAuditFilters({ ...auditFilters, entity: e.target.value })
+                    setAuditFilters({ ...auditFilters, entity: e.target.value }
                   }
                 />
 
@@ -434,7 +434,7 @@ export default function AuditPage() {
                     setAuditFilters({
                       ...auditFilters,
                       dateFrom: e.target.value
-                    })
+                    }
                   }
                 />
 
@@ -443,7 +443,7 @@ export default function AuditPage() {
                   placeholder="Дата до"
                   value={auditFilters.dateTo}
                   onChange={e =>
-                    setAuditFilters({ ...auditFilters, dateTo: e.target.value })
+                    setAuditFilters({ ...auditFilters, dateTo: e.target.value }
                   }
                 />
 
@@ -527,7 +527,7 @@ export default function AuditPage() {
                     setIncompleteFilters({
                       ...incompleteFilters,
                       entity: e.target.value
-                    })
+                    }
                   }
                 />
 
@@ -537,7 +537,7 @@ export default function AuditPage() {
                     setIncompleteFilters({
                       ...incompleteFilters,
                       status: value
-                    })
+                    }
                   }
                 >
                   <SelectTrigger>
@@ -561,7 +561,7 @@ export default function AuditPage() {
                     setIncompleteFilters({
                       ...incompleteFilters,
                       completionRateMin: e.target.value
-                    })
+                    }
                   }
                 />
 
@@ -755,5 +755,5 @@ export default function AuditPage() {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  
 }

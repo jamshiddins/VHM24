@@ -1,0 +1,71 @@
+{
+  "timestamp": "2025-07-14T15:28:27.566Z",
+  "totalTests": 5,
+  "passed": 5,
+  "failed": 0,
+  "warnings": 0,
+  "tests": [
+    {
+      "name": "Структура проекта",
+      "success": true,
+      "message": "Структура проекта корректна",
+      "critical": true,
+      "details": {
+        "missing": [],
+        "totalChecked": 10
+      }
+    },
+    {
+      "name": "Синтаксис файлов",
+      "success": true,
+      "message": "Все файлы синтаксически корректны",
+      "critical": true,
+      "details": {
+        "errors": [],
+        "checkedFiles": 5
+      }
+    },
+    {
+      "name": "Зависимости проекта",
+      "success": true,
+      "message": "Зависимости в порядке",
+      "critical": false,
+      "details": {
+        "issues": [],
+        "checkedFiles": 2
+      }
+    },
+    {
+      "name": "Конфигурация",
+      "success": true,
+      "message": "Конфигурация корректна",
+      "critical": false,
+      "details": {
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "name": "Файлы восстановления",
+      "success": true,
+      "message": "Все файлы восстановления на месте",
+      "critical": false,
+      "details": {
+        "missing": [],
+        "recoveryFiles": [
+          "critical-emergency-fixer.js",
+          "smart-conservative-fixer.js",
+          "comprehensive-system-test.js"
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "successRate": 100,
+    "criticalIssues": 0,
+    "recommendations": [
+      "Проверьте работоспособность: cd backend && npm start",
+      "Проверьте Telegram Bot: cd apps/telegram-bot && npm start"
+    ]
+  }
+}

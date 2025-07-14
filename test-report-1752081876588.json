@@ -1,0 +1,186 @@
+{
+  "summary": {
+    "total": 25,
+    "passed": 0,
+    "failed": 25,
+    "warnings": 0,
+    "successRate": 0,
+    "totalTime": 3122,
+    "timestamp": "2025-07-09T17:24:36.588Z"
+  },
+  "results": {
+    "services": {
+      "gateway": {
+        "status": "failed",
+        "message": "Service is not responding: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.529Z"
+      },
+      "auth": {
+        "status": "failed",
+        "message": "Service is not responding: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.530Z"
+      },
+      "machines": {
+        "status": "failed",
+        "message": "Service is not responding: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.530Z"
+      },
+      "inventory": {
+        "status": "failed",
+        "message": "Service is not responding: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.531Z"
+      },
+      "tasks": {
+        "status": "failed",
+        "message": "Service is not responding: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.531Z"
+      },
+      "bunkers": {
+        "status": "failed",
+        "message": "Service is not responding: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.531Z"
+      },
+      "notifications": {
+        "status": "failed",
+        "message": "Service is not responding: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.532Z"
+      },
+      "backup": {
+        "status": "failed",
+        "message": "Service is not responding: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.532Z"
+      },
+      "monitoring": {
+        "status": "failed",
+        "message": "Service is not responding: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.533Z"
+      }
+    },
+    "api": {
+      "auth_test": {
+        "status": "failed",
+        "message": "Authentication test failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.535Z"
+      },
+      "GET /health": {
+        "status": "failed",
+        "message": "Request failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.537Z"
+      },
+      "GET /api/v1/test-db": {
+        "status": "failed",
+        "message": "Request failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.538Z"
+      },
+      "GET /api/v1/dashboard/stats": {
+        "status": "failed",
+        "message": "Request failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.540Z"
+      },
+      "GET /api/v1/machines": {
+        "status": "failed",
+        "message": "Request failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.541Z"
+      },
+      "GET /api/v1/machines/stats": {
+        "status": "failed",
+        "message": "Request failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.543Z"
+      }
+    },
+    "database": {
+      "connection": {
+        "status": "failed",
+        "message": "Database test failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.545Z"
+      },
+      "performance": {
+        "status": "failed",
+        "message": "Performance test failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.548Z"
+      }
+    },
+    "security": {
+      "headers": {
+        "status": "failed",
+        "message": "Security headers test failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.550Z"
+      },
+      "rate_limiting": {
+        "status": "failed",
+        "message": "Rate limiting test failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.565Z"
+      },
+      "authorization": {
+        "status": "failed",
+        "message": "Authorization test failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.571Z"
+      }
+    },
+    "performance": {
+      "health_check": {
+        "status": "failed",
+        "message": "Performance test failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.573Z"
+      },
+      "database_test": {
+        "status": "failed",
+        "message": "Performance test failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.574Z"
+      },
+      "concurrent_requests": {
+        "status": "failed",
+        "message": "Concurrent requests test failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.582Z"
+      }
+    },
+    "integration": {
+      "service_communication": {
+        "status": "failed",
+        "message": "Service communication test failed: ",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.585Z"
+      },
+      "websocket_availability": {
+        "status": "failed",
+        "message": "WebSocket endpoint not available",
+        "data": null,
+        "timestamp": "2025-07-09T17:24:36.587Z"
+      }
+    },
+    "summary": {
+      "total": 25,
+      "passed": 0,
+      "failed": 25,
+      "warnings": 0
+    }
+  },
+  "environment": {
+    "nodeVersion": "v22.17.0",
+    "platform": "win32",
+    "baseUrl": "http://localhost:8000"
+  }
+}

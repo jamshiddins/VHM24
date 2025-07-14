@@ -9,7 +9,7 @@ interface LogoProps {
 export default function Logo({
   size = 40,
   showText = true,
-  className = ''
+  className = '
 }: LogoProps) {
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
@@ -70,5 +70,5 @@ export default function Logo({
         </div>
       )}
     </div>
-  );
+  
 }

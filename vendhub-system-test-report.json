@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-07-14T17:19:42.948Z",
+  "results": {
+    "Environment Variables": true,
+    "Project Structure": true,
+    "Dependencies": true,
+    "Prisma Schema": false,
+    "Railway Config": true,
+    "API Routes": true,
+    "Telegram Bot": true,
+    "Documentation": true
+  },
+  "summary": {
+    "total": 8,
+    "passed": 7,
+    "failed": 1
+  }
+}

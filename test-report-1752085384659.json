@@ -1,0 +1,245 @@
+{
+  "summary": {
+    "total": 25,
+    "passed": 19,
+    "failed": 2,
+    "warnings": 4,
+    "successRate": 76,
+    "totalTime": 8079,
+    "timestamp": "2025-07-09T18:23:04.659Z"
+  },
+  "results": {
+    "services": {
+      "backup": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "backup",
+          "storage": {
+            "s3": "not configured",
+            "local": "available"
+          },
+          "schedule": "0 2 * * *"
+        },
+        "timestamp": "2025-07-09T18:22:56.675Z"
+      },
+      "inventory": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "inventory"
+        },
+        "timestamp": "2025-07-09T18:22:56.681Z"
+      },
+      "auth": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "auth"
+        },
+        "timestamp": "2025-07-09T18:22:56.683Z"
+      },
+      "machines": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "machines"
+        },
+        "timestamp": "2025-07-09T18:22:56.685Z"
+      },
+      "monitoring": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "monitoring",
+          "metrics": {
+            "prometheus": "enabled",
+            "endpoint": "/metrics"
+          }
+        },
+        "timestamp": "2025-07-09T18:22:56.687Z"
+      },
+      "tasks": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "tasks"
+        },
+        "timestamp": "2025-07-09T18:22:56.688Z"
+      },
+      "bunkers": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "bunkers",
+          "description": "VHM24 Bunkers Service - 24/7 Operation",
+          "uptime": 67.1754178
+        },
+        "timestamp": "2025-07-09T18:22:56.691Z"
+      },
+      "notifications": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "notifications",
+          "channels": {
+            "email": "not configured",
+            "telegram": "configured",
+            "push": "not configured"
+          }
+        },
+        "timestamp": "2025-07-09T18:22:56.693Z"
+      },
+      "gateway": {
+        "status": "passed",
+        "message": "Service is healthy (200)",
+        "data": {
+          "status": "ok",
+          "service": "gateway",
+          "services": {
+            "auth": "ok",
+            "machines": "ok",
+            "inventory": "ok",
+            "tasks": "ok",
+            "bunkers": "ok",
+            "notifications": "ok"
+          },
+          "database": "supabase",
+          "dbStatus": "connected",
+          "timestamp": "2025-07-09T18:22:57.772Z"
+        },
+        "timestamp": "2025-07-09T18:22:57.776Z"
+      }
+    },
+    "api": {
+      "auth_register": {
+        "status": "failed",
+        "message": "Registration failed (200)",
+        "data": null,
+        "timestamp": "2025-07-09T18:22:58.804Z"
+      },
+      "GET /health": {
+        "status": "passed",
+        "message": "Endpoint responded successfully (200)",
+        "data": null,
+        "timestamp": "2025-07-09T18:22:58.925Z"
+      },
+      "GET /api/v1/test-db": {
+        "status": "passed",
+        "message": "Endpoint responded successfully (200)",
+        "data": null,
+        "timestamp": "2025-07-09T18:22:59.951Z"
+      },
+      "GET /api/v1/dashboard/stats": {
+        "status": "warning",
+        "message": "Authentication required (401)",
+        "data": null,
+        "timestamp": "2025-07-09T18:22:59.954Z"
+      },
+      "GET /api/v1/machines": {
+        "status": "warning",
+        "message": "Authentication required (401)",
+        "data": null,
+        "timestamp": "2025-07-09T18:22:59.961Z"
+      },
+      "GET /api/v1/machines/stats": {
+        "status": "warning",
+        "message": "Authentication required (401)",
+        "data": null,
+        "timestamp": "2025-07-09T18:22:59.966Z"
+      }
+    },
+    "database": {
+      "connection": {
+        "status": "passed",
+        "message": "Database connection successful",
+        "data": {
+          "machines": 0,
+          "tasks": 0,
+          "users": 2,
+          "database": "connected"
+        },
+        "timestamp": "2025-07-09T18:23:00.164Z"
+      },
+      "performance": {
+        "status": "failed",
+        "message": "Performance test failed: Request failed with status code 401",
+        "data": null,
+        "timestamp": "2025-07-09T18:23:00.170Z"
+      }
+    },
+    "security": {
+      "headers": {
+        "status": "passed",
+        "message": "All security headers present",
+        "data": null,
+        "timestamp": "2025-07-09T18:23:00.384Z"
+      },
+      "rate_limiting": {
+        "status": "warning",
+        "message": "Rate limiting not detected (may be configured with high limits)",
+        "data": null,
+        "timestamp": "2025-07-09T18:23:01.739Z"
+      },
+      "authorization": {
+        "status": "passed",
+        "message": "All protected endpoints require authentication",
+        "data": null,
+        "timestamp": "2025-07-09T18:23:01.749Z"
+      }
+    },
+    "performance": {
+      "health_check": {
+        "status": "passed",
+        "message": "Good performance: avg 108ms, max 109ms",
+        "data": null,
+        "timestamp": "2025-07-09T18:23:02.827Z"
+      },
+      "database_test": {
+        "status": "passed",
+        "message": "Good performance: avg 191ms, max 223ms",
+        "data": null,
+        "timestamp": "2025-07-09T18:23:04.297Z"
+      },
+      "concurrent_requests": {
+        "status": "passed",
+        "message": "Handled 10 concurrent requests in 252ms",
+        "data": null,
+        "timestamp": "2025-07-09T18:23:04.549Z"
+      }
+    },
+    "integration": {
+      "service_communication": {
+        "status": "passed",
+        "message": "Gateway can communicate with backend services",
+        "data": null,
+        "timestamp": "2025-07-09T18:23:04.551Z"
+      },
+      "websocket_availability": {
+        "status": "passed",
+        "message": "WebSocket endpoint should be available (gateway is running)",
+        "data": null,
+        "timestamp": "2025-07-09T18:23:04.658Z"
+      }
+    },
+    "summary": {
+      "total": 25,
+      "passed": 19,
+      "failed": 2,
+      "warnings": 4
+    }
+  },
+  "environment": {
+    "nodeVersion": "v22.17.0",
+    "platform": "win32",
+    "baseUrl": "http://localhost:8000"
+  }
+}

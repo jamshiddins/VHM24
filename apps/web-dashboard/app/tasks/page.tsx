@@ -62,44 +62,44 @@ interface TaskTemplate {
 }
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [templates, setTemplates] = useState<TaskTemplate[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [selectedPriority, setSelectedPriority] = useState('');
-  const [selectedAssignee, setSelectedAssignee] = useState('');
+  const [tasks, setTasks] = useState<Task[]>([]
+  const [templates, setTemplates] = useState<TaskTemplate[]>([]
+  const [loading, setLoading] = useState(true
+  const [searchTerm, setSearchTerm] = useState('
+  const [selectedType, setSelectedType] = useState(''
+  const [selectedStatus, setSelectedStatus] = useState('
+  const [selectedPriority, setSelectedPriority] = useState(''
+  const [selectedAssignee, setSelectedAssignee] = useState('
   const [activeTab, setActiveTab] = useState<
     'tasks' | 'templates' | 'calendar'
-  >('tasks');
-  const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
-  const [showCreateTemplateModal, setShowCreateTemplateModal] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  >('tasks'
+  const [showCreateTaskModal, setShowCreateTaskModal] = useState(false
+  const [showCreateTemplateModal, setShowCreateTemplateModal] = useState(false
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null
 
   // Form state
   const [taskFormData, setTaskFormData] = useState({
-    title: '',
+    title: ',
     description: '',
     type: 'MAINTENANCE' as Task['type'],
     priority: 'MEDIUM' as Task['priority'],
     assignedToId: 0,
     machineId: 0,
-    dueDate: '',
+    dueDate: ',
     estimatedDuration: 60,
     notes: ''
-  });
+  }
 
   const [templateFormData, setTemplateFormData] = useState({
-    name: '',
+    name: ',
     description: '',
     type: 'MAINTENANCE',
     estimatedDuration: 60,
     priority: 'MEDIUM',
-    instructions: '',
+    instructions: ',
     requiredTools: [] as string[],
     checklistItems: [] as string[]
-  });
+  }
 
   const taskTypes = [
     { value: '', label: 'Все типы' },
@@ -112,7 +112,7 @@ export default function TasksPage() {
   ];
 
   const statusOptions = [
-    { value: '', label: 'Все статусы' },
+    { value: ', label: 'Все статусы' },
     { value: 'PENDING', label: 'Ожидает' },
     { value: 'IN_PROGRESS', label: 'В работе' },
     { value: 'COMPLETED', label: 'Завершено' },
@@ -121,7 +121,7 @@ export default function TasksPage() {
   ];
 
   const priorityOptions = [
-    { value: '', label: 'Все приоритеты' },
+    { value: ', label: 'Все приоритеты' },
     { value: 'LOW', label: 'Низкий' },
     { value: 'MEDIUM', label: 'Средний' },
     { value: 'HIGH', label: 'Высокий' },
@@ -129,33 +129,33 @@ export default function TasksPage() {
   ];
 
   useEffect(() => {
-    fetchTasks();
-    fetchTemplates();
-  }, []);
+    fetchTasks(
+    fetchTemplates(
+  }, []
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch('/api/v1/tasks');
-      const data = await response.json();
+      const response = await fetch('/api/v1/tasks'
+      const data = await response.json(
       if (data.success) {
-        setTasks(data.data);
+        setTasks(data.data
       }
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      console.error('Error fetching tasks:', error
     } finally {
-      setLoading(false);
+      setLoading(false
     }
   };
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch('/api/v1/tasks/templates');
-      const data = await response.json();
+      const response = await fetch('/api/v1/tasks/templates'
+      const data = await response.json(
       if (data.success) {
-        setTemplates(data.data);
+        setTemplates(data.data
       }
     } catch (error) {
-      console.error('Error fetching templates:', error);
+      console.error('Error fetching templates:', error
     }
   };
 
@@ -166,17 +166,17 @@ export default function TasksPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(taskFormData)
-      });
+        body: JSON.stringify(taskFormData
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
-        setTasks([data.data, ...tasks]);
-        setShowCreateTaskModal(false);
-        resetTaskForm();
+        setTasks([data.data, ...tasks]
+        setShowCreateTaskModal(false
+        resetTaskForm(
       }
     } catch (error) {
-      console.error('Error creating task:', error);
+      console.error('Error creating task:', error
     }
   };
 
@@ -187,17 +187,17 @@ export default function TasksPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(templateFormData)
-      });
+        body: JSON.stringify(templateFormData
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
-        setTemplates([data.data, ...templates]);
-        setShowCreateTemplateModal(false);
-        resetTemplateForm();
+        setTemplates([data.data, ...templates]
+        setShowCreateTemplateModal(false
+        resetTemplateForm(
       }
     } catch (error) {
-      console.error('Error creating template:', error);
+      console.error('Error creating template:', error
     }
   };
 
@@ -211,49 +211,49 @@ export default function TasksPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ status })
-      });
+        body: JSON.stringify({ status }
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
         setTasks(
           tasks.map(task =>
             task.id === taskId
               ? { ...task, status, updatedAt: new Date().toISOString() }
               : task
-          )
-        );
+          
+        
       }
     } catch (error) {
-      console.error('Error updating task status:', error);
+      console.error('Error updating task status:', error
     }
   };
 
   const resetTaskForm = () => {
     setTaskFormData({
-      title: '',
+      title: ',
       description: '',
       type: 'MAINTENANCE',
       priority: 'MEDIUM',
       assignedToId: 0,
       machineId: 0,
-      dueDate: '',
+      dueDate: ',
       estimatedDuration: 60,
       notes: ''
-    });
+    }
   };
 
   const resetTemplateForm = () => {
     setTemplateFormData({
-      name: '',
+      name: ',
       description: '',
       type: 'MAINTENANCE',
       estimatedDuration: 60,
       priority: 'MEDIUM',
-      instructions: '',
+      instructions: ',
       requiredTools: [],
       checklistItems: []
-    });
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -342,7 +342,7 @@ export default function TasksPage() {
   const filteredTasks = tasks.filter(task => {
     const matchesSearch =
       task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchTerm.toLowerCase());
+      task.description.toLowerCase().includes(searchTerm.toLowerCase()
     const matchesType = !selectedType || task.type === selectedType;
     const matchesStatus = !selectedStatus || task.status === selectedStatus;
     const matchesPriority =
@@ -356,8 +356,8 @@ export default function TasksPage() {
       matchesStatus &&
       matchesPriority &&
       matchesAssignee
-    );
-  });
+    
+  }
 
   const getTaskStats = () => {
     const total = tasks.length;
@@ -369,14 +369,14 @@ export default function TasksPage() {
     return { total, pending, inProgress, completed, overdue };
   };
 
-  const stats = getTaskStats();
+  const stats = getTaskStats(
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
-    );
+    
   }
 
   return (
@@ -491,7 +491,7 @@ export default function TasksPage() {
           >
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              Задачи ({tasks.length})
+              Задачи ({tasks.length}
             </div>
           </button>
           <button
@@ -504,7 +504,7 @@ export default function TasksPage() {
           >
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4" />
-              Шаблоны ({templates.length})
+              Шаблоны ({templates.length}
             </div>
           </button>
           <button
@@ -574,11 +574,11 @@ export default function TasksPage() {
             </select>
             <button
               onClick={() => {
-                setSearchTerm('');
-                setSelectedType('');
-                setSelectedStatus('');
-                setSelectedPriority('');
-                setSelectedAssignee('');
+                setSearchTerm('
+                setSelectedType(''
+                setSelectedStatus('
+                setSelectedPriority(''
+                setSelectedAssignee('
               }}
               className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
             >
@@ -685,7 +685,7 @@ export default function TasksPage() {
                         {task.status === 'PENDING' && (
                           <button
                             onClick={() =>
-                              handleUpdateTaskStatus(task.id, 'IN_PROGRESS')
+                              handleUpdateTaskStatus(task.id, 'IN_PROGRESS'
                             }
                             className="text-blue-600 hover:text-blue-900"
                           >
@@ -695,7 +695,7 @@ export default function TasksPage() {
                         {task.status === 'IN_PROGRESS' && (
                           <button
                             onClick={() =>
-                              handleUpdateTaskStatus(task.id, 'COMPLETED')
+                              handleUpdateTaskStatus(task.id, 'COMPLETED'
                             }
                             className="text-green-600 hover:text-green-900"
                           >
@@ -807,7 +807,7 @@ export default function TasksPage() {
                       setTaskFormData({
                         ...taskFormData,
                         title: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -823,7 +823,7 @@ export default function TasksPage() {
                       setTaskFormData({
                         ...taskFormData,
                         description: e.target.value
-                      })
+                      }
                     }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -840,7 +840,7 @@ export default function TasksPage() {
                       setTaskFormData({
                         ...taskFormData,
                         type: e.target.value as Task['type']
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
@@ -862,7 +862,7 @@ export default function TasksPage() {
                       setTaskFormData({
                         ...taskFormData,
                         priority: e.target.value as Task['priority']
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
@@ -885,7 +885,7 @@ export default function TasksPage() {
                       setTaskFormData({
                         ...taskFormData,
                         dueDate: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -893,7 +893,7 @@ export default function TasksPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Время выполнения (мин)
+                    Время выполнения (мин
                   </label>
                   <input
                     type="number"
@@ -901,8 +901,8 @@ export default function TasksPage() {
                     onChange={e =>
                       setTaskFormData({
                         ...taskFormData,
-                        estimatedDuration: parseInt(e.target.value)
-                      })
+                        estimatedDuration: parseInt(e.target.value
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -918,7 +918,7 @@ export default function TasksPage() {
                       setTaskFormData({
                         ...taskFormData,
                         notes: e.target.value
-                      })
+                      }
                     }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -930,8 +930,8 @@ export default function TasksPage() {
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => {
-                    setShowCreateTaskModal(false);
-                    resetTaskForm();
+                    setShowCreateTaskModal(false
+                    resetTaskForm(
                   }}
                   className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-50"
                 >
@@ -970,7 +970,7 @@ export default function TasksPage() {
                       setTemplateFormData({
                         ...templateFormData,
                         name: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -986,7 +986,7 @@ export default function TasksPage() {
                       setTemplateFormData({
                         ...templateFormData,
                         description: e.target.value
-                      })
+                      }
                     }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -1003,7 +1003,7 @@ export default function TasksPage() {
                       setTemplateFormData({
                         ...templateFormData,
                         type: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
@@ -1017,7 +1017,7 @@ export default function TasksPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Время выполнения (мин)
+                    Время выполнения (мин
                   </label>
                   <input
                     type="number"
@@ -1025,8 +1025,8 @@ export default function TasksPage() {
                     onChange={e =>
                       setTemplateFormData({
                         ...templateFormData,
-                        estimatedDuration: parseInt(e.target.value)
-                      })
+                        estimatedDuration: parseInt(e.target.value
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -1042,7 +1042,7 @@ export default function TasksPage() {
                       setTemplateFormData({
                         ...templateFormData,
                         instructions: e.target.value
-                      })
+                      }
                     }
                     rows={4}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -1054,8 +1054,8 @@ export default function TasksPage() {
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => {
-                    setShowCreateTemplateModal(false);
-                    resetTemplateForm();
+                    setShowCreateTemplateModal(false
+                    resetTemplateForm(
                   }}
                   className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-50"
                 >
@@ -1073,5 +1073,5 @@ export default function TasksPage() {
         </div>
       )}
     </div>
-  );
+  
 }

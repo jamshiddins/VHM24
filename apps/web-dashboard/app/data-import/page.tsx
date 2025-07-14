@@ -49,22 +49,22 @@ interface HistoricalData {
 }
 
 export default function DataImportPage() {
-  const [importJobs, setImportJobs] = useState<ImportJob[]>([]);
-  const [historicalData, setHistoricalData] = useState<HistoricalData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [importJobs, setImportJobs] = useState<ImportJob[]>([]
+  const [historicalData, setHistoricalData] = useState<HistoricalData[]>([]
+  const [loading, setLoading] = useState(true
   const [activeTab, setActiveTab] = useState<
     'import' | 'history' | 'templates'
-  >('import');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  >('import'
+  const [selectedFile, setSelectedFile] = useState<File | null>(null
   const [selectedDataType, setSelectedDataType] =
-    useState<ImportJob['dataType']>('SALES');
+    useState<ImportJob['dataType']>('SALES'
   const [dateRange, setDateRange] = useState({
-    startDate: '',
+    startDate: ',
     endDate: ''
-  });
-  const [showPreview, setShowPreview] = useState(false);
-  const [previewData, setPreviewData] = useState<any[]>([]);
-  const [selectedJob, setSelectedJob] = useState<ImportJob | null>(null);
+  }
+  const [showPreview, setShowPreview] = useState(false
+  const [previewData, setPreviewData] = useState<any[]>([]
+  const [selectedJob, setSelectedJob] = useState<ImportJob | null>(null
 
   const dataTypes = [
     {
@@ -100,63 +100,63 @@ export default function DataImportPage() {
   ];
 
   useEffect(() => {
-    fetchImportJobs();
-    fetchHistoricalData();
-  }, []);
+    fetchImportJobs(
+    fetchHistoricalData(
+  }, []
 
   const fetchImportJobs = async () => {
     try {
-      const response = await fetch('/api/v1/data-import/jobs');
-      const data = await response.json();
+      const response = await fetch('/api/v1/data-import/jobs'
+      const data = await response.json(
       if (data.success) {
-        setImportJobs(data.data);
+        setImportJobs(data.data
       }
     } catch (error) {
-      console.error('Error fetching import jobs:', error);
+      console.error('Error fetching import jobs:', error
     } finally {
-      setLoading(false);
+      setLoading(false
     }
   };
 
   const fetchHistoricalData = async () => {
     try {
-      const response = await fetch('/api/v1/data-import/historical');
-      const data = await response.json();
+      const response = await fetch('/api/v1/data-import/historical'
+      const data = await response.json(
       if (data.success) {
-        setHistoricalData(data.data);
+        setHistoricalData(data.data
       }
     } catch (error) {
-      console.error('Error fetching historical data:', error);
+      console.error('Error fetching historical data:', error
     }
   };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
+      setSelectedFile(file
       // Предварительный просмотр файла
-      previewFile(file);
+      previewFile(file
     }
   };
 
   const previewFile = async (file: File) => {
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('dataType', selectedDataType);
+      const formData = new FormData(
+      formData.append('file', file
+      formData.append('dataType', selectedDataType
 
       const response = await fetch('/api/v1/data-import/preview', {
         method: 'POST',
         body: formData
-      });
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
-        setPreviewData(data.preview);
-        setShowPreview(true);
+        setPreviewData(data.preview
+        setShowPreview(true
       }
     } catch (error) {
-      console.error('Error previewing file:', error);
+      console.error('Error previewing file:', error
     }
   };
 
@@ -164,48 +164,48 @@ export default function DataImportPage() {
     if (!selectedFile) return;
 
     try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('dataType', selectedDataType);
-      formData.append('startDate', dateRange.startDate);
-      formData.append('endDate', dateRange.endDate);
+      const formData = new FormData(
+      formData.append('file', selectedFile
+      formData.append('dataType', selectedDataType
+      formData.append('startDate', dateRange.startDate
+      formData.append('endDate', dateRange.endDate
 
       const response = await fetch('/api/v1/data-import/upload', {
         method: 'POST',
         body: formData
-      });
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
-        setImportJobs([data.job, ...importJobs]);
-        setSelectedFile(null);
-        setShowPreview(false);
-        setPreviewData([]);
+        setImportJobs([data.job, ...importJobs]
+        setSelectedFile(null
+        setShowPreview(false
+        setPreviewData([]
         // Сбросить форму
         const fileInput = document.getElementById(
           'file-input'
         ) as HTMLInputElement;
-        if (fileInput) fileInput.value = '';
+        if (fileInput) fileInput.value = ';
       }
     } catch (error) {
-      console.error('Error importing file:', error);
+      console.error('Error importing file:', error
     }
   };
 
   const downloadTemplate = async (dataType: string) => {
     try {
-      const response = await fetch(`/api/v1/data-import/template/${dataType}`);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const response = await fetch(`/api/v1/data-import/template/${dataType}`
+      const blob = await response.blob(
+      const url = window.URL.createObjectURL(blob
+      const a = document.createElement('a'
       a.href = url;
       a.download = `${dataType.toLowerCase()}_template.csv`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      document.body.appendChild(a
+      a.click(
+      window.URL.revokeObjectURL(url
+      document.body.removeChild(a
     } catch (error) {
-      console.error('Error downloading template:', error);
+      console.error('Error downloading template:', error
     }
   };
 
@@ -240,7 +240,7 @@ export default function DataImportPage() {
   };
 
   const getDataTypeText = (type: string) => {
-    const dataType = dataTypes.find(dt => dt.value === type);
+    const dataType = dataTypes.find(dt => dt.value === type
     return dataType?.label || type;
   };
 
@@ -248,7 +248,7 @@ export default function DataImportPage() {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const i = Math.floor(Math.log(bytes) / Math.log(k)
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
@@ -257,7 +257,7 @@ export default function DataImportPage() {
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
-    );
+    
   }
 
   return (
@@ -307,7 +307,7 @@ export default function DataImportPage() {
           >
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              История импорта ({importJobs.length})
+              История импорта ({importJobs.length}
             </div>
           </button>
           <button
@@ -341,7 +341,7 @@ export default function DataImportPage() {
                 <select
                   value={selectedDataType}
                   onChange={e =>
-                    setSelectedDataType(e.target.value as ImportJob['dataType'])
+                    setSelectedDataType(e.target.value as ImportJob['dataType']
                   }
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
@@ -353,7 +353,7 @@ export default function DataImportPage() {
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
                   {
-                    dataTypes.find(dt => dt.value === selectedDataType)
+                    dataTypes.find(dt => dt.value === selectedDataType
                       ?.description
                   }
                 </p>
@@ -383,7 +383,7 @@ export default function DataImportPage() {
                   type="date"
                   value={dateRange.startDate}
                   onChange={e =>
-                    setDateRange({ ...dateRange, startDate: e.target.value })
+                    setDateRange({ ...dateRange, startDate: e.target.value }
                   }
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
@@ -397,7 +397,7 @@ export default function DataImportPage() {
                   type="date"
                   value={dateRange.endDate}
                   onChange={e =>
-                    setDateRange({ ...dateRange, endDate: e.target.value })
+                    setDateRange({ ...dateRange, endDate: e.target.value }
                   }
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
@@ -424,13 +424,13 @@ export default function DataImportPage() {
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => {
-                  setSelectedFile(null);
-                  setShowPreview(false);
-                  setPreviewData([]);
+                  setSelectedFile(null
+                  setShowPreview(false
+                  setPreviewData([]
                   const fileInput = document.getElementById(
                     'file-input'
                   ) as HTMLInputElement;
-                  if (fileInput) fileInput.value = '';
+                  if (fileInput) fileInput.value = ';
                 }}
                 className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-50"
               >
@@ -769,5 +769,5 @@ export default function DataImportPage() {
         </div>
       )}
     </div>
-  );
+  
 }

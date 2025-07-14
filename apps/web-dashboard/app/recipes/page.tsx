@@ -42,19 +42,19 @@ interface Recipe {
 }
 
 export default function RecipesPage() {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+  const [recipes, setRecipes] = useState<Recipe[]>([]
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]
+  const [loading, setLoading] = useState(true
+  const [searchTerm, setSearchTerm] = useState('
+  const [selectedCategory, setSelectedCategory] = useState(''
+  const [showCreateModal, setShowCreateModal] = useState(false
+  const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null
 
   // Form state
   const [formData, setFormData] = useState({
-    name: '',
+    name: ',
     description: '',
-    category: '',
+    category: ',
     preparationTime: 0,
     servings: 1,
     instructions: '',
@@ -63,7 +63,7 @@ export default function RecipesPage() {
       quantity: number;
       unit: string;
     }[]
-  });
+  }
 
   const categories = [
     'Напитки',
@@ -76,33 +76,33 @@ export default function RecipesPage() {
   ];
 
   useEffect(() => {
-    fetchRecipes();
-    fetchIngredients();
-  }, []);
+    fetchRecipes(
+    fetchIngredients(
+  }, []
 
   const fetchRecipes = async () => {
     try {
-      const response = await fetch('/api/v1/recipes');
-      const data = await response.json();
+      const response = await fetch('/api/v1/recipes'
+      const data = await response.json(
       if (data.success) {
-        setRecipes(data.data);
+        setRecipes(data.data
       }
     } catch (error) {
-      console.error('Error fetching recipes:', error);
+      console.error('Error fetching recipes:', error
     } finally {
-      setLoading(false);
+      setLoading(false
     }
   };
 
   const fetchIngredients = async () => {
     try {
-      const response = await fetch('/api/v1/ingredients');
-      const data = await response.json();
+      const response = await fetch('/api/v1/ingredients'
+      const data = await response.json(
       if (data.success) {
-        setIngredients(data.data);
+        setIngredients(data.data
       }
     } catch (error) {
-      console.error('Error fetching ingredients:', error);
+      console.error('Error fetching ingredients:', error
     }
   };
 
@@ -113,17 +113,17 @@ export default function RecipesPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
-      });
+        body: JSON.stringify(formData
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
-        setRecipes([data.data, ...recipes]);
-        setShowCreateModal(false);
-        resetForm();
+        setRecipes([data.data, ...recipes]
+        setShowCreateModal(false
+        resetForm(
       }
     } catch (error) {
-      console.error('Error creating recipe:', error);
+      console.error('Error creating recipe:', error
     }
   };
 
@@ -136,19 +136,19 @@ export default function RecipesPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
-      });
+        body: JSON.stringify(formData
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
         setRecipes(
-          recipes.map(r => (r.id === editingRecipe.id ? data.data : r))
-        );
-        setEditingRecipe(null);
-        resetForm();
+          recipes.map(r => (r.id === editingRecipe.id ? data.data : r)
+        
+        setEditingRecipe(null
+        resetForm(
       }
     } catch (error) {
-      console.error('Error updating recipe:', error);
+      console.error('Error updating recipe:', error
     }
   };
 
@@ -158,27 +158,27 @@ export default function RecipesPage() {
     try {
       const response = await fetch(`/api/v1/recipes/${id}`, {
         method: 'DELETE'
-      });
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
-        setRecipes(recipes.filter(r => r.id !== id));
+        setRecipes(recipes.filter(r => r.id !== id)
       }
     } catch (error) {
-      console.error('Error deleting recipe:', error);
+      console.error('Error deleting recipe:', error
     }
   };
 
   const resetForm = () => {
     setFormData({
-      name: '',
+      name: ',
       description: '',
-      category: '',
+      category: ',
       preparationTime: 0,
       servings: 1,
       instructions: '',
       ingredients: []
-    });
+    }
   };
 
   const addIngredientToForm = () => {
@@ -186,9 +186,9 @@ export default function RecipesPage() {
       ...formData,
       ingredients: [
         ...formData.ingredients,
-        { ingredientId: 0, quantity: 0, unit: '' }
+        { ingredientId: 0, quantity: 0, unit: ' }
       ]
-    });
+    }
   };
 
   const updateFormIngredient = (index: number, field: string, value: any) => {
@@ -197,27 +197,27 @@ export default function RecipesPage() {
       ...updatedIngredients[index],
       [field]: value
     };
-    setFormData({ ...formData, ingredients: updatedIngredients });
+    setFormData({ ...formData, ingredients: updatedIngredients }
   };
 
   const removeFormIngredient = (index: number) => {
     setFormData({
       ...formData,
-      ingredients: formData.ingredients.filter((_, i) => i !== index)
-    });
+      ingredients: formData.ingredients.filter((_, i) => i !== index
+    }
   };
 
   const filteredRecipes = recipes.filter(recipe => {
     const matchesSearch =
       recipe.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      recipe.description.toLowerCase().includes(searchTerm.toLowerCase());
+      recipe.description.toLowerCase().includes(searchTerm.toLowerCase()
     const matchesCategory =
       !selectedCategory || recipe.category === selectedCategory;
     return matchesSearch && matchesCategory;
-  });
+  }
 
   const openEditModal = (recipe: Recipe) => {
-    setEditingRecipe(recipe);
+    setEditingRecipe(recipe
     setFormData({
       name: recipe.name,
       description: recipe.description,
@@ -229,8 +229,8 @@ export default function RecipesPage() {
         ingredientId: ri.ingredientId,
         quantity: ri.quantity,
         unit: ri.unit
-      }))
-    });
+      })
+    }
   };
 
   if (loading) {
@@ -238,7 +238,7 @@ export default function RecipesPage() {
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
-    );
+    
   }
 
   return (
@@ -386,7 +386,7 @@ export default function RecipesPage() {
                     type="text"
                     value={formData.name}
                     onChange={e =>
-                      setFormData({ ...formData, name: e.target.value })
+                      setFormData({ ...formData, name: e.target.value }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -399,7 +399,7 @@ export default function RecipesPage() {
                   <textarea
                     value={formData.description}
                     onChange={e =>
-                      setFormData({ ...formData, description: e.target.value })
+                      setFormData({ ...formData, description: e.target.value }
                     }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -414,7 +414,7 @@ export default function RecipesPage() {
                     <select
                       value={formData.category}
                       onChange={e =>
-                        setFormData({ ...formData, category: e.target.value })
+                        setFormData({ ...formData, category: e.target.value }
                       }
                       className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
@@ -429,7 +429,7 @@ export default function RecipesPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Время (мин)
+                      Время (мин
                     </label>
                     <input
                       type="number"
@@ -437,8 +437,8 @@ export default function RecipesPage() {
                       onChange={e =>
                         setFormData({
                           ...formData,
-                          preparationTime: parseInt(e.target.value)
-                        })
+                          preparationTime: parseInt(e.target.value
+                        }
                       }
                       className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
@@ -454,8 +454,8 @@ export default function RecipesPage() {
                       onChange={e =>
                         setFormData({
                           ...formData,
-                          servings: parseInt(e.target.value)
-                        })
+                          servings: parseInt(e.target.value
+                        }
                       }
                       className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
@@ -469,7 +469,7 @@ export default function RecipesPage() {
                   <textarea
                     value={formData.instructions}
                     onChange={e =>
-                      setFormData({ ...formData, instructions: e.target.value })
+                      setFormData({ ...formData, instructions: e.target.value }
                     }
                     rows={4}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -499,8 +499,8 @@ export default function RecipesPage() {
                             updateFormIngredient(
                               index,
                               'ingredientId',
-                              parseInt(e.target.value)
-                            )
+                              parseInt(e.target.value
+                            
                           }
                           className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
@@ -519,8 +519,8 @@ export default function RecipesPage() {
                             updateFormIngredient(
                               index,
                               'quantity',
-                              parseFloat(e.target.value)
-                            )
+                              parseFloat(e.target.value
+                            
                           }
                           className="w-24 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
@@ -529,7 +529,7 @@ export default function RecipesPage() {
                           placeholder="Единица"
                           value={ingredient.unit}
                           onChange={e =>
-                            updateFormIngredient(index, 'unit', e.target.value)
+                            updateFormIngredient(index, 'unit', e.target.value
                           }
                           className="w-20 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
@@ -549,9 +549,9 @@ export default function RecipesPage() {
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => {
-                    setShowCreateModal(false);
-                    setEditingRecipe(null);
-                    resetForm();
+                    setShowCreateModal(false
+                    setEditingRecipe(null
+                    resetForm(
                   }}
                   className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-50"
                 >
@@ -571,5 +571,5 @@ export default function RecipesPage() {
         </div>
       )}
     </div>
-  );
+  
 }

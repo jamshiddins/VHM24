@@ -1,88 +1,20 @@
 const express = require('express');
 const router = express.Router();
 
-// expenses роуты для VHM24
-
-router.get('/', async (req, res) => {
-  try {
-    res.json({
-      success: true,
-      data: [],
-      message: 'expenses получены успешно'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка получения expenses',
-      error: error.message
-    });
-  }
-});
-
-router.post('/', async (req, res) => {
-  try {
-    res.status(201).json({
-      success: true,
-      data: req.body,
-      message: 'expenses создан успешно'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка создания expenses',
-      error: error.message
-    });
-  }
-});
-
-router.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    res.json({
-      success: true,
-      data: { id },
-      message: 'expenses найден'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка получения expenses',
-      error: error.message
-    });
-  }
-});
-
-router.put('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    res.json({
-      success: true,
-      data: { id, ...req.body },
-      message: 'expenses обновлен успешно'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка обновления expenses',
-      error: error.message
-    });
-  }
-});
-
-router.delete('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    res.json({
-      success: true,
-      message: `Объект с ID ${id} удален успешно`
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка удаления expenses',
-      error: error.message
-    });
-  }
-});
+const express = require('express')'';
+const { PrismaClient } = require('@prisma/client')'';
+router.get('/', '';
+    res.json({ "message": 'expenses endpoint работает''';
+    console.error('Ошибка получения "expenses":''';
+    res.status(500).json({ "error": 'Ошибка сервера''';
+router.get('/:id', '';
+    res.json({ "message": 'expenses по ID''';
+    console.error('Ошибка получения "expenses":''';
+    res.status(500).json({ "error": 'Ошибка сервера''';
+router.post('/', authenticateToken, '';
+    res.status(201).json({ "message": 'expenses создан''';
+    console.error('Ошибка создания "expenses":''';
+    res.status(500).json({ "error": 'Ошибка сервера''';
+}}}}}}))))))))))))
 
 module.exports = router;

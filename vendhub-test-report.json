@@ -1,0 +1,340 @@
+{
+  "timestamp": "2025-07-14T17:40:02.090Z",
+  "summary": {
+    "total": 65,
+    "passed": 56,
+    "failed": 7,
+    "warnings": 2,
+    "errors": 0
+  },
+  "tests": [
+    {
+      "name": "Директория backend",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Директория backend/src",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Директория backend/src/routes",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Директория backend/src/middleware",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Директория backend/src/utils",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Директория backend/prisma",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Директория apps/telegram-bot",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Директория apps/telegram-bot/src",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Файл backend/package.json",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Файл backend/src/index.js",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Файл backend/prisma/schema.prisma",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Файл apps/telegram-bot/package.json",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Файл apps/telegram-bot/src/index.js",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Файл .env",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Переменная DATABASE_URL",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Переменная JWT_SECRET",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Переменная TELEGRAM_BOT_TOKEN",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Переменная AWS_ACCESS_KEY_ID",
+      "status": "FAIL",
+      "details": "отсутствует"
+    },
+    {
+      "name": "Переменная AWS_SECRET_ACCESS_KEY",
+      "status": "FAIL",
+      "details": "отсутствует"
+    },
+    {
+      "name": "Переменная AWS_REGION",
+      "status": "FAIL",
+      "details": "отсутствует"
+    },
+    {
+      "name": "Переменная AWS_S3_BUCKET",
+      "status": "FAIL",
+      "details": "отсутствует"
+    },
+    {
+      "name": "Модель User",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Модель Machine",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Модель Task",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Модель Item",
+      "status": "FAIL",
+      "details": "отсутствует в схеме"
+    },
+    {
+      "name": "Модель Movement",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Модель Hopper",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Модель WaterBottle",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Модель Syrup",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Модель Bag",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Enum UserRole",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Enum TaskStatus",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Enum TaskType",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Enum MachineStatus",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Enum TaskPriority",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Enum MovementType",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Enum MovementStatus",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Зависимость @prisma/client",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Зависимость prisma",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Зависимость express",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Зависимость cors",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Зависимость helmet",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Зависимость bcryptjs",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Зависимость jsonwebtoken",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Зависимость multer",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Зависимость aws-sdk",
+      "status": "FAIL",
+      "details": "отсутствует"
+    },
+    {
+      "name": "Bot зависимость telegraf",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Bot зависимость axios",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Bot зависимость dotenv",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Маршрут auth.js",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Маршрут users.js",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Маршрут machines.js",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Маршрут tasks.js",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Маршрут inventory.js",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Маршрут warehouse.js",
+      "status": "WARN",
+      "details": "возможны проблемы"
+    },
+    {
+      "name": "Маршрут telegram.js",
+      "status": "WARN",
+      "details": "возможны проблемы"
+    },
+    {
+      "name": "Middleware auth.js",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Middleware roleCheck.js",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Middleware upload.js",
+      "status": "FAIL",
+      "details": "не найден"
+    },
+    {
+      "name": "Утилита logger.js",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Утилита s3.js",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Утилита excelImport.js",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Конфиг railway.toml",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Конфиг nixpacks.toml",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Конфиг docker-compose.yml",
+      "status": "PASS",
+      "details": ""
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "status": "FAILED"
+}

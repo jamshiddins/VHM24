@@ -1,66 +1,32 @@
 const express = require('express');
 const router = express.Router();
 
-// Health check роуты для VHM24
-
-/**
- * Проверка состояния системы
- */
-router.get('/', async (req, res) => {
-  try {
-    const health = {
-      status: 'OK',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      memory: process.memoryUsage(),
-      version: process.env.npm_package_version || '1.0.0',
-      environment: process.env.NODE_ENV || 'development'
-    };
-    
-    res.json({
-      success: true,
-      data: health,
-      message: 'Система работает нормально'
+// Health check endpoint
+router.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        version: process.env.npm_package_version || '1.0.0',
+        environment: process.env.NODE_ENV || 'development'
     });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка проверки состояния системы',
-      error: error.message
-    });
-  }
 });
 
-/**
- * Детальная проверка всех компонентов
- */
-router.get('/detailed', async (req, res) => {
-  try {
-    const checks = {
-      database: 'OK', // TODO: Проверка БД
-      redis: 'OK',    // TODO: Проверка Redis
-      telegram: 'OK', // TODO: Проверка Telegram Bot
-      services: 'OK'  // TODO: Проверка сервисов
-    };
-    
-    const allHealthy = Object.values(checks).every(status => status === 'OK');
-    
-    res.status(allHealthy ? 200 : 503).json({
-      success: allHealthy,
-      data: {
-        status: allHealthy ? 'HEALTHY' : 'UNHEALTHY',
-        checks,
-        timestamp: new Date().toISOString()
-      },
-      message: allHealthy ? 'Все компоненты работают' : 'Обнаружены проблемы'
+// API info endpoint
+router.get('/info', (req, res) => {
+    res.json({
+        name: 'VHM24 API',
+        version: '1.0.0',
+        description: 'VendHub Management System API',
+        endpoints: [
+            'GET /api/health',
+            'GET /api/info',
+            'POST /api/auth/login',
+            'GET /api/users',
+            'GET /api/machines',
+            'GET /api/tasks'
+        ]
     });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка детальной проверки',
-      error: error.message
-    });
-  }
 });
 
 module.exports = router;

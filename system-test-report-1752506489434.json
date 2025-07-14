@@ -1,0 +1,103 @@
+{
+  "timestamp": "2025-07-14T15:21:29.380Z",
+  "totalTests": 6,
+  "passed": 5,
+  "failed": 0,
+  "warnings": 1,
+  "tests": [
+    {
+      "name": "Структура проекта",
+      "success": true,
+      "message": "Структура проекта корректна",
+      "critical": true,
+      "details": {
+        "missing": [],
+        "totalChecked": 10
+      }
+    },
+    {
+      "name": "Синтаксис файлов",
+      "success": true,
+      "message": "Все файлы синтаксически корректны",
+      "critical": true,
+      "details": {
+        "errors": [],
+        "checkedFiles": 5
+      }
+    },
+    {
+      "name": "Зависимости проекта",
+      "success": true,
+      "message": "Зависимости в порядке",
+      "critical": false,
+      "details": {
+        "issues": [],
+        "checkedFiles": 2
+      }
+    },
+    {
+      "name": "Конфигурация",
+      "success": true,
+      "message": "Конфигурация корректна",
+      "critical": false,
+      "details": {
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "name": "Файлы восстановления",
+      "success": true,
+      "message": "Все файлы восстановления на месте. Резервных копий: 1",
+      "critical": false,
+      "details": {
+        "missing": [],
+        "backupDirs": [
+          "backup-1752502753300"
+        ],
+        "recoveryFiles": [
+          "emergency-syntax-fixer.js",
+          "mass-fix-routes.js",
+          "quick-fix.js"
+        ]
+      }
+    },
+    {
+      "name": "API Endpoints",
+      "success": false,
+      "message": "Backend не запущен или недоступен",
+      "critical": false,
+      "details": {
+        "results": [
+          {
+            "endpoint": "/health",
+            "status": "ERROR",
+            "success": false,
+            "error": "ECONNREFUSED"
+          },
+          {
+            "endpoint": "/api/v1/auth/me",
+            "status": "ERROR",
+            "success": false,
+            "error": "ECONNREFUSED"
+          },
+          {
+            "endpoint": "/api/v1/machines",
+            "status": "ERROR",
+            "success": false,
+            "error": "ECONNREFUSED"
+          }
+        ],
+        "isBackendRunning": false
+      }
+    }
+  ],
+  "summary": {
+    "successRate": 83,
+    "criticalIssues": 0,
+    "recommendations": [
+      "Запустите Backend: cd backend && npm start",
+      "Проверьте конфигурационные файлы (.env)"
+    ]
+  }
+}

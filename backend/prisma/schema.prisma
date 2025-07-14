@@ -1,434 +1,41 @@
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = env("DATABASE_URL")
 }
+
+// ============================================================================
+// ПОЛЬЗОВАТЕЛИ И РОЛИ
+// ============================================================================
 
 model User {
-  id             String           @id @default(cuid())
-  email          String           @unique
-  name           String
-  passwordHash   String
-  roles          UserRole[]
-  phoneNumber    String?
-  telegramId     String?          @unique
-  telegramUsername String?        @unique
-  warehouseAccess Boolean         @default(false)
-  assignedMachines String[]       // ID автоматов, к которым есть доступ
-  isActive       Boolean          @default(true)
-  isDriver       Boolean          @default(false)
-  registrationStatus RegistrationStatus @default(PENDING)
-  lastLogin      DateTime?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  auditLogs      AuditLog[]
-  systemAuditLogs SystemAuditLog[]
-  incompleteDataLogs IncompleteDataLog[]
-  userSessions   UserSession[]
-  dataValidationLogs DataValidationLog[]
-  serviceHistory ServiceHistory[]
-  stockMovements StockMovement[]
-  tasksAssigned  Task[]           @relation("TaskAssignee")
-  tasksCreated   Task[]           @relation("TaskCreator")
-  taskActions    TaskAction[]
-  taskStepExecutions TaskStepExecution[]
-  routes         Route[]
-  driverLogs     DriverLog[]
-  notifications  Notification[]
-  bunkerOperations BunkerOperation[]
-  // Новые связи для VendHubBot
-  bags           Bag[]
-  waterBottles   WaterBottle[]
-  syrupBottles   SyrupBottle[]
-  incassations   Incassation[]    @relation("IncassationOperator")
-  incassationsManaged Incassation[] @relation("IncassationManager")
-  expenses       Expense[]
-  revenues       Revenue[]
-  syrupOperations SyrupOperation[]
-  waterOperations WaterOperation[]
-  bagOperations  BagOperation[]
-  salesReconciliations SalesReconciliation[]
-  ingredientReconciliations IngredientReconciliation[]
-}
-
-model Location {
-  id        String    @id @default(cuid())
-  name      String
-  address   String
-  latitude  Float?
-  longitude Float?
-  isActive  Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  machines  Machine[]
-}
-
-model Machine {
-  id             String             @id @default(cuid())
-  code           String             @unique
-  serialNumber   String             @unique
-  type           String
-  name           String
-  status         MachineStatus      @default(OFFLINE)
-  locationId     String?
-  lastPing       DateTime?
-  metadata       Json?
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-  location       Location?          @relation(fields: [locationId], references: [id])
-  inventory      MachineInventory[]
-  telemetry      MachineTelemetry[]
-  serviceHistory ServiceHistory[]
-  stockMovements StockMovement[]
-  tasks          Task[]
-  routeStops     RouteStop[]
-  bunkers        Bunker[]
-  // VendHubBot расширения
-  syrupBottles   SyrupBottle[]
-  waterBottles   WaterBottle[]
-  bags           Bag[]
-  incassations   Incassation[]
-  revenues       Revenue[]
-  expenses       Expense[]
-  salesReconciliations SalesReconciliation[]
-  ingredientReconciliations IngredientReconciliation[]
-}
-
-model Task {
-  id           String       @id @default(cuid())
-  title        String
-  description  String       @default("")
-  status       TaskStatus   @default(CREATED)
-  priority     TaskPriority @default(MEDIUM)
-  type         TaskType     @default(GENERAL) // тип задачи
-  dueDate      DateTime?
-  completedAt  DateTime?
-  startedAt    DateTime?    // время начала выполнения
-  machineId    String?
-  assignedToId String?
-  createdById  String
-  bagId        String?      // связь с сумкой
-  templateId   String?      // шаблон задачи
-  estimatedDuration Int?    // оценочное время выполнения (минуты)
-  actualDuration    Int?    // фактическое время выполнения
-  location     String?      // геолокация
-  photos       String[]     // фото результата выполнения
-  metadata     Json?        // дополнительные данные
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  assignedTo   User?        @relation("TaskAssignee", fields: [assignedToId], references: [id])
-  createdBy    User         @relation("TaskCreator", fields: [createdById], references: [id])
-  machine      Machine?     @relation(fields: [machineId], references: [id])
-  bag          Bag?         @relation(fields: [bagId], references: [id])
-  template     TaskTemplate? @relation(fields: [templateId], references: [id])
-  actions      TaskAction[]
-  checklists   TaskChecklist[]
-  executions   TaskStepExecution[]
-
-  @@index([status, assignedToId])
-  @@index([machineId])
-  @@index([type])
-  @@index([templateId])
-}
-
-model TaskAction {
-  id        String   @id @default(cuid())
-  taskId    String
-  userId    String
-  action    String
-  comment   String
-  location  String?
-  photoUrls String[]
-  metadata  Json?
-  createdAt DateTime @default(now())
-  task      Task     @relation(fields: [taskId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@index([taskId])
-}
-
-model InventoryItem {
-  id               String             @id @default(cuid())
-  name             String
-  sku              String             @unique
-  unit             InventoryUnit
-  category         String
-  description      String?
-  quantity         Float              @default(0)
-  minQuantity      Float?
-  maxQuantity      Float?
-  price            Float?
-  isActive         Boolean            @default(true)
-  lastUpdated      DateTime           @default(now())
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  machineInventory MachineInventory[]
-  stockMovements   StockMovement[]
-  recipeIngredients RecipeIngredient[]
-  bunkers          Bunker[]
-  bagContents      BagContent[]
-  ingredientReconciliations IngredientReconciliation[]
-  ingredientBatches IngredientBatch[]
-
-  @@index([category])
-  @@index([sku])
-}
-
-model StockMovement {
-  id             String            @id @default(cuid())
-  itemId         String
-  userId         String
-  type           StockMovementType
-  quantity       Float
-  quantityBefore Float
-  quantityAfter  Float
-  reason         String
-  reference      String?
-  fromLocation   String?
-  toLocation     String?
-  machineId      String?
-  photos         String[]          // URLs фотографий операции
-  videos         String[]          // URLs видео операции
-  eventTime      DateTime          // Время реального события
-  inputTime      DateTime          @default(now()) // Время ввода данных
-  metadata       Json?
-  createdAt      DateTime          @default(now())
-  item           InventoryItem     @relation(fields: [itemId], references: [id])
-  machine        Machine?          @relation(fields: [machineId], references: [id])
-  user           User              @relation(fields: [userId], references: [id])
-
-  @@index([itemId])
-  @@index([type])
-  @@index([eventTime])
-  @@index([createdAt])
-}
-
-model MachineTelemetry {
   id          String   @id @default(cuid())
-  machineId   String
-  temperature Float?
-  humidity    Float?
-  sales       Int?
-  errors      String[]
-  rawData     Json
-  createdAt   DateTime @default(now())
-  machine     Machine  @relation(fields: [machineId], references: [id])
+  telegramId  String   @unique @map("telegram_id")
+  name        String
+  phone       String?
+  role        UserRole @default(OPERATOR)
+  status      UserStatus @default(ACTIVE)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-  @@index([machineId, createdAt])
-}
+  // Связи
+  assignedTasks     Task[]
+  createdTasks      Task[] @relation("TaskCreator")
+  actionLogs        ActionLog[]
+  expenses          Expense[]
+  incomes           Income[]
+  bagIssues         BagIssue[]
+  bagReturns        BagReturn[]
+  taskChecklists    TaskChecklist[]
 
-model AuditLog {
-  id        String   @id @default(cuid())
-  userId    String?
-  action    String
-  entity    String
-  entityId  String
-  changes   Json?
-  ipAddress String?
-  userAgent String?
-  createdAt DateTime @default(now())
-  user      User?    @relation(fields: [userId], references: [id])
-
-  @@index([entity, entityId])
-  @@index([userId])
-  @@index([createdAt])
-}
-
-model SystemAuditLog {
-  id            String              @id @default(cuid())
-  userId        String?
-  sessionId     String?
-  action        SystemAction
-  entity        String
-  entityId      String?
-  description   String
-  oldValues     Json?
-  newValues     Json?
-  inputData     Json?
-  ipAddress     String?
-  userAgent     String?
-  endpoint      String?
-  method        String?
-  statusCode    Int?
-  responseTime  Int?
-  errorMessage  String?
-  metadata      Json?
-  createdAt     DateTime            @default(now())
-  user          User?               @relation(fields: [userId], references: [id])
-  
-  @@index([userId])
-  @@index([action])
-  @@index([entity])
-  @@index([createdAt])
-  @@index([sessionId])
-}
-
-model IncompleteDataLog {
-  id              String                @id @default(cuid())
-  userId          String?
-  entity          String
-  entityId        String
-  requiredFields  String[]
-  missingFields   String[]
-  partialData     Json?
-  completionRate  Float                 @default(0)
-  status          IncompleteDataStatus  @default(PENDING)
-  remindersSent   Int                   @default(0)
-  lastReminderAt  DateTime?
-  completedAt     DateTime?
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
-  user            User?                 @relation(fields: [userId], references: [id])
-  
-  @@index([userId])
-  @@index([entity])
-  @@index([status])
-  @@index([createdAt])
-  @@unique([entity, entityId])
-}
-
-model UserSession {
-  id          String    @id @default(cuid())
-  userId      String
-  sessionId   String    @unique
-  ipAddress   String?
-  userAgent   String?
-  loginAt     DateTime  @default(now())
-  lastActivity DateTime @default(now())
-  logoutAt    DateTime?
-  isActive    Boolean   @default(true)
-  metadata    Json?
-  user        User      @relation(fields: [userId], references: [id])
-  
-  @@index([userId])
-  @@index([sessionId])
-  @@index([isActive])
-  @@index([lastActivity])
-}
-
-model DataValidationLog {
-  id            String              @id @default(cuid())
-  userId        String?
-  entity        String
-  entityId      String?
-  fieldName     String
-  fieldValue    String?
-  validationType ValidationRule
-  isValid       Boolean
-  errorMessage  String?
-  severity      ValidationSeverity  @default(WARNING)
-  autoFixed     Boolean             @default(false)
-  createdAt     DateTime            @default(now())
-  user          User?               @relation(fields: [userId], references: [id])
-  
-  @@index([userId])
-  @@index([entity])
-  @@index([isValid])
-  @@index([severity])
-  @@index([createdAt])
-}
-
-enum SystemAction {
-  CREATE
-  READ
-  UPDATE
-  DELETE
-  LOGIN
-  LOGOUT
-  EXPORT
-  IMPORT
-  APPROVE
-  REJECT
-  ASSIGN
-  COMPLETE
-  CANCEL
-  RESTORE
-  ARCHIVE
-  SYNC
-  BACKUP
-  MAINTENANCE
-  ERROR
-  WARNING
-  INFO
-}
-
-enum IncompleteDataStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-  IGNORED
-  EXPIRED
-}
-
-enum ValidationRule {
-  REQUIRED
-  FORMAT
-  LENGTH
-  RANGE
-  UNIQUE
-  REFERENCE
-  CUSTOM
-}
-
-enum ValidationSeverity {
-  INFO
-  WARNING
-  ERROR
-  CRITICAL
-}
-
-model Transaction {
-  id          String   @id @default(cuid())
-  machineId   String
-  amount      Float
-  currency    String   @default("RUB")
-  paymentType String
-  status      String
-  reference   String?  @unique
-  metadata    Json?
-  createdAt   DateTime @default(now())
-
-  @@index([machineId])
-  @@index([createdAt])
-}
-
-model MachineInventory {
-  id          String        @id @default(cuid())
-  machineId   String
-  itemId      String
-  quantity    Float         @default(0)
-  minQuantity Float?
-  maxQuantity Float?
-  lastRefill  DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  item        InventoryItem @relation(fields: [itemId], references: [id])
-  machine     Machine       @relation(fields: [machineId], references: [id])
-
-  @@unique([machineId, itemId])
-  @@index([machineId])
-  @@index([itemId])
-}
-
-model ServiceHistory {
-  id              String    @id @default(cuid())
-  machineId       String
-  serviceType     String
-  description     String
-  performedById   String
-  performedAt     DateTime  @default(now())
-  nextServiceDate DateTime?
-  photos          String[]
-  location        String?
-  metadata        Json?
-  machine         Machine   @relation(fields: [machineId], references: [id])
-  performedBy     User      @relation(fields: [performedById], references: [id])
-
-  @@index([machineId])
-  @@index([performedAt])
+  @@map("users")
 }
 
 enum UserRole {
@@ -438,883 +45,509 @@ enum UserRole {
   OPERATOR
   TECHNICIAN
   DRIVER
-  INVESTOR
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+// ============================================================================
+// ЛОКАЦИИ И АВТОМАТЫ
+// ============================================================================
+
+model Location {
+  id              String  @id @default(cuid())
+  name            String
+  address         String
+  coordinates     String?
+  rentCost        Float?  @map("rent_cost")
+  electricityCost Float?  @map("electricity_cost")
+  internetCost    Float?  @map("internet_cost")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Связи
+  machines        Machine[]
+
+  @@map("locations")
+}
+
+model Machine {
+  id              String        @id @default(cuid())
+  internalCode    String        @unique @map("internal_code")
+  model           String?
+  serialNumber    String?       @map("serial_number")
+  type            MachineType   @default(COFFEE)
+  status          MachineStatus @default(ACTIVE)
+  locationId      String        @map("location_id")
+  simCard         String?       @map("sim_card")
+  electricityMeter String?      @map("electricity_meter")
+  monthlyTraffic  Float?        @map("monthly_traffic")
+  monthlyElectricity Float?     @map("monthly_electricity")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  // Связи
+  location        Location      @relation(fields: [locationId], references: [id])
+  tasks           Task[]
+  bags            Bag[]
+  sales           Sale[]
+  expenses        Expense[]
+  incomes         Income[]
+  waterBottles    WaterBottle[]
+  hopperInstallations HopperInstallation[]
+
+  @@map("machines")
+}
+
+enum MachineType {
+  COFFEE
+  SNACKS
+  DRINKS
+  COMBO
+  ICE
 }
 
 enum MachineStatus {
-  ONLINE
-  OFFLINE
+  ACTIVE
   MAINTENANCE
-  ERROR
+  OFFLINE
+  BROKEN
+  DECOMMISSIONED
+}
+
+// ============================================================================
+// ИНГРЕДИЕНТЫ И БУНКЕРЫ
+// ============================================================================
+
+model Ingredient {
+  id            String  @id @default(cuid())
+  name          String
+  type          IngredientType
+  unit          String  // г, кг, л, мл, шт
+  shelfLifeDays Int?    @map("shelf_life_days")
+  minStock      Float?  @map("min_stock")
+  price         Float?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Связи
+  hoppers       Hopper[]
+  recipeIngredients RecipeIngredient[]
+
+  @@map("ingredients")
+}
+
+enum IngredientType {
+  COFFEE
+  MILK
+  SUGAR
+  CHOCOLATE
+  TEA
+  SYRUP
+  WATER
+  CONSUMABLE
+}
+
+model Hopper {
+  id            String      @id @default(cuid())
+  code          String      @unique // SET-001-4S
+  ingredientId  String      @map("ingredient_id")
+  weightEmpty   Float       @map("weight_empty")
+  weightCurrent Float?      @map("weight_current")
+  status        HopperStatus @default(ON_WAREHOUSE)
+  cyclesCount   Int         @default(0) @map("cycles_count")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  // Связи
+  ingredient    Ingredient  @relation(fields: [ingredientId], references: [id])
+  bagContents   BagContent[]
+  hopperInstallations HopperInstallation[]
+
+  @@map("hoppers")
+}
+
+enum HopperStatus {
+  ON_WAREHOUSE
+  IN_BAG
+  INSTALLED
+  RETURNED
+  CLEANING
+  DAMAGED
+}
+
+model HopperInstallation {
+  id          String   @id @default(cuid())
+  hopperId    String   @map("hopper_id")
+  machineId   String   @map("machine_id")
+  installedAt DateTime @map("installed_at")
+  removedAt   DateTime? @map("removed_at")
+  weightBefore Float?  @map("weight_before")
+  weightAfter  Float?  @map("weight_after")
+
+  // Связи
+  hopper      Hopper   @relation(fields: [hopperId], references: [id])
+  machine     Machine  @relation(fields: [machineId], references: [id])
+
+  @@map("hopper_installations")
+}
+
+// ============================================================================
+// СИРОПЫ И ВОДА
+// ============================================================================
+
+model Syrup {
+  id            String      @id @default(cuid())
+  name          String
+  bottleVolume  Float       @map("bottle_volume")
+  status        SyrupStatus @default(ON_WAREHOUSE)
+  expiryDate    DateTime?   @map("expiry_date")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  // Связи
+  bagContents   BagContent[]
+
+  @@map("syrups")
+}
+
+enum SyrupStatus {
+  ON_WAREHOUSE
+  IN_BAG
+  INSTALLED
+  USED
+  EXPIRED
+}
+
+model WaterBottle {
+  id            String           @id @default(cuid())
+  uniqueCode    String           @unique @map("unique_code")
+  volume        Float
+  weightFull    Float            @map("weight_full")
+  weightCurrent Float?           @map("weight_current")
+  status        WaterBottleStatus @default(ON_WAREHOUSE)
+  machineId     String?          @map("machine_id")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+
+  // Связи
+  machine       Machine?         @relation(fields: [machineId], references: [id])
+
+  @@map("water_bottles")
+}
+
+enum WaterBottleStatus {
+  ON_WAREHOUSE
+  ISSUED
+  INSTALLED
+  RETURNED
+  EMPTY
+}
+
+// ============================================================================
+// СУМКИ И КОМПЛЕКТЫ
+// ============================================================================
+
+model Bag {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  assignedMachineId String? @map("assigned_machine_id")
+  status          BagStatus @default(PREPARED)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Связи
+  assignedMachine Machine?  @relation(fields: [assignedMachineId], references: [id])
+  contents        BagContent[]
+  issues          BagIssue[]
+  returns         BagReturn[]
+  tasks           Task[]
+
+  @@map("bags")
+}
+
+enum BagStatus {
+  PREPARED
+  ISSUED
+  IN_USE
+  RETURNED
+  CHECKED
+}
+
+model BagContent {
+  id        String  @id @default(cuid())
+  bagId     String  @map("bag_id")
+  hopperId  String? @map("hopper_id")
+  syrupId   String? @map("syrup_id")
+  quantity  Int     @default(1)
+
+  // Связи
+  bag       Bag     @relation(fields: [bagId], references: [id])
+  hopper    Hopper? @relation(fields: [hopperId], references: [id])
+  syrup     Syrup?  @relation(fields: [syrupId], references: [id])
+
+  @@map("bag_contents")
+}
+
+model BagIssue {
+  id        String   @id @default(cuid())
+  bagId     String   @map("bag_id")
+  userId    String   @map("user_id")
+  issuedAt  DateTime @map("issued_at")
+  photoUrl  String?  @map("photo_url")
+
+  // Связи
+  bag       Bag      @relation(fields: [bagId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("bag_issues")
+}
+
+model BagReturn {
+  id          String   @id @default(cuid())
+  bagId       String   @map("bag_id")
+  userId      String   @map("user_id")
+  returnedAt  DateTime @map("returned_at")
+  photoUrl    String?  @map("photo_url")
+  notes       String?
+
+  // Связи
+  bag         Bag      @relation(fields: [bagId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("bag_returns")
+}
+
+// ============================================================================
+// ЗАДАЧИ И ЧЕК-ЛИСТЫ
+// ============================================================================
+
+model Task {
+  id              String     @id @default(cuid())
+  type            TaskType
+  machineId       String     @map("machine_id")
+  assignedUserId  String     @map("assigned_user_id")
+  createdUserId   String     @map("created_user_id")
+  bagId           String?    @map("bag_id")
+  status          TaskStatus @default(CREATED)
+  deadline        DateTime?
+  description     String?
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+  completedAt     DateTime?  @map("completed_at")
+
+  // Связи
+  machine         Machine    @relation(fields: [machineId], references: [id])
+  assignedUser    User       @relation(fields: [assignedUserId], references: [id])
+  createdUser     User       @relation("TaskCreator", fields: [createdUserId], references: [id])
+  bag             Bag?       @relation(fields: [bagId], references: [id])
+  checklists      TaskChecklist[]
+
+  @@map("tasks")
+}
+
+enum TaskType {
+  REPLACE_INGREDIENTS
+  REPLACE_WATER
+  REPLACE_SYRUPS
+  CLEANING
+  MAINTENANCE
+  CASH_COLLECTION
+  REPAIR
+  INSPECTION
+  TEST_PURCHASE
 }
 
 enum TaskStatus {
   CREATED
   ASSIGNED
   IN_PROGRESS
+  PAUSED
   COMPLETED
+  FAILED
   CANCELLED
 }
 
-enum TaskPriority {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
-}
-
-enum StockMovementType {
-  IN
-  OUT
-  ADJUSTMENT
-  TRANSFER
-}
-
-enum InventoryUnit {
-  KG
-  L
-  PCS
-  PACK
-}
-
-enum RegistrationStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-model Recipe {
-  id          String            @id @default(cuid())
-  name        String
-  description String?
-  version     Int               @default(1)
-  isActive    Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  ingredients RecipeIngredient[]
-  
-  @@unique([name, version])
-  @@index([name])
-}
-
-model RecipeIngredient {
-  id           String        @id @default(cuid())
-  recipeId     String
-  itemId       String
-  quantity     Float
-  unit         InventoryUnit
-  createdAt    DateTime      @default(now())
-  recipe       Recipe        @relation(fields: [recipeId], references: [id])
-  item         InventoryItem @relation(fields: [itemId], references: [id])
-  
-  @@unique([recipeId, itemId])
-  @@index([recipeId])
-}
-
-model Route {
-  id          String      @id @default(cuid())
-  name        String
-  description String?
-  driverId    String
-  status      RouteStatus @default(PLANNED)
-  startTime   DateTime?
-  endTime     DateTime?
-  totalDistance Float?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  driver      User        @relation(fields: [driverId], references: [id])
-  stops       RouteStop[]
-  
-  @@index([driverId])
-  @@index([status])
-}
-
-model RouteStop {
-  id          String    @id @default(cuid())
-  routeId     String
-  machineId   String
-  order       Int
-  status      StopStatus @default(PENDING)
-  arrivalTime DateTime?
-  departureTime DateTime?
-  notes       String?
-  photos      String[]
-  createdAt   DateTime  @default(now())
-  route       Route     @relation(fields: [routeId], references: [id])
-  machine     Machine   @relation(fields: [machineId], references: [id])
-  
-  @@unique([routeId, order])
-  @@index([routeId])
-  @@index([machineId])
-}
-
-model DriverLog {
-  id          String    @id @default(cuid())
-  driverId    String
-  type        DriverLogType
-  description String
-  mileage     Float?
-  fuelAmount  Float?
-  fuelCost    Float?
-  location    String?
-  latitude    Float?
-  longitude   Float?
-  photos      String[]
-  metadata    Json?
-  createdAt   DateTime  @default(now())
-  driver      User      @relation(fields: [driverId], references: [id])
-  
-  @@index([driverId])
-  @@index([type])
-  @@index([createdAt])
-}
-
-model Notification {
-  id          String             @id @default(cuid())
-  userId      String?
-  type        NotificationType
-  title       String
-  message     String
-  data        Json?
-  isRead      Boolean            @default(false)
-  sentAt      DateTime?
-  createdAt   DateTime           @default(now())
-  user        User?              @relation(fields: [userId], references: [id])
-  
-  @@index([userId])
-  @@index([type])
-  @@index([isRead])
-  @@index([createdAt])
-}
-
-model NotificationTemplate {
-  id          String             @id @default(cuid())
-  name        String             @unique
-  type        NotificationType
-  title       String
-  message     String
-  variables   String[]
-  isActive    Boolean            @default(true)
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  
-  @@index([type])
-}
-
-enum RouteStatus {
-  PLANNED
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-}
-
-enum StopStatus {
-  PENDING
-  ARRIVED
-  COMPLETED
-  SKIPPED
-}
-
-enum DriverLogType {
-  MILEAGE
-  FUEL_CHECK
-  ARRIVAL
-  DEPARTURE
-  MAINTENANCE
-  INCIDENT
-}
-
-enum NotificationType {
-  TASK_ASSIGNED
-  TASK_OVERDUE
-  MACHINE_ERROR
-  LOW_INVENTORY
-  ROUTE_ASSIGNED
-  SYSTEM_ALERT
-}
-
-model Bunker {
-  id            String       @id @default(cuid())
-  machineId     String
-  name          String
-  capacity      Float
-  currentLevel  Float        @default(0)
-  itemId        String?
-  status        BunkerStatus @default(EMPTY)
-  lastFilled    DateTime?
-  lastCleaned   DateTime?
-  photos        String[]     // URLs фотографий состояния
-  notes         String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  machine       Machine      @relation(fields: [machineId], references: [id])
-  item          InventoryItem? @relation(fields: [itemId], references: [id])
-  operations    BunkerOperation[]
-  bagContents   BagContent[]
-  
-  @@index([machineId])
-  @@index([status])
-}
-
-model BunkerOperation {
-  id          String              @id @default(cuid())
-  bunkerId    String
-  userId      String
-  type        BunkerOperationType
-  description String
-  quantity    Float?
-  photos      String[]            // URLs фотографий операции
-  eventTime   DateTime            // Время реального события
-  inputTime   DateTime            @default(now()) // Время ввода данных
-  metadata    Json?
-  bunker      Bunker              @relation(fields: [bunkerId], references: [id])
-  user        User                @relation(fields: [userId], references: [id])
-  
-  @@index([bunkerId])
-  @@index([userId])
-  @@index([type])
-  @@index([eventTime])
-}
-
-enum BunkerStatus {
-  EMPTY
-  FILLING
-  FULL
-  MAINTENANCE
-  CLEANING
-  ERROR
-}
-
-enum BunkerOperationType {
-  FILL
-  EMPTY
-  CLEAN
-  MAINTENANCE
-  INSPECTION
-  REPAIR
-}
-
-// ============= VENDHUB EXTENSIONS =============
-
-// Сиропы
-model SyrupBottle {
-  id          String            @id @default(cuid())
-  name        String            // ваниль, карамель, кокос
-  bottleId    String   @unique  // уникальный номер бутылки
-  volume      Float             // объем в литрах
-  status      SyrupBottleStatus @default(ON_WAREHOUSE)
-  openedAt    DateTime?         // дата открытия
-  expiryDate  DateTime?         // срок годности
-  assignedTo  String?           // кому назначена
-  machineId   String?           // в каком автомате
-  photos      String[]          // фото бутылки
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  
-  user        User?             @relation(fields: [assignedTo], references: [id])
-  machine     Machine?          @relation(fields: [machineId], references: [id])
-  operations  SyrupOperation[]
-  bagContents BagContent[]
-  
-  @@index([status])
-  @@index([assignedTo])
-  @@index([machineId])
-}
-
-// Вода
-model WaterBottle {
-  id             String            @id @default(cuid())
-  bottleId       String   @unique  // уникальный номер
-  volume         Float             // объем (18.9л)
-  weightEmpty    Float             // вес пустой
-  weightFull     Float             // вес полной
-  weightCurrent  Float             // текущий вес
-  status         WaterBottleStatus @default(ON_WAREHOUSE)
-  assignedTo     String?           // кому назначена
-  machineId      String?           // в каком автомате
-  photos         String[]          // фото бутылки и наклейки
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  
-  user           User?             @relation(fields: [assignedTo], references: [id])
-  machine        Machine?          @relation(fields: [machineId], references: [id])
-  operations     WaterOperation[]
-  
-  @@index([status])
-  @@index([assignedTo])
-  @@index([machineId])
-}
-
-// Сумки/комплекты
-model Bag {
-  id          String    @id @default(cuid())
-  bagId       String    @unique // номер сумки
-  status      BagStatus @default(CREATED)
-  assignedTo  String?   // кому назначена
-  machineId   String?   // для какого автомата
-  description String?   // описание содержимого
-  photos      String[]  // фото упаковки
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  user        User?     @relation(fields: [assignedTo], references: [id])
-  machine     Machine?  @relation(fields: [machineId], references: [id])
-  contents    BagContent[]
-  operations  BagOperation[]
-  tasks       Task[]
-  
-  @@index([status])
-  @@index([assignedTo])
-  @@index([machineId])
-}
-
-// Содержимое сумки
-model BagContent {
-  id         String @id @default(cuid())
-  bagId      String
-  bunkerId   String?
-  syrupId    String?
-  itemId     String? // расходники
-  quantity   Float?
-  
-  bag        Bag           @relation(fields: [bagId], references: [id])
-  bunker     Bunker?       @relation(fields: [bunkerId], references: [id])
-  syrup      SyrupBottle?  @relation(fields: [syrupId], references: [id])
-  item       InventoryItem? @relation(fields: [itemId], references: [id])
-  
-  @@index([bagId])
-}
-
-// Операции с сиропами
-model SyrupOperation {
-  id          String              @id @default(cuid())
-  syrupId     String
-  userId      String
-  type        SyrupOperationType
-  description String
-  photos      String[]
-  eventTime   DateTime            // время события
-  inputTime   DateTime            @default(now()) // время ввода
-  metadata    Json?
-  
-  syrup       SyrupBottle         @relation(fields: [syrupId], references: [id])
-  user        User                @relation(fields: [userId], references: [id])
-  
-  @@index([syrupId])
-  @@index([userId])
-  @@index([type])
-  @@index([eventTime])
-}
-
-// Операции с водой
-model WaterOperation {
-  id          String              @id @default(cuid())
-  bottleId    String
-  userId      String
-  type        WaterOperationType
-  description String
-  weightBefore Float?
-  weightAfter  Float?
-  photos      String[]
-  eventTime   DateTime
-  inputTime   DateTime            @default(now())
-  metadata    Json?
-  
-  bottle      WaterBottle         @relation(fields: [bottleId], references: [id])
-  user        User                @relation(fields: [userId], references: [id])
-  
-  @@index([bottleId])
-  @@index([userId])
-  @@index([type])
-  @@index([eventTime])
-}
-
-// Операции с сумками
-model BagOperation {
-  id          String             @id @default(cuid())
-  bagId       String
-  userId      String
-  type        BagOperationType
-  description String
-  photos      String[]
-  eventTime   DateTime
-  inputTime   DateTime           @default(now())
-  metadata    Json?
-  
-  bag         Bag                @relation(fields: [bagId], references: [id])
-  user        User               @relation(fields: [userId], references: [id])
-  
-  @@index([bagId])
-  @@index([userId])
-  @@index([type])
-  @@index([eventTime])
-}
-
-enum SyrupBottleStatus {
-  ON_WAREHOUSE
-  ASSIGNED
-  IN_MACHINE
-  OPENED
-  EMPTY
-  EXPIRED
-}
-
-enum WaterBottleStatus {
-  ON_WAREHOUSE
-  ASSIGNED
-  IN_MACHINE
-  EMPTY
-  NEEDS_REPLACEMENT
-}
-
-enum BagStatus {
-  CREATED
-  PACKED
-  ASSIGNED
-  IN_TRANSIT
-  DELIVERED
-  RETURNED
-}
-
-enum SyrupOperationType {
-  RECEIVED
-  ASSIGNED
-  INSTALLED
-  OPENED
-  REMOVED
-  RETURNED
-  EXPIRED
-}
-
-enum WaterOperationType {
-  RECEIVED
-  ASSIGNED
-  INSTALLED
-  WEIGHT_CHECK
-  REMOVED
-  RETURNED
-  REPLACED
-}
-
-enum BagOperationType {
-  CREATED
-  PACKED
-  ASSIGNED
-  DELIVERED
-  RETURNED
-  UNPACKED
-}
-
-// ============= ФИНАНСОВЫЙ МОДУЛЬ =============
-
-// Доходы
-model Revenue {
-  id           String         @id @default(cuid())
-  amount       Float
-  currency     String         @default("UZS")
-  source       RevenueSource
-  machineId    String?
-  userId       String?
-  paymentType  PaymentType
-  isTest       Boolean        @default(false) // тестовая продажа
-  fiscalized   Boolean        @default(false) // фискализирован
-  description  String?
-  metadata     Json?
-  photos       String[]       // фото чеков
-  eventTime    DateTime       // время события
-  inputTime    DateTime       @default(now())
-  createdAt    DateTime       @default(now())
-  
-  machine      Machine?       @relation(fields: [machineId], references: [id])
-  user         User?          @relation(fields: [userId], references: [id])
-  
-  @@index([machineId])
-  @@index([source])
-  @@index([eventTime])
-  @@index([paymentType])
-}
-
-// Расходы
-model Expense {
-  id           String         @id @default(cuid())
-  amount       Float
-  currency     String         @default("UZS")
-  category     ExpenseCategory
-  subcategory  String?
-  machineId    String?
-  userId       String
-  paymentMethod PaymentMethod
-  supplierId   String?
-  description  String
-  receiptPhoto String?        // фото чека
-  status       ExpenseStatus  @default(PENDING)
-  metadata     Json?
-  eventTime    DateTime
-  inputTime    DateTime       @default(now())
-  createdAt    DateTime       @default(now())
-  
-  machine      Machine?       @relation(fields: [machineId], references: [id])
-  user         User           @relation(fields: [userId], references: [id])
-  supplier     Supplier?      @relation(fields: [supplierId], references: [id])
-  
-  @@index([category])
-  @@index([userId])
-  @@index([machineId])
-  @@index([eventTime])
-}
-
-// Инкассация
-model Incassation {
-  id          String           @id @default(cuid())
-  machineId   String
-  operatorId  String
-  managerId   String?
-  amount      Float
-  photos      String[]         // фото наличных
-  status      IncassationStatus @default(COLLECTED)
-  description String?
-  eventTime   DateTime         // время сбора
-  handoverTime DateTime?       // время передачи менеджеру
-  inputTime   DateTime         @default(now())
-  createdAt   DateTime         @default(now())
-  
-  machine     Machine          @relation(fields: [machineId], references: [id])
-  operator    User             @relation("IncassationOperator", fields: [operatorId], references: [id])
-  manager     User?            @relation("IncassationManager", fields: [managerId], references: [id])
-  
-  @@index([machineId])
-  @@index([operatorId])
-  @@index([eventTime])
-}
-
-// Поставщики
-model Supplier {
-  id          String    @id @default(cuid())
-  name        String
-  type        String    // ингредиенты, расходники, запчасти
-  contactInfo Json?     // телефон, email, адрес
-  paymentTerms String?  // условия оплаты
-  currency    String    @default("UZS")
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  expenses    Expense[]
-  ingredientBatches IngredientBatch[]
-  
-  @@index([type])
-  @@index([isActive])
-}
-
-// Сверка продаж и платежей
-model SalesReconciliation {
-  id               String                    @id @default(cuid())
-  machineId        String
-  date             DateTime                  // дата сверки
-  salesFromMachine Float                     // продажи по логам автомата
-  cashCollected    Float                     // собрано наличными
-  qrPayments       Float                     // QR платежи
-  vipSales         Float                     // VIP продажи
-  testSales        Float                     // тестовые продажи
-  totalRevenue     Float                     // общая выручка
-  discrepancy      Float                     // расхождение
-  status           ReconciliationStatus      @default(PENDING)
-  notes            String?                   // комментарии
-  createdById      String
-  createdAt        DateTime                  @default(now())
-  
-  machine          Machine                   @relation(fields: [machineId], references: [id])
-  createdBy        User                      @relation(fields: [createdById], references: [id])
-  
-  @@unique([machineId, date])
-  @@index([date])
-  @@index([status])
-}
-
-// Сверка ингредиентов
-model IngredientReconciliation {
-  id                 String                 @id @default(cuid())
-  machineId          String
-  itemId             String
-  date               DateTime
-  normativeConsumption Float                // нормативный расход по рецептам
-  actualConsumption  Float                 // фактический расход
-  discrepancy        Float                 // расхождение
-  discrepancyPercent Float                 // расхождение в %
-  status             ReconciliationStatus   @default(PENDING)
-  notes              String?
-  createdById        String
-  createdAt          DateTime               @default(now())
-  
-  machine            Machine                @relation(fields: [machineId], references: [id])
-  item               InventoryItem          @relation(fields: [itemId], references: [id])
-  createdBy          User                   @relation(fields: [createdById], references: [id])
-  
-  @@unique([machineId, itemId, date])
-  @@index([date])
-  @@index([status])
-}
-
-// Партии ингредиентов для учета сроков годности
-model IngredientBatch {
-  id             String        @id @default(cuid())
-  itemId         String
-  batchNumber    String
-  productionDate DateTime?
-  expiryDate     DateTime?
-  quantity       Float
-  purchasePrice  Float?
-  supplierId     String?
-  status         BatchStatus   @default(ACTIVE)
-  createdAt      DateTime      @default(now())
-  
-  item           InventoryItem @relation(fields: [itemId], references: [id])
-  supplier       Supplier?     @relation(fields: [supplierId], references: [id])
-  
-  @@unique([itemId, batchNumber])
-  @@index([status])
-  @@index([expiryDate])
-}
-
-enum RevenueSource {
-  SALES
-  QR_PAYME
-  QR_CLICK
-  QR_UZUM
-  CASH
-  VIP_SALE
-  TEST_SALE
-  REFUND
-}
-
-enum PaymentType {
-  CASH
-  QR
-  CARD
-  BANK_TRANSFER
-}
-
-enum ExpenseCategory {
-  INGREDIENTS
-  SUPPLIES
-  MAINTENANCE
-  RENT
-  UTILITIES
-  TRANSPORT
-  SALARY
-  TAXES
-  OTHER
-}
-
-enum PaymentMethod {
-  CASH
-  CARD
-  BANK_TRANSFER
-  ONLINE
-}
-
-enum ExpenseStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  PAID
-}
-
-enum IncassationStatus {
-  COLLECTED
-  HANDED_OVER
-  DEPOSITED
-  DISCREPANCY
-}
-
-enum ReconciliationStatus {
-  PENDING
-  REVIEWED
-  APPROVED
-  REJECTED
-}
-
-enum BatchStatus {
-  ACTIVE
-  CONSUMED
-  EXPIRED
-  RETURNED
-}
-
-// ============= СИСТЕМА ЗАДАЧ И ЧЕКЛИСТОВ =============
-
-// Типы задач
-enum TaskType {
-  GENERAL           // общая задача
-  MAINTENANCE       // техническое обслуживание
-  CLEANING          // уборка
-  REFILL            // заправка
-  INSPECTION        // инспекция
-  REPAIR            // ремонт
-  INVENTORY_CHECK   // проверка остатков
-  CASH_COLLECTION   // инкассация
-  SYRUP_REPLACEMENT // замена сиропов
-  WATER_REPLACEMENT // замена воды
-  SUPPLY_DELIVERY   // доставка расходников
-  EMERGENCY         // экстренная задача
-}
-
-// Шаблоны задач
-model TaskTemplate {
-  id               String                @id @default(cuid())
-  name             String                @unique
-  description      String?
-  type             TaskType              @default(GENERAL)
-  priority         TaskPriority          @default(MEDIUM)
-  estimatedDuration Int?                 // в минутах
-  isActive         Boolean               @default(true)
-  instructions     String?               // инструкции по выполнению
-  requiredRoles    UserRole[]            // какие роли могут выполнять
-  requiredPhotos   String[]              // обязательные фото (описания)
-  metadata         Json?                 // дополнительные настройки
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
-  
-  tasks            Task[]
-  checklists       TaskTemplateChecklist[]
-  
-  @@index([type])
-  @@index([isActive])
-}
-
-// Шаблоны чек-листов для задач
-model TaskTemplateChecklist {
-  id          String             @id @default(cuid())
-  templateId  String
-  name        String
-  description String?
-  order       Int                @default(0)
-  isRequired  Boolean            @default(true)
-  
-  template    TaskTemplate       @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  steps       TaskTemplateStep[]
-  
-  @@unique([templateId, order])
-  @@index([templateId])
-}
-
-// Шаги шаблонов чек-листов
-model TaskTemplateStep {
-  id          String                @id @default(cuid())
-  checklistId String
-  name        String
-  description String?
-  order       Int                   @default(0)
-  stepType    TaskStepType          @default(CHECK)
-  isRequired  Boolean               @default(true)
-  requiresPhoto Boolean             @default(false)
-  requiresNote  Boolean             @default(false)
-  validationRules Json?             // правила валидации
-  metadata    Json?
-  
-  checklist   TaskTemplateChecklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
-  
-  @@unique([checklistId, order])
-  @@index([checklistId])
-}
-
-// Экземпляры чек-листов для конкретных задач
 model TaskChecklist {
-  id          String             @id @default(cuid())
-  taskId      String
-  templateId  String?            // ссылка на шаблон
-  name        String
-  description String?
-  order       Int                @default(0)
-  status      ChecklistStatus    @default(NOT_STARTED)
-  startedAt   DateTime?
-  completedAt DateTime?
-  
-  task        Task               @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  steps       TaskChecklistStep[]
-  
-  @@unique([taskId, order])
-  @@index([taskId])
-  @@index([status])
-}
-
-// Шаги чек-листов для конкретных задач
-model TaskChecklistStep {
   id          String            @id @default(cuid())
-  checklistId String
-  templateStepId String?        // ссылка на шаблон
-  name        String
-  description String?
-  order       Int               @default(0)
-  stepType    TaskStepType      @default(CHECK)
-  status      StepStatus        @default(PENDING)
-  isRequired  Boolean           @default(true)
-  requiresPhoto Boolean         @default(false)
-  requiresNote  Boolean         @default(false)
-  validationRules Json?
-  
-  checklist   TaskChecklist     @relation(fields: [checklistId], references: [id], onDelete: Cascade)
-  executions  TaskStepExecution[]
-  
-  @@unique([checklistId, order])
-  @@index([checklistId])
-  @@index([status])
+  taskId      String            @map("task_id")
+  stepName    String            @map("step_name")
+  status      ChecklistStatus   @default(PENDING)
+  photoUrl    String?           @map("photo_url")
+  weight      Float?
+  notes       String?
+  userId      String?           @map("user_id")
+  timestamp   DateTime?
+  createdAt   DateTime          @default(now()) @map("created_at")
+
+  // Связи
+  task        Task              @relation(fields: [taskId], references: [id])
+  user        User?             @relation(fields: [userId], references: [id])
+
+  @@map("task_checklists")
 }
 
-// Выполнение шагов чек-листов
-model TaskStepExecution {
-  id           String            @id @default(cuid())
-  taskId       String
-  stepId       String
-  userId       String
-  status       StepStatus        @default(PENDING)
-  result       String?           // результат выполнения
-  note         String?           // заметка пользователя
-  photos       String[]          // фото результата
-  gpsLocation  String?           // GPS координаты
-  duration     Int?              // время выполнения в секундах
-  metadata     Json?
-  startedAt    DateTime?
-  completedAt  DateTime?
-  createdAt    DateTime          @default(now())
-  
-  task         Task              @relation(fields: [taskId], references: [id])
-  step         TaskChecklistStep @relation(fields: [stepId], references: [id])
-  user         User              @relation(fields: [userId], references: [id])
-  
-  @@index([taskId])
-  @@index([stepId])
-  @@index([userId])
-  @@index([status])
-}
-
-// Типы шагов чек-листов
-enum TaskStepType {
-  CHECK         // простая галочка
-  PHOTO         // требует фото
-  INPUT_TEXT    // ввод текста
-  INPUT_NUMBER  // ввод числа
-  SELECTION     // выбор из вариантов
-  MEASUREMENT   // измерение
-  SIGNATURE     // подпись
-  GPS_LOCATION  // геолокация
-  QR_SCAN       // сканирование QR
-  TIMER         // таймер
-}
-
-// Статусы чек-листов
 enum ChecklistStatus {
-  NOT_STARTED
-  IN_PROGRESS
-  COMPLETED
-  SKIPPED
-}
-
-// Статусы шагов
-enum StepStatus {
   PENDING
-  IN_PROGRESS
   COMPLETED
   SKIPPED
   FAILED
 }
+
+// ============================================================================
+// РЕЦЕПТЫ
+// ============================================================================
+
+model Recipe {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  totalCost   Float?   @map("total_cost")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Связи
+  ingredients RecipeIngredient[]
+
+  @@map("recipes")
+}
+
+model RecipeIngredient {
+  id           String     @id @default(cuid())
+  recipeId     String     @map("recipe_id")
+  ingredientId String     @map("ingredient_id")
+  amount       Float
+  unit         String
+
+  // Связи
+  recipe       Recipe     @relation(fields: [recipeId], references: [id])
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@map("recipe_ingredients")
+}
+
+// ============================================================================
+// ПРОДАЖИ И ПЛАТЕЖИ
+// ============================================================================
+
+model Sale {
+  id            String        @id @default(cuid())
+  machineId     String        @map("machine_id")
+  productName   String        @map("product_name")
+  amount        Float
+  paymentMethod PaymentMethod @map("payment_method")
+  timestamp     DateTime
+  isTest        Boolean       @default(false) @map("is_test")
+
+  // Связи
+  machine       Machine       @relation(fields: [machineId], references: [id])
+  payments      Payment[]
+
+  @@map("sales")
+}
+
+enum PaymentMethod {
+  CASH
+  QR_PAYME
+  QR_CLICK
+  QR_UZUM
+  CARD
+  VIP
+  TEST
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  saleId        String        @map("sale_id")
+  provider      String
+  amount        Float
+  status        PaymentStatus
+  transactionId String?       @map("transaction_id")
+  timestamp     DateTime
+
+  // Связи
+  sale          Sale          @relation(fields: [saleId], references: [id])
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// ============================================================================
+// ФИНАНСЫ
+// ============================================================================
+
+model Expense {
+  id          String   @id @default(cuid())
+  category    String
+  amount      Float
+  date        DateTime
+  machineId   String?  @map("machine_id")
+  userId      String   @map("user_id")
+  description String?
+  receiptUrl  String?  @map("receipt_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Связи
+  machine     Machine? @relation(fields: [machineId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("expenses")
+}
+
+model Income {
+  id          String   @id @default(cuid())
+  source      String
+  amount      Float
+  date        DateTime
+  machineId   String?  @map("machine_id")
+  userId      String   @map("user_id")
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Связи
+  machine     Machine? @relation(fields: [machineId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("incomes")
+}
+
+// ============================================================================
+// ЖУРНАЛ ДЕЙСТВИЙ
+// ============================================================================
+
+model ActionLog {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  actionType String   @map("action_type")
+  objectType String   @map("object_type")
+  objectId   String   @map("object_id")
+  details    Json?
+  timestamp  DateTime @default(now())
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+
+  // Связи
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@map("action_logs")
+}
+
+// ============================================================================
+// ИНДЕКСЫ ДЛЯ ПРОИЗВОДИТЕЛЬНОСТИ
+// ============================================================================
+
+// Индексы будут созданы автоматически для:
+// - Все @unique поля
+// - Все foreign key поля
+// - Поля с @id
+
+// Дополнительные индексы можно добавить при необходимости

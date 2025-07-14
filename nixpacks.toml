@@ -1,23 +1,8 @@
 [phases.setup]
-nixPkgs = ['nodejs-18_x', 'npm-9_x']
+nixPkgs = ["nodejs_18"]
 
 [phases.install]
-dependsOn = ['setup']
-cmds = [
-    'npm ci',
-    'cd backend && npm ci',
-    'cd backend && npx prisma generate'
-]
-
-[phases.build]
-dependsOn = ['install']
-cmds = [
-    'echo "Build phase complete"'
-]
+cmds = ["npm install --production"]
 
 [start]
-cmd = 'npm start'
-
-[variables]
-NODE_ENV = 'production'
-PORT = '8000'
+cmd = "npm start"

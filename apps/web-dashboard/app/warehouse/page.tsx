@@ -67,40 +67,40 @@ interface Bunker {
 }
 
 export default function WarehousePage() {
-  const [items, setItems] = useState<WarehouseItem[]>([]);
-  const [operations, setOperations] = useState<WarehouseOperation[]>([]);
-  const [bunkers, setBunkers] = useState<Bunker[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [items, setItems] = useState<WarehouseItem[]>([]
+  const [operations, setOperations] = useState<WarehouseOperation[]>([]
+  const [bunkers, setBunkers] = useState<Bunker[]>([]
+  const [loading, setLoading] = useState(true
+  const [searchTerm, setSearchTerm] = useState('
+  const [selectedCategory, setSelectedCategory] = useState(''
+  const [selectedStatus, setSelectedStatus] = useState('
   const [activeTab, setActiveTab] = useState<
     'inventory' | 'operations' | 'bunkers'
-  >('inventory');
-  const [showCreateItemModal, setShowCreateItemModal] = useState(false);
-  const [showOperationModal, setShowOperationModal] = useState(false);
+  >('inventory'
+  const [showCreateItemModal, setShowCreateItemModal] = useState(false
+  const [showOperationModal, setShowOperationModal] = useState(false
 
   // Form state
   const [itemFormData, setItemFormData] = useState({
-    name: '',
+    name: ',
     category: '',
     quantity: 0,
-    unit: '',
+    unit: ',
     minQuantity: 0,
     maxQuantity: 0,
     costPerUnit: 0,
     supplier: '',
-    location: '',
+    location: ',
     expiryDate: ''
-  });
+  }
 
   const [operationFormData, setOperationFormData] = useState({
     type: 'RECEIVE' as 'RECEIVE' | 'DISPATCH' | 'TRANSFER' | 'ADJUSTMENT',
     itemId: 0,
     quantity: 0,
-    description: '',
+    description: ',
     weight: 0
-  });
+  }
 
   const categories = [
     'Напитки',
@@ -113,7 +113,7 @@ export default function WarehousePage() {
   ];
 
   const statusOptions = [
-    { value: '', label: 'Все статусы' },
+    { value: ', label: 'Все статусы' },
     { value: 'IN_STOCK', label: 'В наличии' },
     { value: 'LOW_STOCK', label: 'Мало на складе' },
     { value: 'OUT_OF_STOCK', label: 'Нет в наличии' },
@@ -128,46 +128,46 @@ export default function WarehousePage() {
   ];
 
   useEffect(() => {
-    fetchItems();
-    fetchOperations();
-    fetchBunkers();
-  }, []);
+    fetchItems(
+    fetchOperations(
+    fetchBunkers(
+  }, []
 
   const fetchItems = async () => {
     try {
-      const response = await fetch('/api/v1/warehouse/items');
-      const data = await response.json();
+      const response = await fetch('/api/v1/warehouse/items'
+      const data = await response.json(
       if (data.success) {
-        setItems(data.data);
+        setItems(data.data
       }
     } catch (error) {
-      console.error('Error fetching warehouse items:', error);
+      console.error('Error fetching warehouse items:', error
     }
   };
 
   const fetchOperations = async () => {
     try {
-      const response = await fetch('/api/v1/warehouse/operations');
-      const data = await response.json();
+      const response = await fetch('/api/v1/warehouse/operations'
+      const data = await response.json(
       if (data.success) {
-        setOperations(data.data);
+        setOperations(data.data
       }
     } catch (error) {
-      console.error('Error fetching operations:', error);
+      console.error('Error fetching operations:', error
     } finally {
-      setLoading(false);
+      setLoading(false
     }
   };
 
   const fetchBunkers = async () => {
     try {
-      const response = await fetch('/api/v1/warehouse/bunkers');
-      const data = await response.json();
+      const response = await fetch('/api/v1/warehouse/bunkers'
+      const data = await response.json(
       if (data.success) {
-        setBunkers(data.data);
+        setBunkers(data.data
       }
     } catch (error) {
-      console.error('Error fetching bunkers:', error);
+      console.error('Error fetching bunkers:', error
     }
   };
 
@@ -178,17 +178,17 @@ export default function WarehousePage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(itemFormData)
-      });
+        body: JSON.stringify(itemFormData
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
-        setItems([data.data, ...items]);
-        setShowCreateItemModal(false);
-        resetItemForm();
+        setItems([data.data, ...items]
+        setShowCreateItemModal(false
+        resetItemForm(
       }
     } catch (error) {
-      console.error('Error creating item:', error);
+      console.error('Error creating item:', error
     }
   };
 
@@ -199,35 +199,35 @@ export default function WarehousePage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(operationFormData)
-      });
+        body: JSON.stringify(operationFormData
+      }
 
-      const data = await response.json();
+      const data = await response.json(
       if (data.success) {
-        setOperations([data.data, ...operations]);
-        setShowOperationModal(false);
-        resetOperationForm();
+        setOperations([data.data, ...operations]
+        setShowOperationModal(false
+        resetOperationForm(
         // Refresh items to update quantities
-        fetchItems();
+        fetchItems(
       }
     } catch (error) {
-      console.error('Error creating operation:', error);
+      console.error('Error creating operation:', error
     }
   };
 
   const resetItemForm = () => {
     setItemFormData({
-      name: '',
+      name: ',
       category: '',
       quantity: 0,
-      unit: '',
+      unit: ',
       minQuantity: 0,
       maxQuantity: 0,
       costPerUnit: 0,
       supplier: '',
-      location: '',
+      location: ',
       expiryDate: ''
-    });
+    }
   };
 
   const resetOperationForm = () => {
@@ -235,9 +235,9 @@ export default function WarehousePage() {
       type: 'RECEIVE',
       itemId: 0,
       quantity: 0,
-      description: '',
+      description: ',
       weight: 0
-    });
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -316,26 +316,26 @@ export default function WarehousePage() {
   const filteredItems = items.filter(item => {
     const matchesSearch =
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchTerm.toLowerCase());
+      item.category.toLowerCase().includes(searchTerm.toLowerCase()
     const matchesCategory =
       !selectedCategory || item.category === selectedCategory;
     const matchesStatus = !selectedStatus || item.status === selectedStatus;
     return matchesSearch && matchesCategory && matchesStatus;
-  });
+  }
 
   const filteredOperations = operations.filter(operation => {
     const matchesSearch =
       operation.item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      operation.description.toLowerCase().includes(searchTerm.toLowerCase());
+      operation.description.toLowerCase().includes(searchTerm.toLowerCase()
     return matchesSearch;
-  });
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
-    );
+    
   }
 
   return (
@@ -379,7 +379,7 @@ export default function WarehousePage() {
           >
             <div className="flex items-center gap-2">
               <Package className="w-4 h-4" />
-              Инвентарь ({items.length})
+              Инвентарь ({items.length}
             </div>
           </button>
           <button
@@ -392,7 +392,7 @@ export default function WarehousePage() {
           >
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              Операции ({operations.length})
+              Операции ({operations.length}
             </div>
           </button>
           <button
@@ -405,7 +405,7 @@ export default function WarehousePage() {
           >
             <div className="flex items-center gap-2">
               <Scale className="w-4 h-4" />
-              Бункеры ({bunkers.length})
+              Бункеры ({bunkers.length}
             </div>
           </button>
         </nav>
@@ -675,7 +675,7 @@ export default function WarehousePage() {
                     type="text"
                     value={itemFormData.name}
                     onChange={e =>
-                      setItemFormData({ ...itemFormData, name: e.target.value })
+                      setItemFormData({ ...itemFormData, name: e.target.value }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -691,7 +691,7 @@ export default function WarehousePage() {
                       setItemFormData({
                         ...itemFormData,
                         category: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
@@ -714,8 +714,8 @@ export default function WarehousePage() {
                     onChange={e =>
                       setItemFormData({
                         ...itemFormData,
-                        quantity: parseFloat(e.target.value)
-                      })
+                        quantity: parseFloat(e.target.value
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -729,7 +729,7 @@ export default function WarehousePage() {
                     type="text"
                     value={itemFormData.unit}
                     onChange={e =>
-                      setItemFormData({ ...itemFormData, unit: e.target.value })
+                      setItemFormData({ ...itemFormData, unit: e.target.value }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="шт, кг, л"
@@ -746,8 +746,8 @@ export default function WarehousePage() {
                     onChange={e =>
                       setItemFormData({
                         ...itemFormData,
-                        minQuantity: parseFloat(e.target.value)
-                      })
+                        minQuantity: parseFloat(e.target.value
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -763,8 +763,8 @@ export default function WarehousePage() {
                     onChange={e =>
                       setItemFormData({
                         ...itemFormData,
-                        maxQuantity: parseFloat(e.target.value)
-                      })
+                        maxQuantity: parseFloat(e.target.value
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -781,8 +781,8 @@ export default function WarehousePage() {
                     onChange={e =>
                       setItemFormData({
                         ...itemFormData,
-                        costPerUnit: parseFloat(e.target.value)
-                      })
+                        costPerUnit: parseFloat(e.target.value
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -799,7 +799,7 @@ export default function WarehousePage() {
                       setItemFormData({
                         ...itemFormData,
                         supplier: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -816,7 +816,7 @@ export default function WarehousePage() {
                       setItemFormData({
                         ...itemFormData,
                         location: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Стеллаж А1, Полка 3"
@@ -834,7 +834,7 @@ export default function WarehousePage() {
                       setItemFormData({
                         ...itemFormData,
                         expiryDate: e.target.value
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -844,8 +844,8 @@ export default function WarehousePage() {
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => {
-                    setShowCreateItemModal(false);
-                    resetItemForm();
+                    setShowCreateItemModal(false
+                    resetItemForm(
                   }}
                   className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-50"
                 >
@@ -883,7 +883,7 @@ export default function WarehousePage() {
                       setOperationFormData({
                         ...operationFormData,
                         type: e.target.value as any
-                      })
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
@@ -904,8 +904,8 @@ export default function WarehousePage() {
                     onChange={e =>
                       setOperationFormData({
                         ...operationFormData,
-                        itemId: parseInt(e.target.value)
-                      })
+                        itemId: parseInt(e.target.value
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
@@ -928,8 +928,8 @@ export default function WarehousePage() {
                     onChange={e =>
                       setOperationFormData({
                         ...operationFormData,
-                        quantity: parseFloat(e.target.value)
-                      })
+                        quantity: parseFloat(e.target.value
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -937,7 +937,7 @@ export default function WarehousePage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Вес (кг)
+                    Вес (кг
                   </label>
                   <input
                     type="number"
@@ -946,8 +946,8 @@ export default function WarehousePage() {
                     onChange={e =>
                       setOperationFormData({
                         ...operationFormData,
-                        weight: parseFloat(e.target.value)
-                      })
+                        weight: parseFloat(e.target.value
+                      }
                     }
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -963,7 +963,7 @@ export default function WarehousePage() {
                       setOperationFormData({
                         ...operationFormData,
                         description: e.target.value
-                      })
+                      }
                     }
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -975,8 +975,8 @@ export default function WarehousePage() {
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => {
-                    setShowOperationModal(false);
-                    resetOperationForm();
+                    setShowOperationModal(false
+                    resetOperationForm(
                   }}
                   className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-50"
                 >
@@ -994,5 +994,5 @@ export default function WarehousePage() {
         </div>
       )}
     </div>
-  );
+  
 }

@@ -4,12 +4,12 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const router = useRouter();
+  const router = useRouter(
 
   useEffect(() => {
     // Перенаправляем на дашборд
-    router.push('/dashboard');
-  }, [router]);
+    router.push('/dashboard'
+  }, [router]
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -21,5 +21,5 @@ export default function Home() {
         <p className="text-gray-600">Загрузка...</p>
       </div>
     </div>
-  );
+  
 }

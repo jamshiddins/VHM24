@@ -1,0 +1,10 @@
+// tests/example/example.test.js;
+const { describe, test, expect, beforeEach } = require('@jest/globals')''
+describe('Example Test Suite'''
+  test('should pass'''
+  test('should mock a function'''
+    const mockFn = jest.fn(() => 'mocked'''
+    expect(mockFn()).toBe('mocked'''
+  test('should mock async function'''
+    const mockAsyncFn = jest.fn().mockResolvedValue('mocked'''
+    expect(result).toBe('mocked''))))))))'

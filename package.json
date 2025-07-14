@@ -1,18 +1,17 @@
 {
-  "name": "vhm24-production",
+  "name": "vhm24-emergency",
   "version": "1.0.0",
-  "description": "VHM24 Production Railway Deployment",
-  "main": "start.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node start.js",
-    "dev": "cd backend && npm run dev",
-    "build": "cd backend && npm install && npx prisma generate"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "dotenv": "^16.0.3"
+    "pg": "^8.16.3",
+    "redis": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

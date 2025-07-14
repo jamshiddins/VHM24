@@ -1,0 +1,87 @@
+{
+  "timestamp": "2025-07-14T14:55:14.182Z",
+  "summary": {
+    "totalTests": 6,
+    "passed": 4,
+    "failed": 2,
+    "fixed": 0,
+    "successRate": 67,
+    "fixRate": 0
+  },
+  "tests": [
+    {
+      "name": "Структура проекта",
+      "success": true,
+      "message": "Структура проекта корректна",
+      "details": {
+        "missing": [],
+        "totalChecked": 15
+      },
+      "timestamp": "2025-07-14T14:55:14.151Z"
+    },
+    {
+      "name": "Синтаксис всех JS файлов",
+      "success": false,
+      "message": "Ошибки в 7 файлах",
+      "details": {
+        "errors": [
+          "deployment-ready-fixer.js: Несоответствие фигурных скобок (101 открытых, 99 закрытых)",
+          "emergency-syntax-fixer.js: Несоответствие фигурных скобок (113 открытых, 109 закрытых)",
+          "final-cleanup.js: Несоответствие фигурных скобок (11 открытых, 7 закрытых)",
+          "final-error-eliminator.js: Несоответствие фигурных скобок (25 открытых, 20 закрытых)",
+          "production-ready-fixer.js: Несоответствие фигурных скобок (212 открытых, 208 закрытых)",
+          "quick-fix.js: Несоответствие фигурных скобок (4 открытых, 3 закрытых)",
+          "ultimate-error-fixer.js: Несоответствие фигурных скобок (99 открытых, 97 закрытых)"
+        ],
+        "totalFiles": 110
+      },
+      "timestamp": "2025-07-14T14:55:14.174Z"
+    },
+    {
+      "name": "Зависимости и package.json",
+      "success": true,
+      "message": "Все зависимости в порядке",
+      "details": {
+        "issues": []
+      },
+      "timestamp": "2025-07-14T14:55:14.175Z"
+    },
+    {
+      "name": "Конфигурационные файлы",
+      "success": true,
+      "message": "Все конфигурационные файлы в порядке",
+      "details": {
+        "issues": []
+      },
+      "timestamp": "2025-07-14T14:55:14.177Z"
+    },
+    {
+      "name": "Redis ошибки в Telegram Bot",
+      "success": true,
+      "message": "Redis ошибки обрабатываются корректно",
+      "details": {
+        "hasRedisConnection": true,
+        "hasRedisErrorHandling": true
+      },
+      "timestamp": "2025-07-14T14:55:14.178Z"
+    },
+    {
+      "name": "Критические файлы",
+      "success": false,
+      "message": "Проблемы: backend/src/utils/logger.js: не содержит Express/Router",
+      "details": {
+        "issues": [
+          "backend/src/utils/logger.js: не содержит Express/Router"
+        ],
+        "checkedFiles": 8
+      },
+      "timestamp": "2025-07-14T14:55:14.182Z"
+    }
+  ],
+  "fixes": [],
+  "recommendations": [
+    "Некоторые проблемы требуют ручного исправления",
+    "Запустите comprehensive-system-test.js для финальной проверки",
+    "Установите зависимости: cd apps/telegram-bot && npm install"
+  ]
+}
