@@ -458,7 +458,7 @@ module.exports = { app, startServer };
         
         const baseUrl = this.optimizedVars.PUBLIC_DOMAIN 
             ? `https://${this.optimizedVars.PUBLIC_DOMAIN}`
-            : process.env.WEB-PRODUCTION-73916_UP_RAILWAY_APP_URL || 'https://web-production-73916.up.railway.app';
+            : process.env.WEB-PRODUCTION-73916_UP_RAILWAY_APP_URL || process.env.WEB-PRODUCTION-73916_UP_RAILWAY_APP_URL || 'https://web-production-73916.up.railway.app';
         
         const endpoints = [
             '/api/health',
