@@ -6,16 +6,6 @@ healthcheckPath = "/health"
 healthcheckTimeout = 30
 restartPolicyType = "always"
 
-[[services]]
-name = "vhm24-backend"
-source = "."
-build = "npm install && npm run build"
-start = "npm run start:prod"
-
 [env]
 NODE_ENV = "production"
-PORT = "$PORT"
-JWT_SECRET = "$JWT_SECRET"
-DATABASE_URL = "$DATABASE_URL"
-REDIS_URL = "$REDIS_URL"
-TELEGRAM_BOT_TOKEN = "$TELEGRAM_BOT_TOKEN"
+PORT = "8000"
