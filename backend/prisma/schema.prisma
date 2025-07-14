@@ -34,6 +34,7 @@ model User {
   tasksAssigned  Task[]           @relation("TaskAssignee")
   tasksCreated   Task[]           @relation("TaskCreator")
   taskActions    TaskAction[]
+  taskStepExecutions TaskStepExecution[]
   routes         Route[]
   driverLogs     DriverLog[]
   notifications  Notification[]
