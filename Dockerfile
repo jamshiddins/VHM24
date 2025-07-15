@@ -2,15 +2,14 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Установка зависимостей
-COPY package*.json ./
-RUN npm ci --only=production
-
 # Копирование исходного кода
 COPY . .
 
 # Создание директорий для логов и загрузок
 RUN mkdir -p logs uploads
+
+# Установка зависимостей
+RUN npm ci --only=production
 
 # Генерация Prisma клиента
 RUN cd backend && npx prisma generate
