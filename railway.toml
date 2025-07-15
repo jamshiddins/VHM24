@@ -33,5 +33,5 @@ sleepApplication = false
 restartPolicyType = "on-failure"
 restartPolicyMaxRetries = 10
 
-[environments]
-production = "main"
+# Environments configuration
+# Removed due to compatibility issues with new Railway CLI
