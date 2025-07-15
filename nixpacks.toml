@@ -1,11 +1,25 @@
 [phases.setup]
-nixPkgs = ["nodejs", "postgresql"]
+nixPkgs = ["nodejs", "npm", "postgresql", "redis"]
 
 [phases.install]
-cmds = ["npm ci"]
+cmds = ["npm install"]
 
 [phases.build]
-cmds = ["npx prisma generate"]
+cmds = [
+  "npm run prisma:generate",
+  "npm run build"
+]
 
 [start]
 cmd = "npm start"
+
+[healthcheck]
+path = "/health"
+interval = "30s"
+timeout = "10s"
+retries = 3
+
+[deploy]
+numReplicas = 1
+restartPolicy = "on-failure"
+restartPolicyMaxRetries = 10

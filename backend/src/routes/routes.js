@@ -1,12 +1,12 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
-const roleCheck = require('../middleware/roleCheck');
+const { requireRole, authenticateToken } = require('../middleware/roleCheck');
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// GET /api/routes - Получить все маршруты;
-router.get('/', roleCheck(['admin', 'manager', 'operator']), async (req, res) => {
+// GET /api/routes - Получить все маршруты
+router.get('/', authenticateToken, requireRole(['ADMIN', 'MANAGER', 'OPERATOR']), async (req, res) => {
   try {
     const { operatorId, date } = req.query;
     const where = {};
@@ -17,68 +17,68 @@ router.get('/', roleCheck(['admin', 'manager', 'operator']), async (req, res) =>
     
     if (date) {
       where.routeDate = {
-        "gte": new Date(date),;
-        "lt": new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000);
+        gte: new Date(date),
+        lt: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000)
       };
     }
     
-    const routes = await prisma.await route.findMany({
-      where,;
-      "include": {,
-  "assignedOperator": true,;
-        "stops": {,
-  "include": {
-            "machine": true;
-          },;
-          "orderBy": {,
-  "order": 'asc';
+    const routes = await prisma.route.findMany({
+      where,
+      include: {
+        assignedOperator: true,
+        stops: {
+          include: {
+            machine: true
+          },
+          orderBy: {
+            order: 'asc'
           }
         }
       }
     });
     res.json(routes);
   } catch (error) {
-    console.error('Error fetching "routes":', error);
-    res.status(500).json({ "error": 'Failed to fetch routes' });
+    console.error('Error fetching routes:', error);
+    res.status(500).json({ error: 'Failed to fetch routes' });
   }
 });
 
-// POST /api/routes - Создать маршрут;
-router.post('/', authenticateToken, roleCheck(['manager']), async (req, res) => {
+// POST /api/routes - Создать маршрут
+router.post('/', authenticateToken, requireRole(['ADMIN', 'MANAGER']), async (req, res) => {
   try {
     const { routeName, assignedOperatorId, routeDate, machines } = req.body;
     
     const route = await prisma.route.create({
-      "data": {
-        routeName,;
-        assignedOperatorId,;
-        "routeDate": new Date(routeDate),;
-        "machinesOrder": machines,;
-        "status": 'PLANNED';
+      data: {
+        routeName,
+        assignedOperatorId,
+        routeDate: new Date(routeDate),
+        machinesOrder: machines,
+        status: 'PLANNED'
       }
     });
 
-    // Создать остановки маршрута;
+    // Создать остановки маршрута
     if (machines && machines.length > 0) {
       await prisma.routeStop.createMany({
-        "data": machines.map((machineId, index) => ({
-          "routeId": route.id,;
-          machineId,;
-          "order": index + 1;
-        }));
+        data: machines.map((machineId, index) => ({
+          routeId: route.id,
+          machineId,
+          order: index + 1
+        }))
       });
     }
 
-    const routeWithStops = await prisma.await route.findUnique({
-      "where": { "id": route.id },;
-      "include": {,
-  "assignedOperator": true,;
-        "stops": {,
-  "include": {
-            "machine": true;
-          },;
-          "orderBy": {,
-  "order": 'asc';
+    const routeWithStops = await prisma.route.findUnique({
+      where: { id: route.id },
+      include: {
+        assignedOperator: true,
+        stops: {
+          include: {
+            machine: true
+          },
+          orderBy: {
+            order: 'asc'
           }
         }
       }
@@ -86,8 +86,8 @@ router.post('/', authenticateToken, roleCheck(['manager']), async (req, res) => 
 
     res.status(201).json(routeWithStops);
   } catch (error) {
-    console.error('Error creating "route":', error);
-    res.status(500).json({ "error": 'Failed to create route' });
+    console.error('Error creating route:', error);
+    res.status(500).json({ error: 'Failed to create route' });
   }
 });
 

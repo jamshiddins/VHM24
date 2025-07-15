@@ -1,29 +1,25 @@
-const _canvas = require('canvas')'';
-const _jwt = require('jsonwebtoken')'''';
-  "setupFilesAfterEnv": ['<rootDir>/jest.setup.js'],'''';
-  "testEnvironment": 'node','''';
-  "testMatch": ['<rootDir>/simple-tests.test.js''''''';
-    '/node_modules/','''';
-    '/_services /','''';
-    '/packages/','''';
-    'tests/auth/','''';
-    'tests/_data -import/','''';
-    'tests/gateway/','''';
-    'tests/inventory/','''';
-    'tests/machines/','''';
-    'tests/monitoring/','''';
-    'tests/notifications/','''';
-    'tests/routes/','''';
-    'tests/tasks/','''';
-    'tests/telegram-bot/','''';
-    'tests/warehouse/''''''';
-  "coverageDirectory": 'coverage''''''';
-    'backend/src/utils/require("./utils/logger").js','''';
-    '_check -env.js','''';
-    'scripts/cleanup-analysis.js','''';
-    '!**/node_modulesvendor*.test.js''''''';
-  process.env.API_KEY_213 || "transformIgnorePatterns": ['/node_modules/(?!(fast-jwt|canvas|skia-canvas)/)''''''';
-    '^canvas$': '<rootDir>/mocks/canvas.js','''';
-    '^skia-canvas$': '<rootDir>/mocks/canvas.js','''';
-    '^fast-jwt$': '<rootDir>/mocks/jwt.js''''';
-'']]
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  roots: ['<rootDir>'],
+  testMatch: ['**/__tests__/**/*.js', '**/?(*.)+(spec|test).js'],
+  transform: {
+    '^.+\\.tsx?$': 'ts-jest'
+  },
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  collectCoverageFrom: [
+    'src/**/*.{js,ts}',
+    'backend/**/*.{js,ts}',
+    'apps/**/*.{js,ts}',
+    '!**/node_modules/**',
+    '!**/dist/**',
+    '!**/__tests__/**'
+  ],
+  coverageReporters: ['text', 'lcov', 'clover'],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  verbose: true,
+  testTimeout: 30000,
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js']
+};

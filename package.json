@@ -3,34 +3,63 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node start-production.js",
-    "dev": "node server.js",
+    "start": "node index.js",
+    "start:dev": "node server.js",
+    "start:local": "node start-local.js",
+    "start:prod": "node start-production.js",
+    "start:worker": "node src/worker.js",
+    "start:scheduler": "node src/scheduler.js",
+    "start:system": "node apps/start-vendhub-system.js",
+    "start:all": "concurrently \"npm start\" \"npm run start:worker\" \"npm run start:scheduler\" \"npm run start:bot\"",
+    "build": "cd backend && npx prisma generate",
     "postinstall": "npx prisma generate",
+    "check:env": "node check-env-variables.js",
+    "check:railway-logs": "node check-railway-logs.js",
+    "setup:railway-variables": "node setup-railway-variables.js",
+    "extract:railway-variables": "node extract-railway-variables.js",
     "start:bot": "node apps/telegram-bot/src/index.js",
     "dev:bot": "nodemon apps/telegram-bot/src/index.js",
     "prisma:generate": "cd backend && npx prisma generate",
     "prisma:migrate": "cd backend && npx prisma migrate dev",
     "prisma:studio": "cd backend && npx prisma studio",
-    "deploy": "node deploy-to-railway-complete.js"
+    "deploy": "node deploy-to-railway.js",
+    "deploy:railway": "node deploy-to-railway.js",
+    "deploy:railway:safe": "node deploy-to-railway-with-env-check.js",
+    "setup:webhook": "node setup-telegram-webhook.js",
+    "check:health": "curl $RAILWAY_PUBLIC_URL/api/health || node check-system-health.js",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "cleanup": "node cleanup-project.js",
+    "update:git": "node update-git.js",
+    "prepare:deploy": "npm run cleanup && npm run update:git && npm run deploy"
   },
   "dependencies": {
     "@prisma/client": "^6.11.1",
     "axios": "^1.10.0",
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "exceljs": "^4.4.0",
     "express": "^4.18.2",
+    "helmet": "^7.1.0",
     "pg": "^8.16.3",
     "redis": "^5.6.0",
-    "uuid": "^11.1.0",
-    "xlsx": "^0.18.5",
     "telegraf": "^4.12.2",
-    "dotenv": "^16.3.1"
+    "uuid": "^11.1.0",
+    "winston": "^3.11.0",
+    "xlsx": "^0.18.5"
   },
   "engines": {
     "node": ">=16.0.0",
     "npm": ">=8.0.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.14",
     "@types/node": "^24.0.13",
-    "dotenv": "^17.2.0"
+    "@types/supertest": "^6.0.3",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4",
+    "ts-jest": "^29.4.0"
   }
 }

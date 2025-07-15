@@ -8,6 +8,7 @@ const warehouseRoutes = require('./warehouse');
 const dataImportRoutes = require('./data-import');
 const telegramRoutes = require('./telegram');
 const healthRoutes = require('./health');
+const routesRoutes = require('./routes');
 
 const router = express.Router();
 
@@ -21,6 +22,7 @@ router.use('/warehouse', warehouseRoutes);
 router.use('/data-import', dataImportRoutes);
 router.use('/telegram', telegramRoutes);
 router.use('/health', healthRoutes);
+router.use('/routes', routesRoutes);
 
 // Базовый маршрут API
 router.get('/', (req, res) => {
@@ -36,7 +38,8 @@ router.get('/', (req, res) => {
       '/api/warehouse',
       '/api/data-import',
       '/api/telegram',
-      '/api/health'
+      '/api/health',
+      '/api/routes'
     ]
   });
 });

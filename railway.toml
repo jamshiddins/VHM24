@@ -1,13 +1,37 @@
+# Railway configuration file for VHM24
+
 [build]
 builder = "nixpacks"
-buildCommand = "npm ci"
+buildCommand = "npm install && npm run prisma:generate && npm run build"
 
 [deploy]
 startCommand = "npm start"
-healthcheckPath = "/api/health"
-healthcheckTimeout = 300
+healthcheckPath = "/health"
+healthcheckTimeout = 100
 restartPolicyType = "on-failure"
-restartPolicyMaxRetries = 5
+restartPolicyMaxRetries = 10
 
-[nixpacks]
-nodejs-version = "16"
+[deploy.web]
+numReplicas = 1
+sleepApplication = false
+healthcheckPath = "/health"
+healthcheckTimeout = 100
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 10
+
+[deploy.worker]
+startCommand = "npm run start:worker"
+numReplicas = 1
+sleepApplication = false
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 10
+
+[deploy.scheduler]
+startCommand = "npm run start:scheduler"
+numReplicas = 1
+sleepApplication = false
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 10
+
+[environments]
+production = "main"

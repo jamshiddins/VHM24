@@ -1,0 +1,137 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: railway_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Create .env.test file
+        run: |
+          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/railway_test" > .env.test
+          echo "REDIS_URL=redis://localhost:6379" >> .env.test
+          echo "PORT=3000" >> .env.test
+          echo "NODE_ENV=test" >> .env.test
+          echo "JWT_SECRET=test_jwt_secret" >> .env.test
+          echo "SESSION_SECRET=test_session_secret" >> .env.test
+          echo "API_KEY=test_api_key" >> .env.test
+          echo "TELEGRAM_BOT_TOKEN=test_telegram_bot_token" >> .env.test
+          echo "WEBHOOK_URL=https://example.com/api/telegram/webhook" >> .env.test
+      
+      - name: Generate Prisma client
+        run: npx prisma generate
+      
+      - name: Run tests
+        run: npm test
+      
+      - name: Validate environment variables
+        run: |
+          echo "Проверка переменных окружения в CI/CD..."
+          node check-env-variables.js
+  
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+      
+      - name: Deploy to Railway
+        run: railway up
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      
+      - name: Wait for deployment to complete
+        run: sleep 60
+      
+      - name: Check health
+        run: |
+          HEALTH_URL=$(railway variables get RAILWAY_PUBLIC_URL --token "${{ secrets.RAILWAY_TOKEN }}" --output json | jq -r '.RAILWAY_PUBLIC_URL')/api/health
+          echo "Checking health at $HEALTH_URL"
+          curl -f $HEALTH_URL || exit 1
+      
+      - name: Setup Telegram webhook
+        run: |
+          WEBHOOK_URL=$(railway variables get RAILWAY_PUBLIC_URL --token "${{ secrets.RAILWAY_TOKEN }}" --output json | jq -r '.RAILWAY_PUBLIC_URL')/api/telegram/webhook
+          BOT_TOKEN=$(railway variables get TELEGRAM_BOT_TOKEN --token "${{ secrets.RAILWAY_TOKEN }}" --output json | jq -r '.TELEGRAM_BOT_TOKEN')
+          echo "Setting webhook to $WEBHOOK_URL"
+          curl -f "https://api.telegram.org/bot$BOT_TOKEN/setWebhook?url=$WEBHOOK_URL" || exit 1
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      
+      - name: Notify on success
+        if: success()
+        run: |
+          BOT_TOKEN=$(railway variables get TELEGRAM_BOT_TOKEN --token "${{ secrets.RAILWAY_TOKEN }}" --output json | jq -r '.TELEGRAM_BOT_TOKEN')
+          CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}
+          MESSAGE="✅ Деплой успешно завершен! Коммит: ${{ github.sha }}"
+          curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" -d "chat_id=$CHAT_ID&text=$MESSAGE"
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      
+      - name: Notify on failure
+        if: failure()
+        run: |
+          BOT_TOKEN=$(railway variables get TELEGRAM_BOT_TOKEN --token "${{ secrets.RAILWAY_TOKEN }}" --output json | jq -r '.TELEGRAM_BOT_TOKEN')
+          CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}
+          MESSAGE="❌ Деплой завершился с ошибкой! Коммит: ${{ github.sha }}"
+          curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" -d "chat_id=$CHAT_ID&text=$MESSAGE"
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

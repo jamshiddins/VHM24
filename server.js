@@ -50,7 +50,7 @@ app.use('*', (req, res) => {
 
 // Start server - КРИТИЧЕСКИ ВАЖНО прослушивание process.env.PORT
 app.listen(PORT, '0.0.0.0', () => {
-  
-  
-  
+  console.log(`[${new Date().toISOString()}] Server running on port ${PORT}`);
+  console.log(`[${new Date().toISOString()}] Health check: http://localhost:${PORT}/health`);
+  console.log(`[${new Date().toISOString()}] API health check: http://localhost:${PORT}/api/health`);
 });

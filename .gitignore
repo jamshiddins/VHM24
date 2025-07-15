@@ -49,6 +49,11 @@ Thumbs.db
 *.temp
 *.bak
 *.backup
+*~
+.*.swp
+.*.swo
+*.old
+debug.*
 
 # Cache
 .cache/
@@ -62,6 +67,24 @@ uploads/*
 
 # Railway
 .railway/
+railway-production-secrets.env
+railway-*.env
 
 # Docker
 .dockerignore
+
+# Reports and documentation
+*_REPORT.md
+*-report.json
+*-report.md
+*-autofix.js
+*-fix.js
+*-fixer.js
+*-test.js
+*-check.js
+*-monitor.js
+*-deploy.js
+*-setup.js
+*-validator.js
+*-eliminator.js
+*-solver.js

@@ -1,67 +1,215 @@
-# Игнорируемые файлы и директории для Railway
+# Игнорировать файлы и директории при деплое в Railway
 
 # Системные файлы
-.git
-.github
-.vscode
-.idea
 .DS_Store
-
-# Зависимости
-node_modules
-**/node_modules
+Thumbs.db
+desktop.ini
 
 # Логи
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Временные файлы
-tmp
-temp
-.tmp
-.temp
+# Директории зависимостей
+node_modules/
+jspm_packages/
+bower_components/
+
+# Кэш
+.npm
+.eslintcache
+.node_repl_history
+.yarn-integrity
+.cache
+.parcel-cache
+
+# Директории сборки
+dist/
+build/
+out/
+.next/
+.nuxt/
+.vuepress/dist
+.serverless/
+.fusebox/
+.dynamodb/
 
 # Файлы окружения (кроме примеров)
 .env
 .env.local
 .env.development
 .env.test
+.env.production
+.env.railway
+
+# Не игнорировать примеры файлов окружения
 !.env.example
 !.env.railway.example
-!.env.production
 
-# Файлы разработки
+# Файлы IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Временные файлы
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+
+# Отчеты и документация
+ANALYSIS_REPORT.md
+analysis-report.json
+audit_report.md
+BUG_FIXES_REPORT.md
+COMPATIBILITY_SOLUTION.md
+COMPLETE_FIXES_REPORT.md
+COMPLETE_INSTRUCTIONS.md
+COMPREHENSIVE_SYSTEM_TEST_REPORT.md
+COMPREHENSIVE_TESTING_COMPLETE.md
+comprehensive-fix-report.json
+comprehensive-test-report.json
+connection-test-results.json
+CONSERVATIVE_FIX_REPORT.md
+CRITICAL_FIXES_COMPLETE.md
+DATABASE_MIGRATION_PLAN.md
+DATABASE_MIGRATION_SUMMARY.md
+deep-analysis-report-*.json
+deployment_checklist.md
+DEPLOYMENT_READINESS_REPORT.md
+DETAILED_IMPLEMENTATION_REPORT.md
+EMERGENCY_FIX_REPORT.md
+ENV_AUDIT_COMPLETE_REPORT.md
+env-check-report.json
+ENVIRONMENT_VARIABLES_CHECK.md
+ENVIRONMENT_VARIABLES.md
+ERRORS_FIXED_REPORT.md
+FINAL_AUDIT_COMPLETE_REPORT.md
+FINAL_BUG_FIXES_SUMMARY.md
+FINAL_COMPREHENSIVE_AUDIT_REPORT.md
+FINAL_COMPREHENSIVE_TESTING_REPORT.md
+FINAL_DEPLOYMENT_REPORT.md
+FINAL_DEPLOYMENT_SUMMARY.md
+FINAL_INFRASTRUCTURE_STATUS.md
+FINAL_INSTRUCTIONS.md
+FINAL_OPTIMIZATION_REPORT.md
+FINAL_PRODUCTION_READY.md
+FINAL_REPORT.md
+FINAL_SETUP_INSTRUCTIONS.md
+FINAL_VHM24_AUDIT_COMPLETE.md
+fix_report.md
+fix-and-test-report.json
+fix-report.json
+FIX_PLAN.md
+git-update-commands.md
+IMPLEMENTATION_REPORT.md
+IMPROVEMENT_REPORT.md
+INFRASTRUCTURE_ANALYSIS_REPORT.md
+infrastructure-test-report.json
+OPTIMIZATION_REPORT.md
+PHASE1_REPORT.md
+PHASE2_REPORT.md
+PHASE4_REPORT.md
+PRODUCTION_AUDIT_REPORT.md
+PRODUCTION_READY_REPORT.md
+production-audit-report.json
+PROJECT_OPTIMIZATION_SUMMARY.md
+PROJECT_READY_REPORT.md
+railway-compatibility-report.json
+railway-test-results.json
+
+# Резервные копии
+backup/
+backup-*/
+*.backup
+backup.json
+*.prisma.backup
+*.prisma.backup-*
+
+# Скрипты для автоматизации и фиксов
+audit-autofix.js
+auto-deploy-and-git-update.js
+checkDockerfiles_fixed.js
+cleanup-project.js
+comprehensive-autofix.js
+comprehensive-system-test-and-db-check.js
+comprehensive-test.js
+deploy-and-setup.js
+deploy-production.sh
+deploy-railway.js
+deploy-to-production.js
+deploy-to-railway-complete.js
+deploy-to-railway-online.js
+deploy-to-railway-with-env-check.js
+deploy-to-railway.js
+deploy-to-vercel.js
+deployment-ready-fixer.js
+diagnose-and-fix-all.js
+direct-mass-fixer.js
+emergency-server.js
+extract-railway-database-url-fixed.js
+extract-railway-database-url.js
+final-cleanup.js
+final-deployment-validator.js
+final-error-eliminator.js
+final-system-check.js
+findHardcodedVariables_fixed.js
+fix-all-critical-errors-final.js
+fix-api-connections.js
+fix-critical-issues.js
+fix-database-url-complete.js
+fix-env-and-start-system.js
+fix-prisma-critical-final.js
+fix-prisma-final-errors.js
+fix-prisma-relations-final.js
+fix-prisma-schema-critical-errors.js
+fix-prisma-schema-duplicates.js
+fix-prisma-schema-errors.js
+fix-prisma-schema-final.js
+fix-prisma-ultimate-final.js
+fix-railway-package.js
+fix-railway-package.sh
+fix-roles-and-api.js
+fix-telegram-bot-and-api.js
+get-railway-database-complete.js
+get-railway-database-info-fixed.js
+get-railway-database-info-working.js
+get-railway-database-info.js
+get-railway-database-url-final.js
+health-monitor.js
+implement-vendhub-complete-database.js
+monitor-24-7.js
+monitor-and-restart.sh
+monitor.html
+monitoring.js
+optimizeBuild_fixed.js
+production-ready-fixer.js
+production-test.js
+quick-fix-and-run.js
+quick-mass-fixer.js
+railway-cleanup-and-optimize.js
+railway-conservative-error-fixer.js
+railway-critical-problem-solver.js
+railway-final-fix.js
+railway-final-production-configurator.js
+railway-production-setup.js
+railway-start-simple.js
+railway-test-complete.js
+railway-ultimate-deployment-solver.js
+
+# Другие файлы, которые не нужны в продакшене
 *.test.js
 *.spec.js
-**/__tests__
-**/__mocks__
-**/test
-**/tests
-
-# Документация
-docs
-*.md
-!README.md
-
-# Бэкапы
-backups
-**/backups
-
-# Загрузки
-uploads/*
-!uploads/.gitkeep
-
-# Конфигурационные файлы разработки
-.eslintrc
-.prettierrc
-.babelrc
-jest.config.js
-tsconfig.json
-
-# Другие файлы
-*.zip
-*.tar.gz
-*.tgz
+__tests__/
+__mocks__/
+test/
+tests/
