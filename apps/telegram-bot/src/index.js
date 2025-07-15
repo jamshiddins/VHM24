@@ -2,8 +2,11 @@
  * Telegram бот для VHM24
  */
 require('dotenv').config();
-const { Telegraf, Markup } = require('telegraf');
+const { Telegraf, Markup, session, Scenes } = require('telegraf');
 const axios = require('axios');
+
+// Импорт FSM-сценариев
+const { allScenes } = require('./scenes');
 
 // Конфигурация
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -21,13 +24,22 @@ if (!BOT_TOKEN) {
 // Создание бота
 const bot = new Telegraf(BOT_TOKEN);
 
+// Создание менеджера сцен
+const stage = new Scenes.Stage(allScenes);
+
 // Middleware для логирования
 bot.use((ctx, next) => {
     const user = ctx.from;
     const message = ctx.message || {};
-    .toISOString()}] ${user?.id} (${user?.username}): ${message.text || '[не текст]'}`);
+    console.log(`[${new Date().toISOString()}] ${user?.id} (${user?.username}): ${message.text || '[не текст]'}`);
     return next();
 });
+
+// Middleware для сессии
+bot.use(session());
+
+// Middleware для сцен
+bot.use(stage.middleware());
 
 // Middleware для проверки администратора
 const isAdmin = (ctx, next) => {
@@ -56,7 +68,8 @@ bot.start((ctx) => {
 Выберите действие из меню ниже:
     `;
     
-    ctx.reply(welcomeMessage, mainMenu);
+    // Переход к FSM-сценарию главного меню
+    ctx.scene.enter('main_menu_fsm');
 });
 
 // Команда /help
@@ -82,7 +95,8 @@ bot.hears('🏪 Автоматы', async (ctx) => {
 });
 
 bot.hears('📋 Мои задачи', async (ctx) => {
-    await handleTasksCommand(ctx);
+    // Переход к FSM-сценарию задач
+    ctx.scene.enter('task_execution_fsm');
 });
 
 bot.hears('📊 Статус системы', async (ctx) => {
@@ -296,6 +310,25 @@ bot.command('webhook', isAdmin, async (ctx) => {
     }
 });
 
+// Команды для запуска FSM-сценариев
+bot.command('admin', (ctx) => ctx.scene.enter('admin_fsm'));
+bot.command('finance', (ctx) => ctx.scene.enter('finance_fsm'));
+bot.command('report', (ctx) => ctx.scene.enter('report_fsm'));
+bot.command('user', (ctx) => ctx.scene.enter('user_fsm'));
+bot.command('directory', (ctx) => ctx.scene.enter('directory_fsm'));
+bot.command('import', (ctx) => ctx.scene.enter('import_fsm'));
+bot.command('error', (ctx) => ctx.scene.enter('error_fsm'));
+bot.command('retro', (ctx) => ctx.scene.enter('retro_fsm'));
+bot.command('cash', (ctx) => ctx.scene.enter('cash_fsm'));
+bot.command('warehouse_inventory', (ctx) => ctx.scene.enter('warehouse_check_inventory_fsm'));
+bot.command('warehouse_return', (ctx) => ctx.scene.enter('warehouse_return_fsm'));
+bot.command('warehouse_receive', (ctx) => ctx.scene.enter('warehouse_receive_fsm'));
+bot.command('bag', (ctx) => ctx.scene.enter('bag_fsm'));
+bot.command('checklist', (ctx) => ctx.scene.enter('checklist_fsm'));
+bot.command('task_execution', (ctx) => ctx.scene.enter('task_execution_fsm'));
+bot.command('task_create', (ctx) => ctx.scene.enter('task_create_fsm'));
+bot.command('main_menu', (ctx) => ctx.scene.enter('main_menu_fsm'));
+
 // Обработка неизвестных команд и текста
 bot.on('text', (ctx) => {
     if (!ctx.message.text.startsWith('/')) {
@@ -317,12 +350,12 @@ bot.catch((err, ctx) => {
 async function setupWebhook() {
     try {
         if (process.env.NODE_ENV === 'production') {
-            
+            console.log(`🔄 Настройка вебхука на URL: ${WEBHOOK_URL}`);
             
             // Проверка доступности API
             try {
                 await axios.get(`${API_BASE_URL}/health`, { timeout: 5000 });
-                
+                console.log('✅ API доступен');
                 
                 // Установка вебхука через API
                 const response = await axios.post(`${API_BASE_URL}/telegram/setWebhook?token=${BOT_TOKEN}`, {
@@ -332,16 +365,16 @@ async function setupWebhook() {
                 });
                 
                 if (response.data && response.data.success) {
-                    
+                    console.log('✅ Вебхук успешно настроен');
                 } else {
                     console.warn('⚠️ Ответ API не подтвердил успешную настройку вебхука');
                 }
             } catch (error) {
                 console.error('❌ Ошибка настройки вебхука:', error.message);
-                
+                console.log('⚠️ Продолжение запуска бота в режиме long polling');
             }
         } else {
-            
+            console.log('🔄 Запуск бота в режиме long polling (development)');
         }
     } catch (error) {
         console.error('❌ Ошибка настройки вебхука:', error);
@@ -351,7 +384,7 @@ async function setupWebhook() {
 // Запуск бота
 async function startBot() {
     try {
-        
+        console.log('🚀 Запуск Telegram бота...');
         
         // Настройка вебхука
         await setupWebhook();
@@ -359,7 +392,7 @@ async function startBot() {
         // Проверка подключения к API
         try {
             const response = await axios.get(`${API_BASE_URL}/health`, { timeout: 5000 });
-            
+            console.log(`✅ API доступен: ${JSON.stringify(response.data)}`);
         } catch (error) {
             console.error(`❌ Ошибка подключения к API: ${error.message}`);
         }
@@ -367,9 +400,10 @@ async function startBot() {
         // Запуск бота
         await bot.launch();
         
+        console.log('✅ Бот успешно запущен');
         
         // Вывод информации о конфигурации
-         || 'Не настроены'}`);
+        console.log(`🔧 Конфигурация бота: API_BASE_URL=${API_BASE_URL}, WEBHOOK_URL=${WEBHOOK_URL}, ADMIN_IDS=${ADMIN_IDS.join(', ') || 'Не настроены'}`);
         
         // Graceful stop
         process.once('SIGINT', () => bot.stop('SIGINT'));

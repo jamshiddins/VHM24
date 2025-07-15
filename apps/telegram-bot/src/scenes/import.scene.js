@@ -11,13 +11,13 @@
  */
 
 const { Scenes, Markup } = require('telegraf');
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('../utils/prisma-mock');
 const prisma = new PrismaClient();
 const states = require('../states');
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
-const excelImport = require('../../utils/excelImport');
+const excelImport = require('../utils/excelImport');
 
 // Создание сцены
 const scene = new Scenes.BaseScene('import_fsm');

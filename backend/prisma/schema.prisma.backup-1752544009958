@@ -18,9 +18,7 @@ datasource db {
 model User {
   id          String   @id @default(cuid())
   telegramId  String   @unique @map("telegram_id")
-  firstName   String
-  lastName    String
-  name        String @default("")
+  name        String
   phone       String?
   role        UserRole @default(OPERATOR)
   status      UserStatus @default(ACTIVE)

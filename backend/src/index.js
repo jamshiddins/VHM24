@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Логирование запросов
 app.use((req, res, next) => {
-  .toISOString()} - ${req.method} ${req.path}`);
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 
@@ -56,11 +56,11 @@ async function startServer() {
   try {
     // Проверка подключения к БД
     await prisma.$connect();
-    
+    console.log('✅ Успешное подключение к базе данных');
     
     app.listen(PORT, () => {
-      
-      
+      console.log(`✅ API-сервер запущен на порту ${PORT}`);
+      console.log(`📅 Время запуска: ${new Date().toISOString()}`);
     });
   } catch (error) {
     console.error('❌ Ошибка запуска сервера:', error);
@@ -70,13 +70,13 @@ async function startServer() {
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-  
+  console.log('Получен сигнал SIGINT, завершение работы...');
   await prisma.$disconnect();
   process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
-  
+  console.log('Получен сигнал SIGTERM, завершение работы...');
   await prisma.$disconnect();
   process.exit(0);
 });

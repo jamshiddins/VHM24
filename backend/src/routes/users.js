@@ -86,4 +86,94 @@ router.put('/:id', authenticateToken, requireRole(['ADMIN']), async (req, res) =
     }
 });
 
+
+/**
+ * @route POST /api/users/sync
+ * @desc Синхронизация пользователя между Telegram-ботом и веб-интерфейсом
+ */
+router.post('/sync', async (req, res) => {
+  try {
+    const { userId, telegramId, firstName, lastName, role } = req.body;
+    
+    if (!userId || !telegramId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Отсутствуют обязательные параметры'
+      });
+    }
+    
+    // Проверяем, существует ли пользователь
+    let user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+    
+    if (!user) {
+      // Проверяем, существует ли пользователь с таким Telegram ID
+      user = await prisma.user.findUnique({
+        where: { telegramId }
+      });
+      
+      if (user) {
+        // Обновляем существующего пользователя
+        user = await prisma.user.update({
+          where: { telegramId },
+          data: {
+            firstName: firstName || user.firstName,
+            lastName: lastName || user.lastName,
+            role: role || user.role
+          }
+        });
+        
+        return res.json({
+          success: true,
+          message: 'Пользователь успешно обновлен',
+          user
+        });
+      }
+      
+      // Создаем нового пользователя
+      user = await prisma.user.create({
+        data: {
+          id: userId,
+          telegramId,
+          firstName: firstName || '',
+          lastName: lastName || '',
+          role: role || 'USER',
+          status: 'ACTIVE'
+        }
+      });
+      
+      return res.json({
+        success: true,
+        message: 'Пользователь успешно создан',
+        user
+      });
+    }
+    
+    // Обновляем существующего пользователя
+    user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        telegramId,
+        firstName: firstName || user.firstName,
+        lastName: lastName || user.lastName,
+        role: role || user.role
+      }
+    });
+    
+    res.json({
+      success: true,
+      message: 'Пользователь успешно синхронизирован',
+      user
+    });
+  } catch (error) {
+    console.error('Ошибка синхронизации пользователя:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Ошибка синхронизации пользователя',
+      details: error.message
+    });
+  }
+});
+
 module.exports = router;

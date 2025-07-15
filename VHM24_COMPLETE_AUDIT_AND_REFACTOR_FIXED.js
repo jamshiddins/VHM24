@@ -171,8 +171,6 @@ class VHM24CompleteAuditor {
     }
 
 async addMissingRoles(missingRoles) {
-        }`);
-
         const schemaPath = path.join(this.projectRoot, 'backend/prisma/schema.prisma');
         if (fs.existsSync(schemaPath)) {
             let schema = fs.readFileSync(schemaPath, 'utf8');
@@ -191,8 +189,6 @@ async addMissingRoles(missingRoles) {
     }
 
 async addMissingTaskTypes(missingTypes) {
-        }`);
-
         const schemaPath = path.join(this.projectRoot, 'backend/prisma/schema.prisma');
         if (fs.existsSync(schemaPath)) {
             let schema = fs.readFileSync(schemaPath, 'utf8');
@@ -210,8 +206,6 @@ async addMissingTaskTypes(missingTypes) {
     }
 
 async createMissingRoutes(missingRoutes) {
-        }`);
-
         const routesDir = path.join(this.projectRoot, 'backend/src/routes');
 
         for (const route of missingRoutes) {

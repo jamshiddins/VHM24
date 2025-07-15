@@ -7,8 +7,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("DATABASE_URL")
+  provider = "sqlite"
+  url = "file:./dev.db"
 }
 
 // ============================================================================
@@ -18,9 +18,7 @@ datasource db {
 model User {
   id          String   @id @default(cuid())
   telegramId  String   @unique @map("telegram_id")
-  firstName   String
-  lastName    String
-  name        String @default("")
+  name        String
   phone       String?
   role        UserRole @default(OPERATOR)
   status      UserStatus @default(ACTIVE)
@@ -360,6 +358,30 @@ enum TaskType {
   CASH_COLLECTION
   REPAIR
   INSPECTION
+  TEST_PURCHASE
+
+  REPLACE_INGREDIENTS
+  REPLACE_WATER
+  REPLACE_SYRUPS
+  CASH_COLLECTION
+  TEST_PURCHASE
+
+  REPLACE_INGREDIENTS
+  REPLACE_WATER
+  REPLACE_SYRUPS
+  CASH_COLLECTION
+  TEST_PURCHASE
+
+  REPLACE_INGREDIENTS
+  REPLACE_WATER
+  REPLACE_SYRUPS
+  CASH_COLLECTION
+  TEST_PURCHASE
+
+  REPLACE_INGREDIENTS
+  REPLACE_WATER
+  REPLACE_SYRUPS
+  CASH_COLLECTION
   TEST_PURCHASE
 }
 

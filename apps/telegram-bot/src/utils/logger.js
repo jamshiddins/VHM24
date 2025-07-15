@@ -1,26 +1,93 @@
-const winston = require('winston');
+/**
+ * Утилита для логирования
+ */
 
-const logger = winston.createLogger({
-  "level": process.env.LOG_LEVEL || 'info',;
-  "format": winston.format.combine(;
-    winston.format.timestamp(),;
-    winston.format.errors({ "stack": true }),;
-    winston.format.json();
-  ),;
-  "defaultMeta": { "service": 'telegram-bot' },;
-  "transports": [;
-    new winston.transports.File({ "filename": 'logs/telegram-error.log', "level": 'error' }),;
-    new winston.transports.File({ "filename": 'logs/telegram-combined.log' }),;
-  ],;
-});
-
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    "format": winston.format.combine(;
-      winston.format.colorize(),;
-      winston.format.simple();
-    );
-  }));
+/**
+ * Простой логгер для Telegram-бота
+ */
+class Logger {
+  /**
+   * Логирование информационного сообщения
+   * @param {string} message - Сообщение для логирования
+   * @param {Object} data - Дополнительные данные
+   */
+  info(message, data = {}) {
+    this.log('INFO', message, data);
+  }
+  
+  /**
+   * Логирование предупреждения
+   * @param {string} message - Сообщение для логирования
+   * @param {Object} data - Дополнительные данные
+   */
+  warn(message, data = {}) {
+    this.log('WARN', message, data);
+  }
+  
+  /**
+   * Логирование ошибки
+   * @param {string} message - Сообщение для логирования
+   * @param {Object|Error} error - Объект ошибки или дополнительные данные
+   */
+  error(message, error = {}) {
+    let errorData = {};
+    
+    if (error instanceof Error) {
+      errorData = {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      };
+    } else if (typeof error === 'object') {
+      errorData = error;
+    }
+    
+    this.log('ERROR', message, errorData);
+  }
+  
+  /**
+   * Логирование отладочной информации
+   * @param {string} message - Сообщение для логирования
+   * @param {Object} data - Дополнительные данные
+   */
+  debug(message, data = {}) {
+    if (process.env.NODE_ENV !== 'production') {
+      this.log('DEBUG', message, data);
+    }
+  }
+  
+  /**
+   * Базовая функция логирования
+   * @param {string} level - Уровень логирования
+   * @param {string} message - Сообщение для логирования
+   * @param {Object} data - Дополнительные данные
+   */
+  log(level, message, data = {}) {
+    const timestamp = new Date().toISOString();
+    const logData = {
+      timestamp,
+      level,
+      message,
+      ...data
+    };
+    
+    // В зависимости от уровня логирования используем разные методы консоли
+    switch (level) {
+      case 'ERROR':
+        console.error(`[${timestamp}] [${level}] ${message}`, Object.keys(data).length ? data : '');
+        break;
+      case 'WARN':
+        console.warn(`[${timestamp}] [${level}] ${message}`, Object.keys(data).length ? data : '');
+        break;
+      case 'DEBUG':
+        console.debug(`[${timestamp}] [${level}] ${message}`, Object.keys(data).length ? data : '');
+        break;
+      default:
+        console.log(`[${timestamp}] [${level}] ${message}`, Object.keys(data).length ? data : '');
+    }
+    
+    // Здесь можно добавить сохранение логов в файл или отправку в систему мониторинга
+  }
 }
 
-module.exports = logger;
+module.exports = new Logger();

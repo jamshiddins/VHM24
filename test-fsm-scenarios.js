@@ -1,5 +1,5 @@
 /**
- * Скрипт для тестирования FSM-сценариев VendHubBot
+ * Скрипт для тестирования FSM-сценариев
  */
 
 const fs = require('fs');
@@ -8,114 +8,201 @@ const path = require('path');
 // Пути к директориям
 const scenesDir = path.join(__dirname, 'apps', 'telegram-bot', 'src', 'scenes');
 const utilsDir = path.join(__dirname, 'apps', 'telegram-bot', 'src', 'utils');
+const docsPath = path.join(__dirname, 'apps', 'telegram-bot', 'FSM_DOCUMENTATION.md');
 
-// Список всех FSM-сценариев
-const fsmScenarios = [
-  { name: 'main-menu.scene.js', id: 'main_menu_fsm' },
-  { name: 'task-create.scene.js', id: 'task_create_fsm' },
-  { name: 'task-execution.scene.js', id: 'task_execution_fsm' },
-  { name: 'checklist.scene.js', id: 'checklist_fsm' },
-  { name: 'bag.scene.js', id: 'bag_fsm' },
-  { name: 'warehouse-receive.scene.js', id: 'warehouse_receive_fsm' },
-  { name: 'warehouse-return.scene.js', id: 'warehouse_return_fsm' },
-  { name: 'warehouse-inventory.scene.js', id: 'warehouse_check_inventory_fsm' },
-  { name: 'cash.scene.js', id: 'cash_fsm' },
-  { name: 'retro.scene.js', id: 'retro_fsm' },
-  { name: 'error.scene.js', id: 'error_fsm' },
-  { name: 'import.scene.js', id: 'import_fsm' },
-  { name: 'directory.scene.js', id: 'directory_fsm' },
-  { name: 'user.scene.js', id: 'user_fsm' },
-  { name: 'report.scene.js', id: 'report_fsm' },
-  { name: 'finance.scene.js', id: 'finance_fsm' },
-  { name: 'admin.scene.js', id: 'admin_fsm' }
+// Список ожидаемых FSM-сценариев
+const expectedScenes = [
+  'main-menu.scene.js',
+  'task-create.scene.js',
+  'task-execution.scene.js',
+  'checklist.scene.js',
+  'bag.scene.js',
+  'warehouse-receive.scene.js',
+  'warehouse-return.scene.js',
+  'warehouse-inventory.scene.js',
+  'cash.scene.js',
+  'retro.scene.js',
+  'error.scene.js',
+  'import.scene.js',
+  'directory.scene.js',
+  'user.scene.js',
+  'report.scene.js',
+  'finance.scene.js',
+  'admin.scene.js'
 ];
 
-// Список утилитарных файлов
-const utilFiles = [
+// Список ожидаемых утилитарных файлов
+const expectedUtils = [
   'fsm-helpers.js',
   'fsm-integrator.js'
 ];
 
-// Функция для проверки наличия файла
-function checkFileExists(filePath) {
-  try {
-    return fs.existsSync(filePath);
-  } catch (err) {
-    console.error(`Ошибка при проверке файла ${filePath}:`, err);
+// Функция для проверки наличия файлов
+function checkFilesExist(dir, files, prefix = '') {
+  const existingFiles = fs.readdirSync(dir);
+  const missingFiles = files.filter(file => !existingFiles.includes(file));
+  
+  if (missingFiles.length > 0) {
+    console.error(`❌ Отсутствуют следующие ${prefix}файлы:`);
+    missingFiles.forEach(file => console.error(`   - ${file}`));
     return false;
   }
+  
+  return true;
 }
 
 // Функция для проверки содержимого файла
-function checkFileContent(filePath, searchString) {
-  try {
-    const content = fs.readFileSync(filePath, 'utf8');
-    return content.includes(searchString);
-  } catch (err) {
-    console.error(`Ошибка при чтении файла ${filePath}:`, err);
+function checkFileContent(filePath, patterns) {
+  if (!fs.existsSync(filePath)) {
+    console.error(`❌ Файл ${filePath} не существует`);
     return false;
   }
+  
+  const content = fs.readFileSync(filePath, 'utf8');
+  
+  for (const pattern of patterns) {
+    if (!content.includes(pattern)) {
+      console.error(`❌ Файл ${filePath} не содержит "${pattern}"`);
+      return false;
+    }
+  }
+  
+  return true;
 }
 
-// Проверка наличия всех FSM-сценариев
+// Функция для проверки индексного файла сцен
+function checkScenesIndex() {
+  const indexPath = path.join(scenesDir, 'index.js');
+  
+  if (!fs.existsSync(indexPath)) {
+    console.error('❌ Индексный файл сцен не существует');
+    return false;
+  }
+  
+  const content = fs.readFileSync(indexPath, 'utf8');
+  
+  // Проверяем, что индексный файл экспортирует все сцены
+  for (const scene of expectedScenes) {
+    const sceneName = scene.replace('.scene.js', '');
+    if (!content.includes(`require('./${sceneName}.scene')`)) {
+      console.error(`❌ Индексный файл сцен не импортирует "${sceneName}.scene.js"`);
+      return false;
+    }
+  }
+  
+  // Проверяем, что индексный файл экспортирует массив allScenes
+  if (!content.includes('const allScenes = [')) {
+    console.error('❌ Индексный файл сцен не экспортирует массив allScenes');
+    return false;
+  }
+  
+  return true;
+}
+
+// Функция для проверки интеграции FSM-хелперов
+function checkFsmIntegration() {
+  const integratorPath = path.join(utilsDir, 'fsm-integrator.js');
+  const helpersPath = path.join(utilsDir, 'fsm-helpers.js');
+  
+  if (!fs.existsSync(integratorPath) || !fs.existsSync(helpersPath)) {
+    console.error('❌ Файлы FSM-хелперов или интегратора не существуют');
+    return false;
+  }
+  
+  const integratorContent = fs.readFileSync(integratorPath, 'utf8');
+  const helpersContent = fs.readFileSync(helpersPath, 'utf8');
+  
+  // Проверяем, что интегратор импортирует хелперы
+  if (!integratorContent.includes('require(\'./fsm-helpers\')')) {
+    console.error('❌ Интегратор не импортирует FSM-хелперы');
+    return false;
+  }
+  
+  // Проверяем, что хелперы экспортируют необходимые функции
+  const requiredHelpers = [
+    'text_input',
+    'num_input',
+    'select',
+    'media_upload',
+    'confirm',
+    'submit',
+    'redirect'
+  ];
+  
+  for (const helper of requiredHelpers) {
+    if (!helpersContent.includes(helper)) {
+      console.error(`❌ FSM-хелперы не содержат функцию "${helper}"`);
+      return false;
+    }
+  }
+  
+  return true;
+}
+
+// Функция для проверки документации
+function checkDocumentation() {
+  if (!fs.existsSync(docsPath)) {
+    console.error('❌ Файл документации не существует');
+    return false;
+  }
+  
+  const content = fs.readFileSync(docsPath, 'utf8');
+  
+  // Проверяем, что документация содержит описание всех FSM-сценариев
+  const fsmNames = [
+    'main_menu_fsm',
+    'task_create_fsm',
+    'task_execution_fsm',
+    'checklist_fsm',
+    'bag_fsm',
+    'warehouse_receive_fsm',
+    'warehouse_return_fsm',
+    'warehouse_check_inventory_fsm',
+    'cash_fsm',
+    'retro_fsm',
+    'error_fsm',
+    'import_fsm',
+    'directory_fsm',
+    'user_fsm',
+    'report_fsm',
+    'finance_fsm',
+    'admin_fsm'
+  ];
+  
+  for (const fsm of fsmNames) {
+    if (!content.includes(fsm)) {
+      console.error(`❌ Документация не содержит описание FSM-сценария "${fsm}"`);
+      return false;
+    }
+  }
+  
+  return true;
+}
+
+// Запуск проверок
 console.log('Проверка наличия всех FSM-сценариев...');
-let allScenesExist = true;
-for (const scenario of fsmScenarios) {
-  const filePath = path.join(scenesDir, scenario.name);
-  const exists = checkFileExists(filePath);
-  console.log(`${scenario.name}: ${exists ? 'OK' : 'ОТСУТСТВУЕТ'}`);
-  if (!exists) {
-    allScenesExist = false;
-  }
-}
+const scenesExist = checkFilesExist(scenesDir, expectedScenes, 'FSM-сценарии');
+console.log(scenesExist ? 'Все FSM-сценарии: OK' : 'Проверка FSM-сценариев: FAILED');
 
-// Проверка наличия всех утилитарных файлов
 console.log('\nПроверка наличия всех утилитарных файлов...');
-let allUtilsExist = true;
-for (const utilFile of utilFiles) {
-  const filePath = path.join(utilsDir, utilFile);
-  const exists = checkFileExists(filePath);
-  console.log(`${utilFile}: ${exists ? 'OK' : 'ОТСУТСТВУЕТ'}`);
-  if (!exists) {
-    allUtilsExist = false;
-  }
-}
+const utilsExist = checkFilesExist(utilsDir, expectedUtils, 'утилитарные');
+console.log(utilsExist ? 'Все утилитарные файлы: OK' : 'Проверка утилитарных файлов: FAILED');
 
-// Проверка индексного файла сцен
 console.log('\nПроверка индексного файла сцен...');
-const indexFilePath = path.join(scenesDir, 'index.js');
-const indexFileExists = checkFileExists(indexFilePath);
-console.log(`index.js: ${indexFileExists ? 'OK' : 'ОТСУТСТВУЕТ'}`);
+const indexOk = checkScenesIndex();
+console.log(indexOk ? 'Индексный файл сцен: OK' : 'Проверка индексного файла сцен: FAILED');
 
-// Проверка интеграции FSM-хелперов в индексном файле
-let fsmHelpersIntegrated = false;
-if (indexFileExists) {
-  fsmHelpersIntegrated = checkFileContent(indexFilePath, 'integrateAllScenes');
-  console.log(`Интеграция FSM-хелперов: ${fsmHelpersIntegrated ? 'OK' : 'ОТСУТСТВУЕТ'}`);
-}
+console.log('\nПроверка интеграции FSM-хелперов...');
+const integrationOk = checkFsmIntegration();
+console.log(integrationOk ? 'Интеграция FSM-хелперов: OK' : 'Проверка интеграции FSM-хелперов: FAILED');
 
-// Проверка документации
 console.log('\nПроверка документации...');
-const docFilePath = path.join(__dirname, 'apps', 'telegram-bot', 'FSM_DOCUMENTATION.md');
-const docFileExists = checkFileExists(docFilePath);
-console.log(`FSM_DOCUMENTATION.md: ${docFileExists ? 'OK' : 'ОТСУТСТВУЕТ'}`);
+const docsOk = checkDocumentation();
+console.log(docsOk ? 'Документация: OK' : 'Проверка документации: FAILED');
 
-// Вывод результатов тестирования
-console.log('\nРезультаты тестирования:');
-console.log(`Все FSM-сценарии: ${allScenesExist ? 'OK' : 'ОШИБКА'}`);
-console.log(`Все утилитарные файлы: ${allUtilsExist ? 'OK' : 'ОШИБКА'}`);
-console.log(`Индексный файл сцен: ${indexFileExists ? 'OK' : 'ОШИБКА'}`);
-console.log(`Интеграция FSM-хелперов: ${fsmHelpersIntegrated ? 'OK' : 'ОШИБКА'}`);
-console.log(`Документация: ${docFileExists ? 'OK' : 'ОШИБКА'}`);
-
-// Общий результат
-const allTestsPassed = allScenesExist && allUtilsExist && indexFileExists && fsmHelpersIntegrated && docFileExists;
-console.log(`\nОбщий результат: ${allTestsPassed ? 'ВСЕ ТЕСТЫ ПРОЙДЕНЫ' : 'ЕСТЬ ОШИБКИ'}`);
-
-// Если все тесты пройдены, выводим сообщение об успешном завершении
-if (allTestsPassed) {
-  console.log('\nВсе FSM-сценарии и утилитарные файлы успешно реализованы и готовы к использованию!');
-  console.log('Система VendHubBot полностью готова к работе.');
+console.log('\nОбщий результат:');
+if (scenesExist && utilsExist && indexOk && integrationOk && docsOk) {
+  console.log('✅ ВСЕ ТЕСТЫ ПРОЙДЕНЫ');
 } else {
-  console.log('\nНеобходимо исправить ошибки перед использованием системы.');
+  console.log('❌ НЕКОТОРЫЕ ТЕСТЫ НЕ ПРОЙДЕНЫ');
 }

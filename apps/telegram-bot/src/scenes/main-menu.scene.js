@@ -11,6 +11,7 @@ const { Scenes, Markup } = require('telegraf');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const states = require('../states');
+const { checkUserRole, getRoleText, syncUserWithAPI } = require('../utils/role-sync');
 
 // Создание сцены
 const scene = new Scenes.BaseScene('main_menu_fsm');
@@ -41,33 +42,21 @@ async function handleAuthCheck(ctx) {
   try {
     const telegramId = ctx.from.id.toString();
     
-    // Проверяем, существует ли пользователь в базе
-    const user = await prisma.user.findUnique({
-      where: { telegramId }
-    });
+    // Проверяем роль пользователя с помощью role-sync
+    const user = await checkUserRole(telegramId);
     
     if (!user) {
-      // Пользователь не найден
-      await ctx.reply('⚠️ Вы не зарегистрированы в системе. Обратитесь к администратору.');
+      // Пользователь не найден или заблокирован
+      await ctx.reply('⚠️ Вы не зарегистрированы в системе или ваш аккаунт заблокирован. Обратитесь к администратору.');
       ctx.session.state = 'unauthorized';
       return;
     }
     
-    if (user.status !== 'ACTIVE') {
-      // Пользователь заблокирован
-      await ctx.reply('⚠️ Ваш аккаунт заблокирован. Обратитесь к администратору.');
-      ctx.session.state = 'unauthorized';
-      return;
-    }
+    // Синхронизируем пользователя с API
+    await syncUserWithAPI(user);
     
     // Сохраняем данные пользователя в сессии
-    ctx.session.user = {
-      id: user.id,
-      telegramId: user.telegramId,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role
-    };
+    ctx.session.user = user;
     
     // Переходим к отображению главного меню
     ctx.session.state = 'main_menu';
@@ -110,18 +99,19 @@ async function handleMainMenu(ctx) {
 }
 
 // Получение текста роли
-function getRoleText(role) {
-  const roles = {
-    ADMIN: 'Администратор',
-    MANAGER: 'Менеджер',
-    WAREHOUSE: 'Складской работник',
-    OPERATOR: 'Оператор',
-    TECHNICIAN: 'Техник',
-    DRIVER: 'Водитель'
-  };
-  
-  return roles[role] || 'Пользователь';
-}
+// Используем функцию getRoleText из role-sync
+// function getRoleText(role) {
+//   const roles = {
+//     ADMIN: 'Администратор',
+//     MANAGER: 'Менеджер',
+//     WAREHOUSE: 'Складской работник',
+//     OPERATOR: 'Оператор',
+//     TECHNICIAN: 'Техник',
+//     DRIVER: 'Водитель'
+//   };
+//   
+//   return roles[role] || 'Пользователь';
+// }
 
 // Получение клавиатуры в зависимости от роли
 function getMainKeyboard(role) {
