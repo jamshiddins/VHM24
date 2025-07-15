@@ -8,7 +8,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=redis://redis:6379
       - PORT=3000
       - HOST=0.0.0.0
@@ -18,7 +18,6 @@ services:
       - WEBHOOK_URL=${WEBHOOK_URL}
     restart: always
     depends_on:
-      - db
       - redis
     volumes:
       - ./logs:/app/logs
@@ -36,12 +35,11 @@ services:
     command: npm run start:worker
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=redis://redis:6379
       - JWT_SECRET=${JWT_SECRET}
     restart: always
     depends_on:
-      - db
       - redis
     volumes:
       - ./logs:/app/logs
@@ -53,12 +51,11 @@ services:
     command: npm run start:scheduler
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=redis://redis:6379
       - JWT_SECRET=${JWT_SECRET}
     restart: always
     depends_on:
-      - db
       - redis
     volumes:
       - ./logs:/app/logs
@@ -69,7 +66,7 @@ services:
     command: npm run start:bot
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=redis://redis:6379
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - API_BASE_URL=http://api:3000/api
@@ -82,23 +79,7 @@ services:
       - ./logs:/app/logs
       - ./uploads:/app/uploads
 
-  # База данных PostgreSQL
-  db:
-    image: postgres:15-alpine
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./backend/prisma/migrations:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # Внешняя база данных PostgreSQL используется из DATABASE_URL
 
   # Redis для кэширования и очередей
   redis:
@@ -114,5 +95,4 @@ services:
       retries: 5
 
 volumes:
-  postgres_data:
   redis_data:

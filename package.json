@@ -16,6 +16,8 @@
     "check:env": "node check-env-variables.js",
     "check:railway-logs": "node check-railway-logs.js",
     "setup:railway-variables": "node setup-railway-variables.js",
+    "fix:railway-variables": "node fix-railway-variables.js",
+    "use:external-database": "node use-external-database.js",
     "extract:railway-variables": "node extract-railway-variables.js",
     "start:bot": "node apps/telegram-bot/src/index.js",
     "dev:bot": "nodemon apps/telegram-bot/src/index.js",
