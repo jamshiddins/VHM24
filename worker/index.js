@@ -1,7 +1,7 @@
 /**
  * Worker для обработки фоновых задач
  */
-require('dotenv').config();
+require('dotenv').config({ path: '.env.worker' });
 const { createClient } = require('redis');
 
 // Инициализация Redis-клиента

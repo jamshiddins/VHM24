@@ -266,7 +266,7 @@ CORS_ORIGIN=https://web-production-d9582.up.railway.app,http://localhost:3001
 DATABASE_URL=postgresql://postgres:TnKaHJbWffrqtZOIklgKNSlNZHDcxsQh@postgres.railway.internal:5432/railway
 
 # Redis (Railway Cache)
-REDIS_URL=redis://default:AlBzXGfakMRiVrFolnlZITTgniXFVBPX@redis.railway.internal:6379
+REDIS_URL=redis://default:AlBzXGfakMRiVrFolnlZITTgniXFVBPX@yamanote.proxy.rlwy.net:21211
 
 # Telegram Bot
 TELEGRAM_BOT_TOKEN=8015112367:AAHi25gHhI3p1X1uyuCAt8vUnlMZRrcoKEQ

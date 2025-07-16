@@ -55,7 +55,7 @@ Redis для кэширования и обмена сообщениями.
 | Имя | Описание | Пример значения |
 |-----|----------|-----------------|
 | `DATABASE_URL` | URL для подключения к базе данных | `postgresql://postgres:password@metro.proxy.rlwy.net:36258/railway` |
-| `REDIS_URL` | URL для подключения к Redis | `redis://default:password@redis.railway.internal:6379` |
+| `REDIS_URL` | URL для подключения к Redis | `redis://default:password@yamanote.proxy.rlwy.net:21211` |
 | `PORT` | Порт для запуска приложения | `3000` |
 | `NODE_ENV` | Окружение Node.js | `production` |
 | `RAILWAY_PUBLIC_URL` | Публичный URL приложения | `https://web-production-73916.up.railway.app` |
