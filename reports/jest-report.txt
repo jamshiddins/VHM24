@@ -31,19 +31,6 @@ FAIL ./simple-tests.test.js
 
       at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
 
-PASS __tests__/database-redis.test.js
-  Database and Redis Connections
-    Database Connection
-      √ should connect to the database successfully (15 ms)
-      √ should handle database connection errors (2 ms)
-      √ should execute a query successfully (2 ms)
-      √ should handle query errors (8 ms)
-    Redis Connection
-      √ should connect to Redis successfully (1 ms)
-      √ should handle Redis connection errors (4 ms)
-      √ should set and get a value successfully (1 ms)
-      √ should handle Redis operation errors (2 ms)
-
 FAIL ./check-env.test.js
   ● Test suite failed to run
 
@@ -142,6 +129,19 @@ FAIL backend/src/utils/logger.test.js
     SyntaxError: Unexpected identifier 'info'
 
       at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
+
+PASS __tests__/database-redis.test.js
+  Database and Redis Connections
+    Database Connection
+      √ should connect to the database successfully (15 ms)
+      √ should handle database connection errors (4 ms)
+      √ should execute a query successfully (11 ms)
+      √ should handle query errors (1 ms)
+    Redis Connection
+      √ should connect to Redis successfully (17 ms)
+      √ should handle Redis connection errors (4 ms)
+      √ should set and get a value successfully (2 ms)
+      √ should handle Redis operation errors (2 ms)
 
 FAIL tests/simple/simple.test.js
   ● Test suite failed to run
@@ -275,39 +275,6 @@ FAIL tests/telegram-bot/health.test.js
 
       at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
 
-FAIL tests/monitoring/health.test.js
-  ● Test suite failed to run
-
-    Jest encountered an unexpected token
-
-    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
-
-    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
-
-    By default "node_modules" folder is ignored by transformers.
-
-    Here's what you can do:
-     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
-     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
-     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
-     • If you need a custom transformation specify a "transform" option in your config.
-     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
-
-    You'll find more details and examples of these config options in the docs:
-    https://jestjs.io/docs/configuration
-    For information about custom transformations, see:
-    https://jestjs.io/docs/code-transformation
-
-    Details:
-
-    D:\Projects\VHM24\tests\monitoring\health.test.js:2
-    const { describe, test, expect, beforeEach } = require('@jest/globals')''
-                                                                           ^^
-
-    SyntaxError: Unexpected string
-
-      at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
-
 FAIL tests/data-import/health.test.js
   ● Test suite failed to run
 
@@ -334,6 +301,39 @@ FAIL tests/data-import/health.test.js
     Details:
 
     D:\Projects\VHM24\tests\data-import\health.test.js:2
+    const { describe, test, expect, beforeEach } = require('@jest/globals')''
+                                                                           ^^
+
+    SyntaxError: Unexpected string
+
+      at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
+
+FAIL tests/monitoring/health.test.js
+  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+
+    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
+
+    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
+
+    By default "node_modules" folder is ignored by transformers.
+
+    Here's what you can do:
+     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
+     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
+     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
+     • If you need a custom transformation specify a "transform" option in your config.
+     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
+
+    You'll find more details and examples of these config options in the docs:
+    https://jestjs.io/docs/configuration
+    For information about custom transformations, see:
+    https://jestjs.io/docs/code-transformation
+
+    Details:
+
+    D:\Projects\VHM24\tests\monitoring\health.test.js:2
     const { describe, test, expect, beforeEach } = require('@jest/globals')''
                                                                            ^^
 
@@ -374,39 +374,6 @@ FAIL tests/warehouse/health.test.js
 
       at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
 
-FAIL tests/machines/health.test.js
-  ● Test suite failed to run
-
-    Jest encountered an unexpected token
-
-    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
-
-    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
-
-    By default "node_modules" folder is ignored by transformers.
-
-    Here's what you can do:
-     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
-     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
-     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
-     • If you need a custom transformation specify a "transform" option in your config.
-     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
-
-    You'll find more details and examples of these config options in the docs:
-    https://jestjs.io/docs/configuration
-    For information about custom transformations, see:
-    https://jestjs.io/docs/code-transformation
-
-    Details:
-
-    D:\Projects\VHM24\tests\machines\health.test.js:2
-    const { describe, test, expect, beforeEach } = require('@jest/globals')''
-                                                                           ^^
-
-    SyntaxError: Unexpected string
-
-      at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
-
 FAIL tests/inventory/health.test.js
   ● Test suite failed to run
 
@@ -433,6 +400,39 @@ FAIL tests/inventory/health.test.js
     Details:
 
     D:\Projects\VHM24\tests\inventory\health.test.js:2
+    const { describe, test, expect, beforeEach } = require('@jest/globals')''
+                                                                           ^^
+
+    SyntaxError: Unexpected string
+
+      at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
+
+FAIL tests/machines/health.test.js
+  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+
+    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
+
+    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
+
+    By default "node_modules" folder is ignored by transformers.
+
+    Here's what you can do:
+     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
+     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
+     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
+     • If you need a custom transformation specify a "transform" option in your config.
+     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
+
+    You'll find more details and examples of these config options in the docs:
+    https://jestjs.io/docs/configuration
+    For information about custom transformations, see:
+    https://jestjs.io/docs/code-transformation
+
+    Details:
+
+    D:\Projects\VHM24\tests\machines\health.test.js:2
     const { describe, test, expect, beforeEach } = require('@jest/globals')''
                                                                            ^^
 
@@ -574,9 +574,9 @@ FAIL tests/auth/health.test.js
 
 PASS __tests__/api-health.test.js
   API Health Endpoint
-    √ should return 200 OK with health information (44 ms)
-    √ should return the correct content type (9 ms)
-    √ should return a valid timestamp (8 ms)
+    √ should return 200 OK with health information (54 ms)
+    √ should return the correct content type (11 ms)
+    √ should return a valid timestamp (10 ms)
 
   console.error
     Redis error: AggregateError: 
@@ -906,12 +906,53 @@ PASS __tests__/api-health.test.js
       at Commander.connect (backend/node_modules/@redis/client/dist/lib/client/index.js:185:9)
       at backend/src/routes/health.js:25:13
 
-FAIL __tests__/telegram-fsm.test.js
+  console.error
+    Redis error: AggregateError: 
+        at internalConnectMultiple (node:net:1134:18)
+        at afterConnectMultiple (node:net:1715:7) {
+      code: 'ECONNREFUSED',
+      [errors]: [
+        Error: connect ECONNREFUSED ::1:6379
+            at createConnectionError (node:net:1678:14)
+            at afterConnectMultiple (node:net:1708:16) {
+          errno: -4078,
+          code: 'ECONNREFUSED',
+          syscall: 'connect',
+          address: '::1',
+          port: 6379
+        },
+        Error: connect ECONNREFUSED 127.0.0.1:6379
+            at createConnectionError (node:net:1678:14)
+            at afterConnectMultiple (node:net:1708:16) {
+          errno: -4078,
+          code: 'ECONNREFUSED',
+          syscall: 'connect',
+          address: '127.0.0.1',
+          port: 6379
+        }
+      ]
+    }
+
+    [0m [90m 17 |[39m     
+     [90m 18 |[39m     redisClient[33m.[39mon([32m'error'[39m[33m,[39m (err) [33m=>[39m {
+    [31m[1m>[22m[39m[90m 19 |[39m         console[33m.[39merror([32m'Redis error:'[39m[33m,[39m err)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 20 |[39m     })[33m;[39m
+     [90m 21 |[39m     
+     [90m 22 |[39m     [90m// Подключение к Redis[39m[0m
+
+      at Commander.error (backend/src/routes/health.js:19:17)
+      at RedisSocket.<anonymous> (backend/node_modules/@redis/client/dist/lib/client/index.js:422:14)
+      at RedisSocket._RedisSocket_connect (backend/node_modules/@redis/client/dist/lib/client/socket.js:166:18)
+      at Commander.connect (backend/node_modules/@redis/client/dist/lib/client/index.js:185:9)
+      at backend/src/routes/health.js:25:13
+
+FAIL __tests__/telegram-fsm.test.js (5.425 s)
   Telegram Bot FSM
-    × should register all scenes (5 ms)
+    × should register all scenes (6 ms)
     √ should handle /start command (3 ms)
     √ should handle /cancel command (1 ms)
-    √ should handle scene transitions (1 ms)
+    √ should handle scene transitions (6 ms)
     √ should handle validation errors (1 ms)
 
   ● Telegram Bot FSM › should register all scenes
@@ -1748,52 +1789,11 @@ FAIL __tests__/telegram-fsm.test.js
       at Commander.connect (backend/node_modules/@redis/client/dist/lib/client/index.js:185:9)
       at backend/src/routes/health.js:25:13
 
-  console.error
-    Redis error: AggregateError: 
-        at internalConnectMultiple (node:net:1134:18)
-        at afterConnectMultiple (node:net:1715:7) {
-      code: 'ECONNREFUSED',
-      [errors]: [
-        Error: connect ECONNREFUSED ::1:6379
-            at createConnectionError (node:net:1678:14)
-            at afterConnectMultiple (node:net:1708:16) {
-          errno: -4078,
-          code: 'ECONNREFUSED',
-          syscall: 'connect',
-          address: '::1',
-          port: 6379
-        },
-        Error: connect ECONNREFUSED 127.0.0.1:6379
-            at createConnectionError (node:net:1678:14)
-            at afterConnectMultiple (node:net:1708:16) {
-          errno: -4078,
-          code: 'ECONNREFUSED',
-          syscall: 'connect',
-          address: '127.0.0.1',
-          port: 6379
-        }
-      ]
-    }
-
-    [0m [90m 17 |[39m     
-     [90m 18 |[39m     redisClient[33m.[39mon([32m'error'[39m[33m,[39m (err) [33m=>[39m {
-    [31m[1m>[22m[39m[90m 19 |[39m         console[33m.[39merror([32m'Redis error:'[39m[33m,[39m err)[33m;[39m
-     [90m    |[39m                 [31m[1m^[22m[39m
-     [90m 20 |[39m     })[33m;[39m
-     [90m 21 |[39m     
-     [90m 22 |[39m     [90m// Подключение к Redis[39m[0m
-
-      at Commander.error (backend/src/routes/health.js:19:17)
-      at RedisSocket.<anonymous> (backend/node_modules/@redis/client/dist/lib/client/index.js:422:14)
-      at RedisSocket._RedisSocket_connect (backend/node_modules/@redis/client/dist/lib/client/socket.js:166:18)
-      at Commander.connect (backend/node_modules/@redis/client/dist/lib/client/index.js:185:9)
-      at backend/src/routes/health.js:25:13
-
-FAIL __tests__/health.test.js (15.034 s)
+FAIL __tests__/health.test.js (15.854 s)
   Health Check API
-    √ should return 200 OK with status information (4064 ms)
-    × should handle database connection errors (4042 ms)
-    × should handle Redis connection errors (4068 ms)
+    √ should return 200 OK with status information (4076 ms)
+    × should handle database connection errors (4047 ms)
+    × should handle Redis connection errors (4033 ms)
 
   ● Health Check API › should handle database connection errors
 
@@ -2534,6 +2534,75 @@ STACK: SyntaxError: D:\Projects\VHM24\backend\src\routes\incassations.js: Identi
     at ScriptTransformer.transformSourceAsync (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:608:17)
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
     at async generateEmptyCoverage (D:\Projects\VHM24\node_modules\@jest\reporters\build\generateEmptyCoverage.js:127:20)
+Failed to collect coverage from D:\Projects\VHM24\backend\src\routes\ingredients.js
+ERROR: D:\Projects\VHM24\backend\src\routes\ingredients.js: Missing semicolon. (11:42)
+
+[0m [90m  9 |[39m router[33m.[39m[36mget[39m([32m'/'[39m[33m,[39m roleCheck([[32m'admin'[39m[33m,[39m [32m'manager'[39m[33m,[39m [32m'warehouse'[39m])[33m,[39m [36masync[39m (req[33m,[39m res) [33m=>[39m {
+ [90m 10 |[39m   [36mtry[39m {
+[31m[1m>[22m[39m[90m 11 |[39m     [36mconst[39m ingredients [33m=[39m [36mawait[39m prisma[33m.[39m[36mawait[39m ingredient[33m.[39mfindMany({
+ [90m    |[39m                                           [31m[1m^[22m[39m
+ [90m 12 |[39m       [32m"include"[39m[33m:[39m {[33m,[39m
+ [90m 13 |[39m   [32m"supplier"[39m[33m:[39m [36mtrue[39m[33m,[39m[33m;[39m
+ [90m 14 |[39m         [32m"hoppers"[39m[33m:[39m [36mtrue[39m[33m;[39m[0m
+STACK: SyntaxError: D:\Projects\VHM24\backend\src\routes\ingredients.js: Missing semicolon. (11:42)
+
+[0m [90m  9 |[39m router[33m.[39m[36mget[39m([32m'/'[39m[33m,[39m roleCheck([[32m'admin'[39m[33m,[39m [32m'manager'[39m[33m,[39m [32m'warehouse'[39m])[33m,[39m [36masync[39m (req[33m,[39m res) [33m=>[39m {
+ [90m 10 |[39m   [36mtry[39m {
+[31m[1m>[22m[39m[90m 11 |[39m     [36mconst[39m ingredients [33m=[39m [36mawait[39m prisma[33m.[39m[36mawait[39m ingredient[33m.[39mfindMany({
+ [90m    |[39m                                           [31m[1m^[22m[39m
+ [90m 12 |[39m       [32m"include"[39m[33m:[39m {[33m,[39m
+ [90m 13 |[39m   [32m"supplier"[39m[33m:[39m [36mtrue[39m[33m,[39m[33m;[39m
+ [90m 14 |[39m         [32m"hoppers"[39m[33m:[39m [36mtrue[39m[33m;[39m[0m
+    at constructor (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:367:19)
+    at Parser.raise (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6627:19)
+    at Parser.semicolon (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6923:10)
+    at Parser.parseVarStatement (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13231:10)
+    at Parser.parseStatementContent (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12851:23)
+    at Parser.parseStatementLike (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12767:17)
+    at Parser.parseStatementListItem (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12747:17)
+    at Parser.parseBlockOrModuleBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13316:61)
+    at Parser.parseBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13309:10)
+    at Parser.parseBlock (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13297:10)
+    at Parser.parseTryStatement (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13205:23)
+    at Parser.parseStatementContent (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12804:21)
+    at Parser.parseStatementLike (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12767:17)
+    at Parser.parseStatementListItem (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12747:17)
+    at Parser.parseBlockOrModuleBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13316:61)
+    at Parser.parseBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13309:10)
+    at Parser.parseBlock (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13297:10)
+    at Parser.parseFunctionBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12101:24)
+    at Parser.parseArrowExpression (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12076:10)
+    at Parser.parseAsyncArrowFromCallExpression (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11259:10)
+    at Parser.parseCoverCallAndAsyncArrowHead (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11189:27)
+    at Parser.parseSubscript (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11115:19)
+    at Parser.parseSubscripts (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11089:19)
+    at Parser.parseExprSubscripts (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11080:17)
+    at Parser.parseUpdate (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11061:21)
+    at Parser.parseMaybeUnary (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11041:23)
+    at Parser.parseMaybeUnaryOrPrivate (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10894:61)
+    at Parser.parseExprOps (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10899:23)
+    at Parser.parseMaybeConditional (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10876:23)
+    at Parser.parseMaybeAssign (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10826:21)
+    at D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10795:39
+    at Parser.allowInAnd (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12427:12)
+    at Parser.parseMaybeAssignAllowIn (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10795:17)
+    at Parser.parseMaybeAssignAllowInOrVoidPattern (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12494:17)
+    at Parser.parseExprListItem (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12176:18)
+    at Parser.parseCallExpressionArguments (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11247:22)
+    at Parser.parseCoverCallAndAsyncArrowHead (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11181:29)
+    at Parser.parseSubscript (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11115:19)
+    at Parser.parseSubscripts (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11089:19)
+    at Parser.parseExprSubscripts (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11080:17)
+    at Parser.parseUpdate (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11061:21)
+    at Parser.parseMaybeUnary (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11041:23)
+    at Parser.parseMaybeUnaryOrPrivate (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10894:61)
+    at Parser.parseExprOps (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10899:23)
+    at Parser.parseMaybeConditional (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10876:23)
+    at Parser.parseMaybeAssign (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10826:21)
+    at Parser.parseExpressionBase (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10779:23)
+    at D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10775:39
+    at Parser.allowInAnd (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12422:16)
+    at Parser.parseExpression (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10775:17)
 Failed to collect coverage from D:\Projects\VHM24\backend\src\routes\incomplete-data.js
 ERROR: D:\Projects\VHM24\backend\src\routes\incomplete-data.js: Identifier 'express' has already been declared. (4:6)
 
@@ -2589,25 +2658,25 @@ STACK: SyntaxError: D:\Projects\VHM24\backend\src\routes\incomplete-data.js: Ide
     at ScriptTransformer.transformSourceAsync (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:608:17)
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
     at async generateEmptyCoverage (D:\Projects\VHM24\node_modules\@jest\reporters\build\generateEmptyCoverage.js:127:20)
-Failed to collect coverage from D:\Projects\VHM24\backend\src\routes\ingredients.js
-ERROR: D:\Projects\VHM24\backend\src\routes\ingredients.js: Missing semicolon. (11:42)
+Failed to collect coverage from D:\Projects\VHM24\backend\src\routes\payments.js
+ERROR: D:\Projects\VHM24\backend\src\routes\payments.js: Missing semicolon. (11:39)
 
-[0m [90m  9 |[39m router[33m.[39m[36mget[39m([32m'/'[39m[33m,[39m roleCheck([[32m'admin'[39m[33m,[39m [32m'manager'[39m[33m,[39m [32m'warehouse'[39m])[33m,[39m [36masync[39m (req[33m,[39m res) [33m=>[39m {
+[0m [90m  9 |[39m router[33m.[39m[36mget[39m([32m'/'[39m[33m,[39m authenticateToken[33m,[39m requireRole([[32m'admin'[39m[33m,[39m [32m'manager'[39m])[33m,[39m [36masync[39m (req[33m,[39m res) [33m=>[39m {
  [90m 10 |[39m   [36mtry[39m {
-[31m[1m>[22m[39m[90m 11 |[39m     [36mconst[39m ingredients [33m=[39m [36mawait[39m prisma[33m.[39m[36mawait[39m ingredient[33m.[39mfindMany({
- [90m    |[39m                                           [31m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 11 |[39m     [36mconst[39m payments [33m=[39m [36mawait[39m prisma[33m.[39m[36mawait[39m payment[33m.[39mfindMany({
+ [90m    |[39m                                        [31m[1m^[22m[39m
  [90m 12 |[39m       [32m"include"[39m[33m:[39m {[33m,[39m
- [90m 13 |[39m   [32m"supplier"[39m[33m:[39m [36mtrue[39m[33m,[39m[33m;[39m
- [90m 14 |[39m         [32m"hoppers"[39m[33m:[39m [36mtrue[39m[33m;[39m[0m
-STACK: SyntaxError: D:\Projects\VHM24\backend\src\routes\ingredients.js: Missing semicolon. (11:42)
+ [90m 13 |[39m   [32m"machine"[39m[33m:[39m [36mtrue[39m[33m,[39m[33m;[39m
+ [90m 14 |[39m         [32m"sale"[39m[33m:[39m [36mtrue[39m[33m;[39m[0m
+STACK: SyntaxError: D:\Projects\VHM24\backend\src\routes\payments.js: Missing semicolon. (11:39)
 
-[0m [90m  9 |[39m router[33m.[39m[36mget[39m([32m'/'[39m[33m,[39m roleCheck([[32m'admin'[39m[33m,[39m [32m'manager'[39m[33m,[39m [32m'warehouse'[39m])[33m,[39m [36masync[39m (req[33m,[39m res) [33m=>[39m {
+[0m [90m  9 |[39m router[33m.[39m[36mget[39m([32m'/'[39m[33m,[39m authenticateToken[33m,[39m requireRole([[32m'admin'[39m[33m,[39m [32m'manager'[39m])[33m,[39m [36masync[39m (req[33m,[39m res) [33m=>[39m {
  [90m 10 |[39m   [36mtry[39m {
-[31m[1m>[22m[39m[90m 11 |[39m     [36mconst[39m ingredients [33m=[39m [36mawait[39m prisma[33m.[39m[36mawait[39m ingredient[33m.[39mfindMany({
- [90m    |[39m                                           [31m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 11 |[39m     [36mconst[39m payments [33m=[39m [36mawait[39m prisma[33m.[39m[36mawait[39m payment[33m.[39mfindMany({
+ [90m    |[39m                                        [31m[1m^[22m[39m
  [90m 12 |[39m       [32m"include"[39m[33m:[39m {[33m,[39m
- [90m 13 |[39m   [32m"supplier"[39m[33m:[39m [36mtrue[39m[33m,[39m[33m;[39m
- [90m 14 |[39m         [32m"hoppers"[39m[33m:[39m [36mtrue[39m[33m;[39m[0m
+ [90m 13 |[39m   [32m"machine"[39m[33m:[39m [36mtrue[39m[33m,[39m[33m;[39m
+ [90m 14 |[39m         [32m"sale"[39m[33m:[39m [36mtrue[39m[33m;[39m[0m
     at constructor (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:367:19)
     at Parser.raise (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6627:19)
     at Parser.semicolon (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6923:10)
@@ -2892,75 +2961,6 @@ STACK: SyntaxError: D:\Projects\VHM24\backend\src\routes\revenues.js: Identifier
     at ScriptTransformer.transformSourceAsync (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:608:17)
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
     at async generateEmptyCoverage (D:\Projects\VHM24\node_modules\@jest\reporters\build\generateEmptyCoverage.js:127:20)
-Failed to collect coverage from D:\Projects\VHM24\backend\src\routes\payments.js
-ERROR: D:\Projects\VHM24\backend\src\routes\payments.js: Missing semicolon. (11:39)
-
-[0m [90m  9 |[39m router[33m.[39m[36mget[39m([32m'/'[39m[33m,[39m authenticateToken[33m,[39m requireRole([[32m'admin'[39m[33m,[39m [32m'manager'[39m])[33m,[39m [36masync[39m (req[33m,[39m res) [33m=>[39m {
- [90m 10 |[39m   [36mtry[39m {
-[31m[1m>[22m[39m[90m 11 |[39m     [36mconst[39m payments [33m=[39m [36mawait[39m prisma[33m.[39m[36mawait[39m payment[33m.[39mfindMany({
- [90m    |[39m                                        [31m[1m^[22m[39m
- [90m 12 |[39m       [32m"include"[39m[33m:[39m {[33m,[39m
- [90m 13 |[39m   [32m"machine"[39m[33m:[39m [36mtrue[39m[33m,[39m[33m;[39m
- [90m 14 |[39m         [32m"sale"[39m[33m:[39m [36mtrue[39m[33m;[39m[0m
-STACK: SyntaxError: D:\Projects\VHM24\backend\src\routes\payments.js: Missing semicolon. (11:39)
-
-[0m [90m  9 |[39m router[33m.[39m[36mget[39m([32m'/'[39m[33m,[39m authenticateToken[33m,[39m requireRole([[32m'admin'[39m[33m,[39m [32m'manager'[39m])[33m,[39m [36masync[39m (req[33m,[39m res) [33m=>[39m {
- [90m 10 |[39m   [36mtry[39m {
-[31m[1m>[22m[39m[90m 11 |[39m     [36mconst[39m payments [33m=[39m [36mawait[39m prisma[33m.[39m[36mawait[39m payment[33m.[39mfindMany({
- [90m    |[39m                                        [31m[1m^[22m[39m
- [90m 12 |[39m       [32m"include"[39m[33m:[39m {[33m,[39m
- [90m 13 |[39m   [32m"machine"[39m[33m:[39m [36mtrue[39m[33m,[39m[33m;[39m
- [90m 14 |[39m         [32m"sale"[39m[33m:[39m [36mtrue[39m[33m;[39m[0m
-    at constructor (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:367:19)
-    at Parser.raise (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6627:19)
-    at Parser.semicolon (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6923:10)
-    at Parser.parseVarStatement (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13231:10)
-    at Parser.parseStatementContent (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12851:23)
-    at Parser.parseStatementLike (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12767:17)
-    at Parser.parseStatementListItem (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12747:17)
-    at Parser.parseBlockOrModuleBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13316:61)
-    at Parser.parseBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13309:10)
-    at Parser.parseBlock (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13297:10)
-    at Parser.parseTryStatement (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13205:23)
-    at Parser.parseStatementContent (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12804:21)
-    at Parser.parseStatementLike (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12767:17)
-    at Parser.parseStatementListItem (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12747:17)
-    at Parser.parseBlockOrModuleBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13316:61)
-    at Parser.parseBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13309:10)
-    at Parser.parseBlock (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13297:10)
-    at Parser.parseFunctionBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12101:24)
-    at Parser.parseArrowExpression (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12076:10)
-    at Parser.parseAsyncArrowFromCallExpression (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11259:10)
-    at Parser.parseCoverCallAndAsyncArrowHead (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11189:27)
-    at Parser.parseSubscript (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11115:19)
-    at Parser.parseSubscripts (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11089:19)
-    at Parser.parseExprSubscripts (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11080:17)
-    at Parser.parseUpdate (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11061:21)
-    at Parser.parseMaybeUnary (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11041:23)
-    at Parser.parseMaybeUnaryOrPrivate (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10894:61)
-    at Parser.parseExprOps (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10899:23)
-    at Parser.parseMaybeConditional (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10876:23)
-    at Parser.parseMaybeAssign (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10826:21)
-    at D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10795:39
-    at Parser.allowInAnd (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12427:12)
-    at Parser.parseMaybeAssignAllowIn (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10795:17)
-    at Parser.parseMaybeAssignAllowInOrVoidPattern (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12494:17)
-    at Parser.parseExprListItem (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12176:18)
-    at Parser.parseCallExpressionArguments (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11247:22)
-    at Parser.parseCoverCallAndAsyncArrowHead (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11181:29)
-    at Parser.parseSubscript (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11115:19)
-    at Parser.parseSubscripts (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11089:19)
-    at Parser.parseExprSubscripts (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11080:17)
-    at Parser.parseUpdate (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11061:21)
-    at Parser.parseMaybeUnary (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11041:23)
-    at Parser.parseMaybeUnaryOrPrivate (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10894:61)
-    at Parser.parseExprOps (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10899:23)
-    at Parser.parseMaybeConditional (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10876:23)
-    at Parser.parseMaybeAssign (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10826:21)
-    at Parser.parseExpressionBase (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10779:23)
-    at D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10775:39
-    at Parser.allowInAnd (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12422:16)
-    at Parser.parseExpression (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10775:17)
 Failed to collect coverage from D:\Projects\VHM24\backend\src\routes\syrups.js
 ERROR: D:\Projects\VHM24\backend\src\routes\syrups.js: Identifier 'express' has already been declared. (4:6)
 
@@ -3434,6 +3434,53 @@ STACK: SyntaxError: D:\Projects\VHM24\backend\src\services\inventoryService.js: 
     at ScriptTransformer.transformSourceAsync (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:608:17)
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
     at async generateEmptyCoverage (D:\Projects\VHM24\node_modules\@jest\reporters\build\generateEmptyCoverage.js:127:20)
+Failed to collect coverage from D:\Projects\VHM24\backend\src\services\reconciliation.service.js
+ERROR: D:\Projects\VHM24\backend\src\services\reconciliation.service.js: Missing semicolon. (2:15)
+
+[0m [90m 1 |[39m [36mclass[39m [33mReconciliationService[39m {}
+[31m[1m>[22m[39m[90m 2 |[39m   constructor() {}
+ [90m   |[39m                [31m[1m^[22m[39m
+ [90m 3 |[39m     [90m// Инициализация сервиса;[39m
+ [90m 4 |[39m   }
+ [90m 5 |[39m   [36masync[39m getAll() {}[0m
+STACK: SyntaxError: D:\Projects\VHM24\backend\src\services\reconciliation.service.js: Missing semicolon. (2:15)
+
+[0m [90m 1 |[39m [36mclass[39m [33mReconciliationService[39m {}
+[31m[1m>[22m[39m[90m 2 |[39m   constructor() {}
+ [90m   |[39m                [31m[1m^[22m[39m
+ [90m 3 |[39m     [90m// Инициализация сервиса;[39m
+ [90m 4 |[39m   }
+ [90m 5 |[39m   [36masync[39m getAll() {}[0m
+    at constructor (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:367:19)
+    at Parser.raise (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6627:19)
+    at Parser.semicolon (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6923:10)
+    at Parser.parseExpressionStatement (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13285:10)
+    at Parser.parseStatementContent (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12899:19)
+    at Parser.parseStatementLike (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12767:17)
+    at Parser.parseModuleItem (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12744:17)
+    at Parser.parseBlockOrModuleBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13316:36)
+    at Parser.parseBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13309:10)
+    at Parser.parseProgram (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12625:10)
+    at Parser.parseTopLevel (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12615:25)
+    at Parser.parse (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:14492:10)
+    at parse (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:14526:38)
+    at parser (D:\Projects\VHM24\node_modules\@babel\core\lib\parser\index.js:41:34)
+    at parser.next (<anonymous>)
+    at normalizeFile (D:\Projects\VHM24\node_modules\@babel\core\lib\transformation\normalize-file.js:64:37)
+    at normalizeFile.next (<anonymous>)
+    at run (D:\Projects\VHM24\node_modules\@babel\core\lib\transformation\index.js:22:50)
+    at run.next (<anonymous>)
+    at transform (D:\Projects\VHM24\node_modules\@babel\core\lib\transform.js:22:33)
+    at transform.next (<anonymous>)
+    at evaluateSync (D:\Projects\VHM24\node_modules\gensync\index.js:251:28)
+    at sync (D:\Projects\VHM24\node_modules\gensync\index.js:89:14)
+    at stopHiding - secret - don't use this - v1 (D:\Projects\VHM24\node_modules\@babel\core\lib\errors\rewrite-stack-trace.js:47:12)
+    at transformSync (D:\Projects\VHM24\node_modules\@babel\core\lib\transform.js:42:76)
+    at ScriptTransformer._instrumentFile (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:389:46)
+    at ScriptTransformer._buildTransformResult (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:491:33)
+    at ScriptTransformer.transformSourceAsync (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:608:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async generateEmptyCoverage (D:\Projects\VHM24\node_modules\@jest\reporters\build\generateEmptyCoverage.js:127:20)
 Failed to collect coverage from D:\Projects\VHM24\backend\src\services\payment.service.js
 ERROR: D:\Projects\VHM24\backend\src\services\payment.service.js: Unexpected token (7:21)
 
@@ -3503,18 +3550,18 @@ STACK: SyntaxError: D:\Projects\VHM24\backend\src\services\payment.service.js: U
     at D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13517:14
     at Parser.withSmartMixTopicForbiddingContext (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12404:14)
     at Parser.parseClassBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13499:10)
-Failed to collect coverage from D:\Projects\VHM24\backend\src\services\reconciliation.service.js
-ERROR: D:\Projects\VHM24\backend\src\services\reconciliation.service.js: Missing semicolon. (2:15)
+Failed to collect coverage from D:\Projects\VHM24\backend\src\services\syrupBottle.service.js
+ERROR: D:\Projects\VHM24\backend\src\services\syrupBottle.service.js: Missing semicolon. (2:15)
 
-[0m [90m 1 |[39m [36mclass[39m [33mReconciliationService[39m {}
+[0m [90m 1 |[39m [36mclass[39m [33mSyrupBottleService[39m {}
 [31m[1m>[22m[39m[90m 2 |[39m   constructor() {}
  [90m   |[39m                [31m[1m^[22m[39m
  [90m 3 |[39m     [90m// Инициализация сервиса;[39m
  [90m 4 |[39m   }
  [90m 5 |[39m   [36masync[39m getAll() {}[0m
-STACK: SyntaxError: D:\Projects\VHM24\backend\src\services\reconciliation.service.js: Missing semicolon. (2:15)
+STACK: SyntaxError: D:\Projects\VHM24\backend\src\services\syrupBottle.service.js: Missing semicolon. (2:15)
 
-[0m [90m 1 |[39m [36mclass[39m [33mReconciliationService[39m {}
+[0m [90m 1 |[39m [36mclass[39m [33mSyrupBottleService[39m {}
 [31m[1m>[22m[39m[90m 2 |[39m   constructor() {}
  [90m   |[39m                [31m[1m^[22m[39m
  [90m 3 |[39m     [90m// Инициализация сервиса;[39m
@@ -3562,53 +3609,6 @@ ERROR: D:\Projects\VHM24\backend\src\services\revenue.service.js: Missing semico
 STACK: SyntaxError: D:\Projects\VHM24\backend\src\services\revenue.service.js: Missing semicolon. (2:15)
 
 [0m [90m 1 |[39m [36mclass[39m [33mRevenueService[39m {}
-[31m[1m>[22m[39m[90m 2 |[39m   constructor() {}
- [90m   |[39m                [31m[1m^[22m[39m
- [90m 3 |[39m     [90m// Инициализация сервиса;[39m
- [90m 4 |[39m   }
- [90m 5 |[39m   [36masync[39m getAll() {}[0m
-    at constructor (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:367:19)
-    at Parser.raise (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6627:19)
-    at Parser.semicolon (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6923:10)
-    at Parser.parseExpressionStatement (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13285:10)
-    at Parser.parseStatementContent (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12899:19)
-    at Parser.parseStatementLike (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12767:17)
-    at Parser.parseModuleItem (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12744:17)
-    at Parser.parseBlockOrModuleBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13316:36)
-    at Parser.parseBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13309:10)
-    at Parser.parseProgram (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12625:10)
-    at Parser.parseTopLevel (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12615:25)
-    at Parser.parse (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:14492:10)
-    at parse (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:14526:38)
-    at parser (D:\Projects\VHM24\node_modules\@babel\core\lib\parser\index.js:41:34)
-    at parser.next (<anonymous>)
-    at normalizeFile (D:\Projects\VHM24\node_modules\@babel\core\lib\transformation\normalize-file.js:64:37)
-    at normalizeFile.next (<anonymous>)
-    at run (D:\Projects\VHM24\node_modules\@babel\core\lib\transformation\index.js:22:50)
-    at run.next (<anonymous>)
-    at transform (D:\Projects\VHM24\node_modules\@babel\core\lib\transform.js:22:33)
-    at transform.next (<anonymous>)
-    at evaluateSync (D:\Projects\VHM24\node_modules\gensync\index.js:251:28)
-    at sync (D:\Projects\VHM24\node_modules\gensync\index.js:89:14)
-    at stopHiding - secret - don't use this - v1 (D:\Projects\VHM24\node_modules\@babel\core\lib\errors\rewrite-stack-trace.js:47:12)
-    at transformSync (D:\Projects\VHM24\node_modules\@babel\core\lib\transform.js:42:76)
-    at ScriptTransformer._instrumentFile (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:389:46)
-    at ScriptTransformer._buildTransformResult (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:491:33)
-    at ScriptTransformer.transformSourceAsync (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:608:17)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async generateEmptyCoverage (D:\Projects\VHM24\node_modules\@jest\reporters\build\generateEmptyCoverage.js:127:20)
-Failed to collect coverage from D:\Projects\VHM24\backend\src\services\syrupBottle.service.js
-ERROR: D:\Projects\VHM24\backend\src\services\syrupBottle.service.js: Missing semicolon. (2:15)
-
-[0m [90m 1 |[39m [36mclass[39m [33mSyrupBottleService[39m {}
-[31m[1m>[22m[39m[90m 2 |[39m   constructor() {}
- [90m   |[39m                [31m[1m^[22m[39m
- [90m 3 |[39m     [90m// Инициализация сервиса;[39m
- [90m 4 |[39m   }
- [90m 5 |[39m   [36masync[39m getAll() {}[0m
-STACK: SyntaxError: D:\Projects\VHM24\backend\src\services\syrupBottle.service.js: Missing semicolon. (2:15)
-
-[0m [90m 1 |[39m [36mclass[39m [33mSyrupBottleService[39m {}
 [31m[1m>[22m[39m[90m 2 |[39m   constructor() {}
  [90m   |[39m                [31m[1m^[22m[39m
  [90m 3 |[39m     [90m// Инициализация сервиса;[39m
@@ -3774,6 +3774,118 @@ STACK: SyntaxError: D:\Projects\VHM24\backend\src\services\taskTemplate.service.
     at ScriptTransformer._buildTransformResult (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:491:33)
     at ScriptTransformer.transformSourceAsync (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:608:17)
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Failed to collect coverage from D:\Projects\VHM24\backend\src\services\taskTemplateSeeder.service.js
+ERROR: D:\Projects\VHM24\backend\src\services\taskTemplateSeeder.service.js: Unterminated string constant. (1:41)
+
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mconst[39m logger [33m=[39m require([32m'../utils/logger'[39m)[32m'[39m
+ [90m   |[39m                                          [31m[1m^[22m[39m
+ [90m 2 |[39m [32m''[39m[32m';[39m
+ [90m 3 |[39m [36mconst[39m { [33mPrismaClient[39m } [33m=[39m require([32m'@prisma/client'[39m)[32m'[39m
+ [90m 4 |[39m [32m''[39m[0m
+STACK: SyntaxError: D:\Projects\VHM24\backend\src\services\taskTemplateSeeder.service.js: Unterminated string constant. (1:41)
+
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mconst[39m logger [33m=[39m require([32m'../utils/logger'[39m)[32m'[39m
+ [90m   |[39m                                          [31m[1m^[22m[39m
+ [90m 2 |[39m [32m''[39m[32m';[39m
+ [90m 3 |[39m [36mconst[39m { [33mPrismaClient[39m } [33m=[39m require([32m'@prisma/client'[39m)[32m'[39m
+ [90m 4 |[39m [32m''[39m[0m
+    at constructor (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:367:19)
+    at Parser.raise (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6627:19)
+    at Object.unterminated (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:5692:20)
+    at readStringContents (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:5434:16)
+    at Parser.readString (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6526:9)
+    at Parser.getTokenFromCode (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6286:14)
+    at Parser.nextToken (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:5810:10)
+    at Parser.next (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:5720:10)
+    at Parser.eat (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:5724:12)
+    at Parser.parseCallExpressionArguments (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11234:18)
+    at Parser.parseCoverCallAndAsyncArrowHead (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11181:29)
+    at Parser.parseSubscript (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11115:19)
+    at Parser.parseSubscripts (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11089:19)
+    at Parser.parseExprSubscripts (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11080:17)
+    at Parser.parseUpdate (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11061:21)
+    at Parser.parseMaybeUnary (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11041:23)
+    at Parser.parseMaybeUnaryOrPrivate (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10894:61)
+    at Parser.parseExprOps (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10899:23)
+    at Parser.parseMaybeConditional (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10876:23)
+    at Parser.parseMaybeAssign (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10826:21)
+    at D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10795:39
+    at Parser.allowInAnd (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12422:16)
+    at Parser.parseMaybeAssignAllowIn (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10795:17)
+    at Parser.parseVar (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13384:91)
+    at Parser.parseVarStatement (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13230:10)
+    at Parser.parseStatementContent (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12851:23)
+    at Parser.parseStatementLike (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12767:17)
+    at Parser.parseModuleItem (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12744:17)
+    at Parser.parseBlockOrModuleBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13316:36)
+    at Parser.parseBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13309:10)
+    at Parser.parseProgram (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12625:10)
+    at Parser.parseTopLevel (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12615:25)
+    at Parser.parse (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:14492:10)
+    at parse (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:14526:38)
+    at parser (D:\Projects\VHM24\node_modules\@babel\core\lib\parser\index.js:41:34)
+    at parser.next (<anonymous>)
+    at normalizeFile (D:\Projects\VHM24\node_modules\@babel\core\lib\transformation\normalize-file.js:64:37)
+    at normalizeFile.next (<anonymous>)
+    at run (D:\Projects\VHM24\node_modules\@babel\core\lib\transformation\index.js:22:50)
+    at run.next (<anonymous>)
+    at transform (D:\Projects\VHM24\node_modules\@babel\core\lib\transform.js:22:33)
+    at transform.next (<anonymous>)
+    at evaluateSync (D:\Projects\VHM24\node_modules\gensync\index.js:251:28)
+    at sync (D:\Projects\VHM24\node_modules\gensync\index.js:89:14)
+    at stopHiding - secret - don't use this - v1 (D:\Projects\VHM24\node_modules\@babel\core\lib\errors\rewrite-stack-trace.js:47:12)
+    at transformSync (D:\Projects\VHM24\node_modules\@babel\core\lib\transform.js:42:76)
+    at ScriptTransformer._instrumentFile (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:389:46)
+    at ScriptTransformer._buildTransformResult (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:491:33)
+    at ScriptTransformer.transformSourceAsync (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:608:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Failed to collect coverage from D:\Projects\VHM24\backend\src\services\waterBottle.service.js
+ERROR: D:\Projects\VHM24\backend\src\services\waterBottle.service.js: Missing semicolon. (2:15)
+
+[0m [90m 1 |[39m [36mclass[39m [33mWaterBottleService[39m {}
+[31m[1m>[22m[39m[90m 2 |[39m   constructor() {}
+ [90m   |[39m                [31m[1m^[22m[39m
+ [90m 3 |[39m     [90m// Инициализация сервиса;[39m
+ [90m 4 |[39m   }
+ [90m 5 |[39m   [36masync[39m getAll() {}[0m
+STACK: SyntaxError: D:\Projects\VHM24\backend\src\services\waterBottle.service.js: Missing semicolon. (2:15)
+
+[0m [90m 1 |[39m [36mclass[39m [33mWaterBottleService[39m {}
+[31m[1m>[22m[39m[90m 2 |[39m   constructor() {}
+ [90m   |[39m                [31m[1m^[22m[39m
+ [90m 3 |[39m     [90m// Инициализация сервиса;[39m
+ [90m 4 |[39m   }
+ [90m 5 |[39m   [36masync[39m getAll() {}[0m
+    at constructor (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:367:19)
+    at Parser.raise (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6627:19)
+    at Parser.semicolon (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6923:10)
+    at Parser.parseExpressionStatement (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13285:10)
+    at Parser.parseStatementContent (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12899:19)
+    at Parser.parseStatementLike (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12767:17)
+    at Parser.parseModuleItem (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12744:17)
+    at Parser.parseBlockOrModuleBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13316:36)
+    at Parser.parseBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13309:10)
+    at Parser.parseProgram (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12625:10)
+    at Parser.parseTopLevel (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12615:25)
+    at Parser.parse (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:14492:10)
+    at parse (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:14526:38)
+    at parser (D:\Projects\VHM24\node_modules\@babel\core\lib\parser\index.js:41:34)
+    at parser.next (<anonymous>)
+    at normalizeFile (D:\Projects\VHM24\node_modules\@babel\core\lib\transformation\normalize-file.js:64:37)
+    at normalizeFile.next (<anonymous>)
+    at run (D:\Projects\VHM24\node_modules\@babel\core\lib\transformation\index.js:22:50)
+    at run.next (<anonymous>)
+    at transform (D:\Projects\VHM24\node_modules\@babel\core\lib\transform.js:22:33)
+    at transform.next (<anonymous>)
+    at evaluateSync (D:\Projects\VHM24\node_modules\gensync\index.js:251:28)
+    at sync (D:\Projects\VHM24\node_modules\gensync\index.js:89:14)
+    at stopHiding - secret - don't use this - v1 (D:\Projects\VHM24\node_modules\@babel\core\lib\errors\rewrite-stack-trace.js:47:12)
+    at transformSync (D:\Projects\VHM24\node_modules\@babel\core\lib\transform.js:42:76)
+    at ScriptTransformer._instrumentFile (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:389:46)
+    at ScriptTransformer._buildTransformResult (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:491:33)
+    at ScriptTransformer.transformSourceAsync (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:608:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async generateEmptyCoverage (D:\Projects\VHM24\node_modules\@jest\reporters\build\generateEmptyCoverage.js:127:20)
 Failed to collect coverage from D:\Projects\VHM24\backend\src\utils\database.js
 ERROR: D:\Projects\VHM24\backend\src\utils\database.js: Unexpected token (5:97)
 
@@ -3888,118 +4000,6 @@ STACK: SyntaxError: D:\Projects\VHM24\backend\src\utils\excelImport.js: Missing 
     at ScriptTransformer.transformSourceAsync (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:608:17)
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
     at async generateEmptyCoverage (D:\Projects\VHM24\node_modules\@jest\reporters\build\generateEmptyCoverage.js:127:20)
-Failed to collect coverage from D:\Projects\VHM24\backend\src\services\waterBottle.service.js
-ERROR: D:\Projects\VHM24\backend\src\services\waterBottle.service.js: Missing semicolon. (2:15)
-
-[0m [90m 1 |[39m [36mclass[39m [33mWaterBottleService[39m {}
-[31m[1m>[22m[39m[90m 2 |[39m   constructor() {}
- [90m   |[39m                [31m[1m^[22m[39m
- [90m 3 |[39m     [90m// Инициализация сервиса;[39m
- [90m 4 |[39m   }
- [90m 5 |[39m   [36masync[39m getAll() {}[0m
-STACK: SyntaxError: D:\Projects\VHM24\backend\src\services\waterBottle.service.js: Missing semicolon. (2:15)
-
-[0m [90m 1 |[39m [36mclass[39m [33mWaterBottleService[39m {}
-[31m[1m>[22m[39m[90m 2 |[39m   constructor() {}
- [90m   |[39m                [31m[1m^[22m[39m
- [90m 3 |[39m     [90m// Инициализация сервиса;[39m
- [90m 4 |[39m   }
- [90m 5 |[39m   [36masync[39m getAll() {}[0m
-    at constructor (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:367:19)
-    at Parser.raise (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6627:19)
-    at Parser.semicolon (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6923:10)
-    at Parser.parseExpressionStatement (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13285:10)
-    at Parser.parseStatementContent (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12899:19)
-    at Parser.parseStatementLike (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12767:17)
-    at Parser.parseModuleItem (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12744:17)
-    at Parser.parseBlockOrModuleBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13316:36)
-    at Parser.parseBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13309:10)
-    at Parser.parseProgram (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12625:10)
-    at Parser.parseTopLevel (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12615:25)
-    at Parser.parse (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:14492:10)
-    at parse (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:14526:38)
-    at parser (D:\Projects\VHM24\node_modules\@babel\core\lib\parser\index.js:41:34)
-    at parser.next (<anonymous>)
-    at normalizeFile (D:\Projects\VHM24\node_modules\@babel\core\lib\transformation\normalize-file.js:64:37)
-    at normalizeFile.next (<anonymous>)
-    at run (D:\Projects\VHM24\node_modules\@babel\core\lib\transformation\index.js:22:50)
-    at run.next (<anonymous>)
-    at transform (D:\Projects\VHM24\node_modules\@babel\core\lib\transform.js:22:33)
-    at transform.next (<anonymous>)
-    at evaluateSync (D:\Projects\VHM24\node_modules\gensync\index.js:251:28)
-    at sync (D:\Projects\VHM24\node_modules\gensync\index.js:89:14)
-    at stopHiding - secret - don't use this - v1 (D:\Projects\VHM24\node_modules\@babel\core\lib\errors\rewrite-stack-trace.js:47:12)
-    at transformSync (D:\Projects\VHM24\node_modules\@babel\core\lib\transform.js:42:76)
-    at ScriptTransformer._instrumentFile (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:389:46)
-    at ScriptTransformer._buildTransformResult (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:491:33)
-    at ScriptTransformer.transformSourceAsync (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:608:17)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async generateEmptyCoverage (D:\Projects\VHM24\node_modules\@jest\reporters\build\generateEmptyCoverage.js:127:20)
-Failed to collect coverage from D:\Projects\VHM24\backend\src\services\taskTemplateSeeder.service.js
-ERROR: D:\Projects\VHM24\backend\src\services\taskTemplateSeeder.service.js: Unterminated string constant. (1:41)
-
-[0m[31m[1m>[22m[39m[90m 1 |[39m [36mconst[39m logger [33m=[39m require([32m'../utils/logger'[39m)[32m'[39m
- [90m   |[39m                                          [31m[1m^[22m[39m
- [90m 2 |[39m [32m''[39m[32m';[39m
- [90m 3 |[39m [36mconst[39m { [33mPrismaClient[39m } [33m=[39m require([32m'@prisma/client'[39m)[32m'[39m
- [90m 4 |[39m [32m''[39m[0m
-STACK: SyntaxError: D:\Projects\VHM24\backend\src\services\taskTemplateSeeder.service.js: Unterminated string constant. (1:41)
-
-[0m[31m[1m>[22m[39m[90m 1 |[39m [36mconst[39m logger [33m=[39m require([32m'../utils/logger'[39m)[32m'[39m
- [90m   |[39m                                          [31m[1m^[22m[39m
- [90m 2 |[39m [32m''[39m[32m';[39m
- [90m 3 |[39m [36mconst[39m { [33mPrismaClient[39m } [33m=[39m require([32m'@prisma/client'[39m)[32m'[39m
- [90m 4 |[39m [32m''[39m[0m
-    at constructor (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:367:19)
-    at Parser.raise (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6627:19)
-    at Object.unterminated (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:5692:20)
-    at readStringContents (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:5434:16)
-    at Parser.readString (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6526:9)
-    at Parser.getTokenFromCode (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:6286:14)
-    at Parser.nextToken (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:5810:10)
-    at Parser.next (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:5720:10)
-    at Parser.eat (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:5724:12)
-    at Parser.parseCallExpressionArguments (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11234:18)
-    at Parser.parseCoverCallAndAsyncArrowHead (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11181:29)
-    at Parser.parseSubscript (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11115:19)
-    at Parser.parseSubscripts (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11089:19)
-    at Parser.parseExprSubscripts (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11080:17)
-    at Parser.parseUpdate (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11061:21)
-    at Parser.parseMaybeUnary (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:11041:23)
-    at Parser.parseMaybeUnaryOrPrivate (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10894:61)
-    at Parser.parseExprOps (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10899:23)
-    at Parser.parseMaybeConditional (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10876:23)
-    at Parser.parseMaybeAssign (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10826:21)
-    at D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10795:39
-    at Parser.allowInAnd (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12422:16)
-    at Parser.parseMaybeAssignAllowIn (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:10795:17)
-    at Parser.parseVar (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13384:91)
-    at Parser.parseVarStatement (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13230:10)
-    at Parser.parseStatementContent (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12851:23)
-    at Parser.parseStatementLike (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12767:17)
-    at Parser.parseModuleItem (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12744:17)
-    at Parser.parseBlockOrModuleBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13316:36)
-    at Parser.parseBlockBody (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:13309:10)
-    at Parser.parseProgram (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12625:10)
-    at Parser.parseTopLevel (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:12615:25)
-    at Parser.parse (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:14492:10)
-    at parse (D:\Projects\VHM24\node_modules\@babel\parser\lib\index.js:14526:38)
-    at parser (D:\Projects\VHM24\node_modules\@babel\core\lib\parser\index.js:41:34)
-    at parser.next (<anonymous>)
-    at normalizeFile (D:\Projects\VHM24\node_modules\@babel\core\lib\transformation\normalize-file.js:64:37)
-    at normalizeFile.next (<anonymous>)
-    at run (D:\Projects\VHM24\node_modules\@babel\core\lib\transformation\index.js:22:50)
-    at run.next (<anonymous>)
-    at transform (D:\Projects\VHM24\node_modules\@babel\core\lib\transform.js:22:33)
-    at transform.next (<anonymous>)
-    at evaluateSync (D:\Projects\VHM24\node_modules\gensync\index.js:251:28)
-    at sync (D:\Projects\VHM24\node_modules\gensync\index.js:89:14)
-    at stopHiding - secret - don't use this - v1 (D:\Projects\VHM24\node_modules\@babel\core\lib\errors\rewrite-stack-trace.js:47:12)
-    at transformSync (D:\Projects\VHM24\node_modules\@babel\core\lib\transform.js:42:76)
-    at ScriptTransformer._instrumentFile (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:389:46)
-    at ScriptTransformer._buildTransformResult (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:491:33)
-    at ScriptTransformer.transformSourceAsync (D:\Projects\VHM24\node_modules\@jest\transform\build\ScriptTransformer.js:608:17)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
 Failed to collect coverage from D:\Projects\VHM24\apps\web-dashboard\.next\server\middleware-build-manifest.js
 ERROR: D:\Projects\VHM24\apps\web-dashboard\.next\server\middleware-build-manifest.js: Missing semicolon. (2:17)
 
@@ -4481,39 +4481,6 @@ FAIL tests/telegram-bot/health.test.js
 
       at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
 
-FAIL tests/monitoring/health.test.js
-  ● Test suite failed to run
-
-    Jest encountered an unexpected token
-
-    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
-
-    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
-
-    By default "node_modules" folder is ignored by transformers.
-
-    Here's what you can do:
-     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
-     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
-     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
-     • If you need a custom transformation specify a "transform" option in your config.
-     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
-
-    You'll find more details and examples of these config options in the docs:
-    https://jestjs.io/docs/configuration
-    For information about custom transformations, see:
-    https://jestjs.io/docs/code-transformation
-
-    Details:
-
-    D:\Projects\VHM24\tests\monitoring\health.test.js:2
-    const { describe, test, expect, beforeEach } = require('@jest/globals')''
-                                                                           ^^
-
-    SyntaxError: Unexpected string
-
-      at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
-
 FAIL tests/data-import/health.test.js
   ● Test suite failed to run
 
@@ -4540,6 +4507,39 @@ FAIL tests/data-import/health.test.js
     Details:
 
     D:\Projects\VHM24\tests\data-import\health.test.js:2
+    const { describe, test, expect, beforeEach } = require('@jest/globals')''
+                                                                           ^^
+
+    SyntaxError: Unexpected string
+
+      at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
+
+FAIL tests/monitoring/health.test.js
+  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+
+    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
+
+    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
+
+    By default "node_modules" folder is ignored by transformers.
+
+    Here's what you can do:
+     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
+     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
+     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
+     • If you need a custom transformation specify a "transform" option in your config.
+     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
+
+    You'll find more details and examples of these config options in the docs:
+    https://jestjs.io/docs/configuration
+    For information about custom transformations, see:
+    https://jestjs.io/docs/code-transformation
+
+    Details:
+
+    D:\Projects\VHM24\tests\monitoring\health.test.js:2
     const { describe, test, expect, beforeEach } = require('@jest/globals')''
                                                                            ^^
 
@@ -4580,39 +4580,6 @@ FAIL tests/warehouse/health.test.js
 
       at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
 
-FAIL tests/machines/health.test.js
-  ● Test suite failed to run
-
-    Jest encountered an unexpected token
-
-    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
-
-    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
-
-    By default "node_modules" folder is ignored by transformers.
-
-    Here's what you can do:
-     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
-     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
-     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
-     • If you need a custom transformation specify a "transform" option in your config.
-     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
-
-    You'll find more details and examples of these config options in the docs:
-    https://jestjs.io/docs/configuration
-    For information about custom transformations, see:
-    https://jestjs.io/docs/code-transformation
-
-    Details:
-
-    D:\Projects\VHM24\tests\machines\health.test.js:2
-    const { describe, test, expect, beforeEach } = require('@jest/globals')''
-                                                                           ^^
-
-    SyntaxError: Unexpected string
-
-      at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
-
 FAIL tests/inventory/health.test.js
   ● Test suite failed to run
 
@@ -4639,6 +4606,39 @@ FAIL tests/inventory/health.test.js
     Details:
 
     D:\Projects\VHM24\tests\inventory\health.test.js:2
+    const { describe, test, expect, beforeEach } = require('@jest/globals')''
+                                                                           ^^
+
+    SyntaxError: Unexpected string
+
+      at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
+
+FAIL tests/machines/health.test.js
+  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+
+    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
+
+    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
+
+    By default "node_modules" folder is ignored by transformers.
+
+    Here's what you can do:
+     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
+     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
+     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
+     • If you need a custom transformation specify a "transform" option in your config.
+     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
+
+    You'll find more details and examples of these config options in the docs:
+    https://jestjs.io/docs/configuration
+    For information about custom transformations, see:
+    https://jestjs.io/docs/code-transformation
+
+    Details:
+
+    D:\Projects\VHM24\tests\machines\health.test.js:2
     const { describe, test, expect, beforeEach } = require('@jest/globals')''
                                                                            ^^
 
@@ -4778,7 +4778,7 @@ FAIL tests/auth/health.test.js
 
       at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
 
-FAIL __tests__/telegram-fsm.test.js
+FAIL __tests__/telegram-fsm.test.js (5.425 s)
   ● Telegram Bot FSM › should register all scenes
 
     TypeError: registerScenes is not a function
@@ -4793,7 +4793,7 @@ FAIL __tests__/telegram-fsm.test.js
 
       at Object.<anonymous> (__tests__/telegram-fsm.test.js:40:5)
 
-FAIL __tests__/health.test.js (15.034 s)
+FAIL __tests__/health.test.js (15.854 s)
   ● Health Check API › should handle database connection errors
 
     expect(received).toBe(expected) // Object.is equality
@@ -4832,5 +4832,5 @@ FAIL __tests__/health.test.js (15.034 s)
 Test Suites: 19 failed, 2 passed, 21 total
 Tests:       3 failed, 16 passed, 19 total
 Snapshots:   0 total
-Time:        21.229 s
+Time:        22.391 s
 Ran all test suites.

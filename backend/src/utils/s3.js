@@ -24,6 +24,22 @@ class S3Service {
   }
 
   /**
+   * Получение имени бакета
+   * @returns {string} Имя бакета
+   */
+  static getBucketName() {
+    return process.env.S3_BUCKET_NAME || process.env.S3_BUCKET;
+  }
+
+  /**
+   * Получение URL для загрузок
+   * @returns {string} URL для загрузок
+   */
+  static getUploadsEndpoint() {
+    return process.env.S3_UPLOAD_URL || process.env.UPLOADS_ENDPOINT;
+  }
+
+  /**
    * Загрузка файла в S3
    * @param {Buffer} fileBuffer - Буфер с содержимым файла
    * @param {string} fileName - Имя файла
@@ -37,7 +53,7 @@ class S3Service {
       const key = folder ? `${folder}/${fileName}` : fileName;
       
       const command = new PutObjectCommand({
-        Bucket: process.env.S3_BUCKET,
+        Bucket: this.getBucketName(),
         Key: key,
         Body: fileBuffer,
         ContentType: contentType,
@@ -46,7 +62,7 @@ class S3Service {
       
       await s3Client.send(command);
       
-      const fileUrl = `${process.env.UPLOADS_ENDPOINT}/${key}`;
+      const fileUrl = `${this.getUploadsEndpoint()}/${key}`;
       
       logger.info('File uploaded to S3', { key, url: fileUrl });
       
@@ -123,7 +139,7 @@ class S3Service {
       const s3Client = this.getS3Client();
       
       const command = new DeleteObjectCommand({
-        Bucket: process.env.S3_BUCKET,
+        Bucket: this.getBucketName(),
         Key: key
       });
       
@@ -155,7 +171,7 @@ class S3Service {
       const s3Client = this.getS3Client();
       
       const command = new GetObjectCommand({
-        Bucket: process.env.S3_BUCKET,
+        Bucket: this.getBucketName(),
         Key: key
       });
       
@@ -180,7 +196,7 @@ class S3Service {
       const s3Client = this.getS3Client();
       
       const command = new HeadObjectCommand({
-        Bucket: process.env.S3_BUCKET,
+        Bucket: this.getBucketName(),
         Key: key
       });
       
@@ -206,7 +222,7 @@ class S3Service {
       const s3Client = this.getS3Client();
       
       const command = new ListObjectsV2Command({
-        Bucket: process.env.S3_BUCKET,
+        Bucket: this.getBucketName(),
         Prefix: prefix
       });
       
@@ -228,16 +244,16 @@ class S3Service {
       const s3Client = this.getS3Client();
       
       const command = new HeadBucketCommand({
-        Bucket: process.env.S3_BUCKET
+        Bucket: this.getBucketName()
       });
       
       await s3Client.send(command);
       
-      logger.info('S3 connection test successful', { bucket: process.env.S3_BUCKET });
+      logger.info('S3 connection test successful', { bucket: this.getBucketName() });
       
       return true;
     } catch (error) {
-      logger.error('S3 connection test failed', { error: error.message, bucket: process.env.S3_BUCKET });
+      logger.error('S3 connection test failed', { error: error.message, bucket: this.getBucketName() });
       return false;
     }
   }

@@ -346,7 +346,17 @@ async function setupRailwayEnvironmentVariables() {
       'NODE_ENV',
       'JWT_SECRET',
       'ADMIN_IDS',
-      'WEBHOOK_URL'
+      'WEBHOOK_URL',
+      'CORS_ORIGIN',
+      'S3_ACCESS_KEY',
+      'S3_SECRET_KEY',
+      'S3_REGION',
+      'S3_BUCKET_NAME',
+      'S3_BACKUP_BUCKET',
+      'S3_ENDPOINT',
+      'S3_UPLOAD_URL',
+      'S3_BACKUP_URL',
+      'METRICS_ENABLED'
     ];
     
     // Проверка наличия необходимых переменных окружения в Railway
