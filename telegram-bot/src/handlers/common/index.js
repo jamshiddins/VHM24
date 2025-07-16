@@ -1,161 +1,206 @@
-;
-const { BOT_STATES } = require('../fsm/states')'''';
-const { createInlineKeyboard } = require('../_keyboards ')'''';
-const { _formatMessage  } = require('../utils/formatters')'''';
-const userService = require('../_services /_users ')'''';
-const apiService = require('../_services /api')'''';
-const logger = require('../utils/logger')'''''';
-  bot.action(_'main_menu''''''';
-      return await ctx.reply('❌ Необходима авторизация''''''';
-  bot.action(_'profile''''''';
-  bot.action(_'_settings ''''''';
-  bot.action(_process.env.API_KEY_348 || process.env.API_KEY_349 || 'settings_notifications''''''';
-  bot.action(_'help''''''';
-  bot._command (_'system',  _async (ctx) => {'''';
-    if (!userService.hasRole(ctx._user , ['ADMIN', 'MANAGER'])) {'''';
-      return await ctx.reply('❌ Недостаточно прав''''''';
-  bot._command (_'version',  _async (ctx) => {'''';
-    const botVersion = require('../package.json')'''''';
-      '🤖 *VendHub Manager (VHM24) Bot*\n\n' +'''';
-      `🔗 Версия "API": ${apiVersion?.version || 'неизвестно''';
-      `📅 Сборка: ${apiVersion?.buildDate || 'неизвестно''';
-      { "parse_mode": 'Markdown''''''';
-  bot._command (_'ping''''''';
-      let ___status = '✅ Связь установлена;';'''';
-      if (health._status  !== 'ok') {'''';
-        _status  = '⚠️ Проблемы с API''''''';
-        '🏓 *Pong!*\n\n' +'''';
-        { "parse_mode": 'Markdown''''''';
-        '❌ *Ошибка связи*\n\n' +'''';
-        'Не удается подключиться к серверу\n' +'''';
-        { "parse_mode": 'Markdown''''''';
-  bot.on(_'callback_query''''''';
-    const isHandled = ctx.callbackQuery._data .startsWith('_handled_''''''';
-      await ctx.answerCbQuery('🤔 Функция временно недоступна''''';
-      require("./utils/logger")"";
-    return await ctx.reply('❌ Необходима авторизация''''''';
-        "parse_mode": 'Markdown''''''';,
-  "parse_mode": 'Markdown''''''';
-      "parse_mode": 'Markdown''''''';
-    return await ctx.reply('❌ Необходима авторизация''''''';
-      profileText += '\n\n📈 *Статистика за неделю:*\n';'''';
-      [{ "text": '📊 Детальная статистика', "callback_data": 'profile_stats' }],'''';
-      [{ "text": '⚙️ Настройки', "callback_data": '_settings ' }],'''';
-      [{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-        "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error showing "profile":''''';
-    await ctx.reply('❌ Ошибка загрузки профиля''''''';
-  let ___settingsText = '⚙️ *Настройки бота*\n\n;';'''';
-  settingsText += '🔔 Уведомления:\n';'''';
-  settingsText += `• Новые задачи: ${_settings .newTasks ? '✅' : '❌''';
-  settingsText += `• Напоминания: ${_settings .taskReminders ? '✅' : '❌''';
-  settingsText += `• Обновления: ${_settings .taskUpdates ? '✅' : '❌''';
-  settingsText += `• Системные: ${_settings .systemAlerts ? '✅' : '❌''';
-    settingsText += '🌙 Тихие часы: отключены\n'''';''';
-    [{ "text": '🔔 Управление уведомлениями', "callback_data": 'settings_notifications' }],'''';
-    [{ "text": '🌍 Язык и регион', "callback_data": 'settings_language' }],'''';
-    [{ "text": '🔒 Приватность', "callback_data": 'settings_privacy' }],'''';
-    [{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-      "text": `${_settings .newTasks ? '🔔' : '🔕''';,
-  "callback_data": process.env.API_KEY_350 || 'toggle_notification_newTasks''''''';
-      "text": `${_settings .taskReminders ? '🔔' : '🔕''';,
-  "callback_data": process.env.API_KEY_351 || 'toggle_notification_taskReminders''''''';
-      "text": `${_settings .taskUpdates ? '🔔' : '🔕''';,
-  "callback_data": process.env.API_KEY_352 || 'toggle_notification_taskUpdates''''''';
-      "text": `${_settings .systemAlerts ? '🔔' : '🔕''';,
-  "callback_data": process.env.API_KEY_353 || 'toggle_notification_systemAlerts''''''';
-    [{ "text": '🌙 Тихие часы', "callback_data": process.env.API_KEY_354 || 'settings_quiet_hours' }],'''';
-    [{ "text": '🔙 Назад', "callback_data": '_settings ''''''';
-    '🔔 *Настройки уведомлений*\n\n' +'''';
-    'Выберите типы уведомлений, которые вы хотите получать:''''''';
-      "parse_mode": 'Markdown''''''';
-    await ctx.answerCbQuery('✅ Настройка обновлена''''''';
-    await userService.logAction(ctx._user .id, process.env.API_KEY_355 || 'NOTIFICATION_SETTING_CHANGED''''''';
-    require("./utils/logger").error('Error toggling notification "setting":''''';
-    await ctx.answerCbQuery('❌ Ошибка обновления настройки''''''';
-  const role = _user ?.role || 'OPERATOR;'''';''';
-    "OPERATOR": '📋 *Справка для оператора*\n\n' +'''';
-      '*Основные команды:*\n' +'''';
-      '• /start - Запуск бота\n' +'''';
-      '• /tasks - Мои задачи\n' +'''';
-      '• /_status  - Текущий статус\n' +'''';
-      '• /help - Эта справка\n\n' +'''';
-      '*Функции в меню:*\n' +'''';
-      '🔹 Мои задачи - просмотр и выполнение\n' +'''';
-      '🔹 Возврат сумок - возврат на склад\n' +'''';
-      '🔹 Инкассация - сбор наличных\n' +'''';
-      '🔹 Мой отчет - статистика работы''''''';
-    "WAREHOUSE": '📦 *Справка для склада*\n\n' +'''';
-      '*Основные команды:*\n' +'''';
-      '• /start - Запуск бота\n' +'''';
-      '• /inventory - Остатки склада\n' +'''';
-      '• /bags - Управление сумками\n' +'''';
-      '• /help - Эта справка\n\n' +'''';
-      '*Функции в меню:*\n' +'''';
-      '🔹 Приём/выдача - операции склада\n' +'''';
-      '🔹 Сборка сумок - комплектация\n' +'''';
-      '🔹 Остатки - инвентаризация\n' +'''';
-      '🔹 Мойка бункеров - подготовка''''''';
-    "MANAGER": '👔 *Справка для менеджера*\n\n' +'''';
-      '*Основные команды:*\n' +'''';
-      '• /start - Запуск бота\n' +'''';
-      '• /create - Создать задачу\n' +'''';
-      '• /reports - Отчеты системы\n' +'''';
-      '• /system - Статус системы\n' +'''';
-      '• /help - Эта справка\n\n' +'''';
-      '*Функции в меню:*\n' +'''';
-      '🔹 Создать задачу - новая задача\n' +'''';
-      '🔹 Управление задачами - контроль\n' +'''';
-      '🔹 Отчёты - аналитика и статистика\n' +'''';
-      '🔹 Справочники - управление данными''''''';
-  const helpText = helpTexts[role] + '\n\n' +'';'';
-    '*Дополнительная помощь:*\n' +'''';
-    '• Используйте кнопки меню для навигации\n' +'''';
-    '• В любой момент можно вернуться в главное меню\n' +'''';
-    '• При ошибках попробуйте команду /start\n\n' +'''';
-    '📞 *Поддержка:* Обратитесь к администратору'''';''';
-    [{ "text": '📖 Детальная инструкция', "callback_data": 'help_detailed' }],'''';
-    [{ "text": '❓ FAQ', "callback_data": 'help_faq' }],'''';
-    [{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-      "parse_mode": 'Markdown''''''';
-    let ___statusText = '🖥️ *Статус системы*\n\n;';'''';
-    _statusText  += `🔗 "API": ${health._status  === 'ok' ? '✅ Работает' : '❌ Недоступен''';
-    _statusText  += `💾 База данных: ${health.database ? '✅' : '❌' ${health.database || 'Ошибка''';
-    _statusText  += `🔴 "Redis": ${health.redis ? '✅' : '❌' ${health.redis || 'Ошибка''';
-      _statusText  += '📊 *Статистика:*\n';'''';
-    _statusText  += `\n⏰ Обновлено: ${new Date().toLocaleString('ru-RU''';
-      [{ "text": '🔄 Обновить', "callback_data": 'system_refresh' ],'''';
-      [{ "text": '📊 Детальная статистика', "callback_data": 'system_detailed' ],'''';
-      [{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error getting system _status :''''';
-    await ctx.reply('❌ Ошибка получения статуса системы''''''';
-    case 'main_menu''''''';
-    case 'profile''''''';
-    case '_settings ''''''';
-    require("./utils/logger").error('Error in back "navigation":''''''';
-      [{ "text": '📋 Мои задачи', "callback_data": 'operator_tasks' ],'''';
-      [{ "text": '🎒 Возврат сумок', "callback_data": 'bag_return' ],'''';
-      [{ "text": '💰 Инкассация', "callback_data": 'incassation' ],'''';
-      [{ "text": '📊 Мой отчет', "callback_data": 'operator_report' ],'''';
-      [{ "text": '👤 Профиль', "callback_data": 'profile' , { "text": '⚙️ Настройки', "callback_data": '_settings ''''''';
-      [{ "text": '📦 Приём/выдача', "callback_data": 'warehouse_receive' ],'''';
-      [{ "text": '🎒 Сборка сумок', "callback_data": 'warehouse_bags' ],'''';
-      [{ "text": '📋 Остатки', "callback_data": 'warehouse_inventory' ],'''';
-      [{ "text": '🧹 Мойка бункеров', "callback_data": 'warehouse_cleaning' ],'''';
-      [{ "text": '👤 Профиль', "callback_data": 'profile' , { "text": '⚙️ Настройки', "callback_data": '_settings ''''''';
-      [{ "text": '📝 Создать задачу', "callback_data": 'manager_create_task' ],'''';
-      [{ "text": '👥 Управление задачами', "callback_data": 'manager_tasks' ],'''';
-      [{ "text": '📊 Отчёты', "callback_data": 'manager_reports' ],'''';
-      [{ "text": '📚 Справочники', "callback_data": 'manager_directories' ],'''';
-      [{ "text": '👤 Профиль', "callback_data": 'profile' , { "text": '⚙️ Настройки', "callback_data": '_settings ''''''';
-      [{ "text": '🔧 Технические задачи', "callback_data": 'tech_tasks' ],'''';
-      [{ "text": '⚙️ Диагностика', "callback_data": 'tech_diagnostics' ],'''';
-      [{ "text": '📸 Фото отчеты', "callback_data": 'tech_photo_reports' ],'''';
-      [{ "text": '📋 История ремонтов', "callback_data": 'tech_history' ],'''';
-      [{ "text": '👤 Профиль', "callback_data": 'profile' , { "text": '⚙️ Настройки', "callback_data": '_settings ''''';
-'';
-}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}})))))))))))))))))))))))))]]]]]]]]]
+const { Markup } = require('telegraf');
+const { BOT_STATES } = require('../../fsm/states');
+const { ROLE_KEYBOARDS } = require('../../keyboards');
+const logger = require('../../utils/logger');
+
+/**
+ * Регистрирует общие обработчики
+ * @param {Object} bot - Экземпляр бота Telegraf
+ */
+const register = (bot) => {
+  // Обработчик команды /start
+  bot.command('start', async (ctx) => {
+    try {
+      await startHandler(ctx);
+    } catch (error) {
+      logger.error('Error in start command handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик команды /help
+  bot.command('help', async (ctx) => {
+    try {
+      await helpHandler(ctx);
+    } catch (error) {
+      logger.error('Error in help command handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для возврата в главное меню
+  bot.action('back_to_menu', async (ctx) => {
+    try {
+      // Получаем информацию о пользователе
+      const user = ctx.user || { role: 'DEFAULT' };
+      
+      // Получаем клавиатуру в зависимости от роли пользователя
+      const keyboard = ROLE_KEYBOARDS[user.role] || ROLE_KEYBOARDS.DEFAULT;
+      
+      // Отправляем сообщение с клавиатурой
+      await ctx.editMessageText('🏠 *Главное меню*\n\nВыберите действие:', {
+        parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: keyboard
+        }
+      });
+      
+      // Устанавливаем состояние бота
+      if (ctx.scene && ctx.scene.enter) {
+        await ctx.scene.enter(BOT_STATES.MAIN_MENU);
+      }
+      
+      logger.info(`User ${ctx.from.id} returned to main menu`);
+    } catch (error) {
+      logger.error('Error in back_to_menu action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик команды /profile
+  bot.command('profile', async (ctx) => {
+    try {
+      // Проверяем, авторизован ли пользователь
+      if (!ctx.user) {
+        await ctx.reply('❌ Необходима авторизация для просмотра профиля');
+        return;
+      }
+      
+      // Формируем сообщение с информацией о профиле
+      const message = `👤 *Ваш профиль*\n\n` +
+        `*Имя:* ${ctx.user.firstName || 'Не указано'}\n` +
+        `*Фамилия:* ${ctx.user.lastName || 'Не указано'}\n` +
+        `*Роль:* ${getRoleText(ctx.user.role)}\n` +
+        `*Статус:* ${getStatusText(ctx.user.status)}`;
+      
+      // Создаем клавиатуру для профиля
+      const keyboard = [
+        [
+          Markup.button.callback('⚙️ Настройки', 'settings'),
+          Markup.button.callback('🔐 Сменить пароль', 'change_password')
+        ],
+        [Markup.button.callback('🏠 Главное меню', 'back_to_menu')]
+      ];
+      
+      await ctx.replyWithMarkdown(message, Markup.inlineKeyboard(keyboard));
+      
+      logger.info(`User ${ctx.from.id} viewed profile`);
+    } catch (error) {
+      logger.error('Error in profile command handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для неизвестных команд
+  bot.on('text', async (ctx, next) => {
+    // Если это команда
+    if (ctx.message.text.startsWith('/')) {
+      try {
+        await unknownCommandHandler(ctx);
+      } catch (error) {
+        logger.error('Error in unknown command handler:', error);
+        await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+      }
+    } else {
+      // Если это не команда, передаем управление следующему обработчику
+      return next();
+    }
+  });
+  
+  logger.info('Common handlers registered');
+};
+
+// Обработчик команды /start
+const startHandler = async (ctx) => {
+  try {
+    // Получаем информацию о пользователе
+    const user = ctx.user || { role: 'DEFAULT' };
+    
+    // Приветственное сообщение
+    const welcomeMessage = `👋 Привет, ${ctx.from.first_name}!
+    
+🤖 Я бот системы VendHub для управления вендинговыми автоматами.
+
+Выберите действие из меню ниже:`;
+    
+    // Получаем клавиатуру в зависимости от роли пользователя
+    const keyboard = ROLE_KEYBOARDS[user.role] || ROLE_KEYBOARDS.DEFAULT;
+    
+    // Отправляем сообщение с клавиатурой
+    await ctx.reply(welcomeMessage, Markup.inlineKeyboard(keyboard));
+    
+    // Устанавливаем состояние бота
+    if (ctx.scene && ctx.scene.enter) {
+      await ctx.scene.enter(BOT_STATES.MAIN_MENU);
+    }
+    
+    logger.info(`User ${ctx.from.id} started the bot`);
+  } catch (error) {
+    logger.error('Error in start handler:', error);
+    await ctx.reply('❌ Произошла ошибка при запуске бота. Пожалуйста, попробуйте позже.');
+  }
+};
+
+// Обработчик команды /help
+const helpHandler = async (ctx) => {
+  try {
+    const helpMessage = `📚 *Справка по использованию бота*
+    
+Основные команды:
+/start - Запустить бота и показать главное меню
+/help - Показать эту справку
+/profile - Показать информацию о вашем профиле
+/tasks - Показать ваши текущие задачи
+
+Если у вас возникли проблемы, обратитесь к администратору системы.`;
+    
+    await ctx.replyWithMarkdown(helpMessage);
+    logger.info(`User ${ctx.from.id} requested help`);
+  } catch (error) {
+    logger.error('Error in help handler:', error);
+    await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+  }
+};
+
+// Обработчик неизвестных команд
+const unknownCommandHandler = async (ctx) => {
+  try {
+    await ctx.reply('❓ Неизвестная команда. Используйте /help для получения списка доступных команд.');
+    logger.warn(`User ${ctx.from.id} used unknown command: ${ctx.message.text}`);
+  } catch (error) {
+    logger.error('Error in unknown command handler:', error);
+  }
+};
+
+// Вспомогательная функция для получения текстового представления роли
+const getRoleText = (role) => {
+  const roleMap = {
+    'ADMIN': '👑 Администратор',
+    'MANAGER': '📊 Менеджер',
+    'OPERATOR': '👨‍💼 Оператор',
+    'WAREHOUSE': '📦 Склад',
+    'TECHNICIAN': '🔧 Техник',
+    'USER': '👤 Пользователь'
+  };
+  
+  return roleMap[role] || role;
+};
+
+// Вспомогательная функция для получения текстового представления статуса
+const getStatusText = (status) => {
+  const statusMap = {
+    'ACTIVE': '✅ Активен',
+    'INACTIVE': '❌ Неактивен',
+    'PENDING': '⏳ Ожидает подтверждения',
+    'BLOCKED': '🚫 Заблокирован'
+  };
+  
+  return statusMap[status] || status;
+};
+
+module.exports = {
+  startHandler,
+  helpHandler,
+  unknownCommandHandler,
+  register
+};

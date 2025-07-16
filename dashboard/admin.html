@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VHM24 - Администрирование системы</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+        }
+
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-button {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .nav-button i {
+            margin-right: 5px;
+        }
+
+        .nav-button:hover {
+            background: #2980b9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .panel h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        .panel h3 {
+            margin: 15px 0 10px;
+            color: #2c3e50;
+        }
+
+        .admin-menu {
+            list-style: none;
+        }
+
+        .admin-menu-item {
+            margin-bottom: 5px;
+        }
+
+        .admin-menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 5px;
+            color: #2c3e50;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .admin-menu-link:hover {
+            background: #ecf0f1;
+        }
+
+        .admin-menu-link.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .admin-menu-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        .admin-content.active {
+            display: block;
+        }
+
+        .user-list {
+            margin-top: 20px;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .user-item:hover {
+            background: #e9ecef;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+
+        .user-details h4 {
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .user-details p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-icon:hover {
+            background: #2980b9;
+        }
+
+        .btn-icon.btn-edit {
+            background: #f39c12;
+        }
+
+        .btn-icon.btn-edit:hover {
+            background: #d35400;
+        }
+
+        .btn-icon.btn-delete {
+            background: #e74c3c;
+        }
+
+        .btn-icon.btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            color: white;
+            margin-left: 5px;
+        }
+
+        .role-admin {
+            background: #e74c3c;
+        }
+
+        .role-manager {
+            background: #3498db;
+        }
+
+        .role-operator {
+            background: #2ecc71;
+        }
+
+        .role-warehouse {
+            background: #f39c12;
+        }
+
+        .role-technician {
+            background: #9b59b6;
+        }
+
+        .search-box {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 35px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+        }
+
+        select.form-control {
+            background: white;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn i {
+            margin-right: 5px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #219653;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+        }
+
+        .btn-warning:hover {
+            background: #d35400;
+        }
+
+        .system-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+
+        .stat-card .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .stat-card .label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .log-container {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: monospace;
+            margin-top: 15px;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 0.9em;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: #7f8c8d;
+            margin-right: 10px;
+        }
+
+        .log-level {
+            display: inline-block;
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin-right: 10px;
+            font-size: 0.8em;
+            color: white;
+        }
+
+        .log-info {
+            background: #3498db;
+        }
+
+        .log-warning {
+            background: #f39c12;
+        }
+
+        .log-error {
+            background: #e74c3c;
+        }
+
+        .log-debug {
+            background: #2ecc71;
+        }
+
+        .log-message {
+            color: #2c3e50;
+        }
+
+        .machine-list {
+            margin-top: 15px;
+        }
+
+        .machine-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .machine-info h4 {
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .machine-info p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .machine-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            color: white;
+            margin-left: 5px;
+        }
+
+        .status-online {
+            background: #27ae60;
+        }
+
+        .status-offline {
+            background: #e74c3c;
+        }
+
+        .status-warning {
+            background: #f39c12;
+        }
+
+        .settings-section {
+            margin-bottom: 30px;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .settings-group {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-item-label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .settings-item-value {
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #2ecc71;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .navigation {
+                margin-top: 15px;
+                flex-wrap: wrap;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .system-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-cogs"></i> Администрирование</h1>
+                <p class="subtitle">Управление пользователями, настройками и мониторинг системы</p>
+            </div>
+            <div class="navigation">
+                <a href="index.html" class="nav-button"><i class="fas fa-tachometer-alt"></i> Дашборд</a>
+                <a href="analytics.html" class="nav-button"><i class="fas fa-chart-pie"></i> Аналитика</a>
+                <a href="routes.html" class="nav-button"><i class="fas fa-route"></i> Маршруты</a>
+                <a href="tasks.html" class="nav-button"><i class="fas fa-tasks"></i> Задачи</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Admin Menu Panel -->
+            <div class="panel">
+                <h2><i class="fas fa-bars"></i> Меню администратора</h2>
+                
+                <ul class="admin-menu">
+                    <li class="admin-menu-item">
+                        <a href="#" class="admin-menu-link active" data-target="users">
+                            <i class="fas fa-users"></i> Пользователи
+                        </a>
+                    </li>
+                    <li class="admin-menu-item">
+                        <a href="#" class="admin-menu-link" data-target="machines">
+                            <i class="fas fa-robot"></i> Автоматы
+                        </a>
+                    </li>
+                    <li class="admin-menu-item">
+                        <a href="#" class="admin-menu-link" data-target="system">
+                            <i class="fas fa-server"></i> Состояние системы
+                        </a>
+                    </li>
+                    <li class="admin-menu-item">
+                        <a href="#" class="admin-menu-link" data-target="logs">
+                            <i class="fas fa-clipboard-list"></i> Логи
+                        </a>
+                    </li>
+                    <li class="admin-menu-item">
+                        <a href="#" class="admin-menu-link" data-target="settings">
+                            <i class="fas fa-sliders-h"></i> Настройки
+                        </a>
+                    </li>
+                    <li class="admin-menu-item">
+                        <a href="#" class="admin-menu-link" data-target="backup">
+                            <i class="fas fa-database"></i> Резервное копирование
+                        </a>
+                    </li>
+                    <li class="admin-menu-item">
+                        <a href="#" class="admin-menu-link" data-target="notifications">
+                            <i class="fas fa-bell"></i> Уведомления
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Admin Content Panel -->
+            <div class="panel">
+                <!-- Users Section -->
+                <div class="admin-content active" id="users-content">
+                    <h2><i class="fas fa-users"></i> Управление пользователями</h2>
+                    
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Поиск пользователей..." id="user-search">
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">Все</button>
+                        <button class="filter-btn" data-filter="admin">Администраторы</button>
+                        <button class="filter-btn" data-filter="manager">Менеджеры</button>
+                        <button class="filter-btn" data-filter="operator">Операторы</button>
+                        <button class="filter-btn" data-filter="warehouse">Склад</button>
+                        <button class="filter-btn" data-filter="technician">Техники</button>
+                    </div>
+                    
+                    <div class="user-list">
+                        <div class="user-item" data-role="admin">
+                            <div class="user-info">
+                                <div class="user-avatar">АД</div>
+                                <div class="user-details">
+                                    <h4>Александр Дмитриев <span class="role-badge role-admin">Админ</span></h4>
+                                    <p>admin@vhm24.com | Последний вход: 15.07.2025 10:45</p>
+                                </div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="user-item" data-role="manager">
+                            <div class="user-info">
+                                <div class="user-avatar">ДС</div>
+                                <div class="user-details">
+                                    <h4>Дмитрий Сергеев <span class="role-badge role-manager">Менеджер</span></h4>
+                                    <p>manager@vhm24.com | Последний вход: 15.07.2025 09:30</p>
+                                </div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="user-item" data-role="operator">
+                            <div class="user-info">
+                                <div class="user-avatar">АК</div>
+                                <div class="user-details">
+                                    <h4>Алексей Кузнецов <span class="role-badge role-operator">Оператор</span></h4>
+                                    <p>operator1@vhm24.com | Последний вход: 15.07.2025 11:15</p>
+                                </div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="user-item" data-role="operator">
+                            <div class="user-info">
+                                <div class="user-avatar">МП</div>
+                                <div class="user-details">
+                                    <h4>Мария Петрова <span class="role-badge role-operator">Оператор</span></h4>
+                                    <p>operator2@vhm24.com | Последний вход: 15.07.2025 08:45</p>
+                                </div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="user-item" data-role="warehouse">
+                            <div class="user-info">
+                                <div class="user-avatar">ИС</div>
+                                <div class="user-details">
+                                    <h4>Иван Смирнов <span class="role-badge role-warehouse">Склад</span></h4>
+                                    <p>warehouse@vhm24.com | Последний вход: 14.07.2025 16:20</p>
+                                </div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="user-item" data-role="technician">
+                            <div class="user-info">
+                                <div class="user-avatar">СМ</div>
+                                <div class="user-details">
+                                    <h4>Сергей Михайлов <span class="role-badge role-technician">Техник</span></h4>
+                                    <p>technician@vhm24.com | Последний вход: 15.07.2025 07:30</p>
+                                </div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-success" id="add-user-btn"><i class="fas fa-user-plus"></i> Добавить пользователя</button>
+                    </div>
+                </div>
+                
+                <!-- Machines Section -->
+                <div class="admin-content" id="machines-content">
+                    <h2><i class="fas fa-robot"></i> Управление автоматами</h2>
+                    
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Поиск автоматов..." id="machine-search">
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">Все</button>
+                        <button class="filter-btn" data-filter="online">Онлайн</button>
+                        <button class="filter-btn" data-filter="offline">Офлайн</button>
+                        <button class="filter-btn" data-filter="warning">Предупреждение</button>
+                    </div>
+                    
+                    <div class="machine-list">
+                        <div class="machine-item" data-status="online">
+                            <div class="machine-info">
+                                <h4>VM-001 <span class="machine-status status-online">Онлайн</span></h4>
+                                <p>ТЦ Mega Planet | Последнее обновление: 15.07.2025 11:45</p>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="machine-item" data-status="warning">
+                            <div class="machine-info">
+                                <h4>VM-015 <span class="machine-status status-warning">Предупреждение</span></h4>
+                                <p>Парк Ашхабад | Последнее обновление: 15.07.2025 10:30</p>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="machine-item" data-status="warning">
+                            <div class="machine-info">
+                                <h4>VM-028 <span class="machine-status status-warning">Предупреждение</span></h4>
+                                <p>Метро Олмазор | Последнее обновление: 15.07.2025 09:15</p>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="machine-item" data-status="offline">
+                            <div class="machine-info">
+                                <h4>VM-042 <span class="machine-status status-offline">Офлайн</span></h4>
+                                <p>УзЭкспоЦентр | Последнее обновление: 14.07.2025 18:45</p>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="machine-item" data-status="online">
+                            <div class="machine-info">
+                                <h4>VM-055 <span class="machine-status status-online">Онлайн</span></h4>
+                                <p>ТЦ Next | Последнее обновление: 15.07.2025 11:30</p>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="machine-item" data-status="online">
+                            <div class="machine-info">
+                                <h4>VM-067 <span class="machine-status status-online">Онлайн</span></h4>
+                                <p>Аэропорт | Последнее обновление: 15.07.2025 11:40</p>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                <button class="btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-success" id="add-machine-btn"><i class="fas fa-plus"></i> Добавить автомат</button>
+                    </div>
+                </div>
+                
+                <!-- System Status Section -->
+                <div class="admin-content" id="system-content">
+                    <h2><i class="fas fa-server"></i> Состояние системы</h2>
+                    
+                    <div class="system-stats">
+                        <div class="stat-card">
+                            <div class="icon"><i class="fas fa-server"></i></div>
+                            <div class="value">98.7%</div>
+                            <div class="label">Доступность сервера</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon"><i class="fas fa-memory"></i></div>
+                            <div class="value">42%</div>
+                            <div class="label">Использование RAM</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon"><i class="fas fa-microchip"></i></div>
+                            <div class="value">28%</div>
+                            <div class="label">Загрузка CPU</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon"><i class="fas fa-hdd"></i></div>
+                            <div class="value">65%</div>
+                            <div class="label">Использование диска</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon"><i class="fas fa-database"></i></div>
+                            <div class="value">87%</div>
+                            <div class="label">Производительность БД</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon"><i class="fas fa-network-wired"></i></div>
+                            <div class="value">95.2%</div>
+                            <div class="label">Доступность сети</div>
+                        </div>
+                    </div>
+                    
+                    <h3>Активные процессы</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <thead>
+                            <tr style="background: #f2f2f2;">
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">ID</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Процесс</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">CPU</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">RAM</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Время работы</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">1001</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">API Server</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">12.5%</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">256 MB</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">15д 7ч 23м</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd; color: #27ae60;">Работает</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">1002</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Web Server</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">8.2%</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">192 MB</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">15д 7ч 23м</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd; color: #27ae60;">Работает</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">1003</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Database</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">15.8%</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">512 MB</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">15д 7ч 23м</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd; color: #27ae60;">Работает</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">1004</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Telegram Bot</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">5.3%</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">128 MB</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">15д 7ч 23м</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd; color: #27ae60;">Работает</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">1005</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Task Scheduler</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">3.1%</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">96 MB</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">15д 7ч 23м</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd; color: #27ae60;">Работает</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="action-buttons">
+                        <button class="btn"><i class="fas fa-sync-alt"></i> Обновить</button>
+                        <button class="btn"><i class="fas fa-download"></i> Скачать отчет</button>
+                    </div>
+                </div>
+                
+                <!-- Logs Section -->
+                <div class="admin-content" id="logs-content">
+                    <h2><i class="fas fa-clipboard-list"></i> Логи системы</h2>
+                    
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">Все</button>
+                        <button class="filter-btn" data-filter="info">Информация</button>
+                        <button class="filter-btn" data-filter="warning">Предупреждения</button>
+                        <button class="filter-btn" data-filter="error">Ошибки</button>
+                        <button class="filter-btn" data-filter="debug">Отладка</button>
+                    </div>
+                    
+                    <div class="log-container">
+                        <div class="log-entry">
+                            <span class="log-time">15.07.2025 11:45:23</span>
+                            <span class="log-level log-info">INFO</span>
+                            <span class="log-message">Пользователь admin@vhm24.com вошел в систему</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">15.07.2025 11:42:15</span>
+                            <span class="log-level log-warning">WARN</span>
+                            <span class="log-message">Автомат VM-015 сообщает о низком уровне сиропа (15%)</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">15.07.2025 11:30:07</span>
+                            <span class="log-level log-error">ERROR</span>
+                            <span class="log-message">Не удалось подключиться к автомату VM-042. Таймаут соединения.</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">15.07.2025 11:15:42</span>
+                            <span class="log-level log-info">INFO</span>
+                            <span class="log-message">Пользователь operator1@vhm24.com вошел в систему</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">15.07.2025 11:10:18</span>
+                            <span class="log-level log-debug">DEBUG</span>
+                            <span class="log-message">Запрос к API /api/machines завершен за 235ms</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">15.07.2025 11:05:33</span>
+                            <span class="log-level log-info">INFO</span>
+                            <span class="log-message">Задача #1 "Инкассация автомата VM-055" создана</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">15.07.2025 10:58:21</span>
+                            <span class="log-level log-warning">WARN</span>
+                            <span class="log-message">Автомат VM-028 сообщает о высокой температуре (32°C)</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">15.07.2025 10:45:12</span>
+                            <span class="log-level log-info">INFO</span>
+                            <span class="log-message">Пользователь admin@vhm24.com вошел в систему</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">15.07.2025 10:30:05</span>
+                            <span class="log-level log-debug">DEBUG</span>
+                            <span class="log-message">Запрос к API /api/users завершен за 187ms</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">15.07.2025 10:15:47</span>
+                            <span class="log-level log-info">INFO</span>
+                            <span class="log-message">Резервное копирование базы данных успешно завершено</span>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn"><i class="fas fa-sync-alt"></i> Обновить</button>
+                        <button class="btn"><i class="fas fa-download"></i> Скачать логи</button>
+                        <button class="btn"><i class="fas fa-trash"></i> Очистить логи</button>
+                    </div>
+                </div>
+                
+                <!-- Settings Section -->
+                <div class="admin-content" id="settings-content">
+                    <h2><i class="fas fa-sliders-h"></i> Настройки системы</h2>
+                    
+                    <div class="settings-section">
+                        <h3>Общие настройки</h3>
+                        <div class="settings-group">
+                            <div class="settings-item">
+                                <div class="settings-item-label">Название системы</div>
+                                <div class="settings-item-value">
+                                    <input type="text" class="form-control" value="VHM24 - Enterprise Vending Hub Manager" style="width: 300px;">
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Часовой пояс</div>
+                                <div class="settings-item-value">
+                                    <select class="form-control" style="width: 300px;">
+                                        <option value="UTC+5">Asia/Tashkent (UTC+5)</option>
+                                        <option value="UTC+3">Europe/Moscow (UTC+3)</option>
+                                        <option value="UTC+0">UTC</option>
+                                        <option value="UTC-5">America/New_York (UTC-5)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Язык системы</div>
+                                <div class="settings-item-value">
+                                    <select class="form-control" style="width: 300px;">
+                                        <option value="ru">Русский</option>
+                                        <option value="en">English</option>
+                                        <option value="uz">O'zbek</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>Настройки безопасности</h3>
+                        <div class="settings-group">
+                            <div class="settings-item">
+                                <div class="settings-item-label">Двухфакторная аутентификация</div>
+                                <div class="settings-item-value">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Сложность пароля</div>
+                                <div class="settings-item-value">
+                                    <select class="form-control" style="width: 300px;">
+                                        <option value="high">Высокая</option>
+                                        <option value="medium" selected>Средняя</option>
+                                        <option value="low">Низкая</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Срок действия пароля</div>
+                                <div class="settings-item-value">
+                                    <select class="form-control" style="width: 300px;">
+                                        <option value="30">30 дней</option>
+                                        <option value="60">60 дней</option>
+                                        <option value="90" selected>90 дней</option>
+                                        <option value="0">Бессрочно</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Блокировка после неудачных попыток</div>
+                                <div class="settings-item-value">
+                                    <select class="form-control" style="width: 300px;">
+                                        <option value="3">3 попытки</option>
+                                        <option value="5" selected>5 попыток</option>
+                                        <option value="10">10 попыток</option>
+                                        <option value="0">Отключено</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>Настройки уведомлений</h3>
+                        <div class="settings-group">
+                            <div class="settings-item">
+                                <div class="settings-item-label">Email-уведомления</div>
+                                <div class="settings-item-value">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Telegram-уведомления</div>
+                                <div class="settings-item-value">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">SMS-уведомления</div>
+                                <div class="settings-item-value">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Push-уведомления</div>
+                                <div class="settings-item-value">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-success"><i class="fas fa-save"></i> Сохранить настройки</button>
+                        <button class="btn btn-danger"><i class="fas fa-undo"></i> Сбросить настройки</button>
+                    </div>
+                </div>
+                
+                <!-- Backup Section -->
+                <div class="admin-content" id="backup-content">
+                    <h2><i class="fas fa-database"></i> Резервное копирование</h2>
+                    
+                    <div class="settings-section">
+                        <h3>Настройки резервного копирования</h3>
+                        <div class="settings-group">
+                            <div class="settings-item">
+                                <div class="settings-item-label">Автоматическое резервное копирование</div>
+                                <div class="settings-item-value">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Частота резервного копирования</div>
+                                <div class="settings-item-value">
+                                    <select class="form-control" style="width: 300px;">
+                                        <option value="daily" selected>Ежедневно</option>
+                                        <option value="weekly">Еженедельно</option>
+                                        <option value="monthly">Ежемесячно</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Время резервного копирования</div>
+                                <div class="settings-item-value">
+                                    <input type="time" class="form-control" value="03:00" style="width: 300px;">
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Хранить резервные копии</div>
+                                <div class="settings-item-value">
+                                    <select class="form-control" style="width: 300px;">
+                                        <option value="7">7 дней</option>
+                                        <option value="14">14 дней</option>
+                                        <option value="30" selected>30 дней</option>
+                                        <option value="90">90 дней</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Последние резервные копии</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <thead>
+                            <tr style="background: #f2f2f2;">
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Дата</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Размер</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Тип</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Статус</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">15.07.2025 03:00</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">256 MB</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Автоматическое</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd; color: #27ae60;">Успешно</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                    <button class="btn-icon"><i class="fas fa-download"></i></button>
+                                    <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">14.07.2025 03:00</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">255 MB</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Автоматическое</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd; color: #27ae60;">Успешно</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                    <button class="btn-icon"><i class="fas fa-download"></i></button>
+                                    <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">13.07.2025 15:45</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">254 MB</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Ручное</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd; color: #27ae60;">Успешно</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                    <button class="btn-icon"><i class="fas fa-download"></i></button>
+                                    <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">13.07.2025 03:00</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">253 MB</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Автоматическое</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd; color: #27ae60;">Успешно</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                    <button class="btn-icon"><i class="fas fa-download"></i></button>
+                                    <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">12.07.2025 03:00</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">252 MB</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Автоматическое</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd; color: #27ae60;">Успешно</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                    <button class="btn-icon"><i class="fas fa-download"></i></button>
+                                    <button class="btn-icon btn-delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-success"><i class="fas fa-database"></i> Создать резервную копию</button>
+                        <button class="btn"><i class="fas fa-upload"></i> Восстановить из резервной копии</button>
+                    </div>
+                </div>
+                
+                <!-- Notifications Section -->
+                <div class="admin-content" id="notifications-content">
+                    <h2><i class="fas fa-bell"></i> Уведомления</h2>
+                    
+                    <div class="settings-section">
+                        <h3>Настройки уведомлений</h3>
+                        <div class="settings-group">
+                            <div class="settings-item">
+                                <div class="settings-item-label">Критические уведомления</div>
+                                <div class="settings-item-value">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Уведомления о задачах</div>
+                                <div class="settings-item-value">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Уведомления о пользователях</div>
+                                <div class="settings-item-value">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-item-label">Уведомления о системе</div>
+                                <div class="settings-item-value">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Последние уведомления</h3>
+                    <div style="margin-top: 15px;">
+                        <div style="padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #e74c3c;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <strong style="color: #e74c3c;">Критическое</strong>
+                                <span style="color: #7f8c8d;">15.07.2025 11:30:07</span>
+                            </div>
+                            <div>Не удалось подключиться к автомату VM-042. Таймаут соединения.</div>
+                        </div>
+                        <div style="padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #f39c12;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <strong style="color: #f39c12;">Предупреждение</strong>
+                                <span style="color: #7f8c8d;">15.07.2025 11:42:15</span>
+                            </div>
+                            <div>Автомат VM-015 сообщает о низком уровне сиропа (15%).</div>
+                        </div>
+                        <div style="padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #f39c12;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <strong style="color: #f39c12;">Предупреждение</strong>
+                                <span style="color: #7f8c8d;">15.07.2025 10:58:21</span>
+                            </div>
+                            <div>Автомат VM-028 сообщает о высокой температуре (32°C).</div>
+                        </div>
+                        <div style="padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #3498db;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <strong style="color: #3498db;">Информация</strong>
+                                <span style="color: #7f8c8d;">15.07.2025 11:45:23</span>
+                            </div>
+                            <div>Пользователь admin@vhm24.com вошел в систему.</div>
+                        </div>
+                        <div style="padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #3498db;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <strong style="color: #3498db;">Информация</strong>
+                                <span style="color: #7f8c8d;">15.07.2025 11:05:33</span>
+                            </div>
+                            <div>Задача #1 "Инкассация автомата VM-055" создана.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn"><i class="fas fa-sync-alt"></i> Обновить</button>
+                        <button class="btn"><i class="fas fa-bell-slash"></i> Отметить все как прочитанные</button>
+                        <button class="btn"><i class="fas fa-cog"></i> Настройки уведомлений</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>&copy; 2024 VHM24 - Enterprise Vending Hub Manager | Powered by AI & Blockchain</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Обработчики меню администратора
+            const menuLinks = document.querySelectorAll('.admin-menu-link');
+            const contentSections = document.querySelectorAll('.admin-content');
+            
+            menuLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    const targetId = link.getAttribute('data-target');
+                    
+                    // Активируем выбранный пункт меню
+                    menuLinks.forEach(item => item.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Показываем соответствующий контент
+                    contentSections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetId + '-content') {
+                            section.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // Обработчики фильтров пользователей
+            const userFilterButtons = document.querySelectorAll('#users-content .filter-btn');
+            const userItems = document.querySelectorAll('.user-item');
+            
+            userFilterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.getAttribute('data-filter');
+                    
+                    // Активируем кнопку
+                    userFilterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Фильтруем пользователей
+                    userItems.forEach(item => {
+                        if (filter === 'all' || item.getAttribute('data-role') === filter) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Обработчики фильтров автоматов
+            const machineFilterButtons = document.querySelectorAll('#machines-content .filter-btn');
+            const machineItems = document.querySelectorAll('.machine-item');
+            
+            machineFilterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.getAttribute('data-filter');
+                    
+                    // Активируем кнопку
+                    machineFilterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Фильтруем автоматы
+                    machineItems.forEach(item => {
+                        if (filter === 'all' || item.getAttribute('data-status') === filter) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Обработчики фильтров логов
+            const logFilterButtons = document.querySelectorAll('#logs-content .filter-btn');
+            const logEntries = document.querySelectorAll('.log-entry');
+            
+            logFilterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.getAttribute('data-filter');
+                    
+                    // Активируем кнопку
+                    logFilterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Фильтруем логи
+                    logEntries.forEach(entry => {
+                        const logLevel = entry.querySelector('.log-level').classList[1].replace('log-', '');
+                        
+                        if (filter === 'all' || logLevel === filter) {
+                            entry.style.display = 'block';
+                        } else {
+                            entry.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Обработчик поиска пользователей
+            document.getElementById('user-search').addEventListener('input', (e) => {
+                const searchText = e.target.value.toLowerCase();
+                
+                userItems.forEach(item => {
+                    const userName = item.querySelector('h4').textContent.toLowerCase();
+                    const userEmail = item.querySelector('p').textContent.toLowerCase();
+                    
+                    if (userName.includes(searchText) || userEmail.includes(searchText)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Обработчик поиска автоматов
+            document.getElementById('machine-search').addEventListener('input', (e) => {
+                const searchText = e.target.value.toLowerCase();
+                
+                machineItems.forEach(item => {
+                    const machineName = item.querySelector('h4').textContent.toLowerCase();
+                    const machineLocation = item.querySelector('p').textContent.toLowerCase();
+                    
+                    if (machineName.includes(searchText) || machineLocation.includes(searchText)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Обработчики кнопок действий
+            const actionButtons = document.querySelectorAll('.action-buttons .btn');
+            
+            actionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const action = button.textContent.trim();
+                    alert(`Действие: ${action}`);
+                });
+            });
+            
+            // Обработчики кнопок редактирования и удаления
+            const editButtons = document.querySelectorAll('.btn-edit');
+            const deleteButtons = document.querySelectorAll('.btn-delete');
+            
+            editButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const itemName = button.closest('.user-item, .machine-item').querySelector('h4').textContent.trim().split(' ')[0];
+                    alert(`Редактирование: ${itemName}`);
+                });
+            });
+            
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const itemName = button.closest('.user-item, .machine-item').querySelector('h4').textContent.trim().split(' ')[0];
+                    if (confirm(`Вы уверены, что хотите удалить ${itemName}?`)) {
+                        alert(`${itemName} удален`);
+                    }
+                });
+            });
+            
+            // Обработчики переключателей
+            const toggleSwitches = document.querySelectorAll('.toggle-switch input[type="checkbox"]');
+            
+            toggleSwitches.forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    const settingName = toggle.closest('.settings-item').querySelector('.settings-item-label').textContent;
+                    alert(`Настройка "${settingName}" ${toggle.checked ? 'включена' : 'выключена'}`);
+                });
+            });
+            
+            // Обработчики добавления
+            document.getElementById('add-user-btn').addEventListener('click', () => {
+                alert('Добавление нового пользователя');
+            });
+            
+            document.getElementById('add-machine-btn').addEventListener('click', () => {
+                alert('Добавление нового автомата');
+            });
+        });
+    </script>
+</body>
+</html>

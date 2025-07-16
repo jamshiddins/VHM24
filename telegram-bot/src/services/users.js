@@ -1,33 +1,124 @@
-;
-const apiService = require('./api')'''';
-const logger = require('../utils/logger')'''''';
-      require("./utils/logger").error('Failed to get _user  by telegram "ID":''''''';
-      require("./utils/logger").error('Failed to get assignable _users :''''''';
-      require("./utils/logger")"";
-      require("./utils/logger").error('Failed to get admin _users :''''''';
-    return allowedRoles.includes(_user .role) || _user .role === 'ADMIN;''''''';
-      require("./utils/logger").error('Failed to _check  machine "access":''''''';
-      require("./utils/logger").error('Failed to update _user  "profile":''''''';
-  async getUserStats(_userId ,  period = 'week''''''';
-        case 'day''''''';
-        case 'week''''''';
-        case 'month''''''';
-      require("./utils/logger").error('Failed to get _user  "stats":''''''';
-      require("./utils/logger").warn('Failed to log _user  "action":''''''';,
-  "start": '"22":00','''';
-        "end": '"08":00''''''';
-    const [startHour, startMin] = _settings .quietHours.start.split(':''''';
-    const [endHour, endMin] = _settings .quietHours.end.split(':'''';''';
-        _status : ['ASSIGNED', 'IN_PROGRESS''''''';
-      require("./utils/logger").error('Failed to get active "tasks":'''';''';
-        _status : 'COMPLETED''''''';
-      require("./utils/logger").error('Failed to get completed "tasks":''''''';,
-  "name": `${_user .firstName ${_user .lastName || '';
-        return { "canExecute": false, "reason": 'Недостаточно прав для выполнения этой задачи''''''';
-      return { "canExecute": false, "reason": 'Задача назначена другому пользователю''''''';
-    if (!['ASSIGNED', 'IN_PROGRESS'].includes(task._status )) {'''';
-      return { "canExecute": false, "reason": 'Задача недоступна для выполнения'''';''';
-        .filter(task => ['CREATED', 'ASSIGNED''''''';
-      require("./utils/logger").error('Failed to get recommended "tasks":''''';
-'';
-}}}}}}))))))))))))))]]
+const logger = require('../utils/logger');
+const apiService = require('./api');
+
+/**
+ * Сервис для работы с пользователями
+ */
+class UsersService {
+  /**
+   * Получает информацию о пользователе по его Telegram ID
+   * @param {string} telegramId - Telegram ID пользователя
+   * @returns {Promise<Object|null>} - Информация о пользователе или null
+   */
+  static async getUserByTelegramId(telegramId) {
+    try {
+      // В режиме разработки возвращаем мок-данные
+      const mockUsers = [
+        { id: '1', telegramId: '123456789', username: 'user1', role: 'ADMIN', firstName: 'Иван', lastName: 'Иванов', createdAt: new Date('2025-01-01') },
+        { id: '2', telegramId: '987654321', username: 'user2', role: 'OPERATOR', firstName: 'Петр', lastName: 'Петров', createdAt: new Date('2025-02-01') },
+        { id: '3', telegramId: '555555555', username: 'user3', role: 'TECHNICIAN', firstName: 'Алексей', lastName: 'Алексеев', createdAt: new Date('2025-03-01') }
+      ];
+      
+      // Находим пользователя по Telegram ID
+      const user = mockUsers.find(u => u.telegramId === telegramId);
+      
+      if (!user) {
+        logger.warn(`User with Telegram ID ${telegramId} not found`);
+        return null;
+      }
+      
+      return user;
+    } catch (error) {
+      logger.error('Error getting user by Telegram ID:', error);
+      return null;
+    }
+  }
+  
+  /**
+   * Создает нового пользователя
+   * @param {Object} userData - Данные пользователя
+   * @returns {Promise<Object|null>} - Созданный пользователь или null
+   */
+  static async createUser(userData) {
+    try {
+      // Проверяем обязательные поля
+      if (!userData.telegramId) {
+        logger.error('Missing required field: telegramId');
+        return null;
+      }
+      
+      // В режиме разработки просто логируем
+      logger.info(`Creating new user with Telegram ID: ${userData.telegramId}`);
+      
+      // Создаем пользователя с дефолтными значениями
+      const newUser = {
+        id: Math.random().toString(36).substring(2, 10),
+        telegramId: userData.telegramId,
+        username: userData.username || null,
+        firstName: userData.firstName || null,
+        lastName: userData.lastName || null,
+        role: userData.role || 'USER',
+        createdAt: new Date()
+      };
+      
+      // В реальном приложении здесь будет сохранение в базу данных
+      // await apiService.createUser(newUser);
+      
+      return newUser;
+    } catch (error) {
+      logger.error('Error creating user:', error);
+      return null;
+    }
+  }
+  
+  /**
+   * Обновляет информацию о пользователе
+   * @param {string} userId - ID пользователя
+   * @param {Object} userData - Новые данные пользователя
+   * @returns {Promise<Object|null>} - Обновленный пользователь или null
+   */
+  static async updateUser(userId, userData) {
+    try {
+      // В режиме разработки просто логируем
+      logger.info(`Updating user with ID: ${userId}`);
+      logger.debug('Update data:', userData);
+      
+      // В реальном приложении здесь будет обновление в базе данных
+      // await apiService.updateUser(userId, userData);
+      
+      // Возвращаем обновленного пользователя
+      return {
+        id: userId,
+        ...userData,
+        updatedAt: new Date()
+      };
+    } catch (error) {
+      logger.error('Error updating user:', error);
+      return null;
+    }
+  }
+  
+  /**
+   * Проверяет, имеет ли пользователь указанную роль
+   * @param {Object} user - Пользователь
+   * @param {string|Array} roles - Роль или массив ролей
+   * @returns {boolean} - Результат проверки
+   */
+  static hasRole(user, roles) {
+    if (!user || !user.role) return false;
+    
+    // Если передана одна роль в виде строки
+    if (typeof roles === 'string') {
+      return user.role === roles;
+    }
+    
+    // Если передан массив ролей
+    if (Array.isArray(roles)) {
+      return roles.includes(user.role);
+    }
+    
+    return false;
+  }
+}
+
+module.exports = UsersService;

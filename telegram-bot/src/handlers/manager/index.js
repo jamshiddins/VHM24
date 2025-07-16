@@ -1,220 +1,543 @@
-;
-const { BOT_STATES } = require('../fsm/states')'''';
-const { createInlineKeyboard, TASK_TYPE_KEYBOARD } = require('../_keyboards ')'''';
-'';
-const { requireRole } = require('../middleware/auth')'''';
-const apiService = require('../_services /api')'''';
-const userService = require('../_services /_users ')'''';
-const analyticsService = require('../_services /analytics')'''';
-const logger = require('../utils/logger')'''''';
-  bot.action('manager_create_task', requireRole(['MANAGER', 'ADMIN''''''';
-  bot.action('manager_tasks', requireRole(['MANAGER', 'ADMIN''''''';
-  bot.action('manager_reports', requireRole(['MANAGER', 'ADMIN''''''';
-  bot.action('manager_directories', requireRole(['MANAGER', 'ADMIN''''''';
-    ctx.setData('taskType''''''';
-    ctx.setData('taskPriority''''''';
-  bot._command ('create', requireRole(['MANAGER', 'ADMIN''''''';
-  bot._command ('reports', requireRole(['MANAGER', 'ADMIN''''''';
-  bot.action(_'daily_report''''''';
-  bot.action(_'weekly_report''''''';
-  bot.action(_'monthly_report''''''';
-  bot.action(_'operators_report''''''';
-  bot.action(_'machines_report''''''';
-  bot.action(_'financial_report''''''';
-  bot.action(_'export_data''''''';
-  const message = '📝 *Создание новой задачи*\n\n' +'';'';
-    'Выберите тип задачи для создания:''''''';
-    "parse_mode": 'Markdown'''';''';
-        '❌ Нет доступных автоматов''''''';
-          { "text": '🔙 Назад', "callback_data": 'manager_create_task''''''';
-    // const message =  '🏪 *Выбор автомата*\n\n' +'';'';
-      'Выберите автомат для выполнения задачи:'''';''';
-    _keyboard .push([{ "text": '🔙 Назад', "callback_data": 'manager_create_task''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error selecting task "machine":''''';
-    await ctx.reply('❌ Ошибка загрузки автоматов''''''';
-    const operators = await userService.getUsersByRole('OPERATOR'''';''';
-        '❌ Нет доступных операторов''''''';
-          { "text": '🔙 Назад', "callback_data": 'manager_create_task''''''';
-    // const message =  '👤 *Выбор исполнителя*\n\n' +'';'';
-      'Выберите оператора для выполнения задачи:'''';''';
-      "text": `👤 ${_user .firstName} ${_user .lastName || '';
-    _keyboard .push([{ "text": '🎲 Автоназначение', "callback_data": 'auto_assign''''';
-    _keyboard .push([{ "text": '🔙 Назад', "callback_data": process.env.API_KEY_356 || 'select_task_priority''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error selecting task "assignee":''''';
-    await ctx.reply('❌ Ошибка загрузки операторов''''''';
-      "orderBy": '"createdAt":desc'''';''';,
-  "CREATED": _allTasks .filter(t => t._status  === 'CREATED'),'''';
-      "ASSIGNED": _allTasks .filter(t => t._status  === 'ASSIGNED'),'''';
-      "IN_PROGRESS": _allTasks .filter(t => t._status  === 'IN_PROGRESS'),'''';
-      "COMPLETED": _allTasks .filter(t => t._status  === 'COMPLETED''''''';
-    let ___message = '👥 *Управление задачами*\n\n;';'''';
-    _message  += '📊 *Статистика:*\n';'''';
-      !['COMPLETED', 'CANCELLED''''''';
-        { "text": `📋 Созданы (${tasksByStatus.CREATED.length})`, "callback_data": 'status_CREATED' },'''';
-        { "text": `👤 Назначены (${tasksByStatus.ASSIGNED.length})`, "callback_data": 'status_ASSIGNED''''''';
-        { "text": `🔄 В процессе (${tasksByStatus.IN_PROGRESS.length})`, "callback_data": 'status_IN_PROGRESS' },'''';
-        { "text": `✅ Завершены (${tasksByStatus.COMPLETED.length})`, "callback_data": 'status_COMPLETED''''''';
-      _keyboard .push([{ "text": `⚠️ Просроченные (${overdueTasks.length})`, "callback_data": 'overdue_tasks''''''';
-    _keyboard .push([{ "text": '📝 Создать задачу', "callback_data": 'manager_create_task''''';
-    _keyboard .push([{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error showing manage "tasks":''''';
-    await ctx.reply('❌ Ошибка загрузки задач''''''';
-    let ___message = '📊 *Отчеты и аналитика*\n\n;''''''';
-      _message  += '📈 *Основные показатели:*\n';'''';
-    _message  += 'Выберите тип отчета:''''''';
-        { "text": '📅 Дневной отчет', "callback_data": 'daily_report' },'''';
-        { "text": '📊 Недельный отчет', "callback_data": 'weekly_report''''''';
-        { "text": '📈 Месячный отчет', "callback_data": 'monthly_report' },'''';
-        { "text": '👥 Отчет по операторам', "callback_data": 'operators_report''''''';
-        { "text": '🏪 Отчет по автоматам', "callback_data": 'machines_report' },'''';
-        { "text": '💰 Финансовый отчет', "callback_data": 'financial_report''''''';
-        { "text": '📊 Экспорт данных', "callback_data": 'export_data' },'''';
-        { "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error showing "reports":''''';
-    await ctx.reply('❌ Ошибка загрузки отчетов''''''';
-  // const message =  '📚 *Справочники*\n\n' +'';'';
-    'Управление справочными данными системы:''''''';
-      { "text": '🏪 Автоматы', "callback_data": 'directory_machines' },'''';
-      { "text": '👥 Пользователи', "callback_data": 'directory_users''''''';
-      { "text": '📦 Товары и остатки', "callback_data": 'directory_inventory' },'''';
-      { "text": '🏢 Локации', "callback_data": 'directory_locations''''''';
-      { "text": '📋 Шаблоны задач', "callback_data": 'directory_templates' },'''';
-      { "text": '⚙️ Настройки системы', "callback_data": 'directory_settings''''''';
-    [{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-    await ctx.editMessageText('📊 Генерирую дневной отчет...', { "parse_mode": 'Markdown''''''';
-    const today = new Date().toLocaleDateString('ru-RU''''''';
-    _message  += '📋 *Задачи:*\n';'''';
-    _message  += '💰 *Финансы:*\n';'''';
-      _message  += '🏆 *Топ автоматы:*\n''''''';
-      [{ "text": '📄 Подробный отчет', "callback_data": process.env.API_KEY_357 || 'detailed_daily_report' }],'''';
-      [{ "text": '📊 Экспорт', "callback_data": process.env.API_KEY_358 || 'export_daily_summary_1' }],'''';
-      [{ "text": '🔙 К отчетам', "callback_data": 'manager_reports''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error showing daily "report":''''';
-    await ctx.editMessageText('❌ Ошибка генерации дневного отчета''''''';
-    await ctx.editMessageText('📊 Генерирую недельный отчет...', { "parse_mode": 'Markdown''''''';
-    let ___message = '📊 *Недельный отчет*\n\n;''''''';
-    _message  += '📈 *Общие показатели:*\n';'''';
-    _message  += '📈 *Тренды выполнения задач:*\n''''''';
-      const icon = change > 0 ? '📈' : change < 0 ? '📉' : '➡️;';'''';
-      _message  += `• Изменение: ${_icon } ${change > 0 ? '+' : '';
-    _message  += '\n''''''';
-      _message  += '👥 *Эффективность операторов:*\n''''''';
-        { "text": '📊 Детали по дням', "callback_data": 'weekly_details' },'''';
-        { "text": '👥 По операторам', "callback_data": 'weekly_operators''''''';
-        { "text": '📄 Полный отчет', "callback_data": process.env.API_KEY_359 || process.env.API_KEY_373 || 'export_tasks_summary_7' },'''';
-        { "text": '💰 Финансовый', "callback_data": process.env.API_KEY_360 || 'export_revenue_summary_7''''''';
-      [{ "text": '🔙 К отчетам', "callback_data": 'manager_reports''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error showing weekly "report":''''';
-    await ctx.editMessageText('❌ Ошибка генерации недельного отчета''''''';
-    await ctx.editMessageText('📊 Генерирую месячный отчет...', { "parse_mode": 'Markdown''''''';
-    let ___message = '📈 *Месячный отчет*\n\n;''''''';
-    _message  += '📊 *Ключевые показатели:*\n';'''';
-    _message  += '📋 *Задачи:*\n';'''';
-    _message  += '🏪 *Автоматы:*\n';'''';
-    _message  += '\n''''''';
-      _message  += '💰 *Топ автоматы по выручке:*\n''''''';
-        { "text": '📊 Детальная аналитика', "callback_data": 'monthly_detailed' },'''';
-        { "text": '👥 По операторам', "callback_data": 'operators_report''''''';
-        { "text": '🏪 По автоматам', "callback_data": 'machines_report' },'''';
-        { "text": '💰 Финансовый', "callback_data": 'financial_report''''''';
-        { "text": '📄 Экспорт JSON', "callback_data": process.env.API_KEY_361 || 'export_tasks_json_30' },'''';
-        { "text": '📊 Экспорт CSV', "callback_data": process.env.API_KEY_362 || process.env.API_KEY_368 || process.env.API_KEY_370 || 'export_revenue_csv_30''''''';
-      [{ "text": '🔙 К отчетам', "callback_data": 'manager_reports''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error showing monthly "report":''''';
-    await ctx.editMessageText('❌ Ошибка генерации месячного отчета''''''';
-    await ctx.editMessageText('👥 Генерирую отчет по операторам...', { "parse_mode": 'Markdown''''''';
-    let ___message = '👥 *Отчет по операторам*\n\n;''''''';
-      _message  += '❌ Нет данных по операторам''''''';
-      _message  += '📊 *Общая статистика:*\n';'''';
-        _message  += '🏆 *Лучший оператор:*\n';'''';
-        _message  += `• Рейтинг: ${'⭐''';
-      _message  += '📋 *Топ операторы:*\n''''''';
-        const stars = '⭐''''';
-        _message  += '\n''''''';
-        { "text": '📊 Подробная статистика', "callback_data": 'operators_detailed' },'''';
-        { "text": '⭐ Рейтинг операторов', "callback_data": 'operators_rating''''''';
-        { "text": '📄 Экспорт отчета', "callback_data": process.env.API_KEY_363 || process.env.API_KEY_371 || 'export_operators_summary_30' },'''';
-        { "text": '📈 Тренды эффективности', "callback_data": 'operators_trends''''''';
-      [{ "text": '🔙 К отчетам', "callback_data": 'manager_reports''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error showing operators "report":''''';
-    await ctx.editMessageText('❌ Ошибка генерации отчета по операторам''''''';
-    await ctx.editMessageText('🏪 Генерирую отчет по автоматам...', { "parse_mode": 'Markdown''''''';
-    let ___message = '🏪 *Отчет по автоматам*\n\n;''''''';
-    _message  += '📊 *Общая статистика:*\n';'''';
-      _message  += '💰 *Топ по выручке:*\n''''''';
-        { "text": '🔧 Проблемные автоматы', "callback_data": process.env.API_KEY_364 || 'problematic_machines' },'''';
-        { "text": '📈 Аналитика по локациям', "callback_data": process.env.API_KEY_365 || 'machines_by_location''''''';
-        { "text": '⚙️ Техобслуживание', "callback_data": process.env.API_KEY_366 || 'maintenance_schedule' },'''';
-        { "text": '📊 Health Score', "callback_data": 'machines_health''''''';
-        { "text": '📄 Экспорт отчета', "callback_data": process.env.API_KEY_367 || process.env.API_KEY_372 || 'export_machines_summary_30' },'''';
-        { "text": '📈 Uptime тренды', "callback_data": 'uptime_trends''''''';
-      [{ "text": '🔙 К отчетам', "callback_data": 'manager_reports''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error showing machines "report":''''';
-    await ctx.editMessageText('❌ Ошибка генерации отчета по автоматам''''''';
-    await ctx.editMessageText('💰 Генерирую финансовый отчет...', { "parse_mode": 'Markdown''''''';
-    let ___message = '💰 *Финансовый отчет за месяц*\n\n;''''''';
-    _message  += '📊 *Основные показатели:*\n';'''';
-      _message  += '📈 *Динамика:*\n';'''';
-      // const icon =  change > 0 ? '📈' : change < 0 ? '📉' : '➡️;';'''';
-      _message  += `• Изменение: ${_icon  ${change > 0 ? '+' : '${change.toLocaleString() сум (${changePercent > 0 ? '+' : ''';
-      _message  += '🏆 *Топ автоматы по выручке:*\n''''''';
-        { "text": '📅 По дням', "callback_data": 'financial_daily' ,'''';
-        { "text": '🏪 По автоматам', "callback_data": 'financial_machines''''''';
-        { "text": '💸 Анализ расходов', "callback_data": 'expenses_analysis' ,'''';
-        { "text": '💰 Анализ доходов', "callback_data": 'revenue_analysis''''''';
-        { "text": '📊 Экспорт финансов', "callback_data": 'export_revenue_csv_30' ,'''';
-        { "text": '📈 Прогноз', "callback_data": 'revenue_forecast''''''';
-      [{ "text": '🔙 К отчетам', "callback_data": 'manager_reports''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error showing financial "report":''''';
-    await ctx.editMessageText('❌ Ошибка генерации финансового отчета''''''';
-  // const message =  '📊 *Экспорт данных*\n\n' +'';'';
-    'Выберите тип данных и формат для экспорта:''''''';
-      { "text": '📋 Задачи (JSON)', "callback_data": 'export_tasks_json_7' ,'''';
-      { "text": '📋 Задачи (CSV)', "callback_data": 'export_tasks_csv_7''''''';
-      { "text": '💰 Выручка (JSON)', "callback_data": process.env.API_KEY_369 || 'export_revenue_json_30' ,'''';
-      { "text": '💰 Выручка (CSV)', "callback_data": 'export_revenue_csv_30''''''';
-      { "text": '👥 Операторы (Отчет)', "callback_data": 'export_operators_summary_30' ,'''';
-      { "text": '🏪 Автоматы (Отчет)', "callback_data": 'export_machines_summary_30''''''';
-      { "text": '📊 Сводка за неделю', "callback_data": 'export_tasks_summary_7' ,'''';
-      { "text": '📈 Сводка за месяц', "callback_data": process.env.API_KEY_374 || 'export_revenue_summary_30''''''';
-    [{ "text": '🔙 К отчетам', "callback_data": 'manager_reports''''''';,
-  "parse_mode": 'Markdown''''''';
-      "parse_mode": 'Markdown''''''';
-    const dateStr = new Date().toLocaleDateString('ru-RU''''''';
-    let ___message = '📄 *Экспорт завершен*\n\n;';'''';
-    if (format === '_summary ''''''';
-        [{ "text": '📊 Другой экспорт', "callback_data": 'export_data' ],'''';
-        [{ "text": '🔙 К отчетам', "callback_data": 'manager_reports''''''';,
-  "parse_mode": 'Markdown''''''';
-      _message  += '💾 Файл готов к скачиванию''''''';
-      //   "source": Buffer.from(exportedData, 'utf8''''''';
-      _message  += `\n\n📝 *Превью данных:*\n\`\`\`\n${exportedData.substring(0, 500)${exportedData.length > 500 ? '...' : '';
-        [{ "text": '📊 Другой экспорт', "callback_data": 'export_data' ],'''';
-        [{ "text": '🔙 К отчетам', "callback_data": 'manager_reports''''''';,
-  "parse_mode": 'Markdown''''''';
-    await userService.logAction(ctx._user .id, 'DATA_EXPORTED''''''';
-    require("./utils/logger").error('Error exporting analytics _data :''''';
-    "MAINTENANCE": 'Техобслуживание','''';
-    "CLEANING": 'Уборка','''';
-    "REFILL": 'Заправка','''';
-    "INSPECTION": 'Инспекция','''';
-    "REPAIR": 'Ремонт','''';
-    "INVENTORY_CHECK": 'Проверка остатков','''';
-    "CASH_COLLECTION": 'Инкассация','''';
-    "SYRUP_REPLACEMENT": 'Замена сиропов','''';
-    "WATER_REPLACEMENT": 'Замена воды','''';
-    "SUPPLY_DELIVERY": 'Доставка расходников','''';
-    "EMERGENCY": 'Экстренная задача''''';
-'';
-}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))]]]]]]]]]]]]]]]]]]]]]]]
+const { Markup } = require('telegraf');
+const { BOT_STATES } = require('../../fsm/states');
+const apiService = require('../../services/api');
+const logger = require('../../utils/logger');
+
+/**
+ * Регистрирует обработчики для роли MANAGER
+ * @param {Object} bot - Экземпляр бота Telegraf
+ * @param {Function} requireRole - Функция для проверки роли
+ */
+const register = (bot, requireRole) => {
+  // Обработчик для просмотра аналитики
+  bot.action('manager_analytics', requireRole(['MANAGER', 'ADMIN']), async (ctx) => {
+    try {
+      await viewAnalyticsHandler(ctx);
+    } catch (error) {
+      logger.error('Error in manager_analytics action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для создания задачи
+  bot.action('manager_create_task', requireRole(['MANAGER', 'ADMIN']), async (ctx) => {
+    try {
+      await createTaskHandler(ctx);
+    } catch (error) {
+      logger.error('Error in manager_create_task action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для выбора типа задачи
+  bot.action(/^task_type_(\w+)$/, requireRole(['MANAGER', 'ADMIN']), async (ctx) => {
+    try {
+      await selectTaskTypeHandler(ctx);
+    } catch (error) {
+      logger.error('Error in task_type action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для управления маршрутами
+  bot.action('manager_routes', requireRole(['MANAGER', 'ADMIN']), async (ctx) => {
+    try {
+      await manageRoutesHandler(ctx);
+    } catch (error) {
+      logger.error('Error in manager_routes action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для планирования задач
+  bot.action('manager_schedule', requireRole(['MANAGER', 'ADMIN']), async (ctx) => {
+    try {
+      await scheduleTasksHandler(ctx);
+    } catch (error) {
+      logger.error('Error in manager_schedule action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для детальной аналитики
+  bot.action('detailed_analytics', requireRole(['MANAGER', 'ADMIN']), async (ctx) => {
+    try {
+      await detailedAnalyticsHandler(ctx);
+    } catch (error) {
+      logger.error('Error in detailed_analytics action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для экспорта отчета
+  bot.action('export_report', requireRole(['MANAGER', 'ADMIN']), async (ctx) => {
+    try {
+      await exportReportHandler(ctx);
+    } catch (error) {
+      logger.error('Error in export_report action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для выбора автомата для задачи
+  bot.action(/^task_machine_(\d+)$/, requireRole(['MANAGER', 'ADMIN']), async (ctx) => {
+    try {
+      const machineId = ctx.match[1];
+      
+      // Сохраняем ID автомата в сессии
+      if (ctx.session) {
+        ctx.session.taskMachineId = machineId;
+      }
+      
+      // Получаем список операторов из сессии
+      const operators = ctx.session?.operators || [
+        { id: '1', name: 'Иван Иванов' },
+        { id: '2', name: 'Петр Петров' },
+        { id: '3', name: 'Сидор Сидоров' }
+      ];
+      
+      // Создаем клавиатуру для выбора оператора
+      const keyboard = operators.map(operator => [
+        Markup.button.callback(operator.name, `task_operator_${operator.id}`)
+      ]);
+      
+      // Добавляем кнопку возврата
+      keyboard.push([Markup.button.callback('🔙 Назад', 'create_task')]);
+      
+      await ctx.reply('Выберите оператора для задачи:', Markup.inlineKeyboard(keyboard));
+      
+      logger.info(`User ${ctx.from.id} selected machine ${machineId} for task`);
+    } catch (error) {
+      logger.error('Error in task_machine action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для возврата к созданию задачи
+  bot.action('create_task', requireRole(['MANAGER', 'ADMIN']), async (ctx) => {
+    try {
+      await createTaskHandler(ctx);
+    } catch (error) {
+      logger.error('Error in create_task action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  logger.info('Manager handlers registered');
+};
+
+// Обработчик для просмотра аналитики
+const viewAnalyticsHandler = async (ctx) => {
+  try {
+    // Получаем ID пользователя
+    const userId = ctx.user?.id || '1';
+    
+    // В режиме разработки используем мок-данные
+    const analytics = {
+      sales: {
+        today: 1250,
+        week: 8750,
+        month: 32500
+      },
+      machines: {
+        total: 15,
+        active: 12,
+        inactive: 3
+      },
+      products: {
+        mostPopular: 'Капучино',
+        leastPopular: 'Американо'
+      },
+      tasks: {
+        completed: 25,
+        pending: 8,
+        overdue: 2
+      }
+    };
+    
+    // Формируем сообщение с аналитикой
+    let message = '📊 *Аналитика системы:*\n\n';
+    
+    message += '*Продажи:*\n';
+    message += `📅 Сегодня: ${analytics.sales.today} руб.\n`;
+    message += `📆 За неделю: ${analytics.sales.week} руб.\n`;
+    message += `📆 За месяц: ${analytics.sales.month} руб.\n\n`;
+    
+    message += '*Автоматы:*\n';
+    message += `📊 Всего: ${analytics.machines.total}\n`;
+    message += `✅ Активных: ${analytics.machines.active}\n`;
+    message += `❌ Неактивных: ${analytics.machines.inactive}\n\n`;
+    
+    message += '*Продукты:*\n';
+    message += `🔝 Самый популярный: ${analytics.products.mostPopular}\n`;
+    message += `⬇️ Наименее популярный: ${analytics.products.leastPopular}\n\n`;
+    
+    message += '*Задачи:*\n';
+    message += `✅ Выполнено: ${analytics.tasks.completed}\n`;
+    message += `⏳ В ожидании: ${analytics.tasks.pending}\n`;
+    message += `⚠️ Просрочено: ${analytics.tasks.overdue}\n`;
+    
+    // Создаем клавиатуру для управления аналитикой
+    const keyboard = [
+      [
+        Markup.button.callback('📊 Детальная аналитика', 'detailed_analytics'),
+        Markup.button.callback('📈 Экспорт отчета', 'export_report')
+      ],
+      [
+        Markup.button.callback('📅 По дням', 'analytics_by_day'),
+        Markup.button.callback('📆 По неделям', 'analytics_by_week'),
+        Markup.button.callback('📆 По месяцам', 'analytics_by_month')
+      ],
+      [Markup.button.callback('🔙 Назад в меню', 'back_to_menu')]
+    ];
+    
+    await ctx.replyWithMarkdown(message, Markup.inlineKeyboard(keyboard));
+    
+    // Устанавливаем состояние бота
+    if (ctx.scene && ctx.scene.enter) {
+      await ctx.scene.enter(BOT_STATES.MANAGER_ANALYTICS);
+    }
+    
+    logger.info(`User ${ctx.from.id} viewed analytics`);
+  } catch (error) {
+    logger.error('Error in view analytics handler:', error);
+    await ctx.reply('❌ Произошла ошибка при получении аналитики. Пожалуйста, попробуйте позже.');
+  }
+};
+
+// Обработчик для создания задачи
+const createTaskHandler = async (ctx) => {
+  try {
+    // Получаем список операторов
+    const operators = [
+      { id: '1', name: 'Иван Иванов' },
+      { id: '2', name: 'Петр Петров' },
+      { id: '3', name: 'Сидор Сидоров' }
+    ];
+    
+    // Получаем список автоматов
+    const machines = [
+      { id: '101', name: 'Кофейный автомат #101' },
+      { id: '102', name: 'Кофейный автомат #102' },
+      { id: '103', name: 'Кофейный автомат #103' }
+    ];
+    
+    // Сохраняем данные в сессии
+    if (ctx.session) {
+      ctx.session.operators = operators;
+      ctx.session.machines = machines;
+    }
+    
+    // Создаем клавиатуру для выбора типа задачи
+    const keyboard = [
+      [Markup.button.callback('🔧 Техническое обслуживание', 'task_type_maintenance')],
+      [Markup.button.callback('🧹 Чистка автомата', 'task_type_cleaning')],
+      [Markup.button.callback('📦 Пополнение ингредиентов', 'task_type_refill')],
+      [Markup.button.callback('🔙 Назад в меню', 'back_to_menu')]
+    ];
+    
+    await ctx.reply('Выберите тип задачи:', Markup.inlineKeyboard(keyboard));
+    
+    // Устанавливаем состояние бота
+    if (ctx.scene && ctx.scene.enter) {
+      await ctx.scene.enter(BOT_STATES.MANAGER_CREATE_TASK);
+    }
+    
+    logger.info(`User ${ctx.from.id} is creating a task`);
+  } catch (error) {
+    logger.error('Error in create task handler:', error);
+    await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+  }
+};
+
+// Обработчик для выбора типа задачи
+const selectTaskTypeHandler = async (ctx) => {
+  try {
+    // Получаем тип задачи из callback_data
+    const taskType = ctx.callbackQuery.data.split('_')[2];
+    
+    // Сохраняем тип задачи в сессии
+    if (ctx.session) {
+      ctx.session.taskType = taskType;
+    }
+    
+    // Получаем список автоматов из сессии
+    const machines = ctx.session?.machines || [
+      { id: '101', name: 'Кофейный автомат #101' },
+      { id: '102', name: 'Кофейный автомат #102' },
+      { id: '103', name: 'Кофейный автомат #103' }
+    ];
+    
+    // Создаем клавиатуру для выбора автомата
+    const keyboard = machines.map(machine => [
+      Markup.button.callback(machine.name, `task_machine_${machine.id}`)
+    ]);
+    
+    // Добавляем кнопку возврата
+    keyboard.push([Markup.button.callback('🔙 Назад', 'create_task')]);
+    
+    await ctx.reply('Выберите автомат для задачи:', Markup.inlineKeyboard(keyboard));
+    
+    logger.info(`User ${ctx.from.id} selected task type: ${taskType}`);
+  } catch (error) {
+    logger.error('Error in select task type handler:', error);
+    await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+  }
+};
+
+/**
+ * Обработчик для управления маршрутами
+ * @param {Object} ctx - Контекст Telegraf
+ */
+const manageRoutesHandler = async (ctx) => {
+  try {
+    // Получаем ID пользователя
+    const userId = ctx.user?.id || '1';
+    
+    // В режиме разработки используем мок-данные
+    const routes = [
+      { id: '1', name: 'Маршрут #1', operator: 'Иван Иванов', machines: ['101', '102', '103'], status: 'ACTIVE' },
+      { id: '2', name: 'Маршрут #2', operator: 'Петр Петров', machines: ['104', '105'], status: 'ACTIVE' },
+      { id: '3', name: 'Маршрут #3', operator: 'Сидор Сидоров', machines: ['106', '107', '108', '109'], status: 'INACTIVE' }
+    ];
+    
+    // Формируем сообщение со списком маршрутов
+    let message = '🚗 *Управление маршрутами:*\n\n';
+    
+    routes.forEach((route, index) => {
+      const status = getRouteStatusText(route.status);
+      
+      message += `*${index + 1}. ${route.name}*\n`;
+      message += `👨‍💼 Оператор: ${route.operator}\n`;
+      message += `🔢 Количество автоматов: ${route.machines.length}\n`;
+      message += `🔄 Статус: ${status}\n\n`;
+    });
+    
+    // Создаем клавиатуру для управления маршрутами
+    const keyboard = [
+      [
+        Markup.button.callback('➕ Создать маршрут', 'create_route'),
+        Markup.button.callback('✏️ Редактировать маршрут', 'edit_route')
+      ],
+      [
+        Markup.button.callback('🗑 Удалить маршрут', 'delete_route'),
+        Markup.button.callback('📊 Статистика маршрутов', 'route_stats')
+      ],
+      [Markup.button.callback('🔙 Назад в меню', 'back_to_menu')]
+    ];
+    
+    await ctx.replyWithMarkdown(message, Markup.inlineKeyboard(keyboard));
+    
+    // Устанавливаем состояние бота
+    if (ctx.scene && ctx.scene.enter) {
+      await ctx.scene.enter(BOT_STATES.MANAGER_ROUTES);
+    }
+    
+    logger.info(`User ${ctx.from.id} viewed routes management`);
+  } catch (error) {
+    logger.error('Error in manage routes handler:', error);
+    await ctx.reply('❌ Произошла ошибка при получении данных о маршрутах. Пожалуйста, попробуйте позже.');
+  }
+};
+
+/**
+ * Обработчик для планирования задач
+ * @param {Object} ctx - Контекст Telegraf
+ */
+const scheduleTasksHandler = async (ctx) => {
+  try {
+    // Получаем ID пользователя
+    const userId = ctx.user?.id || '1';
+    
+    // В режиме разработки используем мок-данные
+    const scheduledTasks = [
+      { id: '1', type: 'Техническое обслуживание', machine: 'Автомат #101', operator: 'Иван Иванов', scheduledDate: '2025-07-20', status: 'PENDING' },
+      { id: '2', type: 'Пополнение ингредиентов', machine: 'Автомат #102', operator: 'Петр Петров', scheduledDate: '2025-07-18', status: 'PENDING' },
+      { id: '3', type: 'Инкассация', machine: 'Автомат #103', operator: 'Сидор Сидоров', scheduledDate: '2025-07-25', status: 'PENDING' }
+    ];
+    
+    // Формируем сообщение со списком запланированных задач
+    let message = '📅 *Планирование задач:*\n\n';
+    
+    scheduledTasks.forEach((task, index) => {
+      const status = getTaskStatusText(task.status);
+      
+      message += `*${index + 1}. ${task.type}*\n`;
+      message += `📍 Автомат: ${task.machine}\n`;
+      message += `👨‍💼 Оператор: ${task.operator}\n`;
+      message += `📅 Дата: ${task.scheduledDate}\n`;
+      message += `🔄 Статус: ${status}\n\n`;
+    });
+    
+    // Создаем клавиатуру для планирования задач
+    const keyboard = [
+      [
+        Markup.button.callback('➕ Запланировать задачу', 'schedule_task'),
+        Markup.button.callback('✏️ Редактировать задачу', 'edit_scheduled_task')
+      ],
+      [
+        Markup.button.callback('🗑 Удалить задачу', 'delete_scheduled_task'),
+        Markup.button.callback('📊 Календарь задач', 'task_calendar')
+      ],
+      [Markup.button.callback('🔙 Назад в меню', 'back_to_menu')]
+    ];
+    
+    await ctx.replyWithMarkdown(message, Markup.inlineKeyboard(keyboard));
+    
+    // Устанавливаем состояние бота
+    if (ctx.scene && ctx.scene.enter) {
+      await ctx.scene.enter(BOT_STATES.MANAGER_SCHEDULE);
+    }
+    
+    logger.info(`User ${ctx.from.id} viewed task scheduling`);
+  } catch (error) {
+    logger.error('Error in schedule tasks handler:', error);
+    await ctx.reply('❌ Произошла ошибка при получении данных о запланированных задачах. Пожалуйста, попробуйте позже.');
+  }
+};
+
+/**
+ * Обработчик для детальной аналитики
+ * @param {Object} ctx - Контекст Telegraf
+ */
+const detailedAnalyticsHandler = async (ctx) => {
+  try {
+    // Получаем ID пользователя
+    const userId = ctx.user?.id || '1';
+    
+    // В режиме разработки используем мок-данные
+    const detailedAnalytics = {
+      sales: {
+        byProduct: [
+          { name: 'Капучино', count: 250, amount: 12500 },
+          { name: 'Латте', count: 200, amount: 10000 },
+          { name: 'Американо', count: 150, amount: 6000 },
+          { name: 'Эспрессо', count: 100, amount: 4000 }
+        ],
+        byMachine: [
+          { id: '101', name: 'Автомат #101', count: 300, amount: 15000 },
+          { id: '102', name: 'Автомат #102', count: 250, amount: 12500 },
+          { id: '103', name: 'Автомат #103', count: 150, amount: 7500 }
+        ]
+      },
+      tasks: {
+        byType: [
+          { type: 'Техническое обслуживание', count: 10 },
+          { type: 'Пополнение ингредиентов', count: 15 },
+          { type: 'Инкассация', count: 5 }
+        ],
+        byStatus: [
+          { status: 'COMPLETED', count: 20 },
+          { status: 'IN_PROGRESS', count: 5 },
+          { status: 'PENDING', count: 5 }
+        ]
+      }
+    };
+    
+    // Формируем сообщение с детальной аналитикой
+    let message = '📊 *Детальная аналитика:*\n\n';
+    
+    message += '*Продажи по продуктам:*\n';
+    detailedAnalytics.sales.byProduct.forEach(product => {
+      message += `• ${product.name}: ${product.count} шт. (${product.amount} руб.)\n`;
+    });
+    
+    message += '\n*Продажи по автоматам:*\n';
+    detailedAnalytics.sales.byMachine.forEach(machine => {
+      message += `• ${machine.name}: ${machine.count} шт. (${machine.amount} руб.)\n`;
+    });
+    
+    message += '\n*Задачи по типам:*\n';
+    detailedAnalytics.tasks.byType.forEach(task => {
+      message += `• ${task.type}: ${task.count} шт.\n`;
+    });
+    
+    message += '\n*Задачи по статусам:*\n';
+    detailedAnalytics.tasks.byStatus.forEach(task => {
+      message += `• ${getTaskStatusText(task.status)}: ${task.count} шт.\n`;
+    });
+    
+    // Создаем клавиатуру для управления аналитикой
+    const keyboard = [
+      [
+        Markup.button.callback('📊 Экспорт отчета', 'export_report'),
+        Markup.button.callback('📈 Графики', 'analytics_charts')
+      ],
+      [
+        Markup.button.callback('📅 По дням', 'analytics_by_day'),
+        Markup.button.callback('📆 По неделям', 'analytics_by_week'),
+        Markup.button.callback('📆 По месяцам', 'analytics_by_month')
+      ],
+      [Markup.button.callback('🔙 Назад к аналитике', 'manager_analytics')]
+    ];
+    
+    await ctx.replyWithMarkdown(message, Markup.inlineKeyboard(keyboard));
+    
+    logger.info(`User ${ctx.from.id} viewed detailed analytics`);
+  } catch (error) {
+    logger.error('Error in detailed analytics handler:', error);
+    await ctx.reply('❌ Произошла ошибка при получении детальной аналитики. Пожалуйста, попробуйте позже.');
+  }
+};
+
+/**
+ * Обработчик для экспорта отчета
+ * @param {Object} ctx - Контекст Telegraf
+ */
+const exportReportHandler = async (ctx) => {
+  try {
+    // Получаем ID пользователя
+    const userId = ctx.user?.id || '1';
+    
+    // Создаем клавиатуру для выбора формата отчета
+    const keyboard = [
+      [
+        Markup.button.callback('📊 Excel', 'export_excel'),
+        Markup.button.callback('📄 PDF', 'export_pdf'),
+        Markup.button.callback('📝 CSV', 'export_csv')
+      ],
+      [Markup.button.callback('🔙 Назад к аналитике', 'manager_analytics')]
+    ];
+    
+    await ctx.reply('Выберите формат отчета:', Markup.inlineKeyboard(keyboard));
+    
+    logger.info(`User ${ctx.from.id} is exporting report`);
+  } catch (error) {
+    logger.error('Error in export report handler:', error);
+    await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+  }
+};
+
+// Вспомогательная функция для получения текстового представления статуса маршрута
+const getRouteStatusText = (status) => {
+  const statusMap = {
+    'ACTIVE': '✅ Активен',
+    'INACTIVE': '❌ Неактивен',
+    'PAUSED': '⏸ Приостановлен'
+  };
+  
+  return statusMap[status] || status;
+};
+
+// Вспомогательная функция для получения текстового представления статуса задачи
+const getTaskStatusText = (status) => {
+  const statusMap = {
+    'PENDING': '⏳ Ожидает',
+    'IN_PROGRESS': '🔄 В процессе',
+    'COMPLETED': '✅ Выполнено',
+    'CANCELLED': '❌ Отменено'
+  };
+  
+  return statusMap[status] || status;
+};
+
+module.exports = {
+  viewAnalyticsHandler,
+  createTaskHandler,
+  selectTaskTypeHandler,
+  manageRoutesHandler,
+  scheduleTasksHandler,
+  detailedAnalyticsHandler,
+  exportReportHandler,
+  register
+};

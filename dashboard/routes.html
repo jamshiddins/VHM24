@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VHM24 - Управление маршрутами</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+        }
+
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-button {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .nav-button i {
+            margin-right: 5px;
+        }
+
+        .nav-button:hover {
+            background: #2980b9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .panel h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        .panel h3 {
+            margin: 15px 0 10px;
+            color: #2c3e50;
+        }
+
+        .route-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .route-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border-left: 4px solid #3498db;
+        }
+
+        .route-item:hover {
+            background: #e9ecef;
+        }
+
+        .route-item.active {
+            background: #e3f2fd;
+            border-left-color: #2980b9;
+        }
+
+        .route-item h4 {
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .route-item p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .route-item .route-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: #7f8c8d;
+        }
+
+        .route-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            color: white;
+            margin-left: 10px;
+        }
+
+        .status-active {
+            background: #27ae60;
+        }
+
+        .status-inactive {
+            background: #e74c3c;
+        }
+
+        .status-planned {
+            background: #f39c12;
+        }
+
+        .map-container {
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .route-details {
+            margin-top: 20px;
+        }
+
+        .machine-list {
+            margin-top: 15px;
+        }
+
+        .machine-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .machine-item:hover {
+            background: #e9ecef;
+        }
+
+        .machine-item .machine-info {
+            flex: 1;
+        }
+
+        .machine-item .machine-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .machine-item .btn-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .machine-item .btn-icon:hover {
+            background: #2980b9;
+        }
+
+        .btn-icon.btn-up {
+            background: #27ae60;
+        }
+
+        .btn-icon.btn-up:hover {
+            background: #219653;
+        }
+
+        .btn-icon.btn-down {
+            background: #e74c3c;
+        }
+
+        .btn-icon.btn-down:hover {
+            background: #c0392b;
+        }
+
+        .btn-icon.btn-remove {
+            background: #e74c3c;
+        }
+
+        .btn-icon.btn-remove:hover {
+            background: #c0392b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn i {
+            margin-right: 5px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #219653;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+        }
+
+        .btn-warning:hover {
+            background: #d35400;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+        }
+
+        select.form-control {
+            background: white;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .search-box {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 35px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            color: #7f8c8d;
+        }
+
+        .tab-btn.active {
+            border-bottom-color: #3498db;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .navigation {
+                margin-top: 15px;
+                flex-wrap: wrap;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-route"></i> Управление маршрутами</h1>
+                <p class="subtitle">Создание и редактирование маршрутов для операторов</p>
+            </div>
+            <div class="navigation">
+                <a href="index.html" class="nav-button"><i class="fas fa-tachometer-alt"></i> Дашборд</a>
+                <a href="analytics.html" class="nav-button"><i class="fas fa-chart-pie"></i> Аналитика</a>
+                <a href="tasks.html" class="nav-button"><i class="fas fa-tasks"></i> Задачи</a>
+                <a href="admin.html" class="nav-button"><i class="fas fa-cogs"></i> Администрирование</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Routes List Panel -->
+            <div class="panel">
+                <h2><i class="fas fa-list"></i> Список маршрутов</h2>
+                
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Поиск маршрутов..." id="route-search">
+                </div>
+                
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">Все</button>
+                    <button class="filter-btn" data-filter="active">Активные</button>
+                    <button class="filter-btn" data-filter="inactive">Неактивные</button>
+                    <button class="filter-btn" data-filter="planned">Запланированные</button>
+                </div>
+                
+                <div class="route-list" id="route-list">
+                    <div class="route-item active" data-id="1" data-status="active">
+                        <h4>Маршрут #1 <span class="route-status status-active">Активен</span></h4>
+                        <p>Оператор: Алексей К.</p>
+                        <p>Автоматы: 5</p>
+                        <div class="route-stats">
+                            <span>Создан: 01.07.2025</span>
+                            <span>Последнее обновление: 15.07.2025</span>
+                        </div>
+                    </div>
+                    <div class="route-item" data-id="2" data-status="active">
+                        <h4>Маршрут #2 <span class="route-status status-active">Активен</span></h4>
+                        <p>Оператор: Мария П.</p>
+                        <p>Автоматы: 3</p>
+                        <div class="route-stats">
+                            <span>Создан: 05.07.2025</span>
+                            <span>Последнее обновление: 12.07.2025</span>
+                        </div>
+                    </div>
+                    <div class="route-item" data-id="3" data-status="inactive">
+                        <h4>Маршрут #3 <span class="route-status status-inactive">Неактивен</span></h4>
+                        <p>Оператор: Дмитрий С.</p>
+                        <p>Автоматы: 4</p>
+                        <div class="route-stats">
+                            <span>Создан: 10.06.2025</span>
+                            <span>Последнее обновление: 01.07.2025</span>
+                        </div>
+                    </div>
+                    <div class="route-item" data-id="4" data-status="planned">
+                        <h4>Маршрут #4 <span class="route-status status-planned">Запланирован</span></h4>
+                        <p>Оператор: Анна В.</p>
+                        <p>Автоматы: 6</p>
+                        <div class="route-stats">
+                            <span>Создан: 14.07.2025</span>
+                            <span>Запланирован на: 20.07.2025</span>
+                        </div>
+                    </div>
+                    <div class="route-item" data-id="5" data-status="active">
+                        <h4>Маршрут #5 <span class="route-status status-active">Активен</span></h4>
+                        <p>Оператор: Сергей М.</p>
+                        <p>Автоматы: 4</p>
+                        <div class="route-stats">
+                            <span>Создан: 20.06.2025</span>
+                            <span>Последнее обновление: 10.07.2025</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-success" id="create-route"><i class="fas fa-plus"></i> Создать маршрут</button>
+                </div>
+            </div>
+            
+            <!-- Route Details Panel -->
+            <div class="panel">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="details">Детали маршрута</button>
+                    <button class="tab-btn" data-tab="edit">Редактирование</button>
+                    <button class="tab-btn" data-tab="stats">Статистика</button>
+                </div>
+                
+                <!-- Details Tab -->
+                <div class="tab-content active" id="details-tab">
+                    <h2><i class="fas fa-info-circle"></i> Детали маршрута #1</h2>
+                    
+                    <div class="map-container" id="route-map">
+                        Карта маршрута будет отображена здесь
+                    </div>
+                    
+                    <div class="route-details">
+                        <h3>Информация о маршруте</h3>
+                        <table style="width: 100%; margin-top: 10px;">
+                            <tr>
+                                <td style="width: 30%; font-weight: bold;">Название:</td>
+                                <td>Маршрут #1</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Оператор:</td>
+                                <td>Алексей К.</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Статус:</td>
+                                <td><span class="route-status status-active">Активен</span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Дата создания:</td>
+                                <td>01.07.2025</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Последнее обновление:</td>
+                                <td>15.07.2025</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Количество автоматов:</td>
+                                <td>5</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Общая выручка:</td>
+                                <td>1,245,800 ₽</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Среднее время обслуживания:</td>
+                                <td>45 минут</td>
+                            </tr>
+                        </table>
+                        
+                        <h3>Автоматы на маршруте</h3>
+                        <div class="machine-list">
+                            <div class="machine-item">
+                                <div class="machine-info">
+                                    <strong>VM-001</strong> - ТЦ Mega Planet
+                                    <div style="font-size: 0.9em; color: #7f8c8d;">Последнее обслуживание: 15.07.2025</div>
+                                </div>
+                                <div class="machine-actions">
+                                    <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                            <div class="machine-item">
+                                <div class="machine-info">
+                                    <strong>VM-015</strong> - Парк Ашхабад
+                                    <div style="font-size: 0.9em; color: #7f8c8d;">Последнее обслуживание: 14.07.2025</div>
+                                </div>
+                                <div class="machine-actions">
+                                    <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                            <div class="machine-item">
+                                <div class="machine-info">
+                                    <strong>VM-028</strong> - Метро Олмазор
+                                    <div style="font-size: 0.9em; color: #7f8c8d;">Последнее обслуживание: 13.07.2025</div>
+                                </div>
+                                <div class="machine-actions">
+                                    <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                            <div class="machine-item">
+                                <div class="machine-info">
+                                    <strong>VM-042</strong> - УзЭкспоЦентр
+                                    <div style="font-size: 0.9em; color: #7f8c8d;">Последнее обслуживание: 12.07.2025</div>
+                                </div>
+                                <div class="machine-actions">
+                                    <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                            <div class="machine-item">
+                                <div class="machine-info">
+                                    <strong>VM-055</strong> - ТЦ Next
+                                    <div style="font-size: 0.9em; color: #7f8c8d;">Последнее обслуживание: 11.07.2025</div>
+                                </div>
+                                <div class="machine-actions">
+                                    <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn" id="edit-route-btn"><i class="fas fa-edit"></i> Редактировать</button>
+                            <button class="btn btn-warning"><i class="fas fa-pause"></i> Приостановить</button>
+                            <button class="btn btn-danger"><i class="fas fa-trash"></i> Удалить</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Edit Tab -->
+                <div class="tab-content" id="edit-tab">
+                    <h2><i class="fas fa-edit"></i> Редактирование маршрута #1</h2>
+                    
+                    <form id="edit-route-form">
+                        <div class="form-group">
+                            <label for="route-name">Название маршрута</label>
+                            <input type="text" id="route-name" class="form-control" value="Маршрут #1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="route-operator">Оператор</label>
+                            <select id="route-operator" class="form-control">
+                                <option value="1" selected>Алексей К.</option>
+                                <option value="2">Мария П.</option>
+                                <option value="3">Дмитрий С.</option>
+                                <option value="4">Анна В.</option>
+                                <option value="5">Сергей М.</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="route-status">Статус</label>
+                                <select id="route-status" class="form-control">
+                                    <option value="active" selected>Активен</option>
+                                    <option value="inactive">Неактивен</option>
+                                    <option value="planned">Запланирован</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="route-date">Дата начала</label>
+                                <input type="date" id="route-date" class="form-control" value="2025-07-01">
+                            </div>
+                        </div>
+                        
+                        <h3>Автоматы на маршруте</h3>
+                        <div class="machine-list">
+                            <div class="machine-item">
+                                <div class="machine-info">
+                                    <strong>VM-001</strong> - ТЦ Mega Planet
+                                </div>
+                                <div class="machine-actions">
+                                    <button type="button" class="btn-icon btn-up"><i class="fas fa-arrow-up"></i></button>
+                                    <button type="button" class="btn-icon btn-down"><i class="fas fa-arrow-down"></i></button>
+                                    <button type="button" class="btn-icon btn-remove"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="machine-item">
+                                <div class="machine-info">
+                                    <strong>VM-015</strong> - Парк Ашхабад
+                                </div>
+                                <div class="machine-actions">
+                                    <button type="button" class="btn-icon btn-up"><i class="fas fa-arrow-up"></i></button>
+                                    <button type="button" class="btn-icon btn-down"><i class="fas fa-arrow-down"></i></button>
+                                    <button type="button" class="btn-icon btn-remove"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="machine-item">
+                                <div class="machine-info">
+                                    <strong>VM-028</strong> - Метро Олмазор
+                                </div>
+                                <div class="machine-actions">
+                                    <button type="button" class="btn-icon btn-up"><i class="fas fa-arrow-up"></i></button>
+                                    <button type="button" class="btn-icon btn-down"><i class="fas fa-arrow-down"></i></button>
+                                    <button type="button" class="btn-icon btn-remove"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="machine-item">
+                                <div class="machine-info">
+                                    <strong>VM-042</strong> - УзЭкспоЦентр
+                                </div>
+                                <div class="machine-actions">
+                                    <button type="button" class="btn-icon btn-up"><i class="fas fa-arrow-up"></i></button>
+                                    <button type="button" class="btn-icon btn-down"><i class="fas fa-arrow-down"></i></button>
+                                    <button type="button" class="btn-icon btn-remove"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="machine-item">
+                                <div class="machine-info">
+                                    <strong>VM-055</strong> - ТЦ Next
+                                </div>
+                                <div class="machine-actions">
+                                    <button type="button" class="btn-icon btn-up"><i class="fas fa-arrow-up"></i></button>
+                                    <button type="button" class="btn-icon btn-down"><i class="fas fa-arrow-down"></i></button>
+                                    <button type="button" class="btn-icon btn-remove"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 15px;">
+                            <button type="button" class="btn" id="add-machine-btn"><i class="fas fa-plus"></i> Добавить автомат</button>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Сохранить изменения</button>
+                            <button type="button" class="btn btn-danger" id="cancel-edit"><i class="fas fa-times"></i> Отменить</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Stats Tab -->
+                <div class="tab-content" id="stats-tab">
+                    <h2><i class="fas fa-chart-bar"></i> Статистика маршрута #1</h2>
+                    
+                    <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="color: #7f8c8d;">Общая выручка</div>
+                            <div style="font-size: 2em; font-weight: bold; margin: 10px 0; color: #2c3e50;">1,245,800 ₽</div>
+                            <div style="color: #27ae60; font-size: 0.9em;"><i class="fas fa-arrow-up"></i> 12.5%</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="color: #7f8c8d;">Количество обслуживаний</div>
+                            <div style="font-size: 2em; font-weight: bold; margin: 10px 0; color: #2c3e50;">48</div>
+                            <div style="color: #27ae60; font-size: 0.9em;"><i class="fas fa-arrow-up"></i> 8.3%</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="color: #7f8c8d;">Среднее время обслуживания</div>
+                            <div style="font-size: 2em; font-weight: bold; margin: 10px 0; color: #2c3e50;">45 мин</div>
+                            <div style="color: #e74c3c; font-size: 0.9em;"><i class="fas fa-arrow-up"></i> 5.2%</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="color: #7f8c8d;">Эффективность маршрута</div>
+                            <div style="font-size: 2em; font-weight: bold; margin: 10px 0; color: #2c3e50;">87%</div>
+                            <div style="color: #27ae60; font-size: 0.9em;"><i class="fas fa-arrow-up"></i> 3.1%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container" style="height: 300px; background: #f8f9fa; border-radius: 10px; margin: 20px 0; display: flex; align-items: center; justify-content: center; color: #7f8c8d; font-size: 1.2em;">
+                        График статистики маршрута будет отображен здесь
+                    </div>
+                    
+                    <h3>Статистика по автоматам</h3>
+                    <table class="data-table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; background-color: #f2f2f2; font-weight: bold; color: #2c3e50;">Автомат</th>
+                                <th style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; background-color: #f2f2f2; font-weight: bold; color: #2c3e50;">Выручка</th>
+                                <th style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; background-color: #f2f2f2; font-weight: bold; color: #2c3e50;">Обслуживаний</th>
+                                <th style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; background-color: #f2f2f2; font-weight: bold; color: #2c3e50;">Среднее время</th>
+                                <th style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; background-color: #f2f2f2; font-weight: bold; color: #2c3e50;">Эффективность</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">VM-055</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">345,800 ₽</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">12</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">40 мин</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; color: #27ae60;">92%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">VM-001</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">285,420 ₽</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">10</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">42 мин</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; color: #27ae60;">89%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">VM-015</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">254,280 ₽</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">9</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">45 мин</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; color: #27ae60;">85%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">VM-028</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">215,340 ₽</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">8</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">48 мин</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; color: #f39c12;">78%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">VM-042</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">144,960 ₽</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">9</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd;">50 мин</td>
+                                <td style="padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; color: #e74c3c;">72%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="action-buttons">
+                        <button class="btn"><i class="fas fa-file-excel"></i> Экспорт в Excel</button>
+                        <button class="btn"><i class="fas fa-file-pdf"></i> Экспорт в PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>&copy; 2024 VHM24 - Enterprise Vending Hub Manager | Powered by AI & Blockchain</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Обработчики вкладок
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    
+                    // Активируем кнопку
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Показываем соответствующий контент
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === tabId + '-tab') {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // Обработчики фильтров
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const routeItems = document.querySelectorAll('.route-item');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.getAttribute('data-filter');
+                    
+                    // Активируем кнопку
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Фильтруем маршруты
+                    routeItems.forEach(item => {
+                        if (filter === 'all' || item.getAttribute('data-status') === filter) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Обработчики выбора маршрута
+            routeItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Активируем выбранный маршрут
+                    routeItems.forEach(route => route.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Обновляем детали маршрута
+                    const routeId = item.getAttribute('data-id');
+                    document.querySelector('#details-tab h2').innerHTML = `<i class="fas fa-info-circle"></i> Детали маршрута #${routeId}`;
+                    document.querySelector('#edit-tab h2').innerHTML = `<i class="fas fa-edit"></i> Редактирование маршрута #${routeId}`;
+                    document.querySelector('#stats-tab h2').innerHTML = `<i class="fas fa-chart-bar"></i> Статистика маршрута #${routeId}`;
+                });
+            });
+            
+            // Обработчик кнопки редактирования
+            document.getElementById('edit-route-btn').addEventListener('click', () => {
+                // Переключаемся на вкладку редактирования
+                tabButtons.forEach(btn => {
+                    if (btn.getAttribute('data-tab') === 'edit') {
+                        btn.click();
+                    }
+                });
+            });
+            
+            // Обработчик кнопки отмены редактирования
+            document.getElementById('cancel-edit').addEventListener('click', () => {
+                // Переключаемся на вкладку деталей
+                tabButtons.forEach(btn => {
+                    if (btn.getAttribute('data-tab') === 'details') {
+                        btn.click();
+                    }
+                });
+            });
+            
+            // Обработчик формы редактирования
+            document.getElementById('edit-route-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Изменения сохранены');
+                
+                // Переключаемся на вкладку деталей
+                tabButtons.forEach(btn => {
+                    if (btn.getAttribute('data-tab') === 'details') {
+                        btn.click();
+                    }
+                });
+            });
+            
+            // Обработчик кнопки создания маршрута
+            document.getElementById('create-route').addEventListener('click', () => {
+                alert('Создание нового маршрута');
+            });
+            
+            // Обработчик кнопки добавления автомата
+            document.getElementById('add-machine-btn').addEventListener('click', () => {
+                alert('Добавление нового автомата на маршрут');
+            });
+            
+            // Имитация загрузки карты
+            const mapContainer = document.getElementById('route-map');
+            mapContainer.innerHTML = 'Загрузка карты...';
+            
+            setTimeout(() => {
+                mapContainer.innerHTML = 'Карта маршрута загружена и отображается';
+            }, 1500);
+            
+            // Обработчик поиска
+            document.getElementById('route-search').addEventListener('input', (e) => {
+                const searchText = e.target.value.toLowerCase();
+                
+                routeItems.forEach(item => {
+                    const routeName = item.querySelector('h4').textContent.toLowerCase();
+                    const operatorName = item.querySelector('p').textContent.toLowerCase();
+                    
+                    if (routeName.includes(searchText) || operatorName.includes(searchText)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

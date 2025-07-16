@@ -1,180 +1,322 @@
-;
-const { BOT_STATES } = require('../fsm/states')'''';
-const { createInlineKeyboard } = require('../_keyboards ')'''';
-const { _formatMessage  } = require('../utils/formatters')'''';
-const { requireRole } = require('../middleware/auth')'''';
-const apiService = require('../_services /api')'''';
-const userService = require('../_services /_users ')'''';
-const logger = require('../utils/logger')'''''';
-  bot.action('operator_tasks', requireRole(['OPERATOR''''''';
-    ctx.setData('currentTaskId''''''';
-  bot.action(_process.env.API_KEY_376 || process.env.API_KEY_377 || 'start_task_execution''''''';
-    // const taskId =  ctx.getData('currentTaskId''''''';
-  bot.action('bag_return', requireRole(['OPERATOR''''''';
-  bot.action('incassation', requireRole(['OPERATOR''''''';
-  bot.action(_'operator_report''''''';
-  bot._command ('tasks', requireRole(['OPERATOR''''''';
-  bot._command ('return', requireRole(['OPERATOR''''''';
-  bot._command ('collect', requireRole(['OPERATOR''''''';
-  bot._command (_'report'''';''';
-      _status : ['ASSIGNED', 'IN_PROGRESS'''';''';
-        [{ "text": '🔄 Обновить', "callback_data": 'operator_tasks' }],'''';
-        [{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';
-      const message = '📋 *Мои задачи*\n\n' +'';'';
-        '✅ У вас нет активных задач\n\n' +'''';
-        'Новые задачи будут отображаться здесь'''';''';
-        "parse_mode": 'Markdown''''''';
-    // const message =  _formatMessage .taskList(sortedTasks, 'Мои активные задачи'''';''';
-      "text": `${_formatMessage .getTaskIcon ? _formatMessage .getTaskIcon(task.type) : '📋''';
-    _keyboard .push([{ "text": '🔄 Обновить', "callback_data": 'operator_tasks''''';
-    _keyboard .push([{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-    await userService.logAction(_userId , 'VIEW_TASKS''''''';
-    require("./utils/logger").error('Error showing operator "tasks":''''';
-    await ctx.reply('❌ Ошибка загрузки задач. Попробуйте позже.''''''';
-      return await ctx.editMessageText('❌ Задача не найдена'';''''';
-          { "text": '🔙 К задачам', "callback_data": 'operator_tasks''''''';
-      if (task._status  === 'ASSIGNED') {'''';
-        _keyboard .push([{ "text": '▶️ Начать выполнение', "callback_data": 'start_task_execution''''';
-      } else if (task._status  === 'IN_PROGRESS') {'''';
-        _keyboard .push([{ "text": '📋 Продолжить чек-лист', "callback_data": 'continue_checklist''''';
-        _keyboard .push([{ "text": '⏸️ Приостановить', "callback_data": 'pause_task''''''';
-      _keyboard .push([{ "text": `❌ ${canExecute.reason}`, "callback_data": process.env.API_KEY_378 || 'task_restriction_info''''''';
-    _keyboard .push([{ "text": '📍 Показать на карте', "callback_data": 'show_task_location''''''';
-      { "text": '🔙 К задачам', "callback_data": 'operator_tasks' },'''';
-      { "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-    await userService.logAction(ctx._user .id, 'VIEW_TASK_DETAIL''''''';
-    require("./utils/logger").error('Error showing task "detail":''''';
-    await ctx.reply('❌ Ошибка загрузки задачи''''''';
-      ctx.setData('pendingAction', 'start_task'''';''';
-        [{ "text": '📍 Отправить геолокацию', "request_location": true }],'''';
-        [{ "text": '⏭️ Пропустить', "callback_data": 'skip_location' }],'''';
-        [{ "text": '🔙 Назад''';
-        '📍 *Геолокация*\n\n' +'''';
-        'Для начала выполнения задачи необходимо подтвердить ваше местоположение.\n\n' +'''';
-        'Нажмите кнопку ниже для отправки геолокации:''''''';
-          "parse_mode": 'Markdown''''''';
-    ctx.setData('currentTask''''''';
-    await userService.logAction(ctx._user .id, process.env.API_KEY_379 || 'START_TASK_EXECUTION''''''';
-    require("./utils/logger").error('Error starting task "execution":''''''';
-    let ___errorMessage = '❌ Ошибка начала выполнения задачи;';'''';
-    if (error._message .includes('already in _progress ')) {'''';
-      errorMessage = '⚠️ Задача уже выполняется';'''';
-    } else if (error._message .includes('not assigned')) {'''';
-      errorMessage = '⚠️ Задача не назначена вам''''''';
-    // const message =  progressMessage + '\n\n''''''';
-      "parse_mode": 'Markdown''''''';
-    ctx.setData('currentStep''''''';
-  // const currentStep =  ctx.getData('currentStep''''''';
-    return await ctx.reply('❌ Ошибка: шаг не найден''''''';
-    case 'complete':'''';
-      await completeChecklistStep(ctx, currentStep, 'COMPLETED''''''';
-    case 'photo''''''';
-    case '_weight ''''''';
-    case 'gps''''''';
-    case 'qr''''''';
-    case 'note''''''';
-    case 'skip''''''';
-      await ctx.reply('❌ Неизвестное действие''''''';
-    require("./utils/logger").error('Error handling checklist "action":''''';
-    await ctx.reply('❌ Ошибка выполнения действия'''';''';
-      _status : ['ISSUED''''''';
-      // const message =  '🎒 *Возврат сумок*\n\n' +'';'';
-        '📦 У вас нет выданных сумок для возврата'''';''';
-        [{ "text": '🔄 Обновить', "callback_data": 'bag_return' }],'''';
-        [{ "text": '🏠 Главное меню', "callback_data": 'main_menu'''';''';,
-  "parse_mode": 'Markdown''''''';
-    let ___message = '🎒 *Возврат сумок*\n\n;';'''';
-      _message  += '\n'''';''';
-    _keyboard .push([{ "text": '📸 Фото всех сумок', "callback_data": 'photo_all_bags''''';
-    _keyboard .push([{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error showing bag "return":''''';
-    await ctx.reply('❌ Ошибка загрузки сумок''''''';
-      // const message =  '💰 *Инкассация*\n\n' +'';'';
-        '📊 Нет автоматов для инкассации или в них нет наличных'''';''';
-        [{ "text": '🔄 Обновить', "callback_data": 'incassation' }],'''';
-        [{ "text": '🏠 Главное меню', "callback_data": 'main_menu'''';''';,
-  "parse_mode": 'Markdown''''''';
-    let ___message = '💰 *Инкассация*\n\n;';'''';
-      _message  += '\n'''';''';
-    _keyboard .push([{ "text": '📊 История инкассаций', "callback_data": 'incassation_history''''';
-    _keyboard .push([{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error showing "incassation":''''';
-    await ctx.reply('❌ Ошибка загрузки данных инкассации''''''';
-    const stats = await userService.getUserStats(_userId , 'day''''''';
-    let ___message = '📊 *Мой отчет за сегодня*\n\n;';'''';
-    _message  += `👤 ${ctx._user .firstName} ${ctx._user .lastName || '';
-    _message  += `📅 ${new Date().toLocaleDateString('ru-RU''';
-    _message  += '📋 *Задачи:*\n';'''';
-      _message  += '⏱️ *Время работы:*\n';'''';
-      _message  += '💰 *Инкассация:*\n';'''';
-      _message  += '🎒 *Сумки:*\n';'''';
-      [{ "text": '📊 Детальная статистика', "callback_data": process.env.API_KEY_380 || 'detailed_operator_report' ],'''';
-      [{ "text": '📅 За неделю', "callback_data": process.env.API_KEY_381 || 'weekly_operator_report' ],'''';
-      [{ "text": '📈 За месяц', "callback_data": process.env.API_KEY_382 || 'monthly_operator_report' ],'''';
-      [{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-        "parse_mode": 'Markdown''''''';
-    require("./utils/logger").error('Error showing operator "report":''''';
-    await ctx.reply('❌ Ошибка загрузки отчета''''''';
-      if (!execution || execution._status  !== 'COMPLETED''''''';
-    _keyboard .push([{ "text": '📸 Фото', "callback_data": 'step_photo''''''';
-    _keyboard .push([{ "text": '⚖️ Вес', "callback_data": 'step_weight''''''';
-  if (step.stepType === 'GPS_LOCATION') {'''';
-    _keyboard .push([{ "text": '📍 GPS', "callback_data": 'step_gps''''''';
-  if (step.stepType === 'QR_SCAN') {'''';
-    _keyboard .push([{ "text": '📱 QR код', "callback_data": 'step_qr''''''';
-  _keyboard .push([{ "text": '✏️ Заметка', "callback_data": 'step_note''''''';
-    { "text": '✅ Выполнено', "callback_data": 'step_complete' ,'''';
-    { "text": '⏭️ Пропустить', "callback_data": 'step_skip''''''';
-  _keyboard .push([{ "text": '🔙 К задаче', "callback_data": 'back_to_task''''''';
-    // const task =  ctx.getData('currentTask''''''';
-    require("./utils/logger").error('Error completing checklist "step":''''';
-    await ctx.reply('❌ Ошибка завершения шага''''''';
-  // const message =  '📸 *Загрузка фото*\n\n' +'';'';
-    `Для шага "${currentStep.step.title""";
-    'Отправьте фото или нажмите "Пропустить":'''';''';
-    [{ "text": '⏭️ Пропустить', "callback_data": 'skip_photo' ],'''';
-    [{ "text": '🔙 Назад к шагу', "callback_data": 'back_to_step''''''';,
-  "parse_mode": 'Markdown''''''';
-  // const message =  '⚖️ *Ввод веса*\n\n' +'';'';
-    `Для шага "${currentStep.step.title""";
-    'Введите вес в килограммах (например: 2.5):'''';''';
-    [{ "text": '⏭️ Пропустить', "callback_data": 'skip_weight' ],'''';
-    [{ "text": '🔙 Назад к шагу', "callback_data": 'back_to_step''''''';,
-  "parse_mode": 'Markdown''''''';
-  // const message =  '📍 *Геолокация*\n\n' +'';'';
-    `Для шага "${currentStep.step.title""";
-    'Отправьте вашу геолокацию:'''';''';
-    [{ "text": '📍 Отправить геолокацию', "request_location": true ],'''';
-    [{ "text": '⏭️ Пропустить', "callback_data": 'skip_gps' ],'''';
-    [{ "text": '🔙 Назад к шагу', "callback_data": 'back_to_step''''''';,
-  "parse_mode": 'Markdown''''''';
-  // const message =  '📱 *Сканирование QR кода*\n\n' +'';'';
-    `Для шага "${currentStep.step.title""";
-    'Отправьте фото QR кода:'''';''';
-    [{ "text": '⏭️ Пропустить', "callback_data": 'skip_qr' ],'''';
-    [{ "text": '🔙 Назад к шагу', "callback_data": 'back_to_step''''''';,
-  "parse_mode": 'Markdown''''''';
-  // const message =  '✏️ *Добавить заметку*\n\n' +'';'';
-    `Для шага "${currentStep.step.title""";
-    'Введите заметку:'''';''';
-    [{ "text": '⏭️ Пропустить', "callback_data": 'skip_note' ],'''';
-    [{ "text": '🔙 Назад к шагу', "callback_data": 'back_to_step''''''';,
-  "parse_mode": 'Markdown''''''';
-  await completeChecklistStep(ctx, currentStep, 'SKIPPED'''';''';
-      "notes": 'Все шаги чек-листа выполнены''''''';
-    // const message =  '✅ *Задача завершена!*\n\n' +'';'';
-      '🎉 Поздравляем! Вы успешно завершили задачу.\n\n' +'''';
-      '📊 Результат будет учтен в вашей статистике.'''';''';
-      [{ "text": '📋 Мои задачи', "callback_data": 'operator_tasks' ],'''';
-      [{ "text": '🏠 Главное меню', "callback_data": 'main_menu''''''';,
-  "parse_mode": 'Markdown''''''';
-    await userService.logAction(ctx._user .id, 'COMPLETE_TASK''''''';
-    require("./utils/logger").error('Error completing "task":''''';
-    await ctx.reply('❌ Ошибка завершения задачи''''';
-'';
-}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}})))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+const { Markup } = require('telegraf');
+const { BOT_STATES } = require('../../fsm/states');
+const apiService = require('../../services/api');
+const logger = require('../../utils/logger');
+
+/**
+ * Регистрирует обработчики для роли OPERATOR
+ * @param {Object} bot - Экземпляр бота Telegraf
+ * @param {Function} requireRole - Функция для проверки роли
+ */
+const register = (bot, requireRole) => {
+  // Обработчик для просмотра задач оператора
+  bot.action('operator_tasks', requireRole(['OPERATOR', 'ADMIN']), async (ctx) => {
+    try {
+      await viewTasksHandler(ctx);
+    } catch (error) {
+      logger.error('Error in operator_tasks action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для просмотра деталей задачи
+  bot.action(/^task_(\d+)$/, requireRole(['OPERATOR', 'ADMIN']), async (ctx) => {
+    try {
+      await viewTaskDetailsHandler(ctx);
+    } catch (error) {
+      logger.error('Error in task details action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для обновления статуса задачи
+  bot.action(/^update_status_(\d+)$/, requireRole(['OPERATOR', 'ADMIN']), async (ctx) => {
+    try {
+      await updateTaskStatusHandler(ctx);
+    } catch (error) {
+      logger.error('Error in update task status action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для установки статуса задачи
+  bot.action(/^set_status_(\d+)_(\w+)$/, requireRole(['OPERATOR', 'ADMIN']), async (ctx) => {
+    try {
+      await setTaskStatusHandler(ctx);
+    } catch (error) {
+      logger.error('Error in set task status action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для принятия задачи
+  bot.action(/^accept_task_(\d+)$/, requireRole(['OPERATOR', 'ADMIN']), async (ctx) => {
+    try {
+      const taskId = ctx.match[1];
+      const result = await apiService.updateTaskStatus(taskId, 'IN_PROGRESS');
+      
+      if (result.success) {
+        await ctx.reply('✅ Задача принята к исполнению');
+        
+        // Возвращаемся к деталям задачи
+        await viewTaskDetailsHandler({
+          ...ctx,
+          callbackQuery: {
+            ...ctx.callbackQuery,
+            data: `task_${taskId}`
+          }
+        });
+      } else {
+        await ctx.reply('❌ Не удалось принять задачу. Пожалуйста, попробуйте позже.');
+      }
+      
+      logger.info(`User ${ctx.from.id} accepted task ${taskId}`);
+    } catch (error) {
+      logger.error('Error in accept task action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для отклонения задачи
+  bot.action(/^reject_task_(\d+)$/, requireRole(['OPERATOR', 'ADMIN']), async (ctx) => {
+    try {
+      const taskId = ctx.match[1];
+      const result = await apiService.updateTaskStatus(taskId, 'REJECTED', {
+        reason: 'Отклонено оператором'
+      });
+      
+      if (result.success) {
+        await ctx.reply('✅ Задача отклонена');
+        
+        // Возвращаемся к списку задач
+        await viewTasksHandler(ctx);
+      } else {
+        await ctx.reply('❌ Не удалось отклонить задачу. Пожалуйста, попробуйте позже.');
+      }
+      
+      logger.info(`User ${ctx.from.id} rejected task ${taskId}`);
+    } catch (error) {
+      logger.error('Error in reject task action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для добавления комментария к задаче
+  bot.action(/^add_comment_(\d+)$/, requireRole(['OPERATOR', 'ADMIN']), async (ctx) => {
+    try {
+      const taskId = ctx.match[1];
+      
+      // Сохраняем ID задачи в сессии
+      if (ctx.session) {
+        ctx.session.commentTaskId = taskId;
+      }
+      
+      await ctx.reply('Введите комментарий к задаче:');
+      
+      // Устанавливаем состояние бота
+      if (ctx.scene && ctx.scene.enter) {
+        await ctx.scene.enter(BOT_STATES.OPERATOR_TASK_COMMENT);
+      }
+      
+      logger.info(`User ${ctx.from.id} is adding comment to task ${taskId}`);
+    } catch (error) {
+      logger.error('Error in add comment action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  // Обработчик для возврата к списку задач
+  bot.action('view_tasks', requireRole(['OPERATOR', 'ADMIN']), async (ctx) => {
+    try {
+      await viewTasksHandler(ctx);
+    } catch (error) {
+      logger.error('Error in view tasks action handler:', error);
+      await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+    }
+  });
+  
+  logger.info('Operator handlers registered');
+};
+
+// Обработчик для просмотра задач оператора
+const viewTasksHandler = async (ctx) => {
+  try {
+    // Получаем ID пользователя
+    const userId = ctx.user?.id || '1';
+    
+    // Получаем задачи пользователя
+    const tasks = await apiService.getUserTasks(userId);
+    
+    if (!tasks || tasks.length === 0) {
+      await ctx.reply('📋 У вас нет активных задач на данный момент.');
+      return;
+    }
+    
+    // Формируем сообщение со списком задач
+    let message = '📋 *Ваши текущие задачи:*\n\n';
+    
+    tasks.forEach((task, index) => {
+      const deadline = new Date(task.deadline).toLocaleDateString('ru-RU');
+      const status = getStatusText(task.status);
+      
+      message += `*${index + 1}. ${task.type}*\n`;
+      message += `📍 Автомат: ${task.machineName}\n`;
+      message += `📝 Описание: ${task.description}\n`;
+      message += `⏱ Срок: ${deadline}\n`;
+      message += `🔄 Статус: ${status}\n\n`;
+    });
+    
+    // Создаем клавиатуру для выбора задачи
+    const keyboard = tasks.map((task, index) => [
+      Markup.button.callback(`Задача #${index + 1}: ${task.type}`, `task_${task.id}`)
+    ]);
+    
+    // Добавляем кнопку возврата в главное меню
+    keyboard.push([Markup.button.callback('🔙 Назад в меню', 'back_to_menu')]);
+    
+    await ctx.replyWithMarkdown(message, Markup.inlineKeyboard(keyboard));
+    
+    // Устанавливаем состояние бота
+    if (ctx.scene && ctx.scene.enter) {
+      await ctx.scene.enter(BOT_STATES.OPERATOR_TASKS);
+    }
+    
+    logger.info(`User ${ctx.from.id} viewed tasks`);
+  } catch (error) {
+    logger.error('Error in view tasks handler:', error);
+    await ctx.reply('❌ Произошла ошибка при получении списка задач. Пожалуйста, попробуйте позже.');
+  }
+};
+
+// Обработчик для просмотра деталей задачи
+const viewTaskDetailsHandler = async (ctx) => {
+  try {
+    // Получаем ID задачи из callback_data
+    const taskId = ctx.callbackQuery.data.split('_')[1];
+    
+    // Получаем задачи пользователя
+    const userId = ctx.user?.id || '1';
+    const tasks = await apiService.getUserTasks(userId);
+    
+    // Находим нужную задачу
+    const task = tasks.find(t => t.id === taskId);
+    
+    if (!task) {
+      await ctx.reply('❌ Задача не найдена.');
+      return;
+    }
+    
+    // Формируем сообщение с деталями задачи
+    const deadline = new Date(task.deadline).toLocaleDateString('ru-RU');
+    const status = getStatusText(task.status);
+    
+    let message = `📋 *Детали задачи #${task.id}*\n\n`;
+    message += `*Тип:* ${task.type}\n`;
+    message += `*Автомат:* ${task.machineName}\n`;
+    message += `*Описание:* ${task.description}\n`;
+    message += `*Срок:* ${deadline}\n`;
+    message += `*Статус:* ${status}\n`;
+    
+    // Создаем клавиатуру с действиями
+    const keyboard = [
+      [
+        Markup.button.callback('✅ Принять задачу', `accept_task_${task.id}`),
+        Markup.button.callback('❌ Отклонить задачу', `reject_task_${task.id}`)
+      ],
+      [
+        Markup.button.callback('🔄 Обновить статус', `update_status_${task.id}`),
+        Markup.button.callback('📝 Добавить комментарий', `add_comment_${task.id}`)
+      ],
+      [Markup.button.callback('🔙 Назад к списку задач', 'view_tasks')]
+    ];
+    
+    await ctx.replyWithMarkdown(message, Markup.inlineKeyboard(keyboard));
+    
+    logger.info(`User ${ctx.from.id} viewed task details for task ${taskId}`);
+  } catch (error) {
+    logger.error('Error in view task details handler:', error);
+    await ctx.reply('❌ Произошла ошибка при получении деталей задачи. Пожалуйста, попробуйте позже.');
+  }
+};
+
+// Обработчик для обновления статуса задачи
+const updateTaskStatusHandler = async (ctx) => {
+  try {
+    // Получаем ID задачи из callback_data
+    const taskId = ctx.callbackQuery.data.split('_')[2];
+    
+    // Создаем клавиатуру для выбора статуса
+    const keyboard = [
+      [
+        Markup.button.callback('🔄 В процессе', `set_status_${taskId}_IN_PROGRESS`),
+        Markup.button.callback('✅ Выполнено', `set_status_${taskId}_COMPLETED`)
+      ],
+      [
+        Markup.button.callback('⏸ Приостановлено', `set_status_${taskId}_PAUSED`),
+        Markup.button.callback('❌ Отменено', `set_status_${taskId}_CANCELLED`)
+      ],
+      [Markup.button.callback('🔙 Назад', `task_${taskId}`)]
+    ];
+    
+    await ctx.reply('Выберите новый статус задачи:', Markup.inlineKeyboard(keyboard));
+    
+    logger.info(`User ${ctx.from.id} is updating status for task ${taskId}`);
+  } catch (error) {
+    logger.error('Error in update task status handler:', error);
+    await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+  }
+};
+
+// Обработчик для установки статуса задачи
+const setTaskStatusHandler = async (ctx) => {
+  try {
+    // Получаем ID задачи и новый статус из callback_data
+    const parts = ctx.callbackQuery.data.split('_');
+    const taskId = parts[2];
+    const newStatus = parts[3];
+    
+    // Обновляем статус задачи
+    const result = await apiService.updateTaskStatus(taskId, newStatus);
+    
+    if (result.success) {
+      await ctx.reply(`✅ Статус задачи успешно обновлен на "${getStatusText(newStatus)}"`);
+      
+      // Возвращаемся к деталям задачи
+      await viewTaskDetailsHandler({
+        ...ctx,
+        callbackQuery: {
+          ...ctx.callbackQuery,
+          data: `task_${taskId}`
+        }
+      });
+    } else {
+      await ctx.reply('❌ Не удалось обновить статус задачи. Пожалуйста, попробуйте позже.');
+    }
+    
+    logger.info(`User ${ctx.from.id} set status for task ${taskId} to ${newStatus}`);
+  } catch (error) {
+    logger.error('Error in set task status handler:', error);
+    await ctx.reply('❌ Произошла ошибка. Пожалуйста, попробуйте позже.');
+  }
+};
+
+// Вспомогательная функция для получения текстового представления статуса
+const getStatusText = (status) => {
+  const statusMap = {
+    'ASSIGNED': '📝 Назначено',
+    'IN_PROGRESS': '🔄 В процессе',
+    'COMPLETED': '✅ Выполнено',
+    'PAUSED': '⏸ Приостановлено',
+    'CANCELLED': '❌ Отменено'
+  };
+  
+  return statusMap[status] || status;
+};
+
+module.exports = {
+  viewTasksHandler,
+  viewTaskDetailsHandler,
+  updateTaskStatusHandler,
+  setTaskStatusHandler,
+  register
+};

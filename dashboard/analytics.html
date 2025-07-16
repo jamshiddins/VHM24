@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VHM24 - Аналитика и отчеты</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+        }
+
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-button {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .nav-button i {
+            margin-right: 5px;
+        }
+
+        .nav-button:hover {
+            background: #2980b9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .panel h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        .panel h3 {
+            margin: 15px 0 10px;
+            color: #2c3e50;
+        }
+
+        .chart-container {
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .report-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .report-card h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .report-card p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .report-card .btn {
+            padding: 8px 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .report-card .btn:hover {
+            background: #2980b9;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background: white;
+            min-width: 150px;
+        }
+
+        .date-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .date-input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #2c3e50;
+        }
+
+        .metric-card .label {
+            color: #7f8c8d;
+        }
+
+        .metric-card .trend {
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .trend-up {
+            color: #27ae60;
+        }
+
+        .trend-down {
+            color: #e74c3c;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .data-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .data-table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .export-btn {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .export-btn i {
+            margin-right: 5px;
+        }
+
+        .export-btn:hover {
+            background: #2980b9;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .navigation {
+                margin-top: 15px;
+                flex-wrap: wrap;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+            }
+            
+            .date-range {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-chart-pie"></i> Аналитика и отчеты</h1>
+                <p class="subtitle">Подробная аналитика и отчеты по работе системы</p>
+            </div>
+            <div class="navigation">
+                <a href="index.html" class="nav-button"><i class="fas fa-tachometer-alt"></i> Дашборд</a>
+                <a href="routes.html" class="nav-button"><i class="fas fa-route"></i> Маршруты</a>
+                <a href="tasks.html" class="nav-button"><i class="fas fa-tasks"></i> Задачи</a>
+                <a href="admin.html" class="nav-button"><i class="fas fa-cogs"></i> Администрирование</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Filters Panel -->
+            <div class="panel">
+                <h2><i class="fas fa-filter"></i> Фильтры</h2>
+                <div class="filter-bar">
+                    <select class="filter-select" id="machine-filter">
+                        <option value="all">Все автоматы</option>
+                        <option value="VM-001">VM-001</option>
+                        <option value="VM-015">VM-015</option>
+                        <option value="VM-028">VM-028</option>
+                        <option value="VM-042">VM-042</option>
+                        <option value="VM-055">VM-055</option>
+                    </select>
+                    <select class="filter-select" id="operator-filter">
+                        <option value="all">Все операторы</option>
+                        <option value="1">Алексей К.</option>
+                        <option value="2">Мария П.</option>
+                        <option value="3">Дмитрий С.</option>
+                        <option value="4">Анна В.</option>
+                        <option value="5">Сергей М.</option>
+                    </select>
+                    <select class="filter-select" id="product-filter">
+                        <option value="all">Все продукты</option>
+                        <option value="coffee">Кофе</option>
+                        <option value="tea">Чай</option>
+                        <option value="snacks">Снеки</option>
+                        <option value="drinks">Напитки</option>
+                    </select>
+                    <div class="date-range">
+                        <span>Период:</span>
+                        <input type="date" class="date-input" id="date-from" value="2025-07-01">
+                        <span>—</span>
+                        <input type="date" class="date-input" id="date-to" value="2025-07-15">
+                    </div>
+                    <button class="export-btn" id="apply-filters"><i class="fas fa-search"></i> Применить</button>
+                </div>
+            </div>
+
+            <!-- Sales Analytics Panel -->
+            <div class="panel">
+                <h2><i class="fas fa-chart-line"></i> Анализ продаж</h2>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="label">Общая выручка</div>
+                        <div class="value">15,482,500 ₽</div>
+                        <div class="trend trend-up"><i class="fas fa-arrow-up"></i> 12.5% к прошлому месяцу</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">Средний чек</div>
+                        <div class="value">185 ₽</div>
+                        <div class="trend trend-up"><i class="fas fa-arrow-up"></i> 3.2% к прошлому месяцу</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">Количество транзакций</div>
+                        <div class="value">83,689</div>
+                        <div class="trend trend-up"><i class="fas fa-arrow-up"></i> 8.7% к прошлому месяцу</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">Конверсия</div>
+                        <div class="value">68.4%</div>
+                        <div class="trend trend-down"><i class="fas fa-arrow-down"></i> 1.2% к прошлому месяцу</div>
+                    </div>
+                </div>
+                
+                <h3>Динамика продаж</h3>
+                <div class="chart-container" id="sales-chart">
+                    График динамики продаж будет отображен здесь
+                </div>
+                
+                <h3>Продажи по категориям</h3>
+                <div class="chart-container" id="category-chart">
+                    График продаж по категориям будет отображен здесь
+                </div>
+                
+                <h3>Топ-10 автоматов по выручке</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID автомата</th>
+                            <th>Локация</th>
+                            <th>Выручка</th>
+                            <th>Транзакции</th>
+                            <th>Средний чек</th>
+                            <th>Динамика</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>VM-055</td>
+                            <td>ТЦ Next</td>
+                            <td>1,245,800 ₽</td>
+                            <td>6,842</td>
+                            <td>182 ₽</td>
+                            <td class="trend-up">+15.3%</td>
+                        </tr>
+                        <tr>
+                            <td>VM-067</td>
+                            <td>Аэропорт</td>
+                            <td>1,187,650 ₽</td>
+                            <td>5,938</td>
+                            <td>200 ₽</td>
+                            <td class="trend-up">+12.8%</td>
+                        </tr>
+                        <tr>
+                            <td>VM-001</td>
+                            <td>ТЦ Mega Planet</td>
+                            <td>985,420 ₽</td>
+                            <td>5,124</td>
+                            <td>192 ₽</td>
+                            <td class="trend-up">+8.5%</td>
+                        </tr>
+                        <tr>
+                            <td>VM-028</td>
+                            <td>Метро Олмазор</td>
+                            <td>875,340 ₽</td>
+                            <td>4,863</td>
+                            <td>180 ₽</td>
+                            <td class="trend-up">+5.2%</td>
+                        </tr>
+                        <tr>
+                            <td>VM-015</td>
+                            <td>Парк Ашхабад</td>
+                            <td>754,280 ₽</td>
+                            <td>4,157</td>
+                            <td>181 ₽</td>
+                            <td class="trend-down">-2.1%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="export-buttons">
+                    <button class="export-btn"><i class="fas fa-file-excel"></i> Экспорт в Excel</button>
+                    <button class="export-btn"><i class="fas fa-file-pdf"></i> Экспорт в PDF</button>
+                    <button class="export-btn"><i class="fas fa-file-csv"></i> Экспорт в CSV</button>
+                </div>
+            </div>
+            
+            <!-- Operator Performance Panel -->
+            <div class="panel">
+                <h2><i class="fas fa-user-check"></i> Эффективность операторов</h2>
+                
+                <div class="chart-container" id="operator-chart">
+                    График эффективности операторов будет отображен здесь
+                </div>
+                
+                <h3>Детализация по операторам</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Оператор</th>
+                            <th>Выполнено задач</th>
+                            <th>Среднее время выполнения</th>
+                            <th>Эффективность</th>
+                            <th>Рейтинг</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Анна В.</td>
+                            <td>124</td>
+                            <td>42 мин</td>
+                            <td>95%</td>
+                            <td>4.9/5</td>
+                        </tr>
+                        <tr>
+                            <td>Алексей К.</td>
+                            <td>118</td>
+                            <td>45 мин</td>
+                            <td>92%</td>
+                            <td>4.8/5</td>
+                        </tr>
+                        <tr>
+                            <td>Мария П.</td>
+                            <td>105</td>
+                            <td>48 мин</td>
+                            <td>88%</td>
+                            <td>4.7/5</td>
+                        </tr>
+                        <tr>
+                            <td>Дмитрий С.</td>
+                            <td>98</td>
+                            <td>52 мин</td>
+                            <td>85%</td>
+                            <td>4.6/5</td>
+                        </tr>
+                        <tr>
+                            <td>Сергей М.</td>
+                            <td>87</td>
+                            <td>58 мин</td>
+                            <td>78%</td>
+                            <td>4.3/5</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="export-buttons">
+                    <button class="export-btn"><i class="fas fa-file-excel"></i> Экспорт в Excel</button>
+                    <button class="export-btn"><i class="fas fa-file-pdf"></i> Экспорт в PDF</button>
+                </div>
+            </div>
+            
+            <!-- Inventory Analytics Panel -->
+            <div class="panel">
+                <h2><i class="fas fa-boxes"></i> Анализ запасов</h2>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="label">Общая стоимость запасов</div>
+                        <div class="value">3,245,800 ₽</div>
+                        <div class="trend trend-up"><i class="fas fa-arrow-up"></i> 5.2% к прошлому месяцу</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">Оборачиваемость запасов</div>
+                        <div class="value">4.8</div>
+                        <div class="trend trend-up"><i class="fas fa-arrow-up"></i> 0.3 к прошлому месяцу</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">Средний срок хранения</div>
+                        <div class="value">7.5 дней</div>
+                        <div class="trend trend-down"><i class="fas fa-arrow-down"></i> 0.8 дня к прошлому месяцу</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">Количество пополнений</div>
+                        <div class="value">285</div>
+                        <div class="trend trend-up"><i class="fas fa-arrow-up"></i> 12.4% к прошлому месяцу</div>
+                    </div>
+                </div>
+                
+                <h3>Динамика запасов</h3>
+                <div class="chart-container" id="inventory-chart">
+                    График динамики запасов будет отображен здесь
+                </div>
+                
+                <h3>Топ-5 товаров по обороту</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Категория</th>
+                            <th>Продано единиц</th>
+                            <th>Выручка</th>
+                            <th>Маржа</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Капучино</td>
+                            <td>Кофе</td>
+                            <td>15,842</td>
+                            <td>1,742,620 ₽</td>
+                            <td>68%</td>
+                        </tr>
+                        <tr>
+                            <td>Латте</td>
+                            <td>Кофе</td>
+                            <td>12,568</td>
+                            <td>1,382,480 ₽</td>
+                            <td>65%</td>
+                        </tr>
+                        <tr>
+                            <td>Эспрессо</td>
+                            <td>Кофе</td>
+                            <td>10,245</td>
+                            <td>921,050 ₽</td>
+                            <td>72%</td>
+                        </tr>
+                        <tr>
+                            <td>Чай зеленый</td>
+                            <td>Чай</td>
+                            <td>8,754</td>
+                            <td>787,860 ₽</td>
+                            <td>70%</td>
+                        </tr>
+                        <tr>
+                            <td>Шоколадный батончик</td>
+                            <td>Снеки</td>
+                            <td>7,985</td>
+                            <td>638,800 ₽</td>
+                            <td>45%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="export-buttons">
+                    <button class="export-btn"><i class="fas fa-file-excel"></i> Экспорт в Excel</button>
+                    <button class="export-btn"><i class="fas fa-file-pdf"></i> Экспорт в PDF</button>
+                </div>
+            </div>
+            
+            <!-- Reports Panel -->
+            <div class="panel">
+                <h2><i class="fas fa-file-alt"></i> Отчеты</h2>
+                
+                <div class="report-grid">
+                    <div class="report-card">
+                        <h4>Ежедневный отчет</h4>
+                        <p>Сводка по продажам, запасам и задачам за день</p>
+                        <button class="btn">Сформировать</button>
+                    </div>
+                    <div class="report-card">
+                        <h4>Еженедельный отчет</h4>
+                        <p>Детальный анализ продаж и эффективности за неделю</p>
+                        <button class="btn">Сформировать</button>
+                    </div>
+                    <div class="report-card">
+                        <h4>Ежемесячный отчет</h4>
+                        <p>Полный финансовый и операционный отчет за месяц</p>
+                        <button class="btn">Сформировать</button>
+                    </div>
+                    <div class="report-card">
+                        <h4>Отчет по автоматам</h4>
+                        <p>Анализ эффективности работы автоматов</p>
+                        <button class="btn">Сформировать</button>
+                    </div>
+                    <div class="report-card">
+                        <h4>Отчет по операторам</h4>
+                        <p>Оценка эффективности работы операторов</p>
+                        <button class="btn">Сформировать</button>
+                    </div>
+                    <div class="report-card">
+                        <h4>Отчет по запасам</h4>
+                        <p>Анализ движения запасов и прогноз пополнения</p>
+                        <button class="btn">Сформировать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>&copy; 2024 VHM24 - Enterprise Vending Hub Manager | Powered by AI & Blockchain</p>
+        </div>
+    </div>
+
+    <script>
+        // Имитация загрузки графиков
+        document.addEventListener('DOMContentLoaded', () => {
+            const chartContainers = document.querySelectorAll('.chart-container');
+            
+            chartContainers.forEach(container => {
+                container.innerHTML = 'Загрузка графика...';
+                
+                setTimeout(() => {
+                    container.innerHTML = 'График загружен и отображается';
+                }, 1500);
+            });
+            
+            // Обработчик кнопки применения фильтров
+            document.getElementById('apply-filters').addEventListener('click', () => {
+                alert('Фильтры применены. Данные обновлены.');
+                
+                // Имитация обновления данных
+                chartContainers.forEach(container => {
+                    container.innerHTML = 'Обновление графика...';
+                    
+                    setTimeout(() => {
+                        container.innerHTML = 'График обновлен с учетом фильтров';
+                    }, 1000);
+                });
+            });
+            
+            // Обработчики кнопок экспорта
+            const exportButtons = document.querySelectorAll('.export-btn');
+            
+            exportButtons.forEach(button => {
+                if (button.id !== 'apply-filters') {
+                    button.addEventListener('click', () => {
+                        alert('Начат экспорт данных. Файл будет скачан автоматически.');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
