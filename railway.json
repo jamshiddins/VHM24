@@ -1,12 +1,61 @@
 {
+  "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS"
+    "builder": "NIXPACKS",
+    "buildCommand": "npm install"
   },
   "deploy": {
-    "startCommand": "npm start",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10,
+    "numReplicas": 1,
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300,
-    "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
-  }
+    "healthcheckInterval": 60
+  },
+  "services": [
+    {
+      "name": "api",
+      "startCommand": "node start-vendhub-with-sqlite.js",
+      "envVars": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "PORT",
+          "value": "3000"
+        }
+      ]
+    },
+    {
+      "name": "worker",
+      "startCommand": "node worker.js",
+      "envVars": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        }
+      ]
+    },
+    {
+      "name": "scheduler",
+      "startCommand": "node scheduler.js",
+      "envVars": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        }
+      ]
+    },
+    {
+      "name": "telegram-bot",
+      "startCommand": "node telegram-bot/src/bot.js",
+      "envVars": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        }
+      ]
+    }
+  ]
 }
