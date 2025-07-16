@@ -1,7 +1,12 @@
 /**
  * Скрипт для проверки и настройки переменных окружения в Railway
  */
-require('dotenv').config();
+const dotenv = require('dotenv');
+const dotenvExpand = require('dotenv-expand');
+
+// Загружаем основной .env файл
+const mainEnv = dotenv.config();
+dotenvExpand.expand(mainEnv);
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');

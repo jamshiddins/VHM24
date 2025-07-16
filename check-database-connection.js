@@ -1,0 +1,120 @@
+/**
+ * Скрипт для проверки подключения к базе данных и структуры базы данных
+ */
+const { Client } = require('pg');
+const dotenv = require('dotenv');
+const dotenvExpand = require('dotenv-expand');
+
+// Загружаем .env.development файл для локальной разработки
+const devEnv = dotenv.config({ path: '.env.development' });
+dotenvExpand.expand(devEnv);
+
+// Загружаем основной .env файл
+const mainEnv = dotenv.config();
+dotenvExpand.expand(mainEnv);
+
+// Функция для проверки подключения к базе данных
+async function checkDatabaseConnection() {
+  console.log('=== ПРОВЕРКА ПОДКЛЮЧЕНИЯ К БАЗЕ ДАННЫХ ===');
+  
+  // Создаем клиент PostgreSQL
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL
+  });
+  
+  try {
+    // Подключаемся к базе данных
+    console.log(`Подключение к базе данных: ${process.env.DATABASE_URL.split('@')[1]}`);
+    await client.connect();
+    console.log('✅ Успешное подключение к базе данных');
+    
+    // Проверяем версию PostgreSQL
+    const versionResult = await client.query('SELECT version()');
+    console.log(`✅ Версия PostgreSQL: ${versionResult.rows[0].version}`);
+    
+    // Получаем список таблиц
+    const tablesResult = await client.query(`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public'
+      ORDER BY table_name
+    `);
+    
+    console.log(`✅ Найдено ${tablesResult.rows.length} таблиц в базе данных:`);
+    
+    // Выводим список таблиц
+    for (const row of tablesResult.rows) {
+      console.log(`  - ${row.table_name}`);
+      
+      // Получаем список колонок для таблицы
+      const columnsResult = await client.query(`
+        SELECT column_name, data_type 
+        FROM information_schema.columns 
+        WHERE table_schema = 'public' AND table_name = $1
+        ORDER BY ordinal_position
+      `, [row.table_name]);
+      
+      console.log(`    Колонки (${columnsResult.rows.length}):`);
+      
+      // Выводим список колонок
+      for (const column of columnsResult.rows) {
+        console.log(`      - ${column.column_name} (${column.data_type})`);
+      }
+      
+      // Получаем количество записей в таблице
+      const countResult = await client.query(`
+        SELECT COUNT(*) as count FROM "${row.table_name}"
+      `);
+      
+      console.log(`    Количество записей: ${countResult.rows[0].count}`);
+      console.log('');
+    }
+    
+    // Получаем список индексов
+    const indexesResult = await client.query(`
+      SELECT indexname, tablename
+      FROM pg_indexes
+      WHERE schemaname = 'public'
+      ORDER BY tablename, indexname
+    `);
+    
+    console.log(`✅ Найдено ${indexesResult.rows.length} индексов в базе данных:`);
+    
+    // Выводим список индексов
+    for (const row of indexesResult.rows) {
+      console.log(`  - ${row.indexname} (таблица: ${row.tablename})`);
+    }
+    
+    // Проверяем размер базы данных
+    const dbSizeResult = await client.query(`
+      SELECT pg_size_pretty(pg_database_size(current_database())) as size
+    `);
+    
+    console.log(`✅ Размер базы данных: ${dbSizeResult.rows[0].size}`);
+    
+    // Проверяем активные соединения
+    const connectionsResult = await client.query(`
+      SELECT count(*) as count
+      FROM pg_stat_activity
+      WHERE datname = current_database()
+    `);
+    
+    console.log(`✅ Активные соединения: ${connectionsResult.rows[0].count}`);
+    
+    console.log('=== ПРОВЕРКА ЗАВЕРШЕНА УСПЕШНО ===');
+    return true;
+  } catch (error) {
+    console.error(`❌ Ошибка при подключении к базе данных: ${error.message}`);
+    console.error(error.stack);
+    return false;
+  } finally {
+    // Закрываем соединение
+    await client.end();
+  }
+}
+
+// Запускаем проверку
+checkDatabaseConnection().catch(error => {
+  console.error(`❌ Критическая ошибка: ${error.message}`);
+  process.exit(1);
+});

@@ -1,7 +1,16 @@
 /**
  * Основной файл запуска VHM24 API сервера
  */
-require('dotenv').config({ path: '.env.api' });
+const dotenv = require('dotenv');
+const dotenvExpand = require('dotenv-expand');
+
+// Загружаем основной .env файл
+const mainEnv = dotenv.config();
+dotenvExpand.expand(mainEnv);
+
+// Загружаем .env.api файл с переопределениями для API сервера
+const apiEnv = dotenv.config({ path: '.env.api' });
+dotenvExpand.expand(apiEnv);
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -11,7 +20,32 @@ const logger = require('../backend/src/utils/logger');
 
 // Инициализация приложения
 const app = express();
-const prisma = new PrismaClient();
+
+// Выбор URL для подключения к базе данных
+// Если мы запускаемся в Railway, используем внутренний URL
+// Если мы запускаемся локально, используем публичный URL или локальный URL
+let databaseUrl = process.env.DATABASE_URL || process.env.DATABASE_URL_PUBLIC;
+
+// Проверяем, запущены ли мы в Railway
+const isRailway = process.env.RAILWAY_ENVIRONMENT === 'production';
+
+// Если мы запущены в Railway, используем специальный URL для подключения к PostgreSQL
+if (isRailway) {
+  // В Railway сервисы могут обращаться друг к другу по имени сервиса
+  // Для PostgreSQL используем полный URL с именем сервиса Postgres
+  databaseUrl = 'postgresql://postgres:TnKaHJbWffrqtZOIklgKNSlNZHDcxsQh@Postgres:5432/railway';
+  console.log('Запущено в Railway, используем специальный URL для подключения к PostgreSQL');
+}
+
+console.log(`Используется URL базы данных: ${databaseUrl ? databaseUrl.split('@')[1] : 'не указан'}`);
+
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: databaseUrl
+    }
+  }
+});
 
 // Получаем порт из окружения - КРИТИЧЕСКИ ВАЖНО для Railway
 const PORT = process.env.PORT || 3000;
@@ -45,15 +79,19 @@ app.get('/', (req, res) => {
 
 // Health check endpoint - КРИТИЧЕСКИ ВАЖНО для Railway
 app.get('/health', (req, res) => {
+  // Выбор URL для подключения к Redis
+  const redisUrl = process.env.REDIS_URL || process.env.REDIS_URL_PUBLIC;
+  
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     version: process.env.npm_package_version || '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
     services: {
-      api: 'OK',
-      database: 'OK',
-      redis: process.env.REDIS_URL ? 'OK' : 'N/A'
+      database: 'Connected',
+      redis: redisUrl ? 'Connected' : 'N/A',
+      telegram: 'Configured'
     }
   });
 });

@@ -1,7 +1,16 @@
 /**
  * Scheduler для планирования задач
  */
-require('dotenv').config();
+const dotenv = require('dotenv');
+const dotenvExpand = require('dotenv-expand');
+
+// Загружаем основной .env файл
+const mainEnv = dotenv.config();
+dotenvExpand.expand(mainEnv);
+
+// Загружаем .env.scheduler файл с переопределениями для Scheduler
+const schedulerEnv = dotenv.config({ path: '.env.scheduler' });
+dotenvExpand.expand(schedulerEnv);
 const { createClient } = require('redis');
 
 // Инициализация Redis-клиента

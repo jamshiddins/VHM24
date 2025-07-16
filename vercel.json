@@ -1,22 +1,19 @@
 {
   "version": 2,
-  "functions": {
-    "backend/src/index.js": {
-      "maxDuration": 30
-    }
-  },
+  "buildCommand": "cd apps/web-dashboard && npm install && npm run build",
+  "outputDirectory": "apps/web-dashboard/.next",
+  "framework": "nextjs",
   "rewrites": [
     {
-      "source": "/health",
-      "destination": "/backend/src/index.js"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/backend/src/index.js"
-    },
-    {
       "source": "/(.*)",
-      "destination": "/backend/src/index.js"
+      "destination": "/apps/web-dashboard/$1"
     }
-  ]
+  ],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://web-production-d9582.up.railway.app/api"
+  },
+  "github": {
+    "enabled": true,
+    "silent": false
+  }
 }

@@ -1,7 +1,16 @@
 /**
  * Scheduler для планирования задач
  */
-require('dotenv').config({ path: '.env.scheduler' });
+const dotenv = require('dotenv');
+const dotenvExpand = require('dotenv-expand');
+
+// Загружаем основной .env файл
+const mainEnv = dotenv.config();
+dotenvExpand.expand(mainEnv);
+
+// Загружаем .env.scheduler файл с переопределениями для Scheduler
+const schedulerEnv = dotenv.config({ path: '.env.scheduler' });
+dotenvExpand.expand(schedulerEnv);
 const { createClient } = require('redis');
 
 // Инициализация Redis-клиента
@@ -12,15 +21,33 @@ let redisClient;
  */
 async function initScheduler() {
   try {
+    // Выбор URL для подключения к Redis
+    // Если мы запускаемся в Railway, используем внутренний URL
+    // Если мы запускаемся локально, используем публичный URL или локальный URL
+    let redisUrl = process.env.REDIS_URL || process.env.REDIS_URL_PUBLIC;
+    
     // Проверка наличия переменной окружения REDIS_URL
-    if (!process.env.REDIS_URL) {
-      console.error('❌ REDIS_URL не настроен в переменных окружения');
+    if (!redisUrl) {
+      console.error('❌ REDIS_URL и REDIS_URL_PUBLIC не настроены в переменных окружения');
       return;
     }
     
+    // Проверяем, запущены ли мы в Railway
+    const isRailway = process.env.RAILWAY_ENVIRONMENT === 'production';
+    
+    // Если мы запущены в Railway, используем специальный URL для подключения к Redis
+    if (isRailway) {
+      // В Railway сервисы могут обращаться друг к другу по имени сервиса
+      // Для Redis используем полный URL с именем сервиса Redis
+      redisUrl = 'redis://default:AlBzXGfakMRiVrFolnlZITTgniXFVBPX@Redis:6379';
+      console.log('Запущено в Railway, используем специальный URL для подключения к Redis');
+    }
+    
+    console.log(`Используется URL Redis: ${redisUrl.split('@')[1]}`);
+    
     // Подключение к Redis с расширенными настройками
     redisClient = createClient({
-      url: process.env.REDIS_URL,
+      url: redisUrl,
       socket: {
         reconnectStrategy: (retries) => {
           // Максимальное количество попыток переподключения - 20

@@ -1,7 +1,16 @@
 /**
  * Worker для обработки фоновых задач
  */
-require('dotenv').config();
+const dotenv = require('dotenv');
+const dotenvExpand = require('dotenv-expand');
+
+// Загружаем основной .env файл
+const mainEnv = dotenv.config();
+dotenvExpand.expand(mainEnv);
+
+// Загружаем .env.worker файл с переопределениями для Worker
+const workerEnv = dotenv.config({ path: '.env.worker' });
+dotenvExpand.expand(workerEnv);
 const { createClient } = require('redis');
 
 // Инициализация Redis-клиента

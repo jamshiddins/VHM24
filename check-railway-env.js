@@ -1,7 +1,12 @@
 /**
  * Скрипт для проверки переменных окружения в Railway
  */
-require('dotenv').config();
+const dotenv = require('dotenv');
+const dotenvExpand = require('dotenv-expand');
+
+// Загружаем основной .env файл
+const mainEnv = dotenv.config();
+dotenvExpand.expand(mainEnv);
 
 // Список переменных из финальной версии
 const finalVariables = [

@@ -69,7 +69,9 @@ function setServiceEnvironmentVariables(serviceName) {
     // Список необходимых переменных окружения
     const requiredVariables = [
       'DATABASE_URL',
+      'DATABASE_URL_PUBLIC',
       'REDIS_URL',
+      'REDIS_URL_PUBLIC',
       'NODE_ENV',
       'PORT',
       'RAILWAY_PUBLIC_URL',

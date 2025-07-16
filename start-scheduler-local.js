@@ -6,7 +6,17 @@
 process.env.NODE_ENV = 'development';
 
 // Запускаем Scheduler с локальными настройками
-require('dotenv').config({ path: '.env.scheduler.local' });
+const dotenv = require('dotenv');
+const dotenvExpand = require('dotenv-expand');
+
+// Загружаем основной .env файл
+const mainEnv = dotenv.config();
+dotenvExpand.expand(mainEnv);
+
+// Загружаем .env.scheduler.local файл с переопределениями для локального Scheduler
+const schedulerLocalEnv = dotenv.config({ path: '.env.scheduler.local' });
+dotenvExpand.expand(schedulerLocalEnv);
+
 require('./scheduler/index');
 
 console.log('🚀 Scheduler запущен в режиме разработки');

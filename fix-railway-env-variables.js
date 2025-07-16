@@ -3,7 +3,16 @@
  * Этот скрипт проверяет наличие всех необходимых переменных окружения
  * и исправляет их при необходимости
  */
-require('dotenv').config();
+const dotenv = require('dotenv');
+const dotenvExpand = require('dotenv-expand');
+
+// Загружаем .env.development файл для локальной разработки
+const devEnv = dotenv.config({ path: '.env.development' });
+dotenvExpand.expand(devEnv);
+
+// Загружаем основной .env файл
+const mainEnv = dotenv.config();
+dotenvExpand.expand(mainEnv);
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
